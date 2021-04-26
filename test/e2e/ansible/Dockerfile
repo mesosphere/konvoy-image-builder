@@ -10,9 +10,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         openssh-server \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN groupadd sshgroup \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd sshgroup \
     && useradd -ms /bin/bash -g sshgroup sshuser \
     && mkdir /setup
 

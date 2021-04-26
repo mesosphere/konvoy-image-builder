@@ -99,11 +99,16 @@ COPY --from=builder /tools /usr/local/bin
 
 RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
     || addgroup --system --gid "${GROUP_ID}" "${GROUP_NAME}"
+
+# NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
+# hadolint ignore=DL3059
 RUN getent passwd "${USER_ID}" > /dev/null 2>&1 \
     || adduser --system --disabled-password \
         --uid "${USER_ID}" --gid "${GROUP_ID}" "${USER_NAME}"
+
 # NOTE(jkoelker) Ignore "A && B || C is not if-then-else"
-# hadolint ignore=SC2015
+# NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
+# hadolint ignore=SC2015,DL3059
 RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
         getent group "${DOCKER_GID}" > /dev/null 2>&1 \
             || addgroup --system --gid "${DOCKER_GID}" "docker"; \
@@ -112,7 +117,6 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
             && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
         rm -rf /tmp/docker.group*; \
     fi
-
 
 # Run as nonroot user using numeric ID for compatibllity.
 USER ${USER_NAME}:${GROUP_NAME}
