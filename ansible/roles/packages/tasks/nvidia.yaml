@@ -1,0 +1,10 @@
+---
+# RPM
+- name: install nvidia-container-runtime rpm package
+  yum:
+    name: "{{ nvidia_container_runtime_package }}"
+    state: present
+    disable_gpg_check: true
+    update_cache: true
+
+# TODO: local driver install

@@ -1,0 +1,2 @@
+---
+runtime-endpoint: unix://{{ containerd_cri_socket }}

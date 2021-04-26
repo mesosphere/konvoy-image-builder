@@ -1,0 +1,15 @@
+---
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: restart containerd
+  service:
+    name: containerd
+    state: restarted
+    enabled: yes
+
+- name: restart kubelet
+  service:
+    name: kubelet
+    state: restarted
+    enabled: yes

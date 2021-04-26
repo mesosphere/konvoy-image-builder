@@ -1,0 +1,122 @@
+#
+FROM hashicorp/packer:1.7.2 as packer
+FROM golangci/golangci-lint:v1.39.0-alpine as golangci-lint
+FROM goreleaser/goreleaser:v0.164.0 as goreleaser
+FROM docker:20.10 as docker
+
+FROM golang:1.16 as builder
+
+# NOTE(jkoelker) since this is a multistage build we
+#                can have an explosion at the layer
+#                factory to help with caching
+
+RUN mkdir -p /tools
+
+# NOTE(jkoelker) Ignore "Pin versions in apt get install.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        p7zip-full
+
+ARG PACKER_GOSS_VERSION=3.0.3
+ARG PACKER_GOSS_SHA265=1994069f78d44a76d463b76fef42c7e4ab412df14703a51643642ecdefa2c029
+ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
+ARG PACKER_GOSS_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
+ARG PACKER_GOSS_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_FILE}"
+RUN wget \
+        --no-verbose \
+        --output-document="/tmp/${PACKER_GOSS_FILE}" \
+        "${PACKER_GOSS_URL}" \
+    && echo "${PACKER_GOSS_SHA265}  /tmp/${PACKER_GOSS_FILE}" \
+        > "/tmp/${PACKER_GOSS_FILE}.sha256" \
+    && sha256sum -c "/tmp/${PACKER_GOSS_FILE}.sha256" \
+    && tar --extract \
+        --file "/tmp/${PACKER_GOSS_FILE}" \
+        --directory /tools
+
+ARG GO_ACC_VERSION=0.2.6
+# TODO(jkoelker) migrate to binary release for next release:
+#                https://github.com/ory/go-acc/pull/23
+RUN go install "github.com/ory/go-acc@v${GO_ACC_VERSION}" \
+    && mv /go/bin/go-acc /tools
+
+ARG GOCOVER_COBERTURA_VERSION=1.1.0
+ARG GOCOVER_COBERTURA_SHA265=bd4cb244f88b2eee22a868dccb88433cc303d11ffa29e1cae3e772caada1b615
+ARG GOCOVER_COBERTURA_REPO="https://github.com/boumenot/gocover-cobertura"
+ARG GOCOVER_COBERTURA_FILE="gocover-cobertura.linux.x64.7z"
+ARG GOCOVER_COBERTURA_URL="${GOCOVER_COBERTURA_REPO}/releases/download/v${GOCOVER_COBERTURA_VERSION}/${GOCOVER_COBERTURA_FILE}"
+RUN wget \
+        --no-verbose \
+        --output-document="/tmp/${GOCOVER_COBERTURA_FILE}" \
+        "${GOCOVER_COBERTURA_URL}" \
+    && echo "${GOCOVER_COBERTURA_SHA265}  /tmp/${GOCOVER_COBERTURA_FILE}" \
+        > "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
+    && sha256sum -c "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
+    && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
+    && chmod +x /tools/gocover-cobertura
+
+# NOTE(jkoelker) From here we care about layers
+FROM golang:1.16
+
+ARG ANSIBLE_VERSION=2.10.7
+ENV ANSIBLE_PATH=/usr/local
+ENV PYTHON_PATH=/usr
+
+ARG USER_NAME=root
+ARG USER_ID=0
+ARG GROUP_NAME=root
+ARG GROUP_ID=0
+ARG DOCKER_GID=0
+
+# NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
+# hadolint ignore=DL3013,DL3008
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        libc-dev \
+        git \
+        gcc \
+        make \
+        bash \
+        openssl \
+        openssh-client \
+        python3 \
+        python3-cryptography \
+        python3-pip \
+        python3-setuptools \
+        python3-wheel \
+    && pip3 install --no-cache-dir \
+        ansible=="${ANSIBLE_VERSION}" \
+        awscli \
+    && rm -rf \
+        /root/.cache \
+        /var/lib/apt/lists/*
+
+COPY --from=packer /bin/packer /usr/local/bin/
+COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
+COPY --from=goreleaser /usr/local/bin/goreleaser /usr/local/bin/
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/
+COPY --from=builder /tools /usr/local/bin
+
+RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
+    || addgroup --system --gid "${GROUP_ID}" "${GROUP_NAME}"
+RUN getent passwd "${USER_ID}" > /dev/null 2>&1 \
+    || adduser --system --disabled-password \
+        --uid "${USER_ID}" --gid "${GROUP_ID}" "${USER_NAME}"
+# NOTE(jkoelker) Ignore "A && B || C is not if-then-else"
+# hadolint ignore=SC2015
+RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
+        getent group "${DOCKER_GID}" > /dev/null 2>&1 \
+            || addgroup --system --gid "${DOCKER_GID}" "docker"; \
+        getent group ${DOCKER_GID} >> /tmp/docker.group \
+            && cut -d: -f1 /tmp/docker.group >> /tmp/docker.group_name \
+            && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
+        rm -rf /tmp/docker.group*; \
+    fi
+
+
+# Run as nonroot user using numeric ID for compatibllity.
+USER ${USER_NAME}:${GROUP_NAME}
+
+# Non-trivial bash scripting like e.g. the Makefile require bash instead of
+# plain sh, in order to function.
+CMD ["/bin/bash"]

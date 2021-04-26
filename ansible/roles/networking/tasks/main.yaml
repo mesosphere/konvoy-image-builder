@@ -1,0 +1,98 @@
+  - name: load br_netfilter kernel module
+    modprobe:
+      name: br_netfilter
+      state: present
+    register: br_netfilter
+
+  - name: persist br_netfilter kernel module
+    copy:
+      dest: /etc/modules-load.d/konvoy-br_netfilter.conf
+      content: br_netfilter
+
+  - name: set bridge-nf-call-iptables to 1
+    sysctl:
+      name: "{{ item }}"
+      state: present
+      value: "1"
+      sysctl_file: /etc/sysctl.d/bridge-nf-call.conf
+      reload: yes
+    with_items:
+      - net.bridge.bridge-nf-call-ip6tables
+      - net.bridge.bridge-nf-call-iptables
+
+  - name: set net.ipv4.ip_forward to 1
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: "1"
+      sysctl_file: /etc/sysctl.d/ipv4-ip_forward.conf
+      state: present
+      reload: yes
+
+  - name: set net.ipv6.conf.all.forwarding to 1
+    sysctl:
+      name: net.ipv6.conf.all.forwarding
+      value: "1"
+      sysctl_file: /etc/sysctl.d/ipv6-forwarding.conf
+      state: present
+      reload: yes
+
+  - name: add iptable ALLOW rules for control-plane
+    iptables:
+      chain: INPUT
+      destination_port: "{{ item.port }}"
+      protocol: tcp
+      jump: ACCEPT
+      comment: "{{ item.comment }}"
+    with_items:
+      - port: "{{ apiserver.secure_port }}"
+        comment: "Konvoy: kube-apiserver --secure-port"
+      - port: 10250
+        comment: "Konvoy: kubelet --port"
+      - port: 10248
+        comment: "Konvoy: kubelet --healthz-port"
+      - port: 10249
+        comment: "Konvoy: kube-proxy --metrics-bind-address"
+      - port: 10256
+        comment: "Konvoy: kube-proxy --healthz-port"
+      - port: 10257
+        comment: "Konvoy: kube-controller-manager --secure-port"
+      - port: 10259
+        comment: "Konvoy: kube-scheduler --secure-port"
+      - port: 2379
+        comment: "Konvoy: etcd client"
+      - port: 2380
+        comment: "Konvoy: etcd peer"
+      - port: 9091
+        comment: "Konvoy: calico-node felix (used for metrics)"
+      - port: 9092
+        comment: "Konvoy: calico-node bird (used for metrics)"
+      - port: 9099
+        comment: "Konvoy: calico-node felix (used for liveness)"
+      - port: 179
+        comment: "Konvoy: calico-node BGP"
+      - port: 30000:32767
+        comment: "Konvoy: NodePorts"
+      - port: 5473
+        comment: "Konvoy: calico-typha (used for syncserver)"
+      - port: 9093
+        comment: "Konvoy: calico-typha (used for metrics)"
+    register: result
+    until: result is success
+    retries: 3
+    delay: 3
+    when:
+      - apply_iptables_rules | default(false)
+
+  - name: add iptable ALLOW rules for ICMP
+    iptables:
+      chain: INPUT
+      protocol: icmp
+      icmp_type: echo-request
+      jump: ACCEPT
+      comment: "Konvoy: ICMP"
+    register: result
+    until: result is success
+    retries: 3
+    delay: 3
+    when:
+      - allow_icmp | default(false)

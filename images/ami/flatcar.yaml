@@ -1,0 +1,31 @@
+download_images: true
+
+packer:
+  ami_filter_name: "Flatcar*stable*"
+  ami_filter_owners: "075585003325"
+  distribution: "Flatcar"
+  distribution_release: "Stable"
+  distribution_version: "2765.2.1"
+  source_ami: ""
+  ssh_username: "core"
+  root_device_name: "/dev/sda1"
+
+build_name: "flatcar-stable"
+packer_builder_type: "amazon"
+
+containerd_version: 1.4.4 # match this with the flatcar distribution version
+kubernetes_cni_version: 0.8.7
+
+ansible_python_interpreter: /opt/bin/python
+python_path: /opt/bin/builder-env/site-packages
+
+sysusr_prefix: /opt
+sysusrlocal_prefix: /opt
+systemd_prefix: /etc/systemd
+
+containerd_cri_socket: /run/docker/libcontainerd/docker-containerd.sock
+
+containerd_flatcar_bins:
+  - ctr
+  - containerd
+  - containerd-shim

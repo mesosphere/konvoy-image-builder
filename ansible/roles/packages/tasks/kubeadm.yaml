@@ -1,0 +1,35 @@
+---
+- name: check if versionlock exists
+  command: yum versionlock list
+  register: versionlocklist
+  args:
+    warn: false
+  ignore_errors: True
+  when: ansible_os_family == 'RedHat'
+
+- name: remove versionlock for kubeadm packages
+  command: yum versionlock delete kubeadm
+  args:
+    warn: false
+  ignore_errors: True
+  when:
+    - ansible_os_family == 'RedHat'
+    - versionlocklist is defined and versionlocklist.stdout is defined
+    - "'kubeadm' in versionlocklist.stdout"
+
+- name: install kubeadm rpm package
+  yum:
+    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+  when: ansible_os_family == 'RedHat'
+
+- name: add versionlock for kubeadm package
+  command: yum versionlock add kubeadm
+  args:
+    warn: false
+  when: ansible_os_family == 'RedHat'

@@ -1,0 +1,28 @@
+---
+name: Build
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: make devkit.run
+        env:
+          WHAT: make build
+
+      - name: Check Docs
+        run: make devkit.run
+        env:
+          WHAT: make docs.check

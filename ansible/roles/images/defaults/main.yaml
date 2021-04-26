@@ -1,0 +1,14 @@
+---
+control_plane_images:
+  - "k8s.gcr.io/kube-apiserver:v{{ kubernetes_version }}"
+  - "k8s.gcr.io/kube-controller-manager:v{{ kubernetes_version }}"
+  - "k8s.gcr.io/kube-scheduler:v{{ kubernetes_version }}"
+  - "k8s.gcr.io/kube-proxy:v{{ kubernetes_version }}"
+  - "k8s.gcr.io/pause:{{ pause_image_version }}"
+  - "k8s.gcr.io/pause:{{ pause_image_version_prev }}"
+  - "k8s.gcr.io/etcd:{{ etcd_version }}"
+  - "k8s.gcr.io/coredns:{{ coredns_version }}"
+
+aws_images: []
+
+extra_images: []

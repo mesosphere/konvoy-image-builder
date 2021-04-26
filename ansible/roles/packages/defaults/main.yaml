@@ -1,0 +1,21 @@
+---
+common_rpms:
+  - audit
+  - ca-certificates
+  - conntrack-tools
+  - chrony
+  - curl
+  - ebtables
+  - open-vm-tools
+  - python3-pip
+  - python-netifaces
+  - python-requests
+  - socat
+  - sysstat
+  - yum-utils
+  - yum-plugin-versionlock
+  - nfs-utils
+  - NetworkManager
+
+rhel8_rpms:
+  - iproute-tc

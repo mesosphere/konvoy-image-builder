@@ -1,0 +1,95 @@
+# based on: https://github.com/kubernetes-sigs/image-builder/blob/df5d6dde507fdab64c76c0e242996fa04da623e9/images/capi/ansible/roles/kubernetes/tasks/url.yml
+---
+- name: Symlink cri-tools
+  file:
+    src: "{{ sysusrlocal_prefix }}/bin/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    mode: 0777
+    state: link
+    force: yes
+  loop:
+    - ctr
+    - crictl
+    - critest
+  when: ansible_os_family != "Flatcar"
+
+- name: Create CNI directory
+  file:
+    state: directory
+    path: /opt/cni/bin
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Download CNI tarball
+  get_url:
+    url: "{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-linux-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz"
+    checksum: "{{ kubernetes_cni_http_checksum }}"
+    dest: /tmp/cni.tar.gz
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Install CNI
+  unarchive:
+    remote_src: yes
+    dest: /opt/cni/bin
+    src: /tmp/cni.tar.gz
+
+- name: Remove CNI tarball
+  file:
+    state: absent
+    path: /tmp/cni.tar.gz
+
+- name: Download Kubernetes binaries
+  get_url:
+    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
+    # TODO(akutz) Write a script to separately download the checksum
+    #             and verify the associated file using the correct
+    #             checksum file format
+    #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
+    dest: "{{ sysusr_prefix }}/bin/{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+  loop: "{{ kubernetes_bins }}"
+
+- name: Create Kubernetes manifests directory
+  file:
+    state: directory
+    path: /etc/kubernetes/manifests
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create kubelet sysconfig directory
+  file:
+    state: directory
+    path: /etc/sysconfig
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create kubelet drop-in directory
+  file:
+    state: directory
+    path: "{{ systemd_prefix }}/system/kubelet.service.d"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create kubelet kubeadm drop-in file
+  template:
+    src: usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    dest: "{{ systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create kubelet systemd file
+  template:
+    src: usr/lib/systemd/system/kubelet.service
+    dest: "{{ systemd_prefix }}/system/kubelet.service"
+    owner: root
+    group: root
+    mode: 0644

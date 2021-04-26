@@ -1,0 +1,72 @@
+---
+before:
+  hooks:
+    - go mod download
+    - go mod tidy
+
+builds:
+  - main: ./cmd/konvoy-image/main.go
+    id: konvoy-image
+    binary: konvoy-image
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X {{ .ModulePath }}/pkg/version.version={{ .Version }}
+      - -X {{ .ModulePath }}/pkg/version.major={{ .Major }}
+      - -X {{ .ModulePath }}/pkg/version.minor={{ .Minor }}
+      - -X {{ .ModulePath }}/pkg/version.patch={{ .Patch }}
+      - -X {{ .ModulePath }}/pkg/version.revision={{ .FullCommit }}
+      - -X {{ .ModulePath }}/pkg/version.commitDate={{ .CommitDate }}
+      - -X {{ .ModulePath }}/pkg/version.branch={{ .Branch }}
+      - -X {{ .ModulePath }}/pkg/version.builtBy=goreleaser
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+
+dockers:
+  - dockerfile: Dockerfile.devkit
+    image_templates:
+      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
+      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}.{{ .Minor }}-devkit{{ end }}"
+      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}.{{ .Minor }}-devkit{{ end }}"
+      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}-devkit{{ end }}"
+      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:latest-devkit{{ end }}"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--platform=linux/amd64"
+    skip_push: true
+
+  - dockerfile: Dockerfile
+    image_templates:
+      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}'
+      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}.{{ .Minor }}{{ end }}"
+      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}{{ end }}"
+      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:latest{{ end }}"
+    ids:
+      - konvoy-image
+    # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
+    #                was just build and is local, it will not be found.
+    build_flag_templates:
+      - '--build-arg=BASE=mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--platform=linux/amd64"
+    skip_push: true
+
+release:
+  github:
+  prerelease: auto

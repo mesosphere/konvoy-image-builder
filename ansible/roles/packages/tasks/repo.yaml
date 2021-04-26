@@ -1,0 +1,64 @@
+---
+# RPM
+- name: add Konvoy Kubernetes rpm repository
+  yum_repository:
+    name: kubernetes
+    file: konvoy-k8s
+    description: Konvoy Kubernetes package repository
+    baseurl: "{{ kubernetes_rpm_repository_url }}"
+    gpgkey: "{{ kubernetes_rpm_gpg_key_url }}"
+    gpgcheck: true
+  register: konvoy_repo_installation_rpm
+  until: konvoy_repo_installation_rpm is success
+  retries: 3
+  delay: 3
+  when: ansible_os_family == 'RedHat'
+
+# Set priority: 50 to be higher priority than the default 99 but leave room
+# for future repos
+- name: add Konvoy Containerd rpm repository
+  yum_repository:
+    name: konvoy-packages
+    description: Konvoy Containerd package repository
+    priority: "50"
+    baseurl: "{{ docker_rpm_repository_url }}"
+    gpgkey: "{{ docker_rpm_gpg_key_url }}"
+    gpgcheck: true
+  retries: 3
+  delay: 3
+  when:
+    - ansible_os_family == 'RedHat'
+
+- name: add libnvidia-container rpm repository
+  yum_repository:
+    name: libnvidia-container
+    description: libnvidia-container Repository
+    baseurl: "{{ libnvidia_container_rpm_repository_package_url }}"
+    gpgkey: "{{ libnvidia_container_gpg_key_url }}"
+    repo_gpgcheck: true
+    gpgcheck: false
+    enabled: true
+    sslverify: true
+    sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+  retries: 3
+  delay: 3
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu is defined and gpu.type == 'nvidia'
+
+- name: add nvidia-container-runtime rpm repository
+  yum_repository:
+    name: nvidia-container-runtime
+    description: nvidia-container-runtime Repository
+    baseurl: "{{ nvidia_container_runtime_rpm_repository_package_url }}"
+    gpgkey: "{{ nvidia_container_runtime_gpg_key_url }}"
+    repo_gpgcheck: true
+    gpgcheck: false
+    enabled: true
+    sslverify: true
+    sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+  retries: 3
+  delay: 3
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu is defined and gpu.type == 'nvidia'

@@ -1,0 +1,37 @@
+---
+- name: install epel-release
+  yum:
+    name: epel-release
+    state: present
+    update_cache: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install common RPMS
+  yum:
+    name: "{{ common_rpms }}"
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: install el8 requirements
+  yum:
+    name: "{{ rhel8_rpms }}"
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '8'
+
+- include: containerd.yaml
+
+- include: url.yaml
+  when: ansible_os_family == "Flatcar"
+# must include crictl-url.yml after installing containerd,
+# as the cri-containerd tarball also includes crictl.
+- include: crictl-url.yaml
+  when: ansible_os_family == "Flatcar"
+
+- include: kubeadm.yaml
+- include: kubelet.yaml
+- include: nvidia.yaml
+  when:
+    - gpu is defined
+    - gpu.type == 'nvidia'

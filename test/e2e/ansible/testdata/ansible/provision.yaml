@@ -1,0 +1,6 @@
+---
+- hosts: all
+  name: Provision Test
+  become: yes
+  roles:
+    - role: echo

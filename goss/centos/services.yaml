@@ -1,0 +1,29 @@
+---
+service:
+  chronyd:
+    running: true
+    enabled: true
+
+  containerd:
+    running: true
+    enabled: true
+
+  dockerd:
+    running: false
+    enabled: false
+
+  kubelet:
+    # NOTE(jkoelker) kubelet will fail until it has a config
+    running:
+      or:
+        - true
+        - false
+    enabled: true
+
+  conntrackd:
+    running: false
+    enabled: false
+
+  auditd:
+    running: true
+    enabled: true

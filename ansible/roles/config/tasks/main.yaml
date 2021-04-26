@@ -1,0 +1,15 @@
+---
+- name: create kubelet systemd directory
+  file:
+    path: "/etc/systemd/system/kubelet.service.d/"
+    state: directory
+
+- name: copy containerd kubelet systemd drop-in to remote
+  template:
+    src: "kubelet-drop-in.conf"
+    dest: "/etc/systemd/system/kubelet.service.d/0-containerd.conf"
+
+- name: copy crictl config to remote
+  template:
+    src: "crictl.yaml"
+    dest: "/etc/crictl.yaml"
