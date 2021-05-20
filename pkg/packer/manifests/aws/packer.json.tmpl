@@ -4,6 +4,7 @@
     "ami_groups": "all",
     "ami_regions": "us-west-2",
     "ami_users": "",
+    "ami_name": "capa-ami-{{user `build_name`}}-{{user `kubernetes_full_version`}}-{{user `build_timestamp`}}",
     "ansible_extra_vars": "",
     "aws_access_key": "",
     "aws_profile": "",
@@ -44,9 +45,9 @@
         "most_recent": true
       },
       ((- end ))
-      "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "ami_name": "{{user `ami_name` | clean_resource_name}}",
       "snapshot_tags": {
-        "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}"
+        "ami_name": "{{user `ami_name` | clean_resource_name}}"
       },
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
