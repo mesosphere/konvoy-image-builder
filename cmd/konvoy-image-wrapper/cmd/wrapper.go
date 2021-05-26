@@ -379,6 +379,10 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return err
 	}
+	// Make sure that that the file is only `rw` by the user.
+	if err = f.Chmod(os.FileMode(0600)); err != nil { //nolint:gomnd // File modes are not magic.
+		return err
+	}
 	f.Close()
 
 	// Mask the ssh known_hosts file from the host.
