@@ -228,7 +228,6 @@ func (r *Runner) dockerRun(args []string) error {
 		r.addBindVolume(r.tempDir+"/passwd", "/etc/passwd")
 		r.addBindVolume(r.tempDir+"/group", "/etc/group")
 		r.addBindVolume(r.homeDir, r.homeDir)
-		r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+"/.ssh/config")
 		r.addBindVolume(r.tempDir+"/ssh_known_hosts", r.usr.HomeDir+"/.ssh/known_hosts")
 	}
 
@@ -375,15 +374,24 @@ func (r *Runner) Run(args []string) error {
 	// Mask the ssh config from the host. The ssh config format on OSX is
 	// slightly different than that in Linux, which will cause Ansible to
 	// fail sometimes.
-	f, err := os.Create(filepath.Join(r.tempDir, "ssh_config"))
-	if err != nil {
-		return err
+	if _, err = os.Stat(r.usr.HomeDir + "/.ssh/config"); err == nil {
+		f, ferr := os.Create(filepath.Join(r.tempDir, "ssh_config"))
+		if ferr != nil {
+			return ferr
+		}
+
+		// Make sure that that the file is only `rw` by the user.
+		if ferr := f.Chmod(os.FileMode(0600)); ferr != nil { //nolint:gomnd // File modes are not magic.
+			return ferr
+		}
+		f.Close()
+
+		r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+"/.ssh/config")
 	}
-	f.Close()
 
 	// Mask the ssh known_hosts file from the host.
 	// This will prevent multiple runs from interfering with each other when targeting hosts with the same IPs.
-	f, err = os.Create(filepath.Join(r.tempDir, "ssh_known_hosts"))
+	f, err := os.Create(filepath.Join(r.tempDir, "ssh_known_hosts"))
 	if err != nil {
 		return err
 	}
