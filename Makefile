@@ -160,7 +160,7 @@ bin/konvoy-image:
 
 bin/konvoy-image-wrapper:
 	$(call print-target)
-	go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
+	CGO_ENABLED=0 go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 
 .PHONY: build
 build: bin/konvoy-image
@@ -302,3 +302,27 @@ ci.e2e.ansible:
 	make -C test/e2e/ansible e2e.setup
 	WHAT="make -C test/e2e/ansible e2e.run" DOCKER_DEVKIT_DEFAULT_ARGS="--rm --net=host" make devkit.run
 	make -C test/e2e/ansible e2e.clean
+
+
+VERSION = $(shell git describe --tags)
+IMAGE_REPO = mesosphere
+IMAGE_NAME = konvoy-image-builder
+
+release-bundle-GOOS:
+	GOOS=$(GOOS) CGO_ENABLED=0 go build -tags EMBED_DOCKER_IMAGE \
+		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(VERSION)" \
+		-o "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/konvoy-image" $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go
+	cp -a "$(REPO_ROOT_DIR)/ansible" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/goss" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/images" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/overrides" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/packer" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
+	tar -C "$(REPO_ROOT_DIR)/dist/bundle" -czf "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS).tar.gz" "konvoy-image-bundle-$(VERSION)_$(GOOS)"
+
+$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz:
+	docker save $(IMAGE_REPO)/$(IMAGE_NAME):$(VERSION) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
+
+release-bundle: $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+	$(MAKE) GOOS=linux release-bundle-GOOS
+	$(MAKE) GOOS=windows release-bundle-GOOS
+	$(MAKE) GOOS=darwin release-bundle-GOOS
