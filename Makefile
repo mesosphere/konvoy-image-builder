@@ -160,7 +160,7 @@ bin/konvoy-image:
 
 bin/konvoy-image-wrapper:
 	$(call print-target)
-	go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
+	CGO_ENABLED=0 go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 
 .PHONY: build
 build: bin/konvoy-image
