@@ -32,7 +32,7 @@ var buildCmd = &cobra.Command{
 		var workDir string
 		var err error
 		if buildFlags.workDir == "" {
-			workDir, err = builder.InitConfig(newInitOptions(args[0]))
+			workDir, err = builder.InitConfig(newInitOptions(args[0], buildFlags.generateCLIFlags))
 			if err != nil {
 				bail("error rendering builder configuration", err, 2)
 			}
