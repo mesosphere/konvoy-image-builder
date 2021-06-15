@@ -22,19 +22,19 @@ var generateCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		builder := newBuilder()
-		_, err := builder.InitConfig(newInitOptions(args[0]))
+		_, err := builder.InitConfig(newInitOptions(args[0], generateFlags))
 		if err != nil {
 			bail("error rendering builder configuration", err, 2)
 		}
 	},
 }
 
-func newInitOptions(image string) app.InitOptions {
+func newInitOptions(image string, flags generateCLIFlags) app.InitOptions {
 	return app.InitOptions{
 		CommonConfigPath: app.CommonConfigDefaultPath,
 		Image:            image,
-		Overrides:        buildFlags.overrides,
-		UserArgs:         buildFlags.userArgs,
+		Overrides:        flags.overrides,
+		UserArgs:         flags.userArgs,
 	}
 }
 
