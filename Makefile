@@ -304,6 +304,12 @@ ci.e2e.build.all:
 	WHAT="make build" make devkit.run
 	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml -v 6" make devkit.run
 	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml -v 6" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml -v 6" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v 6" make devkit.run
+	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/flatcar.yaml -v 6" make devkit.run
 	make docker.clean-latest-ami
 
