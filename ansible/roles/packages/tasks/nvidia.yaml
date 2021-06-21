@@ -26,7 +26,9 @@
           - dkms
         state: present
     - name: sed
-      shell: sed -i '/^GRUB_CMDLINE_LINUX=/s/"$/ module_name.blacklist=1 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau"/' /etc/default/grub
+      shell: >-
+        sed -i '/^GRUB_CMDLINE_LINUX=/s/"$/ module_name.blacklist=1 rd.
+        driver.blacklist=nouveau modprobe.blacklist=nouveau"/'/etc/default/grub
     - name: Remove nouveau driver
       shell: dracut --omit-drivers nouveau -f
     - name: Update GRUB
@@ -61,15 +63,16 @@
     - name: Install NVIDIA driver (centos/rhel 7)
       yum:
         name:
-          - "{{ nvidia_driver_package_name }}:{{ nvidia_driver_package_version }}"
+          - >-
+            {{ nvidia_driver_package_name }}:{{ nvidia_driver_package_version }}
       when:
         - ansible_os_family == 'RedHat'
         - ansible_distribution == 'RedHat'
         - ansible_distribution_major_version|int == 7
     - name: Install NVIDIA driver (centos/rhel 8)
       dnf:
-        name: "@{{ nvidia_driver_module_name }}:{{ nvidia_driver_module_version }}"
-        name: "@nvidia-driver:460-dkms"
+        name: >-
+          @{{ nvidia_driver_module_name }}:{{ nvidia_driver_module_version }}
         state: present
       when:
         - ansible_os_family == 'RedHat'
