@@ -62,3 +62,22 @@
   when:
     - ansible_os_family == 'RedHat'
     - gpu is defined and gpu.type == 'nvidia'
+
+- name: add nvidia-driver rpm repository
+  yum_repository:
+    name: nvidia-driver
+    description: nvidia-driver Repository
+    baseurl: "{{ nvidia_driver_rpm_repository_package_url }}"
+    gpgkey: "{{ nvidia_driver_rpm_gpg_key_url }}"
+    repo_gpgcheck: true
+    gpgcheck: false
+    enabled: true
+    sslverify: true
+    sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+  retries: 3
+  delay: 3
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu is defined and gpu.type == 'nvidia'
+
+# TODO(mh): Add flatcar support
