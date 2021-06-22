@@ -27,8 +27,9 @@
         state: present
     - name: sed
       shell: >-
-        sed -i '/^GRUB_CMDLINE_LINUX=/s/"$/ module_name.blacklist=1 rd.
-        driver.blacklist=nouveau modprobe.blacklist=nouveau"/'/etc/default/grub
+        sed -i '/^GRUB_CMDLINE_LINUX=/s/"$/ module_name.blacklist=1
+        rd.driver.blacklist=nouveau modprobe.blacklist=nouveau"/'
+        /etc/default/grub
     - name: Remove nouveau driver
       shell: dracut --omit-drivers nouveau -f
     - name: Update GRUB
