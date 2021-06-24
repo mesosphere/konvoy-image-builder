@@ -7,4 +7,78 @@
     disable_gpg_check: true
     update_cache: true
 
-# TODO: local driver install
+- name: Install GPU
+  block:
+    - name: Install the 'Development Tools' package group
+      yum:
+        name: "@Development Tools"
+        update_cache: yes
+        state: present
+    - name: Install kernel packages
+      yum:
+        name:
+          - kernel-devel
+          - epel-release
+        state: present
+    - name: Install DKMS
+      yum:
+        name:
+          - dkms
+        state: present
+    - name: sed
+      shell: >-
+        sed -i '/^GRUB_CMDLINE_LINUX=/s/"$/ module_name.blacklist=1
+        rd.driver.blacklist=nouveau modprobe.blacklist=nouveau"/'
+        /etc/default/grub
+    - name: Remove Nouveau driver
+      shell: dracut --omit-drivers nouveau -f
+    - name: Update GRUB
+      shell: grub2-mkconfig -o /boot/grub2/grub.cfg
+    - name: Reboot
+      reboot:
+    - name: Install packages
+      yum:
+        name:
+          - tar
+          - bzip2
+          - make
+          - automake
+          - gcc
+          - gcc-c++
+          - pciutils
+          - elfutils-libelf-devel
+          - libglvnd-devel
+          - iptables
+          - firewalld
+          - vim
+          - bind-utils
+          - wget
+        state: present
+    - name: Stop and disable firewalld service
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
+    - name: Install kernel headers
+      yum:
+        name:
+          - kernel-devel-{{ ansible_kernel }}
+          - kernel-headers-{{ ansible_kernel }}
+    - name: Clean cache
+      shell: yum clean expire-cache
+    - name: Install Nvidia driver (Centos/RHEL 7)
+      yum:
+        name:
+          - "{{ nvidia_driver_rpm_package_name }}:\
+            {{ nvidia_driver_rpm_package_version }}"
+      when:
+        - ansible_os_family == 'RedHat'
+        - ansible_distribution_major_version|int == 7
+    - name: Install Nvidia driver (Centos/RHEL 8)
+      dnf:
+        name: "@{{ nvidia_driver_dnf_module_name }}:\
+          {{ nvidia_driver_dnf_module_version }}"
+        state: present
+      when:
+        - ansible_os_family == 'RedHat'
+        - ansible_distribution_major_version | int >= 8

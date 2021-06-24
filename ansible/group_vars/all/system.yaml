@@ -4,7 +4,7 @@ kubernetes_semver: "v{{ kubernetes_version }}"
 kubernetes_rpm_repository_url: "https://packages.d2iq.com/konvoy/rpm/stable/centos/7/x86_64"
 kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
 
-# containerd package - when adding new urls, please add them to pre-flight checks
+# containerd package
 # Appstream is enabled by default in rhel8, so install the package from local repositories in that case
 docker_rpm_container_selinux_package_url: "{{ 'http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-3.el7.noarch.rpm' if ansible_distribution_major_version|int < 8 else 'container-selinux' }}"
 docker_rpm_container_selinux_gpg_key_url: "http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7"
@@ -13,13 +13,21 @@ docker_rpm_repository_url_upstream_mirror: "https://packages.d2iq.com/download.d
 docker_rpm_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/centos/{{ ansible_distribution_major_version|int }}/x86_64"
 docker_rpm_gpg_key_url: "{{ docker_rpm_repository_url }}/gpg.asc"
 
-# nvidia package - when adding new urls, please add them to pre-flight checks
+# nvidia package
 libnvidia_container_rpm_repository_package_url: "https://nvidia.github.io/libnvidia-container/centos7/x86_64"
 libnvidia_container_deb_repository_url: "https://nvidia.github.io/libnvidia-container/ubuntu16.04/amd64"
 libnvidia_container_gpg_key_url: "https://nvidia.github.io/libnvidia-container/gpgkey"
 nvidia_container_runtime_rpm_repository_package_url: "https://nvidia.github.io/nvidia-container-runtime/centos7/x86_64"
 nvidia_container_runtime_deb_package_url: "https://nvidia.github.io/nvidia-container-runtime/ubuntu16.04/amd64"
 nvidia_container_runtime_gpg_key_url: "https://nvidia.github.io/nvidia-container-runtime/gpgkey"
+nvidia_driver_rpm_repository_package_url: http://developer.download.nvidia.com/compute/cuda/repos/rhel{{ ansible_distribution_major_version|int }}/x86_64/
+nvidia_driver_rpm_gpg_key_url: http://developer.download.nvidia.com/compute/cuda/repos/rhel{{ ansible_distribution_major_version|int }}/x86_64/7fa2af80.pub
+# On Centos7 installs `nvidia-driver` with dkms for kernel line 3.x w version
+nvidia_driver_rpm_package_name: "nvidia-driver-latest-dkms-3"
+nvidia_driver_rpm_package_version: "460.73.01-1.el7.x86_64"
+# On Centos8 installs `nvidia-driver` module with given version
+nvidia_driver_dnf_module_name: "nvidia-driver"
+nvidia_driver_dnf_module_version: "460-dkms"
 
 # the nvidia-container-runtime package no longer exists for rhel8 so we must install the last available version
 nvidia_container_runtime_package: "{{ 'nvidia-container-runtime' if ansible_distribution_major_version|int < 8 else 'nvidia-container-runtime-3.4.0-1.x86_64' }}"

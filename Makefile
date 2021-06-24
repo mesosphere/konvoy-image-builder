@@ -118,10 +118,20 @@ centos7: build
 centos7: ## Build Centos 7 image
 	./bin/konvoy-image build images/ami/centos-7.yaml
 
+.PHONY: centos7-nvidia
+centos7-nvidia: build
+centos7-nvidia: ## Build Centos 7 image
+	./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml
+
 .PHONY: centos8
 centos8: build
 centos8: ## Build Centos 8 image
 	./bin/konvoy-image build images/ami/centos-8.yaml
+
+.PHONY: centos8-nvidia
+centos8-nvidia: build
+centos8-nvidia: ## Build Centos 8 image
+	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml
 
 .PHONY: flatcar
 flatcar: build
@@ -293,6 +303,12 @@ endif
 ci.e2e.build.all:
 	WHAT="make build" make devkit.run
 	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml -v 6" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml -v 6" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml -v 6" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v 6" make devkit.run
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/flatcar.yaml -v 6" make devkit.run
 	make docker.clean-latest-ami

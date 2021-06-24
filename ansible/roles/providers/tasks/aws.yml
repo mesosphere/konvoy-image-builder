@@ -25,6 +25,8 @@
   package:
     name: "{{ item }}"
     state: present
+    # must be fixed by amazon https://github.com/aws/amazon-ssm-agent/issues/235
+    disable_gpg_check: yes
   with_items:
     - https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
   when:
