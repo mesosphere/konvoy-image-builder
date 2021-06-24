@@ -69,17 +69,15 @@
     - name: Install Nvidia driver (Centos/RHEL 7)
       yum:
         name:
-          - >-
-            {{ nvidia_driver_rpm_package_name }}:
-            {{ nvidia_driver_rpm_package_version }}
+          - "{{ nvidia_driver_rpm_package_name }}:\
+            {{ nvidia_driver_rpm_package_version }}"
       when:
         - ansible_os_family == 'RedHat'
         - ansible_distribution_major_version|int == 7
     - name: Install Nvidia driver (Centos/RHEL 8)
       dnf:
-        name: >-
-          @{{ nvidia_driver_dnf_module_name }}:
-          {{ nvidia_driver_dnf_module_version }}
+        name: "@{{ nvidia_driver_dnf_module_name }}:\
+          {{ nvidia_driver_dnf_module_version }}"
         state: present
       when:
         - ansible_os_family == 'RedHat'
