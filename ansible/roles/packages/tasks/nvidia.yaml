@@ -30,7 +30,7 @@
         sed -i '/^GRUB_CMDLINE_LINUX=/s/"$/ module_name.blacklist=1
         rd.driver.blacklist=nouveau modprobe.blacklist=nouveau"/'
         /etc/default/grub
-    - name: Remove nouveau driver
+    - name: Remove Nouveau driver
       shell: dracut --omit-drivers nouveau -f
     - name: Update GRUB
       shell: grub2-mkconfig -o /boot/grub2/grub.cfg
@@ -54,19 +54,19 @@
           - bind-utils
           - wget
         state: present
-    - name: stop and disable firewalld service
+    - name: Stop and disable firewalld service
       service:
         name: firewalld
         state: stopped
         enabled: no
-    - name: Install Kernel headers
+    - name: Install kernel headers
       yum:
         name:
           - kernel-devel-{{ ansible_kernel }}
           - kernel-headers-{{ ansible_kernel }}
     - name: Clean cache
       shell: yum clean expire-cache
-    - name: Install NVIDIA driver (centos/rhel 7)
+    - name: Install Nvidia driver (Centos/RHEL 7)
       yum:
         name:
           - >-
@@ -75,7 +75,7 @@
         - ansible_os_family == 'RedHat'
         - ansible_distribution == 'RedHat'
         - ansible_distribution_major_version|int == 7
-    - name: Install NVIDIA driver (centos/rhel 8)
+    - name: Install Nvidia driver (Centos/RHEL 8)
       dnf:
         name: >-
           @{{ nvidia_driver_module_name }}:{{ nvidia_driver_module_version }}

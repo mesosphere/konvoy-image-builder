@@ -120,7 +120,7 @@ centos7: ## Build Centos 7 image
 
 .PHONY: centos7-nvidia
 centos7-nvidia: build
-centos7-nvidia: ## Build Centos 8 image
+centos7-nvidia: ## Build Centos 7 image
 	./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml
 
 .PHONY: centos8
