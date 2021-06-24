@@ -79,5 +79,3 @@
   when:
     - ansible_os_family == 'RedHat'
     - gpu is defined and gpu.type == 'nvidia'
-
-# TODO(mh): Add flatcar support
