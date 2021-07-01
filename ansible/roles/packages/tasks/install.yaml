@@ -20,6 +20,15 @@
     - ansible_os_family == 'RedHat'
     - ansible_distribution_major_version == '8'
 
+- name: check if versionlock exists
+  command: yum versionlock list
+  register: versionlocklist
+  args:
+    warn: false
+  ignore_errors: True
+  changed_when: false
+  when: ansible_os_family == 'RedHat'
+
 - include: containerd.yaml
 
 - include: url.yaml

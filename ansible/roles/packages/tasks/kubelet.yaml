@@ -4,14 +4,6 @@
     path: "/etc/systemd/system/kubelet.service.d/"
     state: directory
 
-- name: check if versionlock exists
-  command: yum versionlock list
-  register: versionlocklist
-  args:
-    warn: false
-  ignore_errors: True
-  when: ansible_os_family == 'RedHat'
-
 - name: remove versionlock for kubelet and kubectl packages
   command: yum versionlock delete {{ item }}
   with_items:
@@ -20,10 +12,13 @@
   args:
     warn: false
   ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
     - ansible_os_family == 'RedHat'
     - versionlocklist is defined and versionlocklist.stdout is defined
-    - "'kubelet' in versionlocklist.stdout or 'kubectl' in versionlocklist.stdout"
+    - item in versionlocklist.stdout
+    - not package_versions.kubernetes_rpm in versionlocklist.stdout
 
 - name: install kubectl rpm package
   yum:
@@ -59,6 +54,8 @@
     - kubectl
   args:
     warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
   when: ansible_os_family == 'RedHat'
 
 - name: enable kubelet

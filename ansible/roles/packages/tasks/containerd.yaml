@@ -95,23 +95,17 @@
         state: absent
   when: ansible_os_family == 'Flatcar'
 
-- name: check if versionlock exists
-  command: yum versionlock list
-  register: versionlocklist
-  args:
-    warn: false
-  ignore_errors: True
-  when: ansible_os_family == 'RedHat'
-
 - name: remove versionlock for containerd
   command: yum versionlock delete containerd.io
   args:
     warn: false
   ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
     - ansible_os_family == 'RedHat'
     - versionlocklist is defined and versionlocklist.stdout is defined
-    - "'containerd.io' in versionlocklist.stdout"
+    - "'containerd.io' in versionlocklist.stdout and not 'containerd.io-' + containerd_version in versionlocklist.stdout"
 
 # only required for RHEL when not installing from a local file
 - name: install container-selinux GPG key
@@ -156,6 +150,8 @@
   command: yum versionlock add containerd.io
   args:
     warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
   when: ansible_os_family == 'RedHat'
 
 - name: enable containerd
