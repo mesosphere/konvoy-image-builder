@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - set_fact:
+        packer_builder_type: amazon
+        sysprep: false
+
+- name: "Include Provision"
+  include: ../../provision.yaml
