@@ -1,12 +1,15 @@
 download_images: true
 
 packer:
+  # Selectors for source AMI:
   ami_filter_name: "Flatcar*stable*"
   ami_filter_owners: "075585003325"
+  # Tags applied to generated AMI:
   distribution: "Flatcar"
   distribution_release: "Stable"
-  distribution_version: "2765.2.1"
+  distribution_version: "2765.2.6"
   source_ami: ""
+  # Other variables:
   ssh_username: "core"
   root_device_name: "/dev/sda1"
 
