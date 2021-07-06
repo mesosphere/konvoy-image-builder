@@ -18,7 +18,7 @@ Example:
 
 ```sh
 build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml \
-    --override overrides/nvidia.yaml
+    --overrides overrides/nvidia.yaml
 ```
 
 ## Supported images
