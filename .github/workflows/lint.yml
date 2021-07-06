@@ -25,13 +25,17 @@ jobs:
           env-file: .github/super-linter.env
 
       - name: Run Super-Linter
-        uses: github/super-linter@v3.17.1
+        uses: github/super-linter@v4.2.2
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # NOTE(jkoelker) super-linter is broken for go packages
           #                https://github.com/github/super-linter/issues/143
           VALIDATE_GO: false
+          # NOTE(jongiddy) super-linter is broken for Packer HCL files
+          #                https://github.com/github/super-linter/pull/1707
+          # This can be removed when a release > 4.2.2 exists.
+          VALIDATE_TERRAGRUNT: false
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v2.5.2

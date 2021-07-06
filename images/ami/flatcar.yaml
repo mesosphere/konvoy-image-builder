@@ -4,11 +4,10 @@ packer:
   # Selectors for source AMI:
   ami_filter_name: "Flatcar*stable*"
   ami_filter_owners: "075585003325"
+  source_ami: ""
   # Tags applied to generated AMI:
   distribution: "Flatcar"
-  distribution_release: "Stable"
-  distribution_version: "2765.2.6"
-  source_ami: ""
+  distribution_version: null
   # Other variables:
   ssh_username: "core"
   root_device_name: "/dev/sda1"
