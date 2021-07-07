@@ -41,7 +41,7 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--env AWS_PROFILE \
 	--env AWS_SECRET_ACCESS_KEY \
 	--env AWS_SESSION_TOKEN \
-	--env AWS_REGION \
+	--env AWS_DEFAULT_REGION \
 	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
 
 ifneq ($(wildcard $(DOCKER_SOCKET)),)
@@ -134,7 +134,7 @@ centos8-nvidia: ## Build Centos 8 image
 	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml
 
 flatcar-version.yaml:
-	AWS_DEFAULT_REGION=$(AWS_REGION) ./hack/fetch-flatcar-ami.sh
+	./hack/fetch-flatcar-ami.sh
 
 .PHONY: flatcar
 flatcar: build flatcar-version.yaml
