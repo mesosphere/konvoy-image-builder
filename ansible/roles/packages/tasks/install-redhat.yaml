@@ -90,8 +90,6 @@
   until: result is success
   retries: 3
   delay: 3
-  when:
-    - ansible_distribution == 'RedHat'
 
 - name: install containerd.io rpm package
   yum:
@@ -102,7 +100,6 @@
   until: result is success
   retries: 5
   delay: 3
-  when:
 
 - name: add versionlock for containerd
   command: yum versionlock add containerd.io
@@ -118,37 +115,6 @@
   notify:
     - reload systemd
     - restart containerd
-
-- name: remove versionlock for kubeadm packages
-  command: yum versionlock delete kubeadm
-  args:
-    warn: false
-  ignore_errors: True
-  register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
-  when:
-    - ansible_os_family == 'RedHat'
-    - versionlocklist is defined and versionlocklist.stdout is defined
-    - "'kubeadm' in versionlocklist.stdout and not 'kubeadm-' + package_versions.kubernetes_rpm in versionlocklist.stdout"
-
-- name: install kubeadm rpm package
-  yum:
-    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: yes
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
-  when: ansible_os_family == 'RedHat'
-
-- name: add versionlock for kubeadm package
-  command: yum versionlock add kubeadm
-  args:
-    warn: false
-  register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
-  when: ansible_os_family == 'RedHat'
 
 - name: create kubelet systemd directory
   file:
@@ -210,3 +176,31 @@
   notify:
     - reload systemd
     - restart kubelet
+
+- name: remove versionlock for kubeadm packages
+  command: yum versionlock delete kubeadm
+  args:
+    warn: false
+  ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
+  when:
+    - versionlocklist is defined and versionlocklist.stdout is defined
+    - "'kubeadm' in versionlocklist.stdout and not 'kubeadm-' + package_versions.kubernetes_rpm in versionlocklist.stdout"
+
+- name: install kubeadm rpm package
+  yum:
+    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: add versionlock for kubeadm package
+  command: yum versionlock add kubeadm
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
