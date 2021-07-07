@@ -15,7 +15,6 @@
       - socat
       - sysstat
       - nfs-utils
-      - NetworkManager
     state: present
 
 - name: remove preinstalled containerd
