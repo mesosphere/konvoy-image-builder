@@ -32,6 +32,8 @@ def main():
     for k in keys:
         print("export {}={}".format(k.upper(), creds[k]))
 
+    print("export {}={}".format("AWS_DEFAULT_REGION", DEFAULT_REGION))
+
 
 if __name__ == "__main__":
     main()

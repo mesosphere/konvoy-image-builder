@@ -381,7 +381,7 @@ func (r *Runner) Run(args []string) error {
 		}
 
 		// Make sure that that the file is only `rw` by the user.
-		if ferr := f.Chmod(os.FileMode(0600)); ferr != nil { //nolint:gomnd // File modes are not magic.
+		if ferr := f.Chmod(os.FileMode(0600)); ferr != nil {
 			return ferr
 		}
 		f.Close()

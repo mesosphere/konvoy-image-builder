@@ -47,6 +47,7 @@ manifest.json
 .docker-*
 .cache
 .ansible
+flatcar-version.yaml
 /work/
 /bin/
 /report/
