@@ -22,12 +22,12 @@ platforms:
   #   region: us-east-1
   #   instance_type: m4.xlarge
   #   ssh_user: core
-  # - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "suse-sles-15-sp3-v*"
-  #   image_search_owner: "amazon"
-  #   region: us-east-1
-  #   instance_type: m4.xlarge
-  #   ssh_user: ec2-user
+  - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "suse-sles-15-sp3-v*"
+    image_search_owner: "amazon"
+    region: us-east-1
+    instance_type: m4.xlarge
+    ssh_user: ec2-user
 
 provisioner:
   name: ansible

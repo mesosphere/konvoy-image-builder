@@ -1,0 +1,120 @@
+---
+- include: url.yaml
+# must include crictl-url.yml after installing containerd,
+# as the cri-containerd tarball also includes crictl.
+- include: crictl-url.yaml
+
+- name: create containerd systemd directory
+  file:
+    path: "/etc/systemd/system/containerd.service.d/"
+    state: directory
+
+- name: create containerd directory
+  file:
+    path: "/etc/containerd/"
+    state: directory
+
+- name: copy default configuration to remote
+  template:
+    src: "config.toml.tmpl"
+    dest: "/etc/containerd/config.toml"
+
+
+- name: Fail if pre-installed containerd version does not match for Flatcar
+  shell: containerd --version | cut -d\  -f 3
+  register: command_result
+  failed_when: "containerd_version not in command_result.stdout"
+
+- name: Create a directory if it does not exist
+  file:
+    path: "{{ sysusr_prefix }}/bin"
+    state: directory
+    mode: 0755
+
+- name: download containerd
+  get_url:
+    url: "{{ containerd_url }}"
+    checksum: "sha256:{{ containerd_sha256 }}"
+    dest: /tmp/containerd.tar.gz
+    mode: 0600
+
+- name: unpack containerd
+  unarchive:
+    remote_src: True
+    src: /tmp/containerd.tar.gz
+    dest: /opt
+    extra_opts:
+      - --no-overwrite-dir
+      - --strip-components=2
+      - --wildcards
+      - '*containerd-shim-runc-v*'
+
+- name: Create symlinks for containerd
+  file:
+    src: /usr/bin/{{ item }}
+    dest: "{{ sysusr_prefix }}/bin/{{ item }}"
+    state: link
+  loop: "{{ containerd_flatcar_bins }}"
+
+- name: Create systemd unit file for containerd
+  template:
+    dest: /etc/systemd/system/containerd.service
+    src: etc/systemd/system/containerd-flatcar.service
+    mode: 0600
+
+# Remove /opt/cni directory, as we will install cni later
+- name: delete /opt/cni directory
+  file:
+    path: /opt/cni
+    state: absent
+
+# Remove /etc/cni directory, as we will configure cni later
+- name: delete /etc/cni directory
+  file:
+    path: /etc/cni
+    state: absent
+
+- name: Create containerd memory pressure drop in file
+  template:
+    dest: /etc/systemd/system/containerd.service.d/memory-pressure.conf
+    src: etc/systemd/system/containerd.service.d/memory-pressure.conf
+    mode: 0644
+
+- name: Create containerd max tasks drop in file
+  template:
+    dest: /etc/systemd/system/containerd.service.d/max-tasks.conf
+    src: etc/systemd/system/containerd.service.d/max-tasks.conf
+    mode: 0644
+
+- name: Create containerd http proxy conf file if needed
+  template:
+    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
+    src: etc/systemd/system/containerd.service.d/http-proxy.conf
+    mode: 0644
+  when: http_proxy is defined or https_proxy is defined
+
+- name: delete tarball
+  file:
+    path: /tmp/containerd.tar.gz
+    state: absent
+
+- name: enable containerd
+  service:
+    name: containerd
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart containerd
+
+- name: create kubelet systemd directory
+  file:
+    path: "/etc/systemd/system/kubelet.service.d/"
+    state: directory
+
+- name: enable kubelet
+  service:
+    name: kubelet
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart kubelet

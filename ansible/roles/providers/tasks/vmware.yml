@@ -36,6 +36,16 @@
       - python2-pip
   when: ansible_os_family == "RedHat"
 
+- name: Install cloud-init packages
+  zypper:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - cloud-init
+      - cloud-init-vmware-guestinfo
+  when: ansible_os_family == "Suse"
+
 - name: Install cloud-init and tools for VMware Photon OS
   command: tdnf install {{ packages }} -y
   vars:

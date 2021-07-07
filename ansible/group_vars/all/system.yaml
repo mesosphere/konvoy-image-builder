@@ -4,6 +4,9 @@ kubernetes_semver: "v{{ kubernetes_version }}"
 kubernetes_rpm_repository_url: "https://packages.d2iq.com/konvoy/rpm/stable/centos/7/x86_64"
 kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
 
+kubernetes_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/rpm/stable/suse/{{ ansible_distribution_major_version|int }}/x86_64"
+kubernetes_rpm_suse_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
+
 # containerd package
 # Appstream is enabled by default in rhel8, so install the package from local repositories in that case
 docker_rpm_container_selinux_package_url: "{{ 'http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-3.el7.noarch.rpm' if ansible_distribution_major_version|int < 8 else 'container-selinux' }}"
@@ -12,6 +15,10 @@ docker_rpm_container_selinux_gpg_key_url: "http://mirror.centos.org/centos/RPM-G
 docker_rpm_repository_url_upstream_mirror: "https://packages.d2iq.com/download.docker.com/linux/centos/7/x86_64/stable"
 docker_rpm_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/centos/{{ ansible_distribution_major_version|int }}/x86_64"
 docker_rpm_gpg_key_url: "{{ docker_rpm_repository_url }}/gpg.asc"
+
+
+docker_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/opensuse/leap/{{ ansible_distribution_major_version|int }}/x86_64"
+docker_rpm_suse_gpg_key_url: "{{ docker_rpm_suse_repository_url }}/gpg.asc"
 
 # nvidia package
 libnvidia_container_rpm_repository_package_url: "https://nvidia.github.io/libnvidia-container/centos7/x86_64"

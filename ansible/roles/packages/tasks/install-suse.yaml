@@ -1,0 +1,114 @@
+---
+- name: install common RPMS
+  zypper:
+    name:
+      - audit
+      - ca-certificates
+      - conntrack-tools
+      - chrony
+      - curl
+      - ebtables
+      - open-vm-tools
+      - python3-pip
+      - python3-netifaces
+      - python3-requests
+      - socat
+      - sysstat
+      - nfs-utils
+      - NetworkManager
+    state: present
+
+- name: remove preinstalled containerd
+  zypper:
+    name: containerd
+    state: absent
+
+- name: create containerd systemd directory
+  file:
+    path: "/etc/systemd/system/containerd.service.d/"
+    state: directory
+
+- name: create containerd directory
+  file:
+    path: "/etc/containerd/"
+    state: directory
+
+- name: copy default configuration to remote
+  template:
+    src: "config.toml.tmpl"
+    dest: "/etc/containerd/config.toml"
+
+- name: install containerd.io rpm package
+  zypper:
+    name: "{{ 'containerd.io=' + containerd_version }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
+
+- name: enable containerd
+  service:
+    name: containerd
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart containerd
+
+- name: install kubeadm rpm package
+  zypper:
+    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+  when: ansible_os_family == 'RedHat'
+
+- name: create kubelet systemd directory
+  file:
+    path: "/etc/systemd/system/kubelet.service.d/"
+    state: directory
+
+- name: install kubectl rpm package
+  zypper:
+    name: "{{ 'kubectl-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: install kubelet rpm package
+  zypper:
+    name: "{{ 'kubelet-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: kubelet_installation_rpm
+  until: kubelet_installation_rpm is success
+  retries: 3
+  delay: 3
+  notify:
+    - reload systemd
+    - restart kubelet
+
+- name: enable kubelet
+  service:
+    name: kubelet
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart kubelet
+
+- name: install kubeadm rpm package
+  zypper:
+    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
