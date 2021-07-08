@@ -17,6 +17,14 @@
       - nfs-utils
     state: present
 
+- name: check if versionlock exists
+  command: zypper locks -s
+  register: versionlocklist
+  args:
+    warn: false
+  ignore_errors: True
+  changed_when: false
+
 - name: remove preinstalled containerd
   zypper:
     name: containerd
@@ -37,7 +45,18 @@
     src: "config.toml.tmpl"
     dest: "/etc/containerd/config.toml"
 
-- name: install containerd.io rpm package
+- name: remove versionlock for containerd
+  command: zypper removelock containerd.io
+  args:
+    warn: false
+  ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'
+  when:
+    - versionlocklist is defined and versionlocklist.stdout is defined
+    - "'containerd.io' in versionlocklist.stdout and not 'Keep installed : containerd.io-' + containerd_version in versionlocklist.stdout"
+
+- name: install containerd.io package
   zypper:
     name: "{{ 'containerd.io=' + containerd_version }}"
     state: present
@@ -47,6 +66,13 @@
   retries: 5
   delay: 3
 
+- name: add versionlock for containerd
+  command: zypper addlock containerd.io
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*lock has been successfully added.*")'
+
 - name: enable containerd
   service:
     name: containerd
@@ -55,23 +81,27 @@
     - reload systemd
     - restart containerd
 
-- name: install kubeadm rpm package
-  zypper:
-    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: yes
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
-  when: ansible_os_family == 'RedHat'
-
 - name: create kubelet systemd directory
   file:
     path: "/etc/systemd/system/kubelet.service.d/"
     state: directory
 
-- name: install kubectl rpm package
+- name: remove versionlock for kubelet and kubectl packages
+  command: zypper removelock {{ item }}
+  with_items:
+    - kubelet
+    - kubectl
+  args:
+    warn: false
+  ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'
+  when:
+    - versionlocklist is defined and versionlocklist.stdout is defined
+    - item in versionlocklist.stdout
+    - "not 'Keep installed : ' + item + '-' + package_versions.kubernetes_rpm in versionlocklist.stdout"
+
+- name: install kubectl package
   zypper:
     name: "{{ 'kubectl-' + package_versions.kubernetes_rpm }}"
     state: present
@@ -81,7 +111,7 @@
   retries: 3
   delay: 3
 
-- name: install kubelet rpm package
+- name: install kubelet package
   zypper:
     name: "{{ 'kubelet-' + package_versions.kubernetes_rpm }}"
     state: present
@@ -94,6 +124,16 @@
     - reload systemd
     - restart kubelet
 
+- name: add versionlock for kubelet and kubectl packages
+  command: zypper addlock {{ item }}
+  with_items:
+    - kubelet
+    - kubectl
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'
+
 - name: enable kubelet
   service:
     name: kubelet
@@ -102,7 +142,7 @@
     - reload systemd
     - restart kubelet
 
-- name: install kubeadm rpm package
+- name: install kubeadm package
   zypper:
     name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
     state: present
