@@ -29,6 +29,14 @@
   ignore_errors: True
   changed_when: false
 
+- name: check if versionlock exists
+  command: zypper locks -s
+  register: versionlocklist
+  args:
+    warn: false
+  ignore_errors: True
+  changed_when: false
+
 - name: remove preinstalled containerd
   zypper:
     name: containerd
