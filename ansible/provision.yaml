@@ -10,6 +10,7 @@
       when: ansible_os_family == "Flatcar"
   roles:
     - role: packages
+    - role: gpu
     - role: config
     - role: networking
     - role: providers
