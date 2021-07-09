@@ -21,6 +21,7 @@ docker_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/o
 docker_rpm_suse_gpg_key_url: "{{ docker_rpm_suse_repository_url }}/gpg.asc"
 
 # nvidia package
+nvidia_cuda_version: "460"
 libnvidia_container_rpm_repository_package_url: "https://nvidia.github.io/libnvidia-container/centos7/x86_64"
 libnvidia_container_deb_repository_url: "https://nvidia.github.io/libnvidia-container/ubuntu16.04/amd64"
 libnvidia_container_gpg_key_url: "https://nvidia.github.io/libnvidia-container/gpgkey"
@@ -34,7 +35,7 @@ nvidia_driver_rpm_package_name: "nvidia-driver-latest-dkms-3"
 nvidia_driver_rpm_package_version: "460.73.01-1.el7.x86_64"
 # On Centos8 installs `nvidia-driver` module with given version
 nvidia_driver_dnf_module_name: "nvidia-driver"
-nvidia_driver_dnf_module_version: "460-dkms"
+nvidia_driver_dnf_module_version: "{{nvidia_cuda_version}}-dkms"
 
 # the nvidia-container-runtime package no longer exists for rhel8 so we must install the last available version
 nvidia_container_runtime_package: "{{ 'nvidia-container-runtime' if ansible_distribution_major_version|int < 8 else 'nvidia-container-runtime-3.4.0-1.x86_64' }}"

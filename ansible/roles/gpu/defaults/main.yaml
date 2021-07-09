@@ -1,0 +1,28 @@
+---
+# see man lspci (-d)
+nvidia_cuda_version: "460"
+nvidia_device_query:
+  - vendor: "10de"
+    class: "0302"
+  - vendor: "10de"
+    class: "0300"
+vault_repo_baseurl: "http://vault.centos.org/{{ os_release_file['content'] |b64decode | regex_search('\\d+\\.\\d+\\.\\d+') }}/os/$basearch/"
+mirror_repo_baseurl: "http://mirror.centos.org/centos/{{ os_release_file['content'] |b64decode | regex_search('\\d+\\.\\d+\\.\\d+') }}/os/$basearch/"
+nvidia_repo_rpm: https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-10.1.168-1.x86_64.rpm
+nvidia_cuda_package: cuda-10-2
+nvidia_driver_package: nvidia-driver-branch-440
+
+nvidia_repo_distributionmap:
+  CentOS: "rhel"
+  RedHat: "rhel"
+
+
+nvidia_repo_distro: "{{ nvidia_repo_distributionmap[ansible_distribution] | default(ansible_distribution) }}"
+nvidia_repo_baseurl: https://developer.download.nvidia.com/compute/cuda/repos/{{ nvidia_repo_distro | lower }}{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+# nvidia_repo_gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/7fa2af80.pub
+nvidia_repo_gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/GPGKEY
+
+rhel7_vulkan_repo_baseurl: http://mirror.centos.org/centos/7/os/$basearch/
+rhel7_vulkan_repo_gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+
+suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansible_architecture }}

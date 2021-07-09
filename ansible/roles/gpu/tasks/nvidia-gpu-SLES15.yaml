@@ -1,0 +1,37 @@
+---
+- name: SUSE Connect Status
+  command: SUSEConnect --status
+  register: suseconnect_status
+  changed_when: false
+
+- name: Activate PackageHub {{ ansible_distribution_version }} {{ ansible_architecture }}
+  command: SUSEConnect -p {{ suse_packagehub_product }}
+  register: connect_register
+  changed_when: "'Successfully registered' in connect_register.stdout"
+  when: not 'PackageHub' in suseconnect_status.stdout
+
+- name: import CUDA rpm repository key
+  rpm_key:
+    state: present
+    key: "{{ nvidia_repo_gpgkey }}"
+
+- name: Add NVIDIA repo
+  zypper_repository:
+    name: cuda
+    repo: "{{ nvidia_repo_baseurl }}"
+    disable_gpg_check: true
+    autorefresh: true
+  register: cuda_repo_installation_rpm
+  until: cuda_repo_installation_rpm is success
+  retries: 3
+  delay: 3
+
+- name: Install current kernel devel
+  zypper:
+    name: "kernel-{{ ansible_kernel | regex_search('.*-(\\w+)$', '\\1') | first }}-devel={{ ansible_kernel | regex_search('(.*)-\\w+$', '\\1') | first }}"
+    state: present
+
+- name: Install current kernel devel
+  zypper:
+    name: cuda-drivers-{{ nvidia_cuda_version }}
+    state: present
