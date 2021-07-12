@@ -17,9 +17,9 @@
 # If possible we use headers from main OS repo for this kernel.
 - name: Install Kernel Header and Devel from OS repo for Current Kernel
   yum:
-      name:
-        - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
-        - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+    name:
+      - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
+      - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
   when: pkgheaders.results|length > 0
 # CentOS VAULT - Kernel Headers not available in main OS repo anymore. Use Vault for this release
 - name: CentOS VAULT - Kernel Headers not available in main OS repo anymore. Use Vault for this release
@@ -35,12 +35,12 @@
         enabled: false
     - name: ThisVault - Install Kernel Headers for Current Kernel
       yum:
-          enablerepo: ThisVault
-          name: "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
+        enablerepo: ThisVault
+        name: "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
     - name: ThisVault - Install Kernel Devel for Current Kernel
       yum:
-          enablerepo: ThisVault
-          name: "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
+        enablerepo: ThisVault
+        name: "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
   rescue:
     - name: Centos mirror this version
       yum_repository:
@@ -53,12 +53,12 @@
         old_package_repo: CentosThisVersionMirror
     - name: CentosThisVersionMirror - Install Kernel Headers for Current Kernel
       yum:
-          enablerepo: "{{ old_package_repo }}"
-          name: "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
+        enablerepo: "{{ old_package_repo }}"
+        name: "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
     - name: CentosThisVersionMirror - Install Kernel Devel for Current Kernel
       yum:
-          enablerepo: "{{ old_package_repo }}"
-          name: "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
+        enablerepo: "{{ old_package_repo }}"
+        name: "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel | regex_search('\\d+\\.\\d+\\.\\d+-\\d+') }}.el{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
   always:
     - name: Ensure to link against merged kernel headers
       file:
@@ -88,9 +88,4 @@
   yum:
     name:
       - "{{ nvidia_driver_package }}"
-    state: present
-- name: Install cuda package and tools
-  yum:
-    name:
-      - "{{ nvidia_cuda_package }}"
     state: present

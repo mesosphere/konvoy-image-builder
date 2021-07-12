@@ -15,11 +15,16 @@
     state: present
     key: "{{ nvidia_repo_gpgkey }}"
 
+- name: import Nvidia repository key
+  rpm_key:
+    state: present
+    key: "{{ nvidia_repo_gpgkey }}"
+
 - name: Add NVIDIA repo
   zypper_repository:
     name: cuda
     repo: "{{ nvidia_repo_baseurl }}"
-    disable_gpg_check: true
+    disable_gpg_check: false
     autorefresh: true
   register: cuda_repo_installation_rpm
   until: cuda_repo_installation_rpm is success
