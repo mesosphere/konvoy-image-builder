@@ -41,7 +41,7 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--env AWS_PROFILE \
 	--env AWS_SECRET_ACCESS_KEY \
 	--env AWS_SESSION_TOKEN \
-	--env AWS_REGION \
+	--env AWS_DEFAULT_REGION \
 	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
 
 ifneq ($(wildcard $(DOCKER_SOCKET)),)
@@ -133,10 +133,13 @@ centos8-nvidia: build
 centos8-nvidia: ## Build Centos 8 image
 	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml
 
+flatcar-version.yaml:
+	./hack/fetch-flatcar-ami.sh
+
 .PHONY: flatcar
-flatcar: build
+flatcar: build flatcar-version.yaml
 flatcar: ## Build flatcar image
-	./bin/konvoy-image build images/ami/flatcar.yaml
+	./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml
 
 .PHONY: dev
 dev: ## dev build
@@ -151,6 +154,7 @@ clean: ## remove files created during build
 	$(call print-target)
 	rm -rf bin
 	rm -rf dist
+	rm -f flatcar-version.yaml
 	rm -f $(COVERAGE)*
 	docker image rm $(DOCKER_DEVKIT_IMG) || echo "image already removed"
 
@@ -310,7 +314,8 @@ ci.e2e.build.all:
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v 6" make devkit.run
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/flatcar.yaml -v 6" make devkit.run
+	WHAT="make flatcar-version.yaml" make devkit.run
+	WHAT="./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml -v 6" make devkit.run
 	make docker.clean-latest-ami
 
 # use sibling containers to handle dependencies and avoid DinD

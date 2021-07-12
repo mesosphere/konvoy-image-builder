@@ -234,6 +234,7 @@ func genPackerVars(config map[string]interface{}, extraVarsPath string) ([]byte,
 	p[kubernetesFullVersionKey] = getString(config, kubernetesFullVersionKey)
 	p[containerdVersionKey] = getString(config, containerdVersionKey)
 	p[buildNameKey] = buildName(config)
+	p[buildNameExtraKey] = getString(config, buildNameExtraKey)
 	p[ansibleExtraVarsKey] = fmt.Sprintf("@%s", extraVarsPath)
 
 	data, err := json.Marshal(p)

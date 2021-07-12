@@ -68,9 +68,9 @@
       shell: yum clean expire-cache
     - name: Install Nvidia driver (Centos/RHEL 7)
       yum:
-        name:
-          - "{{ nvidia_driver_rpm_package_name }}:\
+        name: "{{ nvidia_driver_rpm_package_name }}-\
             {{ nvidia_driver_rpm_package_version }}"
+        state: present
       when:
         - ansible_os_family == 'RedHat'
         - ansible_distribution_major_version|int == 7

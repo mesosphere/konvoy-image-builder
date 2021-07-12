@@ -1,6 +1,5 @@
 {
   "variables": {
-    "ami_description": "Konvoy base for {{user `kubernetes_full_version`}}",
     "ami_groups": "all",
     "ami_regions": "us-west-2",
     "ami_users": "",
@@ -27,7 +26,7 @@
   },
   "builders": [
     {
-      "name": "{{user `build_name`}}",
+      "name": "{{(user `distribution`) | lower}}-{{user `distribution_version`}}{{user `build_name_extra`}}",
       "type": "amazon-ebs",
       "instance_type": "t3.small",
       ((- if .SourceAMIDefined ))
@@ -44,13 +43,13 @@
         "most_recent": true
       },
       ((- end ))
-      "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "ami_name": "konvoy-ami-{{build_name}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}",
       "snapshot_tags": {
-        "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}"
+        "ami_name": "konvoy-ami-{{build_name}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}"
       },
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
-      "ami_description": "{{user `ami_description`}}",
+      "ami_description": "Konvoy base for Kubernetes {{user `kubernetes_full_version`}} on {{user `distribution`}}-{{user `distribution_version`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
       "snapshot_users": "{{user `snapshot_users`}}",
       "encrypt_boot": "{{user `encrypted`}}",
@@ -73,9 +72,9 @@
         "distribution": "{{user `distribution`}}",
         "distribution_version": "{{user `distribution_version`}}",
         "image_builder_version": "{{user `konvoy_image_builder_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
-        "kubernetes_version": "{{user `kubernetes_version`}}",
-        "source_ami": "{{user `source_ami`}}"
+        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}",
+        "kubernetes_version": "{{user `kubernetes_full_version` | clean_resource_name}}",
+        "source_ami": "{{.SourceAMI}}"
       },
       "launch_block_device_mappings": [
         {
@@ -91,7 +90,7 @@
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
+        "BUILD_NAME={{build_name}}"
       ],
       "inline": [
         "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
@@ -102,10 +101,18 @@
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
+        "BUILD_NAME={{build_name}}"
+      ],
+      "script": "./packer/files/no-update-flatcar.sh",
+      "execute_command": "BUILD_NAME={{build_name}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "BUILD_NAME={{build_name}}"
       ],
       "script": "./packer/files/bootstrap-flatcar.sh",
-      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
+      "execute_command": "BUILD_NAME={{build_name}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
     },
     {
       "type": "ansible",
