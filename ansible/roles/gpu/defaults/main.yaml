@@ -11,6 +11,7 @@ mirror_repo_baseurl: "http://mirror.centos.org/centos/{{ os_release_file['conten
 nvidia_repo_rpm: https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-10.1.168-1.x86_64.rpm
 nvidia_cuda_package: cuda-10-2
 nvidia_driver_package: "nvidia-driver-branch-{{ nvidia_cuda_version }}"
+epel_centos_7_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 nvidia_repo_distributionmap:
   CentOS: "rhel"
