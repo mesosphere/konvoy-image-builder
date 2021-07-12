@@ -7,8 +7,3 @@
 
 - include: install-flatcar.yaml
   when: ansible_os_family == "Flatcar"
-
-- include: nvidia.yaml
-  when:
-    - gpu is defined
-    - gpu.type == 'nvidia'
