@@ -1,0 +1,38 @@
+---
+# If possible we use headers from main OS repo for this kernel.
+- name: Install Kernel Header and Devel from OS repo for Current Kernel
+  yum:
+      name:
+        - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
+        - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+
+- name: import epel repository key
+  rpm_key:
+    state: present
+    key: "{{ epel_centos_8_rpm_gpg_key }}"
+
+- name: Install EPEL release
+  dnf:
+    name: "{{ epel_centos_8_rpm }}"
+    state: present
+    disable_gpg_check: true
+
+# Install NVIDIA repository, driver and tools
+- name: Add NVIDIA repository for CUDA drivers and tools
+  yum_repository:
+    name: cuda
+    description: NVIDIA cuda repository
+    enabled: true
+    baseurl: "{{ nvidia_repo_baseurl }}"
+    gpgkey: "{{ nvidia_repo_gpgkey }}"
+    gpgcheck: true
+
+- name: Install cuda drivers and tools
+  dnf:
+    enablerepo:
+      - "codeready-builder-for-rhel-8-{{ ansible_architecture }}-rpms"
+      - "rhel-8-for-{{ ansible_architecture }}-baseos-rpms"
+      - "rhel-8-for-{{ ansible_architecture }}-appstream-rpms"
+    name:
+      - "{{ nvidia_cuda_package }}"
+    state: present

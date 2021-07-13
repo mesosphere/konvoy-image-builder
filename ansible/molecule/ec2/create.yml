@@ -63,6 +63,7 @@
         owner: "{{ item.image_search_owner }}"
         filters:
           name: "{{ item.image_search_name }}"
+          architecture: x86_64
       loop: "{{ molecule_yml.platforms|flatten(levels=1) }}"
       when:
         - item.image_search_owner is defined and item.image_search_owner != ""
