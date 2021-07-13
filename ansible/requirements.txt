@@ -1,0 +1,8 @@
+molecule
+molecule-ec2
+ansible-lint
+boto
+boto3
+ansible==2.9.20
+yamllint
+pytest-testinfra
