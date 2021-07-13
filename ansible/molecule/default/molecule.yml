@@ -1,6 +1,6 @@
 ---
 scenario:
-  name: ec2_konvoy
+  name: default
 driver:
   name: ec2
 platforms:
