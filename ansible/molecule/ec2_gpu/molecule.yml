@@ -45,6 +45,7 @@ platforms:
     region: us-east-1
     instance_type: p2.xlarge
     ssh_user: ec2-user
+    spot_price: false
 
 provisioner:
   name: ansible
