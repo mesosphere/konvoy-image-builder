@@ -1,4 +1,5 @@
 gpu:
-  type: nvidia
+  types:
+    - nvidia
 
 build_name_extra: "-nvidia"
