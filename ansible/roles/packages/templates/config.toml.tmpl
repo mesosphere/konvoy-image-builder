@@ -74,7 +74,7 @@ imports = ["/etc/containerd/config-konvoy-*.toml"]
     disable_proc_mount = false
     [plugins."io.containerd.grpc.v1.cri".containerd]
       snapshotter = "overlayfs"
-{% if gpu is defined and gpu.type == 'nvidia' %}
+{% if gpu is defined and 'nvidia' in gpu.types %}
       default_runtime_name = "nvidia-container-runtime"
 {% else %}
       default_runtime_name = "runc"
@@ -139,7 +139,7 @@ imports = ["/etc/containerd/config-konvoy-*.toml"]
     no_prometheus = false
   [plugins."io.containerd.runtime.v1.linux"]
     shim = "containerd-shim"
-{% if gpu is defined and gpu.type == 'nvidia' %}
+{% if gpu is defined and 'nvidia' in gpu.types  %}
     runtime = "/usr/bin/nvidia-container-runtime"
 {% else %}
     runtime = "runc"
