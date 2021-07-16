@@ -24,3 +24,7 @@ def test_cuda10_devices(host):
     nvidia_dev = host.file("/dev/nvidia0")
 
     assert True is nvidia_dev.exists
+
+def test_nvidia_container_cli_avail(host):
+    cmd = host.run("type nvidia-container-cli")
+    assert cmd.succeeded is True
