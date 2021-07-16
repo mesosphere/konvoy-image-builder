@@ -52,6 +52,7 @@
     description: NVIDIA libnvidia-container repository
     autorefresh: true
     repo: "{{ libnvidia_container_repo_sles }}"
+  changed_when: false # zypper repo is updating for this resource all the time
 
 - name: install libnvidia-container
   zypper:
@@ -69,6 +70,7 @@
     description: NVIDIA nvidia-container-runtime repository
     autorefresh: true
     repo: "{{ nvidia_container_runtime_repo_sles }}"
+  changed_when: false # zypper repo is updating for this resource all the time
 
 - name: install nvidia-container-runtime
   zypper:
