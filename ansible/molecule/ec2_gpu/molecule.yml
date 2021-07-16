@@ -65,6 +65,6 @@ provisioner:
       group_vars: ../../group_vars/
   lint:
     name: ansible-lint
-    enabled: True
+    enabled: true
 verifier:
   name: testinfra

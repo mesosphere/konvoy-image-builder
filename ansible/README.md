@@ -38,7 +38,7 @@ Use `./ansible` as workdir and if not already done install python `3.9.8`
 
 For better maintanability we create a virtual env.
 
-```
+```bash
 cd ./ansible
 asdf install python
 python -m venv ./venv
@@ -47,7 +47,7 @@ source ./venv/bin/activate
 
 The molecule dependencies are stored in `./requirements.txt`
 
-```
+```bash
 pip install -r requirements.txt
 source ./venv/bin/activate
 
@@ -87,7 +87,7 @@ Now if something fails and you want to try your fix you can rerun `molecule conv
 ### Scenarios
 Currently we have two main scenarios for molecule all based on ec2
 
-```
+```bash
 molecule test
 # means actually
 molecule test -s default
