@@ -1,5 +1,5 @@
 ---
-- name: install common RPMS
+- name: install common packages
   zypper:
     name:
       - audit
@@ -16,6 +16,10 @@
       - sysstat
       - nfs-utils
     state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
 
 - name: check if versionlock exists
   command: zypper locks -s

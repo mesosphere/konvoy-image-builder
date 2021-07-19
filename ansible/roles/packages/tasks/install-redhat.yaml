@@ -25,6 +25,10 @@
       - nfs-utils
       - NetworkManager
     state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
 
 - name: install el8 requirements
   yum:
