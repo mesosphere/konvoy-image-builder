@@ -1,6 +1,7 @@
 ---
 - name: Converge
   hosts: all
+  gather_facts: false
   tasks:
     - set_fact:
         packer_builder_type: amazon
