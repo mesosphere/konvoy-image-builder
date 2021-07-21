@@ -74,7 +74,7 @@
     - name: Create molecule instance(s)
       ec2:
         key_name: "{{ keypair_name }}"
-        image: "{{ item.item.image if item.skipped is defined and item.skipped else item.images[0].image_id }}"
+        image: "{{ item.item.image if item.skipped is defined and item.skipped else (item.images | sort(attribute='creation_date') | last).image_id }}"
         region: "{{ item.item.region }}"
         zone: "{{ item.item.zone|default(omit) }}"
         instance_initiated_shutdown_behavior: terminate

@@ -1,5 +1,25 @@
 ---
 - hosts: all
+  name: Prepare Ansible - Flatcar Python setup
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Flatcar no update
+      changed_when: false
+      script: ../packer/files/no-update-flatcar.sh
+    - name: exec bootstrap python
+      changed_when: false
+      script: ../packer/files/bootstrap-flatcar.sh
+    - name: check for flatcar python
+      raw: stat /opt/bin/.bootstrapped
+      changed_when: false
+      failed_when: false
+      register: flatcar_bootstrapped
+    - name: change python if bootstrapped
+      set_fact:
+        ansible_python_interpreter: /opt/bin/python
+      when: flatcar_bootstrapped.rc == 0
+- hosts: all
   name: Provision
   become: true
   # TODO: hack to pass vars easily for now
