@@ -9,8 +9,8 @@
     autorefresh: true
   register: konvoy_repo_installation_rpm
   until: konvoy_repo_installation_rpm is success
-  retries: 3
-  delay: 3
+  retries: 15
+  delay: 10
 
 - name: import Konvoy Kubernetes rpm repository key
   rpm_key:
@@ -27,8 +27,8 @@
     autorefresh: true
   register: konvoy_repo_installation_rpm
   until: konvoy_repo_installation_rpm is success
-  retries: 3
-  delay: 3
+  retries: 15
+  delay: 10
 
 - name: add Konvoy Containerd rpm repository key
   rpm_key:
