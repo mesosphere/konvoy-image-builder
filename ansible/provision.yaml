@@ -10,11 +10,13 @@
       when: ansible_os_family == "Flatcar"
   roles:
     - role: packages
+    - role: gpu
     - role: config
     - role: networking
     - role: providers
     - role: images
       when: download_images
     - role: sysprep
+      when: sysprep # make the finalize process skipable
   environment:
     PYTHONPATH: "{{ python_path }}"

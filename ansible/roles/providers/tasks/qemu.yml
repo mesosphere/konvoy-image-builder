@@ -36,6 +36,15 @@
       - cloud-utils-growpart
   when: ansible_os_family == "RedHat"
 
+- name: Install cloud-init packages
+  zypper:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - cloud-init
+  when: ansible_os_family == "Suse"
+
 # - name: Unlock password
 #   replace:
 #     path: /etc/cloud/cloud.cfg

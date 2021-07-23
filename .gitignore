@@ -55,3 +55,6 @@ flatcar-version.yaml
 
 /test/e2e/ansible/generated/*
 !/test/e2e/ansible/generated/.keep
+
+/ansible/venv/*
+/ansible/molecule/**/__pycache__/

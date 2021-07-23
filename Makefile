@@ -17,6 +17,8 @@ GROUP_NAME ?= $(shell id -g -n)
 
 COVERAGE ?= $(REPO_ROOT_DIR)/coverage
 
+VERBOSITY ?= 6
+
 export DOCKER_REPOSITORY ?= mesosphere/konvoy-image-builder
 export DOCKER_SOCKET ?= /var/run/docker.sock
 ifeq ($(OS),Darwin)
@@ -306,16 +308,20 @@ endif
 
 ci.e2e.build.all:
 	WHAT="make build" make devkit.run
-	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml -v 6" make devkit.run
+	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml -v 6" make devkit.run
+	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml -v 6" make devkit.run
+	WHAT="./bin/konvoy-image build images/ami/sles-15.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v 6" make devkit.run
+	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/sles-15.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
 	WHAT="make flatcar-version.yaml" make devkit.run
-	WHAT="./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml -v 6" make devkit.run
+	WHAT="./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
 
 # use sibling containers to handle dependencies and avoid DinD

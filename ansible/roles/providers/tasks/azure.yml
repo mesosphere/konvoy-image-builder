@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: redhat.yml
+- import_tasks: azure-redhat.yml
   when: ansible_os_family == "RedHat"
 
-- import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+- import_tasks: azure-pip.yml
+  when: ansible_os_family in ["Debian", "Suse"]
 
 - name: Configure PTP
   lineinfile:

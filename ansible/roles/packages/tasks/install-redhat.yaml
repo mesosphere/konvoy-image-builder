@@ -1,0 +1,210 @@
+---
+- name: install epel-release
+  yum:
+    name: epel-release
+    state: present
+    update_cache: true
+
+- name: install common RPMS
+  yum:
+    name:
+      - audit
+      - ca-certificates
+      - conntrack-tools
+      - chrony
+      - curl
+      - ebtables
+      - open-vm-tools
+      - python3-pip
+      - python3-netifaces
+      - python3-requests
+      - socat
+      - sysstat
+      - yum-utils
+      - yum-plugin-versionlock
+      - nfs-utils
+      - NetworkManager
+    state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
+
+- name: install el8 requirements
+  yum:
+    name:
+      - iproute-tc
+    state: present
+  when:
+    - ansible_distribution_major_version == '8'
+
+- name: check if versionlock exists
+  command: yum versionlock list
+  register: versionlocklist
+  args:
+    warn: false
+  ignore_errors: True
+  changed_when: false
+
+- name: create containerd systemd directory
+  file:
+    path: "/etc/systemd/system/containerd.service.d/"
+    state: directory
+
+- name: create containerd directory
+  file:
+    path: "/etc/containerd/"
+    state: directory
+
+- name: copy default configuration to remote
+  template:
+    src: "config.toml.tmpl"
+    dest: "/etc/containerd/config.toml"
+
+- name: remove versionlock for containerd
+  command: yum versionlock delete containerd.io
+  args:
+    warn: false
+  ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
+  when:
+    - versionlocklist is defined and versionlocklist.stdout is defined
+    - "'containerd.io' in versionlocklist.stdout and not 'containerd.io-' + containerd_version in versionlocklist.stdout"
+
+# only required for RHEL when not installing from a local file
+- name: install container-selinux GPG key
+  rpm_key:
+    state: present
+    key: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+  when:
+    - ansible_distribution == 'RedHat'
+    - ansible_distribution_major_version|int == 7
+
+- name: install container-selinux rpm package
+  yum:
+    name: "{{ docker_rpm_container_selinux_package_url }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: install containerd.io rpm package
+  yum:
+    name: "{{ 'containerd.io-' + containerd_version }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
+
+- name: add versionlock for containerd
+  command: yum versionlock add containerd.io
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+
+- name: enable containerd
+  service:
+    name: containerd
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart containerd
+
+- name: create kubelet systemd directory
+  file:
+    path: "/etc/systemd/system/kubelet.service.d/"
+    state: directory
+
+- name: remove versionlock for kubelet and kubectl packages
+  command: yum versionlock delete {{ item }}
+  with_items:
+    - kubelet
+    - kubectl
+  args:
+    warn: false
+  ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
+  when:
+    - versionlocklist is defined and versionlocklist.stdout is defined
+    - item in versionlocklist.stdout
+    - not package_versions.kubernetes_rpm in versionlocklist.stdout
+
+- name: install kubectl rpm package
+  yum:
+    name: "{{ 'kubectl-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: install kubelet rpm package
+  yum:
+    name: "{{ 'kubelet-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: kubelet_installation_rpm
+  until: kubelet_installation_rpm is success
+  retries: 3
+  delay: 3
+  notify:
+    - reload systemd
+    - restart kubelet
+
+- name: add versionlock for kubelet and kubectl packages
+  command: yum versionlock add {{ item }}
+  with_items:
+    - kubelet
+    - kubectl
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+
+- name: enable kubelet
+  service:
+    name: kubelet
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart kubelet
+
+- name: remove versionlock for kubeadm packages
+  command: yum versionlock delete kubeadm
+  args:
+    warn: false
+  ignore_errors: True
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
+  when:
+    - versionlocklist is defined and versionlocklist.stdout is defined
+    - "'kubeadm' in versionlocklist.stdout and not 'kubeadm-' + package_versions.kubernetes_rpm in versionlocklist.stdout"
+
+- name: install kubeadm rpm package
+  yum:
+    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: add versionlock for kubeadm package
+  command: yum versionlock add kubeadm
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'

@@ -21,6 +21,9 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
+- import_tasks: suse.yml
+  when: ansible_os_family == "Suse"
+
 - import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 

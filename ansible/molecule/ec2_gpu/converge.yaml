@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - set_fact:
+        packer_builder_type: amazon
+        gpu:
+          types:
+            - 'nvidia'
+        sysprep: false
+
+- hosts: all
+  name: GPU
+  become: true
+  roles:
+    - role: gpu

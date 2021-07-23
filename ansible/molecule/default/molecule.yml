@@ -1,0 +1,52 @@
+---
+scenario:
+  name: default
+driver:
+  name: ec2
+platforms:
+  - name: konvoyimage-centos7.9-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "CentOS 7.9.2009 x86_64"
+    image_search_owner: "125523088429"
+    region: us-east-1
+    instance_type: t3.small
+    ssh_user: centos
+  - name: konvoyimage-centos8.3-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "CentOS 8.3.2011 x86_64"
+    image_search_owner: "125523088429"
+    region: us-east-1
+    instance_type: t3.small
+    ssh_user: centos
+  # - name: konvoyimage-flatcar-stable-${USER:-ci}-${HOSTNAME:-local}
+  #   image_search_name: "Flatcar*stable*"
+  #   image_search_owner: "075585003325"
+  #   region: us-east-1
+  #   instance_type: m4.xlarge
+  #   ssh_user: core
+  - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "suse-sles-15-sp3-v*"
+    image_search_owner: "amazon"
+    region: us-east-1
+    instance_type: t3.small
+    ssh_user: ec2-user
+
+provisioner:
+  name: ansible
+  log: true
+  playbooks:
+    ec2:
+      create: ../ec2/create.yml
+      destroy: ../ec2/destroy.yml
+    converge: ../ec2/converge.yml
+  config_options:
+    defaults:
+      hash_behaviour: merge
+  env:
+    ANSIBLE_ROLES_PATH: "../../roles/"
+  inventory:
+    links:
+      group_vars: ../../group_vars/
+  lint:
+    name: ansible-lint
+    enabled: true
+verifier:
+  name: testinfra
