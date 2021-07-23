@@ -34,21 +34,6 @@
     name: containerd
     state: absent
 
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
-- name: create containerd directory
-  file:
-    path: "/etc/containerd/"
-    state: directory
-
-- name: copy default configuration to remote
-  template:
-    src: "config.toml.tmpl"
-    dest: "/etc/containerd/config.toml"
-
 - name: remove versionlock for containerd
   command: zypper removelock containerd.io
   args:
@@ -76,19 +61,6 @@
     warn: false
   register: command_result
   changed_when: 'command_result.stdout is regex(".*lock has been successfully added.*")'
-
-- name: enable containerd
-  service:
-    name: containerd
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart containerd
-
-- name: create kubelet systemd directory
-  file:
-    path: "/etc/systemd/system/kubelet.service.d/"
-    state: directory
 
 - name: remove versionlock for kubelet and kubectl packages
   command: zypper removelock {{ item }}
@@ -137,14 +109,6 @@
     warn: false
   register: command_result
   changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'
-
-- name: enable kubelet
-  service:
-    name: kubelet
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart kubelet
 
 - name: install kubeadm package
   zypper:

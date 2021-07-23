@@ -46,21 +46,6 @@
   ignore_errors: True
   changed_when: false
 
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
-- name: create containerd directory
-  file:
-    path: "/etc/containerd/"
-    state: directory
-
-- name: copy default configuration to remote
-  template:
-    src: "config.toml.tmpl"
-    dest: "/etc/containerd/config.toml"
-
 - name: remove versionlock for containerd
   command: yum versionlock delete containerd.io
   args:
@@ -112,19 +97,6 @@
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
 
-- name: enable containerd
-  service:
-    name: containerd
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart containerd
-
-- name: create kubelet systemd directory
-  file:
-    path: "/etc/systemd/system/kubelet.service.d/"
-    state: directory
-
 - name: remove versionlock for kubelet and kubectl packages
   command: yum versionlock delete {{ item }}
   with_items:
@@ -172,14 +144,6 @@
     warn: false
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
-
-- name: enable kubelet
-  service:
-    name: kubelet
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart kubelet
 
 - name: remove versionlock for kubeadm packages
   command: yum versionlock delete kubeadm

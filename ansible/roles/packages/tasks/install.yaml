@@ -1,4 +1,19 @@
 ---
+- name: create containerd systemd directory
+  file:
+    path: "/etc/systemd/system/containerd.service.d/"
+    state: directory
+
+- name: create containerd directory
+  file:
+    path: "/etc/containerd/"
+    state: directory
+
+- name: create kubelet systemd directory
+  file:
+    path: "/etc/systemd/system/kubelet.service.d/"
+    state: directory
+
 - include: install-redhat.yaml
   when: ansible_os_family == "RedHat"
 
@@ -7,3 +22,53 @@
 
 - include: install-flatcar.yaml
   when: ansible_os_family == "Flatcar"
+
+- name: copy default configuration to remote
+  template:
+    src: "config.toml.tmpl"
+    dest: "/etc/containerd/config.toml"
+
+- name: create konvoy proxy conf
+  template:
+    dest: /etc/konvoy_http_proxy.conf
+    src: etc/konvoy_http_proxy.conf
+    mode: 0644
+  when: http_proxy is defined or https_proxy is defined or no_proxy is defined
+  notify:
+    - reload systemd
+    - restart kubelet
+    - restart containerd
+
+- name: create containerd proxy conf
+  template:
+    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
+    src: etc/systemd/system/http-proxy.conf
+    mode: 0644
+  notify:
+    - reload systemd
+    - restart containerd
+
+- name: create kubelet proxy conf
+  template:
+    dest: /etc/systemd/system/kubelet.service.d/http-proxy.conf
+    src: etc/systemd/system/http-proxy.conf
+    mode: 0644
+  notify:
+    - reload systemd
+    - restart kubelet
+
+- name: enable containerd
+  service:
+    name: containerd
+    enabled: true
+  notify:
+    - reload systemd
+    - restart containerd
+
+- name: enable kubelet
+  service:
+    name: kubelet
+    enabled: true
+  notify:
+    - reload systemd
+    - restart kubelet
