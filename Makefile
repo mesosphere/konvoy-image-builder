@@ -60,10 +60,16 @@ endif
 # not. This results in packer silently failing when running in devkit
 # container, as it is using Alpine linux. See the issue below for more details:
 # https://github.com/docker-library/golang/issues/320
-export DOCKER_DEVKIT_ARGS ?= \
-	--ulimit memlock=67108864:67108864 \
+export DOCKER_ULIMIT_ARGS ?= \
+	--ulimit memlock=67108864:67108864
+
+export DOCKER_DEVKIT_USER_ARGS ?= \
 	--user $(UID):$(GID) \
-	--group-add $(DOCKER_SOCKET_GID) \
+	--group-add $(DOCKER_SOCKET_GID)
+
+export DOCKER_DEVKIT_ARGS ?= \
+	$(DOCKER_ULIMIT_ARGS) \
+	$(DOCKER_DEVKIT_USER_ARGS) \
 	--volume $(REPO_ROOT_DIR):/kib \
 	--workdir /kib \
 	$(DOCKER_SOCKET_ARGS) \
