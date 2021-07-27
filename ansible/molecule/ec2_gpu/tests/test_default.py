@@ -29,3 +29,8 @@ def test_cuda10_devices(host):
 def test_nvidia_container_cli_avail(host):
     cmd = host.run("type nvidia-container-cli")
     assert cmd.succeeded is True
+
+
+def test_nvidia_container_runtime_avail(host):
+    cmd = host.run("type nvidia-container-runtime")
+    assert cmd.succeeded is True
