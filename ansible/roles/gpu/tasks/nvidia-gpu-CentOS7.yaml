@@ -100,7 +100,7 @@
     gpgkey: "{{ libnvidia_container_repo_gpgkey }}"
     gpgcheck: true
 
-- name: install libnvidia-container
+- name: Install libnvidia-container
   yum:
     name: libnvidia-container1
     enablerepo: libnvidia-container
