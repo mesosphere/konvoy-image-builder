@@ -62,10 +62,16 @@
     gpgkey: "{{ nvidia_container_runtime_repo_gpgkey }}"
     gpgcheck: true
 
-- name: install nvidia-container-runtime
+- name: Install nvidia-container-tools
   dnf:
     name: libnvidia-container-tools
     enablerepo:
       - libnvidia-container
+    state: present
+
+- name: Install nvidia-container-runtime
+  dnf:
+    name: "{{ nvidia_container_runtime_package }}"
+    enablerepo:
       - nvidia-container-runtime
     state: present
