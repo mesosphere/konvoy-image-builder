@@ -72,7 +72,12 @@
     repo: "{{ nvidia_container_runtime_repo_sles }}"
   changed_when: false # zypper repo is updating for this resource all the time
 
-- name: install nvidia-container-runtime
+- name: Install nvidia-container-tools
   zypper:
     name: libnvidia-container-tools
+    state: present
+
+- name: Install nvidia-container-runtime
+  zypper:
+    name: "{{ nvidia_container_runtime_package }}"
     state: present
