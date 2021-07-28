@@ -90,7 +90,13 @@
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{build_name}}"
+        "BUILD_NAME={{build_name}}",
+        "HTTP_PROXY={{user `http_proxy`}}",
+        "http_proxy={{user `http_proxy`}}",
+        "HTTPS_PROXY={{user `https_proxy`}}",
+        "https_proxy={{user `https_proxy`}}",
+        "NO_PROXY={{user `no_proxy`}}",
+        "no_proxy={{user `no_proxy`}}"
       ],
       "inline": [
         "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
@@ -101,7 +107,13 @@
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{build_name}}"
+        "BUILD_NAME={{build_name}}",
+        "HTTP_PROXY={{user `http_proxy`}}",
+        "http_proxy={{user `http_proxy`}}",
+        "HTTPS_PROXY={{user `https_proxy`}}",
+        "https_proxy={{user `https_proxy`}}",
+        "NO_PROXY={{user `no_proxy`}}",
+        "no_proxy={{user `no_proxy`}}"
       ],
       "script": "./packer/files/no-update-flatcar.sh",
       "execute_command": "BUILD_NAME={{build_name}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
@@ -109,7 +121,13 @@
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{build_name}}"
+        "BUILD_NAME={{build_name}}",
+        "HTTP_PROXY={{user `http_proxy`}}",
+        "http_proxy={{user `http_proxy`}}",
+        "HTTPS_PROXY={{user `https_proxy`}}",
+        "https_proxy={{user `https_proxy`}}",
+        "NO_PROXY={{user `no_proxy`}}",
+        "no_proxy={{user `no_proxy`}}"
       ],
       "script": "./packer/files/bootstrap-flatcar.sh",
       "execute_command": "BUILD_NAME={{build_name}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
@@ -144,6 +162,14 @@
         "ARCH": "amd64",
         "OS": "{{user `distribution` | lower}}",
         "PROVIDER": "amazon"
+      },
+      "vars_env": {
+        "HTTP_PROXY": "{{user `http_proxy`}}",
+        "http_proxy": "{{user `http_proxy`}}",
+        "HTTPS_PROXY": "{{user `https_proxy`}}",
+        "https_proxy": "{{user `https_proxy`}}",
+        "NO_PROXY": "{{user `no_proxy`}}",
+        "no_proxy": "{{user `no_proxy`}}"
       },
       "version": "{{user `goss_version`}}"
     }
