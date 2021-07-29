@@ -25,9 +25,9 @@
     "extra_vars_file": "",
     "build_name": "",
     "distribution": "",
-    "distribution_version",
+    "distribution_version": "",
     "kubernetes_full_version": "",
-    "build_name_extra": "",
+    "build_name_extra": ""
   },
   "builders": [
     {
@@ -100,7 +100,7 @@
         "HTTPS_PROXY={{user `https_proxy`}}",
         "https_proxy={{user `https_proxy`}}",
         "NO_PROXY={{user `no_proxy`}}",
-        "no_proxy={{user `no_proxy`}}"
+        "no_proxy={{user `no_proxy`}}",
         "BUILD_NAME={{user `build_name`}}"
       ],
       "inline": [
@@ -117,7 +117,7 @@
         "HTTPS_PROXY={{user `https_proxy`}}",
         "https_proxy={{user `https_proxy`}}",
         "NO_PROXY={{user `no_proxy`}}",
-        "no_proxy={{user `no_proxy`}}"
+        "no_proxy={{user `no_proxy`}}",
         "BUILD_NAME={{user `build_name`}}"
       ],
       "script": "./packer/files/no-update-flatcar.sh",
@@ -131,7 +131,7 @@
         "HTTPS_PROXY={{user `https_proxy`}}",
         "https_proxy={{user `https_proxy`}}",
         "NO_PROXY={{user `no_proxy`}}",
-        "no_proxy={{user `no_proxy`}}"
+        "no_proxy={{user `no_proxy`}}",
         "BUILD_NAME={{user `build_name`}}"
       ],
       "script": "./packer/files/no-update-flatcar.sh",
@@ -194,8 +194,8 @@
       "custom_data": {
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
-        "kubernetes_version": "{{user `kubernetes_full_version`}}"
-        "distribution": "{{user `distribution`}}"
+        "kubernetes_version": "{{user `kubernetes_full_version`}}",
+        "distribution": "{{user `distribution`}}",
         "distribution_version": "{{user `distribution_version`}}"
       }
     }
