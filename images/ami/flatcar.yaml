@@ -15,7 +15,8 @@ packer:
 build_name: "flatcar-stable"
 packer_builder_type: "amazon"
 
-containerd_version: 1.4.4 # match this with the flatcar distribution version
+containerd_version: 1.5.4 # match this with the flatcar distribution version
+containerd_sha256: 591e4e087ea2f5007e6c64deb382df58d419b7b6922eab45a1923d843d57615f # matching sha to the version override above
 kubernetes_cni_version: 0.8.7
 
 ansible_python_interpreter: /opt/bin/python
