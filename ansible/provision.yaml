@@ -18,5 +18,4 @@
       when: download_images
     - role: sysprep
       when: sysprep # make the finalize process skipable
-  environment:
-    PYTHONPATH: "{{ python_path }}"
+  environment: "{{ default_env }}"

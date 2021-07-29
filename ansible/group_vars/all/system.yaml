@@ -53,3 +53,16 @@ default_image_registry: ""
 
 fips:
   enabled: false
+
+proxy_env:
+  HTTPS_PROXY: "{{ https_proxy | default('') }}"
+  https_proxy: "{{ https_proxy | default('') }}"
+  HTTP_PROXY: "{{ http_proxy | default('') }}"
+  http_proxy: "{{ http_proxy | default('') }}"
+  NO_PROXY: "{{ no_proxy | default('') }}"
+  no_proxy: "{{ no_proxy | default('') }}"
+
+python_env:
+  PYTHONPATH: "{{ python_path }}"
+
+default_env: "{{ proxy_env | combine(python_env) }}"

@@ -4,22 +4,6 @@
 # as the cri-containerd tarball also includes crictl.
 - include: crictl-url.yaml
 
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
-- name: create containerd directory
-  file:
-    path: "/etc/containerd/"
-    state: directory
-
-- name: copy default configuration to remote
-  template:
-    src: "config.toml.tmpl"
-    dest: "/etc/containerd/config.toml"
-
-
 - name: Fail if pre-installed containerd version does not match for Flatcar
   shell: containerd --version | cut -d\  -f 3
   register: command_result
@@ -86,35 +70,7 @@
     src: etc/systemd/system/containerd.service.d/max-tasks.conf
     mode: 0644
 
-- name: Create containerd http proxy conf file if needed
-  template:
-    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
-    src: etc/systemd/system/containerd.service.d/http-proxy.conf
-    mode: 0644
-  when: http_proxy is defined or https_proxy is defined
-
 - name: delete tarball
   file:
     path: /tmp/containerd.tar.gz
     state: absent
-
-- name: enable containerd
-  service:
-    name: containerd
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart containerd
-
-- name: create kubelet systemd directory
-  file:
-    path: "/etc/systemd/system/kubelet.service.d/"
-    state: directory
-
-- name: enable kubelet
-  service:
-    name: kubelet
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart kubelet

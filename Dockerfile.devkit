@@ -118,9 +118,6 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
         rm -rf /tmp/docker.group*; \
     fi
 
-# Run as nonroot user using numeric ID for compatibllity.
-USER ${USER_NAME}:${GROUP_NAME}
-
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
 CMD ["/bin/bash"]

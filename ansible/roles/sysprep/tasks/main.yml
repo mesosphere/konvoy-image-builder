@@ -27,12 +27,6 @@
 - import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- name: Remove containerd http proxy conf file if needed
-  file:
-    path: /etc/systemd/system/containerd.service.d/http-proxy.conf
-    state: absent
-  when: http_proxy is defined or https_proxy is defined
-
 - name: Truncate machine id
   file:
     state: "{{ item.state }}"
@@ -67,6 +61,12 @@
   hostname:
     name: localhost.local
   when: ansible_os_family != "VMware Photon OS"
+
+- name: Remove konvoy http proxy conf file if needed
+  file:
+    path: /etc/konvoy_http_proxy.conf
+    state: absent
+  when: http_proxy is defined or https_proxy is defined or no_proxy is defined
 
 - name: Reset hosts file
   copy:

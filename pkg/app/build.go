@@ -29,7 +29,10 @@ const (
 	buildNameKey               = "build_name"
 	buildNameExtraKey          = "build_name_extra"
 	ansibleExtraVarsKey        = "ansible_extra_vars"
+	httpProxyKey               = "http_proxy"
+	httpsProxyKey              = "https_proxy"
 	manifestFileName           = "packer.json"
+	noProxyKey                 = "no_proxy"
 	packerBuilderTypeKey       = "packer_builder_type"
 	packerSourceAMIKey         = "source_ami"
 	packerFilterNameKey        = "ami_filter_name"
@@ -236,6 +239,9 @@ func genPackerVars(config map[string]interface{}, extraVarsPath string) ([]byte,
 	p[buildNameKey] = buildName(config)
 	p[buildNameExtraKey] = getString(config, buildNameExtraKey)
 	p[ansibleExtraVarsKey] = fmt.Sprintf("@%s", extraVarsPath)
+	p[httpProxyKey] = getString(config, httpProxyKey)
+	p[httpsProxyKey] = getString(config, httpsProxyKey)
+	p[noProxyKey] = getString(config, noProxyKey)
 
 	data, err := json.Marshal(p)
 	if err != nil {
