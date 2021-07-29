@@ -22,7 +22,12 @@
     "subnet_id": "",
     "vpc_id": "",
     "volume_size": "10",
-    "extra_vars_file": ""
+    "extra_vars_file": "",
+    "build_name": "",
+    "distribution": "",
+    "distribution_version",
+    "kubernetes_full_version": "",
+    "build_name_extra": "",
   },
   "builders": [
     {
@@ -43,9 +48,9 @@
         "most_recent": true
       },
       ((- end ))
-      "ami_name": "konvoy-ami-{{build_name}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}",
       "snapshot_tags": {
-        "ami_name": "konvoy-ami-{{build_name}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}"
+        "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}"
       },
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
@@ -90,13 +95,13 @@
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{build_name}}",
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
         "HTTPS_PROXY={{user `https_proxy`}}",
         "https_proxy={{user `https_proxy`}}",
         "NO_PROXY={{user `no_proxy`}}",
         "no_proxy={{user `no_proxy`}}"
+        "BUILD_NAME={{user `build_name`}}"
       ],
       "inline": [
         "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
@@ -107,38 +112,38 @@
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{build_name}}",
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
         "HTTPS_PROXY={{user `https_proxy`}}",
         "https_proxy={{user `https_proxy`}}",
         "NO_PROXY={{user `no_proxy`}}",
         "no_proxy={{user `no_proxy`}}"
+        "BUILD_NAME={{user `build_name`}}"
       ],
       "script": "./packer/files/no-update-flatcar.sh",
-      "execute_command": "BUILD_NAME={{build_name}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
     },
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{build_name}}",
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
         "HTTPS_PROXY={{user `https_proxy`}}",
         "https_proxy={{user `https_proxy`}}",
         "NO_PROXY={{user `no_proxy`}}",
         "no_proxy={{user `no_proxy`}}"
+        "BUILD_NAME={{user `build_name`}}"
       ],
       "script": "./packer/files/no-update-flatcar.sh",
-      "execute_command": "BUILD_NAME={{build_name}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
+      "execute_command": "BUILD_NAME={{ user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
     },
     {
       "type": "shell",
       "environment_vars": [
-        "BUILD_NAME={{build_name}}"
+        "BUILD_NAME={{ user `build_name`}}"
       ],
       "script": "./packer/files/bootstrap-flatcar.sh",
-      "execute_command": "BUILD_NAME={{build_name}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
+      "execute_command": "BUILD_NAME={{ user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
     },
     {
       "type": "ansible",
@@ -190,6 +195,8 @@
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_version": "{{user `kubernetes_full_version`}}"
+        "distribution": "{{user `distribution`}}"
+        "distribution_version": "{{user `distribution_version`}}"
       }
     }
   ]

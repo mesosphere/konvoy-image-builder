@@ -7,7 +7,7 @@ packer:
   source_ami: ""
   # Tags applied to generated AMI:
   distribution: "Flatcar"
-  distribution_version: null
+  distribution_version: "Stable"
   # Other variables:
   ssh_username: "core"
   root_device_name: "/dev/sda1"
