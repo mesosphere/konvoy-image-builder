@@ -27,18 +27,14 @@ platforms:
     region: us-east-1
     instance_type: t3.small
     ssh_user: centos
-  # - name: konvoyimage-flatcar-stable-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "Flatcar*stable*"
-  #   image_search_owner: "075585003325"
-  #   region: us-east-1
-  #   instance_type: m4.xlarge
-  #   ssh_user: core
-  - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
-    image_search_name: "suse-sles-15-sp3-v*"
-    image_search_owner: "amazon"
+  - name: konvoyimage-flatcar-stable-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "Flatcar*stable*"
+    image_search_owner: "075585003325"
     region: us-east-1
-    instance_type: t3.small
-    ssh_user: ec2-user
+    instance_type: p2.xlarge
+    ssh_user: core
+    spot_price: false
+    volume_name: /dev/xvda
   - name: konvoyimage-rhel7.9-${USER:-ci}-${HOSTNAME:-local}
     image_search_name: "RHEL-7.9_HVM-*"
     image_search_owner: "309956199498"
@@ -52,6 +48,12 @@ platforms:
     region: us-east-1
     instance_type: t3.small
     spot_price: false
+    ssh_user: ec2-user
+  - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "suse-sles-15-sp3-v*"
+    image_search_owner: "amazon"
+    region: us-east-1
+    instance_type: t3.small
     ssh_user: ec2-user
 
 provisioner:

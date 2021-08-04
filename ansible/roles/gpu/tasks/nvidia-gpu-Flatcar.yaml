@@ -1,22 +1,197 @@
 ---
-- name: Load loop modules
-  modprobe:
-    name:
-      - loop
-      - i2c_core
-      - ipmi_msghandler
-    state: present
+- name: create /opt/lib directory
+  file:
+    path: "/opt/lib/"
+    state: directory
 
-<<<<<<< HEAD
-# TODO: Replace me with proper ansible resources 
-- name: Load loop module
-=======
-- name: TODO: Replace me with proper ansible resources - load loop module
->>>>>>> 61a9615... initial GPU support - still not working
+- name: create /opt/var/log directory
+  file:
+    path: "/opt/var/log/"
+    state: directory
+
+# build kernel modules
+- name: load loop modules
+  command: modprobe -d / -a loop i2c_core ipmi_msghandler
+
+- name: install loop modules
   command: echo -e "loop\ni2c_core\nipmi_msghandler" | tee /etc/modules-load.d/driver.conf
 
-- name: Pull driver build image
-  command: docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+- name: pull driver build image
+  command: "docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar"
 
-- name: Run the build
-  command: docker run --rm -ti --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+# Note, this has be to run privileged as the driver module has to be loaded (briefly).
+- name: run the build
+  command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+
+- name: wait for build being done
+  command: "docker logs --tail 1 nvidia-driver"
+  register: build_log
+  retries: 150
+  delay: 10
+  until: "'Done, now waiting for signal' in build_log.stdout"
+
+# FIXME(tillt): consider a proper list of libs to grab - for that we would need a proper dependency tree!
+- name: tar nvidia-libs /usr/lib/x86_64-linux-gnu
+  command: docker exec -i nvidia-driver "/bin/sh" -c "tar czf /opt/lib/x86_64-linux-gnu.tar.gz /usr/lib/x86_64-linux-gnu"
+
+- name: tar nvidia-bins /usr/bin/nvidia*
+  command: docker exec -i nvidia-driver "/bin/sh" -c "tar czf /opt/bin/nvidia-bins.tar.gz /usr/bin/nvidia*"
+
+- name: send signal to terminate build container
+  command: "docker kill -s SIGHUP nvidia-driver"
+
+- name: extract libs into /opt/lib/x86_64-linux-gnu
+  command: "tar xzf /opt/lib/x86_64-linux-gnu.tar.gz --directory /opt/lib --strip-components 2"
+
+- name: remove x86_64-linux-gnu tarball
+  command: "rm /opt/lib/x86_64-linux-gnu.tar.gz"
+
+- name: extract bins into /opt/bin
+  command: "tar xzf /opt/bin/nvidia-bins.tar.gz --directory /opt/bin --strip-components 2"
+
+- name: remove nvidia-bins tarball
+  command: "rm /opt/bin/nvidia-bins.tar.gz"
+
+# FIXME(tillt): consider not packing them in the first place
+- name: kill dead libs in /opt/lib/x86_64-linux-gnu
+  command: |
+    rm /opt/lib/x86_64-linux-gnu/libutil.so         \
+      /opt/lib/x86_64-linux-gnu/libthread_db.so     \
+      /opt/lib/x86_64-linux-gnu/librt.so            \
+      /opt/lib/x86_64-linux-gnu/libresolv.so        \
+      /opt/lib/x86_64-linux-gnu/libnsl.so           \
+      /opt/lib/x86_64-linux-gnu/libnss_compat.so    \
+      /opt/lib/x86_64-linux-gnu/libnss_dns.so       \
+      /opt/lib/x86_64-linux-gnu/libnss_files.so     \
+      /opt/lib/x86_64-linux-gnu/libnss_hesiod.so    \
+      /opt/lib/x86_64-linux-gnu/libzstd.so.1        \
+      /opt/lib/x86_64-linux-gnu/libzstd.so.1.3.3    \
+      /opt/lib/x86_64-linux-gnu/libnss_nis.so       \
+      /opt/lib/x86_64-linux-gnu/libnss_nisplus.so   \
+      /opt/lib/x86_64-linux-gnu/libmvec.so          \
+      /opt/lib/x86_64-linux-gnu/libdl.so            \
+      /opt/lib/x86_64-linux-gnu/libcrypt.so         \
+      /opt/lib/x86_64-linux-gnu/libcidn.so          \
+      /opt/lib/x86_64-linux-gnu/libBrokenLocale.so  \
+      /opt/lib/x86_64-linux-gnu/libz.so             \
+      /opt/lib/x86_64-linux-gnu/libanl.so
+
+- name: run ldconfig
+  command: ldconfig /opt/lib/x86_64-linux-gnu
+
+- name: load nvidia modules
+  command: modprobe -d /opt/nvidia/460.73.01/ -a nvidia nvidia-uvm nvidia-modeset
+
+- name: install nvidia modules
+  command: echo -e "nvidia\nnvidia-uvm\nnvidia-modeset" | tee /etc/modules-load.d/nvidia.conf
+
+# TODO(tillt): find a more elegant way to load the modules
+- name: create systemd unit file for nvidia-kernel-modules service
+  template:
+    dest: /etc/systemd/system/nvidia.service
+    src: etc/systemd/system/nvidia-flatcar.service
+    mode: 0600
+
+# build container runtime
+- name: create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: build_dir
+
+- name: clone nvidia-container-runtime sources
+  command: "git clone --depth 1 --branch v3.5.0 https://gitlab.com/nvidia/container-toolkit/container-runtime.git {{ build_dir.path }}/container-runtime"
+
+- name: pull golang image
+  command: "docker pull golang:1.16"
+
+- name: build the nvidia-container-runtime
+  command: docker run -i -v  {{ build_dir.path }}/container-runtime:/tmp/container-runtime -w /tmp/container-runtime golang:1.16 "/usr/bin/make" "build"
+
+# install container runtime
+# FIXME(tillt): proper copy
+- name: copy nvidia-container-runtime
+  command: cp {{ build_dir.path }}/container-runtime/nvidia-container-runtime /opt/bin
+
+- name: create nvidia-container-runtime configuration directory
+  file:
+    path: "/etc/nvidia-container-runtime/"
+    state: directory
+
+- name: copy nvidia-container-runtime configuration
+  template:
+    src: "./etc/nvidia-container-runtime/config.toml"
+    dest: "/etc/nvidia-container-runtime/config.toml"
+
+- name: create oci hooks directory
+  file:
+    path: "/opt/usr/libexec/oci/hooks.d/"
+    state: directory
+
+- name: copy oci hook
+  template:
+    src: "./usr/libexec/oci/hooks.d/oci-nvidia-hook"
+    dest: "/opt/usr/libexec/oci/hooks.d/oci-nvidia-hook"
+    mode: 0755
+
+- name: create oci hooks configuration directory
+  file:
+    path: "/opt/usr/share/containers/oci/hooks.d/"
+    state: directory
+
+- name: copy oci hook configuration
+  template:
+    src: "./usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
+    dest: "/opt/usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
+
+# build libnvidia-container
+- name: create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: libnvidia_dir
+
+- name: clone nvidia-container-runtime sources
+  command: "git clone --depth 1 --branch v1.4.0 https://gitlab.com/nvidia/container-toolkit/libnvidia-container.git {{ libnvidia_dir.path }}/libnvidia-container"
+
+- name: copy libnvidia build Dockerfile
+  copy:
+    src: "./Dockerfile.libnvidia"
+    dest: "/tmp/Dockerfile.libnvidia"
+
+- name: build the libnvidia-container build image
+  command: docker build -f /tmp/Dockerfile.libnvidia --build-arg BUILD_LOCATION={{ libnvidia_dir.path }}/ --tag libnvidia-build ./
+
+- name: build libnvidia-container
+  command: docker run -i -v /opt:/opt -v {{ libnvidia_dir.path }}/libnvidia-container:/tmp/libnvidia-container -w /tmp/libnvidia-container libnvidia-build:latest "/bin/sh" -c "make ; mv '/tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/name libelf.so.1' /tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/libelf.so.1 ; make"
+
+# FIXME(tillt): proper copy
+- name: copy nvidia-container-cli
+  command: cp {{ libnvidia_dir.path }}/libnvidia-container/nvidia-container-cli /opt/bin
+
+# FIXME(tillt): proper copy
+- name: copy libnvidia-container
+  command: cp {{ libnvidia_dir.path }}/libnvidia-container/libnvidia-container.so.1.4.0 /opt/lib/x86_64-linux-gnu
+
+- name: link libnvidia-container
+  file:
+    src: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.1.4.0"
+    dest: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.1"
+    state: link
+
+- name: link libnvidia-container
+  file:
+    src: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.1.4.0"
+    dest: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so"
+    state: link
+
+- name: run ldconfig
+  command: ldconfig /opt/lib/x86_64-linux-gnu
+
+- name: enable nvidia-kernel-modules service
+  service:
+    name: nvidia
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart containerd
