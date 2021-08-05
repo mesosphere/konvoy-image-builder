@@ -1,14 +1,9 @@
 ---
+- name: load loop modules
+  command: modprobe -d / -a loop i2c_core ipmi_msghandler
+
 - name: prepare loop modules
   command: echo -e "loop\ni2c_core\nipmi_msghandler" | tee /etc/modules-load.d/driver.conf
-
-- name: load loop modules
-  modprobe:
-    name:
-      - loop
-      - i2c_core
-      - ipmi_msghandler
-    state: present
 
 - name: pull driver build image
   command: docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
