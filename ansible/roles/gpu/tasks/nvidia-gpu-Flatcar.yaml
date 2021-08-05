@@ -9,4 +9,4 @@
   command: docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
 
 - name: run the build
-  command: docker run --rm -ti --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+  command: docker run --rm -ti --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
