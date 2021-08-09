@@ -6,7 +6,18 @@
   command: echo -e "loop\ni2c_core\nipmi_msghandler" | tee /etc/modules-load.d/driver.conf
 
 - name: pull driver build image
-  command: docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+  command: "docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar"
 
+# Note, this has be to run privileged as the driver module has to be loaded (briefly).
 - name: run the build
-  command: docker run --rm -ti --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+  command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+
+- name: wait for container being ready
+  command: "docker logs --tail 1 nvidia-driver"
+  register: build_log
+  retries: 720
+  delay: 10
+  until: "'Done, now waiting for signal' in build_log.stdout"
+
+- name: send signal until build container is gone
+  command: "docker kill -s SIGHUP nvidia-driver"
