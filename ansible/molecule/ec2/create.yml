@@ -92,7 +92,7 @@
           molecule_region: "{{ item.item.region }}"
           molecule_ssh_user: "{{ item.item.ssh_user | default(ssh_user) }}"
           owner: ${USER:-ci}
-          expires: 2h
+          expires: 8h
         wait: yes
         exact_count: 1
         count_tag:
