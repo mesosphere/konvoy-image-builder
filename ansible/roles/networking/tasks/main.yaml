@@ -97,9 +97,7 @@
     when:
       - allow_icmp | default(false)
 
-  - name: copy /etc/hosts without ipv6 loopback support
-    file:
-      src: etc-hosts.flatcar.noipv6
-      dest: /etc/hosts
-    when:
-      - ansible_os_family == "Flatcar"
+  - name: copy /etc/host.conf
+    copy:
+      src: host.conf
+      dest: /etc/host.conf

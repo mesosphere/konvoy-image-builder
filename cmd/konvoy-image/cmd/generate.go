@@ -43,12 +43,11 @@ func init() {
 }
 
 func initGenerateFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
-	fs.StringArrayVar(&gFlags.overrides, "overrides", []string{}, "a list of override YAML files")
-	fs.StringVar(&gFlags.userArgs.KubernetesVersion, "kubernetes-version", "", "the version of kubernetes to install")
-	fs.StringVar(&gFlags.userArgs.ContainerdVersion, "containerd-version", "", "the version of containerd to install")
-	fs.StringVar(&gFlags.userArgs.AWSBuilderRegion, "region", "", "the aws region to run the builder")
-	fs.StringArrayVar(&gFlags.userArgs.AMIRegions, "ami-regions", []string{}, "a list of regions to publish amis")
-	fs.StringVar(&gFlags.userArgs.SourceAMI, "source-ami", "", "a specific ami available in the builder region to source from")
-	fs.StringVar(&gFlags.userArgs.AMIFilterName, "source-ami-filter-name", "", "a ami name filter on for selecting the source image")
-	fs.StringVar(&gFlags.userArgs.AMIFilterOwner, "source-ami-filter-owner", "", "only search AMIs belonging to this owner id")
+	addOverridesArg(fs, &generateFlags.overrides)
+	addClusterArgs(
+		fs,
+		&gFlags.userArgs.ClusterArgs.KubernetesVersion,
+		&gFlags.userArgs.ClusterArgs.ContainerdVersion,
+	)
+	addAWSUserArgs(fs, &gFlags.userArgs)
 }

@@ -1,0 +1,21 @@
+download_images: true
+build_name: "flatcar-stable"
+packer_builder_type: ""
+
+containerd_version: 1.5.4 # match this with the flatcar distribution version
+containerd_sha256: 591e4e087ea2f5007e6c64deb382df58d419b7b6922eab45a1923d843d57615f # matching sha to the version override above
+kubernetes_cni_version: 0.8.7
+
+ansible_python_interpreter: /opt/bin/python
+python_path: /opt/bin/builder-env/site-packages
+
+sysusr_prefix: /opt
+sysusrlocal_prefix: /opt
+systemd_prefix: /etc/systemd
+
+containerd_cri_socket: /run/docker/libcontainerd/docker-containerd.sock
+
+containerd_flatcar_bins:
+  - ctr
+  - containerd
+  - containerd-shim
