@@ -1,4 +1,5 @@
 ---
+# build kernel modules
 - name: load loop modules
   command: modprobe -d / -a loop i2c_core ipmi_msghandler
 
@@ -21,3 +22,19 @@
 
 - name: send signal until build container is gone
   command: "docker kill -s SIGHUP nvidia-driver"
+
+# build container runtime
+- name: create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: build_dir
+
+- name: clone nvidia-container-runtime sources
+  command: "git clone --depth 1 --branch v3.5.0 https://gitlab.com/nvidia/container-toolkit/container-runtime.git {{ build_dir.path }}/container-runtime"
+
+- name: pull golang image
+  command: "docker pull golang:1.16"
+
+- name: build the nvidia-container-runtime
+  command: docker run -i -v  {{ build_dir.path }}/container-runtime:/tmp/container-runtime -w /tmp/container-runtime golang:1.16 "/usr/bin/make" "build"
