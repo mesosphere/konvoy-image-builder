@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/term"
 
+	"github.com/mesosphere/konvoy-image-builder/pkg/constants"
 	"github.com/mesosphere/konvoy-image-builder/pkg/logging"
 )
 
@@ -29,6 +30,9 @@ type Runner interface {
 	// WaitPlaybook blocks until the execution of the playbook is complete. If an error occurred,
 	// it is returned. Otherwise, returns nil to signal the completion of the playbook.
 	WaitPlaybook() error
+	// StartPlaybookOnNode runs the playbook asynchronously with the given inventory and extra vars
+	// against the specific node.
+	StartPlaybookOnNode(playbookFileName, inventoryFile string, playbookOptions *PlaybookOptions, node ...string) error
 }
 
 type PlaybookOptions struct {
@@ -56,6 +60,7 @@ func NewLoggerConfig(writer io.Writer, verbosity int) *LoggerConfig {
 }
 
 type runner struct {
+	// Output also gets logged to a file
 	*LoggerConfig
 	pythonPath   string
 	ansiblePath  string
@@ -67,8 +72,8 @@ type runner struct {
 func NewRunner(runDir string, loggerConfig *LoggerConfig) Runner {
 	return &runner{
 		LoggerConfig: loggerConfig,
-		pythonPath:   PythonPath,
-		ansiblePath:  AnsiblePath,
+		pythonPath:   constants.PythonPath,
+		ansiblePath:  constants.AnsibleDir,
 		runDir:       runDir,
 	}
 }
@@ -96,7 +101,7 @@ func (r *runner) StartPlaybook(playbookFileName, inventory string, playbookOptio
 		playbookOptions = &PlaybookOptions{}
 	}
 
-	marshalledExtraVars, err := marshalledExtraVars(playbookOptions.ExtraVarsMap)
+	marshalledExtraVars, err := marshallExtraVars(playbookOptions)
 	if err != nil {
 		return err
 	}
@@ -127,7 +132,75 @@ func (r *runner) StartPlaybook(playbookFileName, inventory string, playbookOptio
 	return nil
 }
 
-func marshalledExtraVars(extraVars map[string]interface{}) ([]byte, error) {
+// StartPlaybookOnNode runs the playbook asynchronously with the given inventory and extra vars against the specific node.
+func (r *runner) StartPlaybookOnNode(
+	playbookFileName string,
+	inventoryFile string,
+	playbookOptions *PlaybookOptions,
+	nodes ...string) error {
+	return r.startPlaybook(
+		playbookFileName,
+		inventoryFile,
+		playbookOptions,
+		nodes...) // Set the --limit arg to the node we want to target
+}
+
+func (r *runner) startPlaybook(
+	playbookFileName string,
+	inventoryFile string,
+	playbookOptions *PlaybookOptions,
+	nodes ...string) error {
+	playbook := filepath.Join(r.ansiblePath, "playbooks", playbookFileName)
+
+	if _, err := os.Stat(playbook); os.IsNotExist(err) {
+		return fmt.Errorf("playbook %q does not exist", playbook)
+	}
+
+	if err := RewriteWithDefaults(inventoryFile,
+		filepath.Join(r.runDir, constants.DefaultInventoryFileName)); err != nil {
+		return fmt.Errorf("unable to copy %q to %q: %v",
+			filepath.Join(r.runDir, constants.DefaultInventoryFileName), r.runDir, err)
+	}
+
+	marshalledExtraVars, err := marshallExtraVars(playbookOptions)
+	if err != nil {
+		return fmt.Errorf("could not marshal extra-vars: %v", err)
+	}
+	// TODO instead of just writing out kubeconfig to directory, add it in kubeconfig
+	/* #nosec : G204: Subprocess launched with function call as argument or cmd arguments */
+	cmd := exec.Command(
+		filepath.Join(r.ansiblePath, "bin", "ansible-playbook"),
+		playbook,
+		"-i", filepath.Join(r.runDir, constants.DefaultInventoryFileName),
+		"--extra-vars", string(marshalledExtraVars))
+	cmd.Args = append(cmd.Args, r.runConditionalFlags(playbookOptions)...)
+	cmd.Env = r.runEnv()
+	PrintCmd(cmd, r.Log)
+
+	// also log to a file
+	cmd.Stdout = io.MultiWriter(r.Log, r.Out)
+	cmd.Stderr = io.MultiWriter(r.Log, r.ErrOut)
+	cmd.Stdin = os.Stdin
+
+	logger.SetOutput(r.Out)
+
+	limitArg := strings.Join(nodes, ",")
+	if limitArg != "" {
+		cmd.Args = append(cmd.Args, "--limit", limitArg)
+	}
+
+	err = cmd.Start()
+	if err != nil {
+		return fmt.Errorf("error running playbook: %v", err)
+	}
+
+	r.waitPlaybook = cmd.Wait
+
+	return nil
+}
+
+func marshallExtraVars(playbookOptions *PlaybookOptions) ([]byte, error) {
+	extraVars := extraVars(playbookOptions)
 	marshalledExtraVars, err := json.Marshal(extraVars)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not marshal extra-vars")
@@ -140,7 +213,7 @@ func (r *runner) runEnv() []string {
 	ansibleConfigEnvVar := "ANSIBLE_CONFIG=" + filepath.Join(r.ansiblePath, "playbooks", "ansible.cfg")
 	env := append(os.Environ(), pythonPathEnvVar, ansibleConfigEnvVar)
 	if r.Verbosity > 0 {
-		ansibleCallbackWhitelistEnvVar := "ANSIBLE_CALLBACK_WHITELIST=" + AnsibleCallbackWhiteListVerbose
+		ansibleCallbackWhitelistEnvVar := "ANSIBLE_CALLBACK_WHITELIST=" + constants.AnsibleCallbackWhiteListVerbose
 		env = append(env, ansibleCallbackWhitelistEnvVar)
 	}
 	// usually Ansible would automatically determine if it should output color based on TTY

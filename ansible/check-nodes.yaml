@@ -1,0 +1,3 @@
+---
+- import_playbook: _preflights.yaml
+- import_playbook: _check-nodes.yaml

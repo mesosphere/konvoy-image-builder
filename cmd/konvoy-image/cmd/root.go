@@ -21,6 +21,9 @@ type rootCmdFlagsStruct struct {
 var (
 	rootCmdFlags rootCmdFlagsStruct
 	rootFlags    app.RootFlags
+
+	out    = os.Stdout
+	errOut = os.Stderr
 )
 
 // rootCmd represents the base command when called without any subcommands.

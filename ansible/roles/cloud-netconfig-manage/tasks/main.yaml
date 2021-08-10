@@ -1,0 +1,27 @@
+---
+
+  # If SUSE we need to turn off CLOUD_NETCONFIG_MANAGE
+  - name: determine if CLOUD_NETCONFIG_MANAGE is enabled
+    find:
+      paths: /etc/sysconfig/network
+      patterns: "ifcfg-e*"
+      contains: "CLOUD_NETCONFIG_MANAGE='yes'"
+    register: files_matched
+    when: ansible_os_family == 'Suse'
+
+  - name: turn off CLOUD_NETCONFIG_MANAGE if enabled
+    shell: "sed -i 's/CLOUD_NETCONFIG_MANAGE=.*$/CLOUD_NETCONFIG_MANAGE=\x27no\x27/g' /etc/sysconfig/network/ifcfg-e*"
+    when:
+      - ansible_os_family == 'Suse'
+      - files_matched.matched > 0
+    args:
+      warn: no
+
+  # If files were found and altered, we need to restart wicked
+  - name: restart wicked network manager
+    service:
+      name: wicked
+      state: restarted
+    when:
+      - ansible_os_family == 'Suse'
+      - files_matched.matched > 0

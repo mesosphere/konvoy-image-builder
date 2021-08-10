@@ -6,6 +6,7 @@ import (
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
 	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
+	"github.com/mesosphere/konvoy-image-builder/pkg/constants"
 	"github.com/mesosphere/konvoy-image-builder/pkg/logging"
 )
 
@@ -13,7 +14,7 @@ var _ = Describe("Provision", func() {
 	BeforeEach(func() {
 		// use the mock data with the container for e2e tests
 		appansible.PlaybookPath = "testdata/ansible"
-		app.AnsibleRunsDirectory = "generated/ansible-runs"
+		constants.AnsibleRunsDirectory = "generated/ansible-runs"
 	})
 
 	It("runs provision with the given inventory.yaml", func() {

@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/ansible"
+	"github.com/mesosphere/konvoy-image-builder/pkg/constants"
 )
 
 type Playbook struct {
@@ -43,5 +44,5 @@ func (p *Playbook) Run(runOptions RunOptions) error {
 }
 
 func (p *Playbook) Filename() string {
-	return path.Join(PlaybookPath, p.Name+".yaml")
+	return path.Join(constants.AnsiblePlaybookPath, p.Name+".yaml")
 }

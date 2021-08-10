@@ -1,0 +1,53 @@
+# This can go away with ansible 2.9
+---
+
+  - name: check for python
+    raw: command -v python
+    changed_when: false
+    failed_when: false
+    register: check_python
+
+  - name: check for yum
+    raw: command -v yum
+    changed_when: false
+    failed_when: false
+    register: check_yum
+
+  - name: check for apt
+    raw: command -v apt
+    changed_when: false
+    failed_when: false
+    register: check_apt
+
+  - name: check for zypper
+    raw: command -v zypper
+    changed_when: false
+    failed_when: false
+    register: check_zypper
+
+  - name: get OS major version
+    raw: "cat /etc/os-release | grep VERSION_ID | awk -F'=' '{print $2}' | tr -d '\"'"
+    register: major_version
+    changed_when: False
+    when:
+      - check_python.rc != 0
+
+  - name: install python 2.7 using apt
+    script: apt.sh
+    when:
+      - check_python.rc != 0
+      - check_apt.rc == 0
+
+  - name: install python 2.7 using yum
+    script: yum.sh
+    when:
+      - check_python.rc != 0
+      - check_yum.rc == 0
+      - major_version.stdout|int == 7
+
+  - name: install python 3
+    script: yum-install-python3.sh
+    when:
+      - check_python.rc != 0
+      - check_yum.rc == 0
+      - major_version.stdout|int == 8

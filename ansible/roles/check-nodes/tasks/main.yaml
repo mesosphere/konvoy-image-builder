@@ -1,0 +1,108 @@
+---
+
+  - name: check files contain expected values
+    command: cat {{ item.file }}
+    register: result
+    with_items:
+      -  { file: '/proc/sys/net/bridge/bridge-nf-call-iptables', content: '1' }
+      -  { file: '/proc/sys/net/ipv4/ip_forward', content: '1' }
+    failed_when: >
+      result is failure or item.content != result.stdout
+    changed_when: False
+    when: preflight_checks is not defined or
+      ignore_errors is not defined or
+      not (
+        'all' in ignore_errors or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-iptables' in ignore_errors or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-ip6tables' in ignore_errors
+      )
+
+  - name: check required services are available
+    command: systemctl status {{ item }}
+    register: result
+    with_items:
+      - kubelet
+      - containerd
+    failed_when:
+      - '"could not be found" in result.stderr'
+    changed_when: False
+
+  - name: check required binaries are available
+    shell: command -v "{{ item }}"
+    register: result
+    with_items:
+      - conntrack
+      - crictl
+      - ebtables
+      - ethtool
+      - kubeadm
+      - ip
+      - iptables
+      - mount
+      - nsenter
+      - socat
+      - tc
+      - touch
+    failed_when:
+      - result.rc != 0
+    changed_when: False
+
+  - name: kubelet health
+    uri:
+      url: http://127.0.0.1:10248/healthz
+    register: status
+    until: status is success
+    retries: 3
+    delay: 3
+
+  - name: kube-proxy health
+    uri:
+      url: http://127.0.0.1:10256/healthz
+    register: status
+    until: status is success
+    retries: 12
+    delay: 10
+
+  - name: etcd health
+    uri:
+      url: https://127.0.0.1:2379/health
+      client_cert: /etc/kubernetes/pki/etcd/healthcheck-client.crt
+      client_key: /etc/kubernetes/pki/etcd/healthcheck-client.key
+      validate_certs: False # there is no option to provide CA
+    register: status
+    until: status is success
+    retries: 3
+    delay: 3
+    when: "'control-plane' in group_names"
+
+  - name: kube-apiserver health
+    uri:
+      url: https://{{ inventory_hostname }}:{{ apiserver.secure_port }}/healthz
+      client_cert: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+      client_key: /etc/kubernetes/pki/apiserver-kubelet-client.key
+      validate_certs: False # there is no option to provide CA
+    register: status
+    until: status is success
+    retries: 3
+    delay: 3
+    when: "'control-plane' in group_names"
+
+  - name: kube-controller-manager health
+    uri:
+      url: https://127.0.0.1:10257/healthz
+      validate_certs: False
+    register: status
+    until: status is success
+    retries: 3
+    delay: 3
+    when: "'control-plane' in group_names"
+
+  - name: kube-scheduler health
+    uri:
+      url: https://127.0.0.1:10259/healthz
+      validate_certs: False
+    register: status
+    until: status is success
+    retries: 3
+    delay: 3
+    when: "'control-plane' in group_names"

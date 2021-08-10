@@ -5,6 +5,7 @@ import (
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/ansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
+	"github.com/mesosphere/konvoy-image-builder/pkg/constants"
 )
 
 type ProvisionFlags struct {
@@ -34,7 +35,7 @@ func NewRunOptions(flags RootFlags) appansible.RunOptions {
 	return appansible.RunOptions{
 		Out:           out,
 		ErrOut:        errOut,
-		RunsDirectory: AnsibleRunsDirectory,
+		RunsDirectory: constants.AnsibleRunsDirectory,
 		Verbosity:     flags.Verbosity,
 	}
 }

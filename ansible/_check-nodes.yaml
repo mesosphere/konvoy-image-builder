@@ -1,0 +1,9 @@
+---
+  - hosts: node control-plane
+    name: "{{ play_name | default('Check Nodes') }}"
+    serial: "100%"
+    become: yes
+    environment: "{{ combined_env }}"
+
+    roles:
+      - role: check-nodes

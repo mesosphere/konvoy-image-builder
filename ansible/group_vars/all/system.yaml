@@ -66,3 +66,44 @@ python_env:
   PYTHONPATH: "{{ python_path }}"
 
 default_env: "{{ proxy_env | combine(python_env) }}"
+
+##### Preflight #########
+kubernetes_regexed_version: "{{ kubernetes_version | regex_replace('\\+.+$', '') }}"
+configured_ansible_distribution: "{{ node_os_distribution[node_pool] if node_pool is defined and node_os_distribution[node_pool] is defined and node_os_distribution[node_pool] != '' else ansible_distribution }}"
+
+system_default_path_env: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+system_path_env: "{{ ansible_env.PATH if ansible_env is defined and ansible_env.PATH is defined else '' }}:{{ system_default_path_env }}"
+combined_env: "{{ proxy_env | combine({'PATH': system_path_env}) }}"
+
+control_plane_hostnames: "{{ groups['control-plane'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
+worker_hostnames: "{{ groups['node'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
+
+# control-plane
+apiserver_endpoint: "{{ control_plane_endpoint }}"
+external_apiserver_address: "{{ apiserver_endpoint.split(':')[0] }}"
+external_apiserver_port: "{{ apiserver_endpoint.split(':')[1] }}"
+
+keepalived:
+  enabled: "{{ keepalived_enabled is defined | bool }}"
+  virtual_ip: "{{ external_apiserver_address }}"
+  virtual_mask: 32
+  vrid: "{{ (keepalived_vrid if keepalived_enabled is defined else '') | default(keepalived_vrid, true) }}"
+  interface: "{{ (keepalived_interface if keepalived_enabled is defined else '') | default('') }}"
+  image: "mesosphere/keepalived-snmp:v0.2.1"
+  snmp_exporter_image: "quay.io/prometheus/snmp-exporter:v0.19.0"
+
+# kube-apiserver additional arguments:
+apiserver:
+  secure_port: "{{ 6443 if cloud_provider is defined and cloud_provider == 'gcp' else external_apiserver_port }}"
+  # Ideally set to 4096 for a production environment
+  target_ram_mb: >-
+    {% if targetRamMB is defined %}
+    {{-targetRamMB-}}
+    {% elif kubernetes_regexed_version < '1.19' %}
+    {{-'2048'-}}
+    {% else %}
+    {{-''-}}
+    {% endif %}
+  max_requests_inflight: 1200
+  max_mutating_requests_inflight: 400
+##### Preflight #########
