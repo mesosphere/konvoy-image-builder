@@ -38,3 +38,39 @@
 
 - name: build the nvidia-container-runtime
   command: docker run -i -v  {{ build_dir.path }}/container-runtime:/tmp/container-runtime -w /tmp/container-runtime golang:1.16 "/usr/bin/make" "build"
+
+# install container runtime
+# FIXME(tillt): proper copy
+- name: copy nvidia-container-runtime
+  command: cp {{ build_dir.path }}/container-runtime/nvidia-container-runtime /opt/bin
+
+- name: create nvidia-container-runtime configuration directory
+  file:
+    path: "/etc/nvidia-container-runtime/"
+    state: directory
+
+- name: copy nvidia-container-runtime configuration
+  template:
+    src: "./etc/nvidia-container-runtime/config.toml"
+    dest: "/etc/nvidia-container-runtime/config.toml"
+
+- name: create oci hooks directory
+  file:
+    path: "/opt/usr/libexec/oci/hooks.d/"
+    state: directory
+
+- name: copy oci hook
+  template:
+    src: "./usr/libexec/oci/hooks.d/oci-nvidia-hook"
+    dest: "/opt/usr/libexec/oci/hooks.d/oci-nvidia-hook"
+    mode: 0755
+
+- name: create oci hooks configuration directory
+  file:
+    path: "/opt/usr/share/containers/oci/hooks.d/"
+    state: directory
+
+- name: copy oci hook configuration
+  template:
+    src: "./usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
+    dest: "/opt/usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
