@@ -23,6 +23,9 @@
 - name: send signal until build container is gone
   command: "docker kill -s SIGHUP nvidia-driver"
 
+# - name: load nvidia modules
+#   command: modprobe -d /opt/ -a nvidia
+
 # build container runtime
 - name: create temporary build directory
   ansible.builtin.tempfile:
@@ -74,3 +77,39 @@
   template:
     src: "./usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
     dest: "/opt/usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
+
+
+# build libnvidia-container
+- name: create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: libnvidia_dir
+
+- name: clone nvidia-container-runtime sources
+  command: "git clone --depth 1 --branch v1.4.0 https://gitlab.com/nvidia/container-toolkit/libnvidia-container.git {{ libnvidia_dir.path }}/libnvidia-container"
+
+- name: copy libnvidia build Dockerfile
+  copy:
+    src: "./Dockerfile.libnvidia"
+    dest: "/tmp/Dockerfile.libnvidia"
+
+- name: build the libnvidia-container build image
+  command: docker build -f /tmp/Dockerfile.libnvidia --build-arg BUILD_LOCATION={{ libnvidia_dir.path }}/ --tag libnvidia-build ./
+
+- name: build libnvidia-container
+  command: docker run -i -v /opt:/opt -v {{ libnvidia_dir.path }}/libnvidia-container:/tmp/libnvidia-container -w /tmp/libnvidia-container libnvidia-build:latest "make"
+
+- name: create /opt/lib directory
+  file:
+    path: "/opt/lib/"
+    state: directory
+
+- name: copy nvidia-container-cli
+  command: cp {{ libnvidia_dir.path }}/libnvidia-container/nvidia-container-cli /opt/bin
+
+- name: copy libnvidia-container
+  command: cp {{ libnvidia_dir.path }}/libnvidia-container/libnvidia-container.so.1.4.0 /opt/lib
+
+- name: run ldconfig
+  command: ldconfig /opt/lib

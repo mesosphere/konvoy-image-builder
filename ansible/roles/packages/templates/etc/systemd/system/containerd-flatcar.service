@@ -11,6 +11,7 @@ Environment=TORCX_IMAGEDIR=/docker
 Environment=PATH=${PATH}:/opt/bin
 Delegate=yes
 Environment=CONTAINERD_CONFIG=/etc/containerd/config.toml
+Environment=LD_LIBRARY_PATH=/opt/lib
 ExecStart=/usr/bin/env PATH=${TORCX_BINDIR}:${PATH} ${TORCX_BINDIR}/containerd --config ${CONTAINERD_CONFIG}
 KillMode=process
 Restart=always
