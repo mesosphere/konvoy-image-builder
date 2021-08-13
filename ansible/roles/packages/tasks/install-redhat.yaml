@@ -1,9 +1,17 @@
 ---
+- name: remove subscription manager
+  command: subscription-manager config --rhsm.manage_repos=0
+  become: yes
+
 - name: install epel-release
-  yum:
-    name: epel-release
-    state: present
-    update_cache: true
+  command: yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+  when:
+    - ansible_distribution_major_version == '8'
+
+- name: install epel-release
+  command: yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  when:
+    - ansible_distribution_major_version == '7'
 
 - name: install common RPMS
   yum:
