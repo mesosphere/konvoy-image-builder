@@ -1,9 +1,15 @@
 ---
+- name: add epel gpg key
+  rpm_key:
+    state: present
+    key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
+  when:
+    - ansible_distribution_major_version == '8'
+
 - name: install epel-release
   yum:
-    name: epel-release
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
-    update_cache: true
 
 - name: install common RPMS
   yum:
