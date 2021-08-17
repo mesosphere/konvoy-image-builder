@@ -39,6 +39,20 @@ platforms:
     region: us-east-1
     instance_type: t3.small
     ssh_user: ec2-user
+  - name: konvoyimage-rhel7.9-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "RHEL-7.9_HVM-*"
+    image_search_owner: "309956199498"
+    region: us-east-1
+    instance_type: p2.xlarge
+    spot_price: false
+    ssh_user: ec2-user
+  - name: konvoyimage-rhel8.4-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "RHEL-8.4.0_HVM-*"
+    image_search_owner: "309956199498"
+    region: us-east-1
+    instance_type: p2.xlarge
+    spot_price: false
+    ssh_user: ec2-user
 
 provisioner:
   name: ansible
