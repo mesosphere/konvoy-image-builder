@@ -9,8 +9,13 @@ import (
 
 type ProvisionFlags struct {
 	RootFlags
+	ClusterArgs
 
 	ExtraVars []string
+	Overrides []string
+	Provider  string
+	WorkDir   string
+	Inventory string
 }
 
 func Provision(inventory string, flags ProvisionFlags) error {

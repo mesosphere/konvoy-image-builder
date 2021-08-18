@@ -14,6 +14,8 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 
+	"github.com/mesosphere/konvoy-image-builder/pkg/ansible"
+	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/packer"
 	"github.com/mesosphere/konvoy-image-builder/pkg/stringutil"
 )
@@ -50,6 +52,11 @@ type InitOptions struct {
 	Image            string
 	Overrides        []string
 	UserArgs         UserArgs
+
+	// ExtraVarsOnly is true when only ansible variables should only ansible variables
+	// should be generated. Omitting packer variables. This is useful for working with
+	// preprovisioned infrastructure
+	ExtraVarsOnly bool
 }
 
 type BuildOptions struct {
@@ -59,15 +66,18 @@ type BuildOptions struct {
 }
 
 type UserArgs struct {
-	KubernetesVersion string `json:"kubernetes_version" yaml:"kubernetes_version"`
-	ContainerdVersion string `json:"containerd_version" yaml:"containerd_version"`
-
+	ClusterArgs
 	// AMI options
 	SourceAMI        string   `json:"source_ami"`
 	AMIFilterName    string   `json:"ami_filter_name"`
 	AMIFilterOwner   string   `json:"ami_filter_owner"`
 	AWSBuilderRegion string   `json:"aws_region"`
 	AMIRegions       []string `json:"ami_regions"`
+}
+
+type ClusterArgs struct {
+	KubernetesVersion string `json:"kubernetes_version" yaml:"kubernetes_version"`
+	ContainerdVersion string `json:"containerd_version" yaml:"containerd_version"`
 }
 
 func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
@@ -118,25 +128,41 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 		return "", InitConfigError("failed to get ansible variables path", err)
 	}
 
-	packerData, err := genPackerVars(config, extraVarsPath)
-	if err != nil {
-		return "", fmt.Errorf("error rendering packer vars: %w", err)
+	if err = initAnsibleConfig(extraVarsPath, config); err != nil {
+		return "", err
 	}
 
-	log.Printf("writing new configuration to %s", workDir)
-	if err = ioutil.WriteFile(
-		filepath.Join(workDir, "packer_vars.json"), packerData, 0600); err != nil {
-		return "", fmt.Errorf("error writing packer variables: %w", err)
+	if !initOptions.ExtraVarsOnly {
+		if err = initPackerConfig(workDir, extraVarsPath, config); err != nil {
+			return "", err
+		}
 	}
+	return workDir, err
+}
 
+func initAnsibleConfig(path string, config map[string]interface{}) error {
 	ansibleData, err := yaml.Marshal(config)
 	if err != nil {
-		return "", fmt.Errorf("error marshelling ansible data: %w", err)
+		return fmt.Errorf("error marshelling ansible data: %w", err)
 	}
-	if err = ioutil.WriteFile(extraVarsPath, ansibleData, 0600); err != nil {
-		return "", fmt.Errorf("error writing ansible vars: %w", err)
+	if err = ioutil.WriteFile(path, ansibleData, 0600); err != nil {
+		return fmt.Errorf("error writing ansible vars: %w", err)
 	}
-	return workDir, nil
+	return nil
+}
+
+func initPackerConfig(workDir, extraVarsPath string, config map[string]interface{}) error {
+	packerData, err := genPackerVars(config, extraVarsPath)
+	if err != nil {
+		return fmt.Errorf("error rendering packer vars: %w", err)
+	}
+
+	log.Printf("writing new packer configuration to %s", workDir)
+	if err = ioutil.WriteFile(
+		filepath.Join(workDir, "packer_vars.json"), packerData, 0600); err != nil {
+		return fmt.Errorf("error writing packer variables: %w", err)
+	}
+	return nil
 }
 
 func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
@@ -186,6 +212,30 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 	_, err = packerCLI.Build(manifestPath, packerBuildFlags)
 	if err != nil {
 		return fmt.Errorf("error running packer build: %w", err)
+	}
+
+	return nil
+}
+
+// Provision will run ansible playbook directly on an existing set of hosts.
+func (b *Builder) Provision(workDir string, flags ProvisionFlags) error {
+	extraVarsPath, err := filepath.Abs(filepath.Join(workDir, ansibleVarsFilename))
+	if err != nil {
+		return InitConfigError("failed to get ansible variables path", err)
+	}
+	playbook := appansible.NewPlaybook(
+		"provision", flags.Inventory, &ansible.PlaybookOptions{
+			ExtraVars: []string{
+				fmt.Sprintf("@%s", extraVarsPath),
+			},
+			ExtraVarsMap: map[string]interface{}{
+				"sysprep":             false,
+				"packer_builder_type": flags.Provider,
+			},
+		})
+
+	if err := playbook.Run(NewRunOptions(flags.RootFlags)); err != nil {
+		return errors.Wrap(err, "error running playbook")
 	}
 
 	return nil

@@ -18,10 +18,12 @@ def test_kubelet_running_and_enabled(host):
 
 
 def test_kubectl_avail(host):
-    cmd = host.run("type kubectl")
+    # the path is only set on interactive shell. SO lets append it here
+    cmd = host.run("bash -c 'PATH=$PATH:/opt/bin type kubectl'")
     assert cmd.succeeded is True
 
 
 def test_kubeadm_avail(host):
-    cmd = host.run("type kubeadm")
+    # the path is only set on interactive shell. SO lets append it here
+    cmd = host.run("bash -c 'PATH=$PATH:/opt/bin type kubeadm'")
     assert cmd.succeeded is True

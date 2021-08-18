@@ -11,3 +11,6 @@
 - name: "NVIDIA Gpu - SLES 15"
   include_tasks: nvidia-gpu-SLES15.yaml
   when: ansible_distribution == "SLES" and ansible_distribution_major_version == '15'
+- name: "NVIDIA Gpu - Flatcar"
+  include_tasks: nvidia-gpu-Flatcar.yaml
+  when: ansible_distribution == "Flatcar"

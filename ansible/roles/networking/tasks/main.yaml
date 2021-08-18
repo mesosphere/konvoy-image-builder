@@ -96,3 +96,8 @@
     delay: 3
     when:
       - allow_icmp | default(false)
+
+  - name: copy /etc/host.conf
+    copy:
+      src: host.conf
+      dest: /etc/host.conf

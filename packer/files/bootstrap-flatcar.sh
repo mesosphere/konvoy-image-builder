@@ -2,7 +2,9 @@
 # copied from: https://github.com/kinvolk/image-builder/blob/3d00a5dc9c9562765d56942b90e5fe300756d425/images/capi/packer/files/bootstrap-flatcar.sh
 set -e
 
-[[ "$BUILD_NAME" != *"flatcar"* ]] && exit 0
+source /etc/os-release
+
+[[ "${NAME,,}" != *"flatcar"* ]] && exit 0
 
 BINDIR="/opt/bin"
 BUILDER_ENV="/opt/bin/builder-env"

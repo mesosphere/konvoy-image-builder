@@ -74,7 +74,7 @@
     - name: Create molecule instance(s)
       ec2:
         key_name: "{{ keypair_name }}"
-        image: "{{ item.item.image if item.skipped is defined and item.skipped else item.images[0].image_id }}"
+        image: "{{ item.item.image if item.skipped is defined and item.skipped else (item.images | sort(attribute='creation_date') | last).image_id }}"
         region: "{{ item.item.region }}"
         zone: "{{ item.item.zone|default(omit) }}"
         instance_initiated_shutdown_behavior: terminate
@@ -82,10 +82,10 @@
         spot_price: "{{ item.item.spot_price | ternary(item.item.spot_price, omit) if item.item.spot_price is defined else spot_price_max_calc }}"
         group: "{{ security_group_name }}"
         volumes:
-          - device_name: /dev/sda1
+          - device_name: "{{ item.item.volume_name if item.item.volume_name is defined else '/dev/sda1' }}"
+            delete_on_termination: true
             volume_size: 20
             volume_type: gp2
-            delete_on_termination: yes
         instance_tags:
           Name: "molecule {{ item.item.name }}"
           instance: "{{ item.item.name }}"
