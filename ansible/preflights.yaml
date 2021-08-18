@@ -1,5 +1,0 @@
----
-- import_playbook: _prereqs.yaml
-  when: "extraRunnerVars.preflight_type in ['full', 'basic']"
-- import_playbook: _validate.yaml
-  when: "extraRunnerVars.preflight_type in ['full', 'node']"

@@ -12,99 +12,6 @@
                  or (ansible_distribution == 'openSUSE Leap' and ansible_distribution_major_version|int == 15)
                  )
 
-# TODO how to determine which ansible_mounts to use in docker?
-#  - name: fail when disk utilization more than 90%
-#    command: /bin/true
-#    changed_when: false
-#    failed_when: ((ansible_mounts[0].size_total - ansible_mounts[0].size_available)/ansible_mounts[0].size_total) > 0.9
-
-  - name: check required OS package registries are accessible for rpm
-    uri:
-      url: "{{item}}"
-      status_code: 200
-    with_items:
-      - "{{kubernetes_rpm_repository_url}}/repodata/repomd.xml"
-      - "{{kubernetes_rpm_gpg_key_url}}"
-      - "{{docker_rpm_container_selinux_package_url}}"
-      - "{{docker_rpm_container_selinux_gpg_key_url}}"
-      - "{{docker_rpm_repository_url}}/repodata/repomd.xml"
-      - "{{docker_rpm_gpg_key_url}}"
-      - "{{libnvidia_container_rpm_repository_package_url}}/repodata/repomd.xml"
-      - "{{libnvidia_container_gpg_key_url}}"
-      - "{{nvidia_container_runtime_rpm_repository_package_url}}/repodata/repomd.xml"
-      - "{{nvidia_container_runtime_gpg_key_url}}"
-    register: result
-    until: result is success
-    retries: 5
-    delay: 3
-    when:
-      - package_versions.enable_repository_installation
-      - ansible_os_family == 'RedHat'
-      - ansible_distribution_major_version|int < 8
-      - rpms_tar_file == ''
-
-  - name: check required OS package registries are accessible for rpm (rhel8 only)
-    uri:
-      url: "{{item}}"
-      status_code: 200
-    with_items:
-      - "{{kubernetes_rpm_repository_url}}/repodata/repomd.xml"
-      - "{{kubernetes_rpm_gpg_key_url}}"
-      - "{{docker_rpm_repository_url}}/repodata/repomd.xml"
-      - "{{docker_rpm_gpg_key_url}}"
-      - "{{libnvidia_container_rpm_repository_package_url}}/repodata/repomd.xml"
-      - "{{libnvidia_container_gpg_key_url}}"
-      - "{{nvidia_container_runtime_rpm_repository_package_url}}/repodata/repomd.xml"
-      - "{{nvidia_container_runtime_gpg_key_url}}"
-    register: result
-    until: result is success
-    retries: 5
-    delay: 3
-    when:
-      - package_versions.enable_repository_installation
-      - ansible_os_family == 'RedHat'
-      - ansible_distribution_major_version|int == 8
-      - rpms_tar_file == ''
-
-  - name: check required OS package registries are accessible for deb
-    uri:
-      url: "{{item}}"
-      status_code: 200
-    with_items:
-      - "{{kubernetes_deb_repository_url}}"
-      - "{{kubernetes_deb_gpg_key_url}}"
-      - "{{docker_deb_repository_url}}/dists/{{docker_deb_release_name}}/{{ docker_deb_component }}/binary-amd64/Packages"
-      - "{{docker_deb_gpg_key_url}}"
-      - "{{libnvidia_container_deb_repository_url}}/repo.conf"
-      - "{{libnvidia_container_gpg_key_url}}"
-      - "{{nvidia_container_runtime_deb_package_url}}/repo.conf"
-      - "{{nvidia_container_runtime_gpg_key_url}}"
-    register: result
-    until: result is success
-    retries: 5
-    delay: 3
-    when:
-      - package_versions.enable_repository_installation
-      - ansible_os_family == 'Debian'
-      - debs_tar_file == ''
-
-  - name: check required OS package registries are accessible for zypper
-    uri:
-      url: "{{item}}"
-      status_code: 200
-    with_items:
-      - "{{kubernetes_zypper_repository_url}}/repodata/repomd.xml"
-      - "{{kubernetes_zypper_gpg_key_url}}"
-      - "{{docker_zypper_repository_url}}/repodata/repomd.xml"
-      - "{{docker_zypper_gpg_key_url}}"
-    register: result
-    until: result is success
-    retries: 5
-    delay: 3
-    when:
-      - package_versions.enable_repository_installation
-      - ansible_os_family == 'Suse'
-
   # kubernetes checks /proc/swaps lines > 1
   - name: check memory swap is disabled
     command: cat /proc/swaps
@@ -121,17 +28,10 @@
             'swap' in spec.kubernetes.preflightChecks.errorsToIgnore
           )
 
-  - name: check control-plane hostnames are unique
+  - name: check hostnames are unique
     fail:
-      msg: "Control-plane machines in the cluster must have unique hostnames, as reported by the 'hostname' command."
-    failed_when: (control_plane_hostnames | length) != (control_plane_hostnames | unique | length)
-    when: "'control-plane' in group_names"
-
-  - name: check worker hostnames are unique
-    fail:
-      msg: "Worker machines in the cluster must have unique hostnames, as reported by the 'hostname' command."
-    failed_when: (worker_hostnames | length) != (worker_hostnames | unique | length)
-    when: "'control-plane' not in group_names"
+      msg: "Machines in the cluster must have unique hostnames, as reported by the 'hostname' command."
+    failed_when: (ostnames | length) != (ostnames | unique | length)
 
   - name: check node IPs do not overlap with serviceSubnet
     fail:
@@ -164,7 +64,6 @@
       - "/etc/kubernetes/manifests/keepalived.yaml"
       - "/var/lib/etcd/member"
     when:
-      - "'control-plane' in group_names"
       - not kubeadm_already_run.stat.exists
     failed_when:
       - result.stat.exists == True
@@ -178,7 +77,6 @@
     failed_when: etcd_dir.matched > 0
     changed_when: etcd_dir.matched > 0
     when:
-      - "'control-plane' in group_names"
       - not kubeadm_already_run.stat.exists
 
   - name: check required ports for control-plane are unused
@@ -321,11 +219,6 @@
     when:
       - keepalived.enabled
 
-  - name: check if /etc/konvoy-marker.yaml exists
-    stat:
-      path: "/etc/konvoy-marker.yaml"
-    register: marker_file
-
   - name: detect persistent volume disks in /mnt/disks
     find:
       paths: '/mnt/disks/'
@@ -379,15 +272,56 @@
         that:
           - ansible_memtotal_mb > {{ preflight.minimum_memory_control_plane_mb|int }}
         msg: Memory allocation {{ ansible_memtotal_mb }}MB is less than required {{ preflight.minimum_memory_control_plane_mb|int }}MB for control plane nodes
-      when: "'control-plane' in group_names"
 
     - name: ensure minimum allocated memory for worker nodes
       assert:
         that:
           - ansible_memtotal_mb > {{ preflight.minimum_memory_worker_mb }}
         msg: Memory allocation {{ ansible_memtotal_mb }}MB is less than required {{ preflight.minimum_memory_worker_mb }}MB for workers
-      when: "'control-plane' not in group_names"
 
-    when:
-      - provisioner is defined and provisioner != 'docker'
-      - "'bastion' not in group_names"
+  - name: check files contain expected values
+    command: cat {{ item.file }}
+    register: result
+    with_items:
+      -  { file: '/proc/sys/net/bridge/bridge-nf-call-iptables', content: '1' }
+      -  { file: '/proc/sys/net/ipv4/ip_forward', content: '1' }
+    failed_when: >
+      result is failure or item.content != result.stdout
+    changed_when: False
+    when: preflight_checks is not defined or
+      ignore_errors is not defined or
+      not (
+        'all' in ignore_errors or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-iptables' in ignore_errors or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-ip6tables' in ignore_errors
+      )
+
+  - name: check required services are available
+    command: systemctl status {{ item }}
+    register: result
+    with_items:
+      - kubelet
+      - containerd
+    failed_when:
+      - '"could not be found" in result.stderr'
+    changed_when: False
+
+  - name: check required binaries are available
+    shell: command -v "{{ item }}"
+    register: result
+    with_items:
+      - conntrack
+      - crictl
+      - ebtables
+      - ethtool
+      - kubeadm
+      - ip
+      - iptables
+      - mount
+      - nsenter
+      - socat
+      - tc
+      - touch
+    failed_when:
+      - result.rc != 0
+    changed_when: False

@@ -75,8 +75,7 @@ system_default_path_env: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbi
 system_path_env: "{{ ansible_env.PATH if ansible_env is defined and ansible_env.PATH is defined else '' }}:{{ system_default_path_env }}"
 combined_env: "{{ proxy_env | combine({'PATH': system_path_env}) }}"
 
-control_plane_hostnames: "{{ groups['control-plane'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
-worker_hostnames: "{{ groups['node'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
+hostnames: "{{ groups['node'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
 
 # control-plane
 apiserver_endpoint: "{{ control_plane_endpoint }}"

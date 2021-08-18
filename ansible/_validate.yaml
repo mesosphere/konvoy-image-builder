@@ -1,5 +1,5 @@
 ---
-  - hosts: node control-plane
+  - hosts: all
     name: "{{ play_name | default('Check Machine Readiness') }}"
     serial: "100%"
     become: yes
