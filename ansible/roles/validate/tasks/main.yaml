@@ -82,7 +82,6 @@
       state: stopped
       timeout: 1
     with_items:
-      - "{{ apiserver_port }}"  # kube-apiserver --secure-port
       - 10250 # kubelet --port
       - 10248 # kubelet --healthz-port
       - 10249 # kube-proxy --metrics-bind-address
@@ -98,6 +97,19 @@
     when:
       - not kubeadm_already_run.stat.exists
     changed_when: False
+
+  - name: check the apiserver port for the control-plane is unused
+    wait_for:
+      port: "{{ item }}"
+      state: stopped
+      timeout: 1
+    with_items:
+      - "{{ apiserver_port }}"  # kube-apiserver --secure-port
+    when:
+      - not kubeadm_already_run.stat.exists
+      - apiserver_port is defined
+    changed_when: False
+
 
   - name: verify machine connectivity
     command: ping -c 2 {{ item }}
@@ -144,6 +156,7 @@
     - name: collect OS disk usage on the root volume
       shell: df -hl | awk '/\/$/ { sum+=$5 } END { print sum }'
       register: os_root_vol_usage
+      changed_when: False
 
     - name: ensure disk usage on the root volume is less than {{ validate.disk_usage_threshold }}%
       assert:
@@ -154,6 +167,7 @@
     - name: collect OS disk allocated size on the root volume
       shell: df -hl | awk '/\/$/ { sum+=$2 } END { print sum }'
       register: os_root_vol_size
+      changed_when: False
 
     - name: ensure disk allocated size on the root volume is equal or greater than {{ validate.disk_size_threshold }}G
       ignore_errors: True

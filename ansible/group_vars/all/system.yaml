@@ -74,10 +74,6 @@ combined_env: "{{ proxy_env | combine({'PATH': system_path_env}) }}"
 
 inventory_hostnames: "{{ groups['all'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
 
-# control-plane
-apiserver_address: "{{ apiserver_endpoint.split(':')[0] }}"
-apiserver_port: "{{ apiserver_endpoint.split(':')[1] }}"
-
 validate:
   # Disk usage must be lesser than 85% on the root volume
   disk_usage_threshold: 85

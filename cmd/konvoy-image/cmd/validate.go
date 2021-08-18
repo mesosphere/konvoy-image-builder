@@ -3,15 +3,12 @@ package cmd
 import (
 	"fmt"
 	"net"
-	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
 )
-
-const validEndpointSize = 2
 
 var validateFlags app.ValidateFlags
 
@@ -31,10 +28,6 @@ var validateCmd = &cobra.Command{
 			return fmt.Errorf("service-subnet %q was not a valid CIDR", validateFlags.ServiceSubnet)
 		}
 
-		if err := validateEndpoint(validateFlags.APIServerEndpoint); err != nil {
-			return errors.Wrap(err, fmt.Sprintf("apiserver-endpoint %q was not a valid, ", validateFlags.APIServerEndpoint))
-		}
-
 		if err := app.Validate(args[0], validateFlags); err != nil {
 			return errors.Wrap(err, "error running provision")
 		}
@@ -51,19 +44,7 @@ func init() {
 		" for the service subnet")
 	flagSet.StringVar(&validateFlags.PodSubnet, "pod-subnet", "192.168.0.0/16", "ip addresses used"+
 		" for the pod subnet")
-	flagSet.StringVar(&validateFlags.APIServerEndpoint, "apiserver-endpoint", "", "required - apiserver endpoint")
-}
-
-func validateEndpoint(str string) error {
-	parsedStr := strings.Replace(strings.Replace(str, "http://", "", -1), "https://", "", -1)
-	sanitizedStr := strings.Split(parsedStr, ":")
-
-	// should have
-	if len(sanitizedStr) < validEndpointSize {
-		return fmt.Errorf("apiserver-endpoint must be of the form http(s)://<hostname-or-ip>:<port>")
-	}
-
-	return nil
+	flagSet.IntVar(&validateFlags.APIServerPort, "apiserver-port", 6443, "apiserver port")
 }
 
 func isValidCIDR(str string) bool {

@@ -27,9 +27,9 @@ type ProvisionFlags struct {
 type ValidateFlags struct {
 	RootFlags
 
-	ServiceSubnet     string
-	PodSubnet         string
-	APIServerEndpoint string
+	ServiceSubnet string
+	PodSubnet     string
+	APIServerPort int
 }
 
 func Validate(inventory string, flags ValidateFlags) error {
@@ -70,7 +70,7 @@ func validateFlagsToPlaybookOptions(flags ValidateFlags) *ansible.PlaybookOption
 	values := []string{
 		fmt.Sprintf(extraVarsTemplate, "service_subnet", flags.ServiceSubnet),
 		fmt.Sprintf(extraVarsTemplate, "pod_subnet", flags.PodSubnet),
-		fmt.Sprintf(extraVarsTemplate, "apiserver_endpoint", flags.APIServerEndpoint),
+		fmt.Sprintf("%s=%d", "apiserver_port", flags.APIServerPort),
 	}
 
 	if playbookOptions.ExtraVars == nil {

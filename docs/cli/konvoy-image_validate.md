@@ -9,10 +9,10 @@ konvoy-image validate [flags]
 ### Options
 
 ```
-      --apiserver-endpoint string   required - apiserver endpoint
-  -h, --help                        help for validate
-      --pod-subnet string           ip addresses used for the pod subnet (default "192.168.0.0/16")
-      --service-subnet string       ip addresses used for the service subnet (default "10.96.0.0/12")
+      --apiserver-port int      apiserver port (default 6443)
+  -h, --help                    help for validate
+      --pod-subnet string       ip addresses used for the pod subnet (default "192.168.0.0/16")
+      --service-subnet string   ip addresses used for the service subnet (default "10.96.0.0/12")
 ```
 
 ### Options inherited from parent commands
