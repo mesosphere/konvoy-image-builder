@@ -68,32 +68,33 @@ python_env:
 default_env: "{{ proxy_env | combine(python_env) }}"
 
 ##### Preflight #########
-kubernetes_regexed_version: "{{ kubernetes_version | regex_replace('\\+.+$', '') }}"
 configured_ansible_distribution: "{{ node_os_distribution[node_pool] if node_pool is defined and node_os_distribution[node_pool] is defined and node_os_distribution[node_pool] != '' else ansible_distribution }}"
 
 system_default_path_env: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 system_path_env: "{{ ansible_env.PATH if ansible_env is defined and ansible_env.PATH is defined else '' }}:{{ system_default_path_env }}"
 combined_env: "{{ proxy_env | combine({'PATH': system_path_env}) }}"
 
-hostnames: "{{ groups['node'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
+inventory_hostnames: "{{ groups['all'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
 
 # control-plane
-apiserver_endpoint: "{{ control_plane_endpoint }}"
 external_apiserver_address: "{{ apiserver_endpoint.split(':')[0] }}"
 external_apiserver_port: "{{ apiserver_endpoint.split(':')[1] }}"
 
 # kube-apiserver additional arguments:
 apiserver:
   secure_port: "{{ 6443 if cloud_provider is defined and cloud_provider == 'gcp' else external_apiserver_port }}"
-  # Ideally set to 4096 for a production environment
-  target_ram_mb: >-
-    {% if targetRamMB is defined %}
-    {{-targetRamMB-}}
-    {% elif kubernetes_regexed_version < '1.19' %}
-    {{-'2048'-}}
-    {% else %}
-    {{-''-}}
-    {% endif %}
-  max_requests_inflight: 1200
-  max_mutating_requests_inflight: 400
+
+validate:
+  # Disk usage must be lesser than 85% on the root volume
+  disk_usage_threshold: 85
+  # Disk size allocation must be equal or greater than 80GB on the root volume
+  # Debian based OS report the size differently, use 78 instead of 80
+  disk_size_threshold: 78
+  # Minimum control_plane memory allocated to each control plane machine in megabytes. The calculation is 3G (1G is allocated to the kubelet daemons) + TargetRAMMB value, if set.
+  minimum_memory_control_plane_mb: 3072
+  # Minimum worker memory allocated to each work machine in megabytes. The calculation is 1G + 1G(allocated to kubelet daemons).
+  minimum_memory_worker_mb: 2048
+  # Minimum CPU cores allocated to each machine.
+  minimum_cpu_cores: 2
+
 ##### Preflight #########

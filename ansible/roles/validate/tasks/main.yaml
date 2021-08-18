@@ -7,6 +7,7 @@
                  or (configured_ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [7, 8])
                  or (configured_ansible_distribution == 'Ubuntu' and ((ansible_distribution_major_version|int == 16) or (ansible_distribution_major_version|int == 18)))
                  or (configured_ansible_distribution == 'Debian' and ((ansible_distribution_major_version|int == 9) or (ansible_distribution_major_version|int == 10)))
+                 or (ansible_distribution == 'Flatcar' and ansible_distribution_major_version|int == 2905)
                  or (ansible_distribution == 'Suse' and ansible_distribution_major_version|int == 15)
                  or (ansible_distribution == 'SLES' and ansible_distribution_major_version|int == 15)
                  or (ansible_distribution == 'openSUSE Leap' and ansible_distribution_major_version|int == 15)
@@ -21,17 +22,12 @@
       - memory_swaps.rc is defined
       - (memory_swaps.rc != 0 or (memory_swaps.stdout_lines is defined and memory_swaps.stdout_lines|length > 1))
     changed_when: False
-    when: spec.kubernetes.preflightChecks is not defined or
-          spec.kubernetes.preflightChecks.errorsToIgnore is not defined or
-          not (
-            'all' in spec.kubernetes.preflightChecks.errorsToIgnore or
-            'swap' in spec.kubernetes.preflightChecks.errorsToIgnore
-          )
+    when: errors_to_ignore is not defined or not ( 'all' in errors_to_ignore or 'swap' in errors_to_ignore )
 
   - name: check hostnames are unique
     fail:
       msg: "Machines in the cluster must have unique hostnames, as reported by the 'hostname' command."
-    failed_when: (ostnames | length) != (ostnames | unique | length)
+    failed_when: (inventory_hostnames | length) != (inventory_hostnames | unique | length)
 
   - name: check node IPs do not overlap with serviceSubnet
     fail:
@@ -135,24 +131,16 @@
       - "calico_encapsulation != 'vxlan'"
     changed_when: False
 
-  - name: verify control-plane to control-plane connectivity
+  - name: verify machine connectivity
     command: ping -c 2 {{ item }}
-    with_items: "{{ groups['control-plane'] }}"
-    when: "'control-plane' in group_names"
-    changed_when: False
-
-  - name: verify node to control-plane connectivity
-    command: ping -c 2 {{ item }}
-    with_items: "{{ groups['control-plane'] }}"
-    when: "'node' in group_names"
+    with_items: "{{ groups['all'] }}"
     changed_when: False
 
   # Every node should be able to reach all other nodes.
   # Use a random sampling of nodes to avoid quadratic complexity.
-  - name: verify node to node connectivity with random sample
+  - name: verify machine to machine connectivity with random sample
     command: ping -c 2 {{ item }}
-    with_random_choice: "{{ groups['node'] | map('extract', hostvars, 'inventory_hostname') | list }}"
-    when: "'node' in group_names"
+    with_random_choice: "{{ groups['all'] | map('extract', hostvars, 'inventory_hostname') | list }}"
     changed_when: False
 
 
@@ -167,64 +155,12 @@
       msg: "The time difference between this node and the first node in this batch is greater than 30 seconds"
     failed_when: ((ansible_date_time.epoch | int) - (hostvars[ansible_play_batch[0]]['ansible_date_time']['epoch'] | int)) | abs > ((30 + (ansible_play_batch|length / ansible_forks)) | int)
 
-  - block:
-    - name: check if keepalived is already configured
-      stat:
-        path: "/etc/kubernetes/manifests/keepalived.yaml"
-      delegate_to: "{{ groups['control-plane'][0] }}"
-      register: keepalived_file
-
-    - block:
-      - name: check reachability to keepalived vip
-        command: ping -c 2 {{ keepalived.virtual_ip }}
-        changed_when: False
-      when:
-        - keepalived_file.stat.exists
-
-    - block:
-      - name: check if keepalived vip is already present
-        command: ping -c 2 {{ keepalived.virtual_ip }}
-        register: pingout
-        changed_when: pingout.rc == 0
-        failed_when: pingout.rc == 0
-
-      - block:
-        - block:
-          - name: detect a keepalived interface
-            shell: ip route get "{{ keepalived.virtual_ip }}" | grep -Po '(?<=(dev )).*(?= src| proto)'
-            register: keepalived_intf
-
-          - name: set keepalived interface
-            set_fact:
-               keepalived:
-                 interface: "{{ keepalived_intf.stdout }}"
-            when: keepalived.interface == ""
-
-          - name: assign keepalived vip for reachability check
-            command: ip addr add {{ keepalived.virtual_ip }} dev {{ keepalived.interface }}
-
-          when: inventory_hostname == groups['control-plane'][0]
-
-        - name: check reachability to keepalived vip
-          command: ping -c 2 {{ keepalived.virtual_ip }}
-          changed_when: False
-
-        always:
-          - name: remove keepalived vip
-            command: ip addr del {{ keepalived.virtual_ip }} dev {{ keepalived.interface }}
-            when: inventory_hostname == groups['control-plane'][0]
-
-      when:
-        - not keepalived_file.stat.exists
-    when:
-      - keepalived.enabled
 
   - name: detect persistent volume disks in /mnt/disks
     find:
       paths: '/mnt/disks/'
       file_type: directory
     register: pvd
-    when: not marker_file.stat.exists
 
   - name: check for old persistent volumes in /mnt/disks/*/
     find:
@@ -235,49 +171,46 @@
     register: old_pvs
     failed_when: old_pvs.matched > 0
     changed_when: old_pvs.matched > 0
-    when:
-      - not marker_file.stat.exists
-      - "'node' in group_names"
 
   - block:
     - name: collect OS disk usage on the root volume
       shell: df -hl | awk '/\/$/ { sum+=$5 } END { print sum }'
       register: os_root_vol_usage
 
-    - name: ensure disk usage on the root volume is less than {{ preflight.disk_usage_threshold }}%
+    - name: ensure disk usage on the root volume is less than {{ validate.disk_usage_threshold }}%
       assert:
         that:
-           - os_root_vol_usage.stdout|int < {{ preflight.disk_usage_threshold }}
-        msg: Disk space has reached {{ preflight.disk_usage_threshold }}% threshold
+           - os_root_vol_usage.stdout|int < {{ validate.disk_usage_threshold }}
+        msg: Disk space has reached {{ validate.disk_usage_threshold }}% threshold
 
     - name: collect OS disk allocated size on the root volume
       shell: df -hl | awk '/\/$/ { sum+=$2 } END { print sum }'
       register: os_root_vol_size
 
-    - name: ensure disk allocated size on the root volume is equal or greater than {{ preflight.disk_size_threshold }}G
+    - name: ensure disk allocated size on the root volume is equal or greater than {{ validate.disk_size_threshold }}G
       ignore_errors: True
       when:
-        - os_root_vol_size.stdout|int < preflight.disk_size_threshold
+        - os_root_vol_size.stdout|int < validate.disk_size_threshold
       fail:
-        msg: "WARNING: Disk size {{ os_root_vol_size.stdout|int }}G is less than {{ preflight.disk_size_threshold }}G"
+        msg: "WARNING: Disk size {{ os_root_vol_size.stdout|int }}G is less than {{ validate.disk_size_threshold }}G"
 
     - name: ensure minimum allocated CPU cores for all the nodes
       assert:
         that:
-          - ansible_processor_vcpus >= {{ preflight.minimum_cpu_cores }}
-        msg: CPU core allocation {{ ansible_processor_vcpus }} is less than required {{ preflight.minimum_cpu_cores }}
+          - ansible_processor_vcpus >= {{ validate.minimum_cpu_cores }}
+        msg: CPU core allocation {{ ansible_processor_vcpus }} is less than required {{ validate.minimum_cpu_cores }}
 
     - name: ensure minimum allocated memory for control plane nodes
       assert:
         that:
-          - ansible_memtotal_mb > {{ preflight.minimum_memory_control_plane_mb|int }}
-        msg: Memory allocation {{ ansible_memtotal_mb }}MB is less than required {{ preflight.minimum_memory_control_plane_mb|int }}MB for control plane nodes
+          - ansible_memtotal_mb > {{ validate.minimum_memory_control_plane_mb|int }}
+        msg: Memory allocation {{ ansible_memtotal_mb }}MB is less than required {{ validate.minimum_memory_control_plane_mb|int }}MB for control plane nodes
 
     - name: ensure minimum allocated memory for worker nodes
       assert:
         that:
-          - ansible_memtotal_mb > {{ preflight.minimum_memory_worker_mb }}
-        msg: Memory allocation {{ ansible_memtotal_mb }}MB is less than required {{ preflight.minimum_memory_worker_mb }}MB for workers
+          - ansible_memtotal_mb > {{ validate.minimum_memory_worker_mb }}
+        msg: Memory allocation {{ ansible_memtotal_mb }}MB is less than required {{ validate.minimum_memory_worker_mb }}MB for workers
 
   - name: check files contain expected values
     command: cat {{ item.file }}
@@ -288,12 +221,11 @@
     failed_when: >
       result is failure or item.content != result.stdout
     changed_when: False
-    when: preflight_checks is not defined or
-      ignore_errors is not defined or
+    when: errors_to_ignore is not defined or
       not (
-        'all' in ignore_errors or
-        'filecontent--proc-sys-net-bridge-bridge-nf-call-iptables' in ignore_errors or
-        'filecontent--proc-sys-net-bridge-bridge-nf-call-ip6tables' in ignore_errors
+        'all' in errors_to_ignore or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-iptables' in errors_to_ignore or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-ip6tables' in errors_to_ignore
       )
 
   - name: check required services are available

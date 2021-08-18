@@ -1,11 +1,17 @@
 package cmd
 
 import (
+	"fmt"
+	"net"
+	"strings"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
 )
+
+const validEndpointSize = 2
 
 var validateFlags app.ValidateFlags
 
@@ -14,10 +20,21 @@ var validateCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	Use:           "validate",
-	Short:         "Run checks on the health of infrastructure",
+	Short:         "validate existing infrastructure",
 	Args:          cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// preflight checks (fail fast here)
+		if !isValidCIDR(validateFlags.PodSubnet) {
+			return fmt.Errorf("pod-subnet %q was not a valid CIDR", validateFlags.PodSubnet)
+		}
+
+		if !isValidCIDR(validateFlags.ServiceSubnet) {
+			return fmt.Errorf("service-subnet %q was not a valid CIDR", validateFlags.ServiceSubnet)
+		}
+
+		if err := validateEndpoint(validateFlags.APIServerEndpoint); err != nil {
+			return errors.Wrap(err, fmt.Sprintf("apiserver-endpoint %q was not a valid, ", validateFlags.APIServerEndpoint))
+		}
+
 		if err := app.Validate(args[0], validateFlags); err != nil {
 			return errors.Wrap(err, "error running provision")
 		}
@@ -29,7 +46,7 @@ var validateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(validateCmd)
 
-	flagSet := rootCmd.Flags()
+	flagSet := validateCmd.Flags()
 	flagSet.StringArrayVar(&validateFlags.ExtraVars, "extra-vars", []string{}, "flag passed Ansible's extra-vars")
 	flagSet.StringVar(&validateFlags.ServiceSubnet, "service-subnet", "10.96.0.0/12", "ip addresses used"+
 		" for the service subnet")
@@ -38,10 +55,25 @@ func init() {
 	flagSet.StringVar(&validateFlags.CalicoEncapsulation, "calico-encapsulation", "vxlan", "calico "+
 		"encapsulation")
 	flagSet.StringVar(&validateFlags.CloudProvider, "cloud-provider", "aws", "cloud provider")
-	flagSet.StringVar(&validateFlags.KubernetesVersion, "kubernetes-version", "1.22", "kubernetes version")
-	flagSet.IntVar(&validateFlags.TargetRAMMB, "target-ram", 4096, "target ram size on a node in MB")
+	flagSet.StringVar(&validateFlags.APIServerEndpoint, "apiserver-endpoint", "", "required - apiserver endpoint")
 	flagSet.StringVar(&validateFlags.ErrorsToIgnore, "errors-to-ignore", "", "comma separated "+
 		"list of errors to ignore")
-	flagSet.StringVar(&validateFlags.PreflightChecks, "preflight-checks", "", "comma separated list "+
-		"of preflight checks to run")
+}
+
+func validateEndpoint(str string) error {
+	parsedStr := strings.Replace(strings.Replace(str, "http://", "", -1), "https://", "", -1)
+	sanitizedStr := strings.Split(parsedStr, ":")
+
+	// should have
+	if len(sanitizedStr) < validEndpointSize {
+		return fmt.Errorf("apiserver-endpoint must be of the form http(s)://<hostname-or-ip>:<port>")
+	}
+
+	return nil
+}
+
+func isValidCIDR(str string) bool {
+	_, _, err := net.ParseCIDR(str)
+
+	return err == nil
 }

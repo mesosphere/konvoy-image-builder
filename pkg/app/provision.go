@@ -30,13 +30,12 @@ type ValidateFlags struct {
 
 	ServiceSubnet       string
 	PodSubnet           string
+	APIServerEndpoint   string
 	CalicoEncapsulation string
 	CloudProvider       string
-	KubernetesVersion   string
-	TargetRAMMB         int
 	ErrorsToIgnore      string
-	PreflightChecks     string
-	ExtraVars           []string
+
+	ExtraVars []string
 }
 
 func Validate(inventory string, flags ValidateFlags) error {
@@ -52,7 +51,7 @@ func Validate(inventory string, flags ValidateFlags) error {
 }
 
 func Provision(inventory string, flags ProvisionFlags) error {
-	playbook := appansible.NewPlaybook("validate", inventory, &ansible.PlaybookOptions{
+	playbook := appansible.NewPlaybook("provision", inventory, &ansible.PlaybookOptions{
 		ExtraVars: flags.ExtraVars,
 	})
 
@@ -79,7 +78,8 @@ func validateFlagsToPlaybookOptions(flags ValidateFlags) *ansible.PlaybookOption
 		fmt.Sprintf(extraVarsTemplate, "pod_subnet", flags.PodSubnet),
 		fmt.Sprintf(extraVarsTemplate, "calico_encapsulation", flags.CalicoEncapsulation),
 		fmt.Sprintf(extraVarsTemplate, "cloud_provider", flags.CloudProvider),
-		fmt.Sprintf(extraVarsTemplate, "kubernetes_version", flags.KubernetesVersion),
+		fmt.Sprintf(extraVarsTemplate, "apiserver_endpoint", flags.APIServerEndpoint),
+		fmt.Sprintf(extraVarsTemplate, "errors_to_ignore", flags.ErrorsToIgnore),
 	}
 
 	if playbookOptions.ExtraVars == nil {
