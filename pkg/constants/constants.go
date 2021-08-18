@@ -6,33 +6,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mesosphere/konvoy/printerlib/pkg/printer"
+	"github.com/mesosphere/konvoy-image-builder/printerlib/pkg/printer"
 )
 
 const (
-	PreflightsName           = "Running Preflights"
-	PreflightsPlaybook       = "preflights.yaml"
-	CheckProvisionedName     = "Verifying that nodes were provisioned"
-	CheckProvisionedPlaybook = "check-provisioned.yaml"
-	CheckKubernetesName      = "Checking Kubernetes"
-	CheckKubernetesPlaybook  = "check-kubernetes.yaml"
-	CheckNodesName           = "Checking Nodes"
-	CheckNodesPlaybook       = "check-nodes.yaml"
-
-	FetchKubeconfigName            = "Fetching Admin Kubeconfig"
-	FetchKubeconfigPlaybook        = "fetch-kubeconfig.yaml"
-	FetchNodeConfigurationName     = "Fetching Node Configuration"
-	FetchNodeConfigurationPlaybook = "fetch-node-configuration.yaml"
-	FetchNodeConfigurationVar      = "fetch_node_configuration_local_dir"
-
-	DefaultInventoryFileName = "inventory.yaml"
-	RunPlaybookName          = "Running Custom Playbook"
-
 	AnsibleCallbackWhiteListVerbose = "profile_tasks"
-	AnsiblePlaybookPath             = "ansible"
 )
 
 var (
+	AnsiblePlaybookPath  = "ansible"
 	AnsibleRunsDirectory = "ansible-runs"
 
 	AnsibleDir    = ansibleDir()

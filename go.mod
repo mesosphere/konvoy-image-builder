@@ -5,8 +5,7 @@ go 1.16
 require (
 	github.com/coreos/go-semver v0.3.0
 	github.com/imdario/mergo v0.3.12
-	github.com/mesosphere/konvoy/clientapis v1.8.2
-	github.com/mesosphere/konvoy/printerlib v1.8.2
+	github.com/mesosphere/konvoy-image-builder/printerlib v0.0.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onrik/logrus v0.9.0
 	github.com/onsi/ginkgo v1.16.4
@@ -21,7 +20,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-replace (
-	github.com/mesosphere/konvoy/kuberneteslib => github.com/mesosphere/konvoy/kuberneteslib v1.8.2
-	github.com/mesosphere/konvoy/printerlib => github.com/mesosphere/konvoy/printerlib v1.8.2
-)
+replace github.com/mesosphere/konvoy-image-builder/printerlib => ./printerlib

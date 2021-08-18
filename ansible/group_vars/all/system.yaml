@@ -83,15 +83,6 @@ apiserver_endpoint: "{{ control_plane_endpoint }}"
 external_apiserver_address: "{{ apiserver_endpoint.split(':')[0] }}"
 external_apiserver_port: "{{ apiserver_endpoint.split(':')[1] }}"
 
-keepalived:
-  enabled: "{{ keepalived_enabled is defined | bool }}"
-  virtual_ip: "{{ external_apiserver_address }}"
-  virtual_mask: 32
-  vrid: "{{ (keepalived_vrid if keepalived_enabled is defined else '') | default(keepalived_vrid, true) }}"
-  interface: "{{ (keepalived_interface if keepalived_enabled is defined else '') | default('') }}"
-  image: "mesosphere/keepalived-snmp:v0.2.1"
-  snmp_exporter_image: "quay.io/prometheus/snmp-exporter:v0.19.0"
-
 # kube-apiserver additional arguments:
 apiserver:
   secure_port: "{{ 6443 if cloud_provider is defined and cloud_provider == 'gcp' else external_apiserver_port }}"

@@ -5,7 +5,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
-	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/constants"
 	"github.com/mesosphere/konvoy-image-builder/pkg/logging"
 )
@@ -13,7 +12,7 @@ import (
 var _ = Describe("Provision", func() {
 	BeforeEach(func() {
 		// use the mock data with the container for e2e tests
-		appansible.PlaybookPath = "testdata/ansible"
+		constants.AnsiblePlaybookPath = "testdata/ansible"
 		constants.AnsibleRunsDirectory = "generated/ansible-runs"
 	})
 

@@ -6,4 +6,4 @@
     environment: "{{ combined_env }}"
 
     roles:
-      - role: preflights
+      - role: validate
