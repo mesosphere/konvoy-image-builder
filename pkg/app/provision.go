@@ -28,14 +28,9 @@ type ProvisionFlags struct {
 type ValidateFlags struct {
 	RootFlags
 
-	ServiceSubnet       string
-	PodSubnet           string
-	APIServerEndpoint   string
-	CalicoEncapsulation string
-	CloudProvider       string
-	ErrorsToIgnore      string
-
-	ExtraVars []string
+	ServiceSubnet     string
+	PodSubnet         string
+	APIServerEndpoint string
 }
 
 func Validate(inventory string, flags ValidateFlags) error {
@@ -76,10 +71,7 @@ func validateFlagsToPlaybookOptions(flags ValidateFlags) *ansible.PlaybookOption
 	values := []string{
 		fmt.Sprintf(extraVarsTemplate, "service_subnet", flags.ServiceSubnet),
 		fmt.Sprintf(extraVarsTemplate, "pod_subnet", flags.PodSubnet),
-		fmt.Sprintf(extraVarsTemplate, "calico_encapsulation", flags.CalicoEncapsulation),
-		fmt.Sprintf(extraVarsTemplate, "cloud_provider", flags.CloudProvider),
 		fmt.Sprintf(extraVarsTemplate, "apiserver_endpoint", flags.APIServerEndpoint),
-		fmt.Sprintf(extraVarsTemplate, "errors_to_ignore", flags.ErrorsToIgnore),
 	}
 
 	if playbookOptions.ExtraVars == nil {

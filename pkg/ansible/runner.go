@@ -89,7 +89,7 @@ func (r *runner) StartPlaybook(playbookFileName, inventory string, playbookOptio
 		playbookOptions = &PlaybookOptions{}
 	}
 
-	marshalledExtraVars, err := marshallExtraVars(playbookOptions)
+	marshalledExtraVars, err := marshalledExtraVars(playbookOptions.ExtraVarsMap)
 	if err != nil {
 		return err
 	}
@@ -120,8 +120,7 @@ func (r *runner) StartPlaybook(playbookFileName, inventory string, playbookOptio
 	return nil
 }
 
-func marshallExtraVars(playbookOptions *PlaybookOptions) ([]byte, error) {
-	extraVars := extraVars(playbookOptions)
+func marshalledExtraVars(extraVars map[string]interface{}) ([]byte, error) {
 	marshalledExtraVars, err := json.Marshal(extraVars)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not marshal extra-vars")

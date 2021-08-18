@@ -9,14 +9,10 @@ konvoy-image validate [flags]
 ### Options
 
 ```
-      --apiserver-endpoint string     required - apiserver endpoint
-      --calico-encapsulation string   calico encapsulation (default "vxlan")
-      --cloud-provider string         cloud provider (default "aws")
-      --errors-to-ignore string       comma separated list of errors to ignore
-      --extra-vars stringArray        flag passed Ansible's extra-vars
-  -h, --help                          help for validate
-      --pod-subnet string             ip addresses used for the pod subnet (default "192.168.0.0/16")
-      --service-subnet string         ip addresses used for the service subnet (default "10.96.0.0/12")
+      --apiserver-endpoint string   required - apiserver endpoint
+  -h, --help                        help for validate
+      --pod-subnet string           ip addresses used for the pod subnet (default "192.168.0.0/16")
+      --service-subnet string       ip addresses used for the service subnet (default "10.96.0.0/12")
 ```
 
 ### Options inherited from parent commands

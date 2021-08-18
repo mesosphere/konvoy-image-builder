@@ -1,12 +1,11 @@
 package constants
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"github.com/mesosphere/konvoy-image-builder/printerlib/pkg/printer"
 )
 
 const (
@@ -37,7 +36,7 @@ func ansibleDir() string {
 func executableDir() string {
 	ex, err := os.Executable()
 	if err != nil {
-		printer.PrintColor(os.Stderr, printer.Red, "Error: could not get executable directory %v", err)
+		fmt.Printf("Error: could not get executable directory %v\n", err)
 		os.Exit(1)
 	}
 	return filepath.Dir(ex)
@@ -46,7 +45,7 @@ func executableDir() string {
 func workingDir() string {
 	wd, err := os.Getwd()
 	if err != nil {
-		printer.PrintColor(os.Stderr, printer.Red, "Error: could not get current working directory %v", err)
+		fmt.Printf("Error: could not get current working directory %v\n", err)
 		os.Exit(1)
 	}
 	return wd

@@ -67,9 +67,7 @@ python_env:
 
 default_env: "{{ proxy_env | combine(python_env) }}"
 
-##### Preflight #########
-configured_ansible_distribution: "{{ node_os_distribution[node_pool] if node_pool is defined and node_os_distribution[node_pool] is defined and node_os_distribution[node_pool] != '' else ansible_distribution }}"
-
+##### Validate #########
 system_default_path_env: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 system_path_env: "{{ ansible_env.PATH if ansible_env is defined and ansible_env.PATH is defined else '' }}:{{ system_default_path_env }}"
 combined_env: "{{ proxy_env | combine({'PATH': system_path_env}) }}"
@@ -77,12 +75,8 @@ combined_env: "{{ proxy_env | combine({'PATH': system_path_env}) }}"
 inventory_hostnames: "{{ groups['all'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
 
 # control-plane
-external_apiserver_address: "{{ apiserver_endpoint.split(':')[0] }}"
-external_apiserver_port: "{{ apiserver_endpoint.split(':')[1] }}"
-
-# kube-apiserver additional arguments:
-apiserver:
-  secure_port: "{{ 6443 if cloud_provider is defined and cloud_provider == 'gcp' else external_apiserver_port }}"
+apiserver_address: "{{ apiserver_endpoint.split(':')[0] }}"
+apiserver_port: "{{ apiserver_endpoint.split(':')[1] }}"
 
 validate:
   # Disk usage must be lesser than 85% on the root volume
@@ -96,5 +90,3 @@ validate:
   minimum_memory_worker_mb: 2048
   # Minimum CPU cores allocated to each machine.
   minimum_cpu_cores: 2
-
-##### Preflight #########

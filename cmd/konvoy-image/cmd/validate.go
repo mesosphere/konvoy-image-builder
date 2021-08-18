@@ -47,17 +47,11 @@ func init() {
 	rootCmd.AddCommand(validateCmd)
 
 	flagSet := validateCmd.Flags()
-	flagSet.StringArrayVar(&validateFlags.ExtraVars, "extra-vars", []string{}, "flag passed Ansible's extra-vars")
 	flagSet.StringVar(&validateFlags.ServiceSubnet, "service-subnet", "10.96.0.0/12", "ip addresses used"+
 		" for the service subnet")
 	flagSet.StringVar(&validateFlags.PodSubnet, "pod-subnet", "192.168.0.0/16", "ip addresses used"+
 		" for the pod subnet")
-	flagSet.StringVar(&validateFlags.CalicoEncapsulation, "calico-encapsulation", "vxlan", "calico "+
-		"encapsulation")
-	flagSet.StringVar(&validateFlags.CloudProvider, "cloud-provider", "aws", "cloud provider")
 	flagSet.StringVar(&validateFlags.APIServerEndpoint, "apiserver-endpoint", "", "required - apiserver endpoint")
-	flagSet.StringVar(&validateFlags.ErrorsToIgnore, "errors-to-ignore", "", "comma separated "+
-		"list of errors to ignore")
 }
 
 func validateEndpoint(str string) error {
