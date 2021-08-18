@@ -9,7 +9,7 @@ konvoy-image provision <inventory.yaml|hostname,> [flags]
 ### Examples
 
 ```
-build ./inventory.yaml
+provision --inventory-file inventory.yaml images/generic/centos-7.yaml
 ```
 
 ### Options
@@ -17,6 +17,9 @@ build ./inventory.yaml
 ```
       --extra-vars stringArray   flag passed Ansible's extra-vars
   -h, --help                     help for provision
+      --inventory-file string    an ansible inventory defining your infrastructure
+      --overrides stringArray    a list of override YAML files
+      --provider string          specify a provider if you wish to install provider specific utilities
 ```
 
 ### Options inherited from parent commands

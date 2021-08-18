@@ -31,7 +31,7 @@ type IOConfig struct {
 func NewIOConfig(runName string, runOptions RunOptions) (*IOConfig, error) {
 	start := time.Now()
 	runDir := filepath.Join(runOptions.RunsDirectory, runName, start.Format("2006-01-02-15-04-05"))
-	if err := os.MkdirAll(runDir, 0750); err != nil {
+	if err := os.MkdirAll(runDir, 0o750); err != nil {
 		return nil, errors.Wrap(err, "error creating directory")
 	}
 

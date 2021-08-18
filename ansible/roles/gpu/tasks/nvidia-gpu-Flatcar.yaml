@@ -7,7 +7,8 @@
       - ipmi_msghandler
     state: present
 
-- name: TODO: Replace me with proper ansible resources - load loop module
+# TODO: Replace me with proper ansible resources 
+- name: Load loop module
   command: echo -e "loop\ni2c_core\nipmi_msghandler" | tee /etc/modules-load.d/driver.conf
 
 - name: Pull driver build image
