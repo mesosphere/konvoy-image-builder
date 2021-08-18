@@ -82,6 +82,7 @@
       state: stopped
       timeout: 1
     with_items:
+      - "{{ apiserver_port }}"  # kube-apiserver --secure-port
       - 10250 # kubelet --port
       - 10248 # kubelet --healthz-port
       - 10249 # kube-proxy --metrics-bind-address
@@ -97,19 +98,6 @@
     when:
       - not kubeadm_already_run.stat.exists
     changed_when: False
-
-  - name: check the apiserver port for the control-plane is unused
-    wait_for:
-      port: "{{ item }}"
-      state: stopped
-      timeout: 1
-    with_items:
-      - "{{ apiserver_port }}"  # kube-apiserver --secure-port
-    when:
-      - not kubeadm_already_run.stat.exists
-      - apiserver_port is defined
-    changed_when: False
-
 
   - name: verify machine connectivity
     command: ping -c 2 {{ item }}
