@@ -13,7 +13,6 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/term"
 
-	"github.com/mesosphere/konvoy-image-builder/pkg/constants"
 	"github.com/mesosphere/konvoy-image-builder/pkg/logging"
 )
 
@@ -47,8 +46,16 @@ type LoggerConfig struct {
 	Verbosity int
 }
 
+func NewLoggerConfig(writer io.Writer, verbosity int) *LoggerConfig {
+	return &LoggerConfig{
+		Out:       writer,
+		ErrOut:    writer,
+		Log:       writer,
+		Verbosity: verbosity,
+	}
+}
+
 type runner struct {
-	// Output also gets logged to a file
 	*LoggerConfig
 	pythonPath   string
 	ansiblePath  string
@@ -60,8 +67,8 @@ type runner struct {
 func NewRunner(runDir string, loggerConfig *LoggerConfig) Runner {
 	return &runner{
 		LoggerConfig: loggerConfig,
-		pythonPath:   constants.PythonPath,
-		ansiblePath:  constants.AnsibleDir,
+		pythonPath:   PythonPath,
+		ansiblePath:  AnsiblePath,
 		runDir:       runDir,
 	}
 }
@@ -133,7 +140,7 @@ func (r *runner) runEnv() []string {
 	ansibleConfigEnvVar := "ANSIBLE_CONFIG=" + filepath.Join(r.ansiblePath, "playbooks", "ansible.cfg")
 	env := append(os.Environ(), pythonPathEnvVar, ansibleConfigEnvVar)
 	if r.Verbosity > 0 {
-		ansibleCallbackWhitelistEnvVar := "ANSIBLE_CALLBACK_WHITELIST=" + constants.AnsibleCallbackWhiteListVerbose
+		ansibleCallbackWhitelistEnvVar := "ANSIBLE_CALLBACK_WHITELIST=" + AnsibleCallbackWhiteListVerbose
 		env = append(env, ansibleCallbackWhitelistEnvVar)
 	}
 	// usually Ansible would automatically determine if it should output color based on TTY
