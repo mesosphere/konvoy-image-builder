@@ -1,0 +1,223 @@
+---
+  - name: check for supported OS
+    fail:
+      msg: "{{ ansible_distribution }} {{ ansible_distribution_major_version }} is not supported. The supported OSes - CentOS 7/8, RHEL 7/8, Suse 15, SLES 15, Ubuntu 16 (xenial) 18 (bionic) or Debian 9 (stretch)"
+    failed_when: not (
+                 (ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7, 8])
+                 or (ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [7, 8])
+                 or (ansible_distribution == 'Ubuntu' and ((ansible_distribution_major_version|int == 16) or (ansible_distribution_major_version|int == 18)))
+                 or (ansible_distribution == 'Debian' and ((ansible_distribution_major_version|int == 9) or (ansible_distribution_major_version|int == 10)))
+                 or (ansible_distribution == 'Flatcar' )
+                 or (ansible_distribution == 'Suse' and ansible_distribution_major_version|int == 15)
+                 or (ansible_distribution == 'SLES' and ansible_distribution_major_version|int == 15)
+                 or (ansible_distribution == 'openSUSE Leap' and ansible_distribution_major_version|int == 15)
+                 )
+
+  # kubernetes checks /proc/swaps lines > 1
+  - name: check memory swap is disabled
+    command: cat /proc/swaps
+    register: memory_swaps
+    failed_when:
+      - memory_swaps is defined
+      - memory_swaps.rc is defined
+      - (memory_swaps.rc != 0 or (memory_swaps.stdout_lines is defined and memory_swaps.stdout_lines|length > 1))
+    changed_when: False
+    when: errors_to_ignore is not defined or not ( 'all' in errors_to_ignore or 'swap' in errors_to_ignore )
+
+  - name: check hostnames are unique
+    fail:
+      msg: "Machines in the cluster must have unique hostnames, as reported by the 'hostname' command."
+    failed_when: (inventory_hostnames | length) != (inventory_hostnames | unique | length)
+
+  - name: check node IPs do not overlap with serviceSubnet
+    fail:
+      msg: The service-subnet {{ service_subnet }} cannot overlap with any of the IPs of the hosts {{ inventory_hostname }}.
+    failed_when:
+      - inventory_hostname | ipaddr(service_subnet)
+    run_once: true
+
+  - name: check node IPs do not overlap with podSubnet
+    fail:
+      msg: The pod-subnet cannot overlap with any of the IPs of the hosts.
+    failed_when:
+      - inventory_hostname | ipaddr(pod_subnet)
+    run_once: true
+    when: pod_subnet is defined and pod_subnet != ''
+
+  - name: check if kubeadm has already run
+    stat:
+      path: "/var/lib/kubelet/config.yaml"
+    register: kubeadm_already_run
+
+  - name: check files and directories do not yet exist
+    stat:
+      path: "{{ item }}"
+    register: result
+    with_items:
+      - "/etc/kubernetes/manifests/kube-apiserver.yaml"
+      - "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+      - "/etc/kubernetes/manifests/kube-scheduler.yaml"
+      - "/etc/kubernetes/manifests/etcd.yaml"
+      - "/etc/kubernetes/manifests/keepalived.yaml"
+      - "/var/lib/etcd/member"
+    when:
+      - not kubeadm_already_run.stat.exists
+    failed_when:
+      - result.stat.exists == True
+    changed_when: False
+
+  - name: check if /var/lib/etcd/ directory is empty
+    find:
+      paths: "/var/lib/etcd/"
+      file_type: any
+    register: etcd_dir
+    failed_when: etcd_dir.matched > 0
+    changed_when: etcd_dir.matched > 0
+    when:
+      - not kubeadm_already_run.stat.exists
+
+  - name: check required ports for control-plane are unused
+    wait_for:
+      port: "{{ item }}"
+      state: stopped
+      timeout: 1
+    with_items:
+      - "{{ apiserver_port }}"  # kube-apiserver --secure-port
+      - 10250 # kubelet --port
+      - 10248 # kubelet --healthz-port
+      - 10249 # kube-proxy --metrics-bind-address
+      - 10256 # kube-proxy --healthz-port
+      - 10257 # kube-controller-manager --secure-port
+      - 10259 # kube-scheduler --secure-port
+      - 2379  # etcd client
+      - 2380  # etcd peer
+      - 9091  # calico-node felix (used for metrics)
+      - 9092  # calico-node bird (used for metrics)
+      - 9099  # calico-node felix (used for liveness)
+      - 179   # calico-node bird (used for BGP)
+    when:
+      - not kubeadm_already_run.stat.exists
+    changed_when: False
+
+  - name: verify machine connectivity
+    command: ping -c 2 {{ item }}
+    with_items: "{{ groups['all'] }}"
+    changed_when: False
+
+  # Every node should be able to reach all other nodes.
+  # Use a random sampling of nodes to avoid quadratic complexity.
+  - name: verify machine to machine connectivity with random sample
+    command: ping -c 2 {{ item }}
+    with_random_choice: "{{ groups['all'] | map('extract', hostvars, 'inventory_hostname') | list }}"
+    changed_when: False
+
+
+  # Need to properly handle larger clusters
+  # Consider forks - where each task runs in some batch( default 20) and serial where each play is split into batches
+  # Hardcoding a specific node will not work as they may be run in a different Ansible batches
+  # The `ansible_date_time` var is collected during fact gathering
+  # This task assumes that the fact gathering runs around the same time
+  # So adding an extra second of allowance for each batch of forks that will run
+  - name: compare time is within 30 seconds of the first node in this batch
+    fail:
+      msg: "The time difference between this node and the first node in this batch is greater than 30 seconds"
+    failed_when: ((ansible_date_time.epoch | int) - (hostvars[ansible_play_batch[0]]['ansible_date_time']['epoch'] | int)) | abs > ((30 + (ansible_play_batch|length / ansible_forks)) | int)
+
+
+  - name: detect persistent volume disks in /mnt/disks
+    find:
+      paths: '/mnt/disks/'
+      file_type: directory
+    register: pvd
+
+  - name: check for old persistent volumes in /mnt/disks/*/
+    find:
+      paths: "{{ pvd.files | map(attribute='path') | list }}"
+      file_type: any
+      excludes:
+        - 'lost+found'
+    register: old_pvs
+    failed_when: old_pvs.matched > 0
+    changed_when: old_pvs.matched > 0
+
+  - block:
+    - name: collect OS disk usage on the root volume
+      shell: df -hl | awk '/\/$/ { sum+=$5 } END { print sum }'
+      register: os_root_vol_usage
+      changed_when: False
+
+    - name: ensure disk usage on the root volume is less than {{ validate.disk_usage_threshold }}%
+      assert:
+        that:
+           - os_root_vol_usage.stdout|int < {{ validate.disk_usage_threshold }}
+        msg: Disk space has reached {{ validate.disk_usage_threshold }}% threshold
+
+    - name: collect OS disk allocated size on the root volume
+      shell: df -hl | awk '/\/$/ { sum+=$2 } END { print sum }'
+      register: os_root_vol_size
+      changed_when: False
+
+    - name: ensure disk allocated size on the root volume is equal or greater than {{ validate.disk_size_threshold }}G
+      ignore_errors: True
+      when:
+        - os_root_vol_size.stdout|int < validate.disk_size_threshold
+      fail:
+        msg: "WARNING: Disk size {{ os_root_vol_size.stdout|int }}G is less than {{ validate.disk_size_threshold }}G"
+
+    - name: ensure minimum allocated CPU cores
+      assert:
+        that:
+          - ansible_processor_vcpus >= {{ validate.minimum_cpu_cores }}
+        msg: CPU core allocation {{ ansible_processor_vcpus }} is less than required {{ validate.minimum_cpu_cores }}
+
+    - name: ensure minimum allocated memory
+      assert:
+        that:
+          - ansible_memtotal_mb > {{ validate.minimum_memory_control_plane_mb|int }}
+        msg: Memory allocation {{ ansible_memtotal_mb }}MB is less than required {{ validate.minimum_memory_control_plane_mb|int }}MB for control plane nodes
+
+  - name: check files contain expected values
+    command: cat {{ item.file }}
+    register: result
+    with_items:
+      -  { file: '/proc/sys/net/bridge/bridge-nf-call-iptables', content: '1' }
+      -  { file: '/proc/sys/net/ipv4/ip_forward', content: '1' }
+    failed_when: >
+      result is failure or item.content != result.stdout
+    changed_when: False
+    when: errors_to_ignore is not defined or
+      not (
+        'all' in errors_to_ignore or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-iptables' in errors_to_ignore or
+        'filecontent--proc-sys-net-bridge-bridge-nf-call-ip6tables' in errors_to_ignore
+      )
+
+  - name: check required services are available
+    command: systemctl status {{ item }}
+    register: result
+    with_items:
+      - kubelet
+      - containerd
+    failed_when:
+      - '"could not be found" in result.stderr'
+    changed_when: False
+
+  - name: check required binaries are available
+    shell: command -v "{{ item }}"
+    register: result
+    with_items:
+      - conntrack
+      - crictl
+      - ebtables
+      - ethtool
+      - kubeadm
+      - ip
+      - iptables
+      - mount
+      - nsenter
+      - socat
+      - tc
+      - touch
+    failed_when:
+      - result.rc != 0
+    changed_when: False

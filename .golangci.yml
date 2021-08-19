@@ -82,7 +82,6 @@ linters:
     - goconst
     - gocyclo
     - godot
-    - goerr113
     - gofmt
     - gofumpt
     - goimports

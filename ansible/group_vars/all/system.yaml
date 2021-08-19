@@ -66,3 +66,23 @@ python_env:
   PYTHONPATH: "{{ python_path }}"
 
 default_env: "{{ proxy_env | combine(python_env) }}"
+
+##### Validate #########
+system_default_path_env: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+system_path_env: "{{ ansible_env.PATH if ansible_env is defined and ansible_env.PATH is defined else '' }}:{{ system_default_path_env }}"
+combined_env: "{{ proxy_env | combine({'PATH': system_path_env}) }}"
+
+inventory_hostnames: "{{ groups['all'] | map('extract', hostvars, ['ansible_hostname']) | select('defined') | list }}"
+
+validate:
+  # Disk usage must be lesser than 85% on the root volume
+  disk_usage_threshold: 85
+  # Disk size allocation must be equal or greater than 80GB on the root volume
+  # Debian based OS report the size differently, use 78 instead of 80
+  disk_size_threshold: 78
+  # Minimum control_plane memory allocated to each control plane machine in megabytes. The calculation is 3G (1G is allocated to the kubelet daemons) + TargetRAMMB value, if set.
+  minimum_memory_control_plane_mb: 3072
+  # Minimum worker memory allocated to each work machine in megabytes. The calculation is 1G + 1G(allocated to kubelet daemons).
+  minimum_memory_worker_mb: 2048
+  # Minimum CPU cores allocated to each machine.
+  minimum_cpu_cores: 2

@@ -207,7 +207,7 @@ docs.check:
 .PHONY: lint
 lint: ## golangci-lint
 	$(call print-target)
-	golangci-lint run -c .golangci.yml
+	golangci-lint run -c .golangci.yml --fix
 
 # Add a convience alias
 .PHONY: super-linter
