@@ -11,6 +11,7 @@ konvoy-image validate [flags]
 ```
       --apiserver-port int      apiserver port (default 6443)
   -h, --help                    help for validate
+      --inventory-file string   an ansible inventory defining your infrastructure (default "inventory.yaml")
       --pod-subnet string       ip addresses used for the pod subnet (default "192.168.0.0/16")
       --service-subnet string   ip addresses used for the service subnet (default "10.96.0.0/12")
 ```
