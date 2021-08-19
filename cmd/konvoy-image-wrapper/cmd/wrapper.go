@@ -307,7 +307,7 @@ func (r *Runner) setUserMapping() error {
 		r.homeDir,
 	)
 	//nolint:gosec // file must be world readable
-	return ioutil.WriteFile(filePath, []byte(content), 0644)
+	return ioutil.WriteFile(filePath, []byte(content), 0o644)
 }
 
 func (r *Runner) setGroupMapping() error {
@@ -325,7 +325,7 @@ func (r *Runner) setGroupMapping() error {
 		r.usr.Gid,
 	)
 	//nolint:gosec // file must be world readable
-	return ioutil.WriteFile(filePath, []byte(content), 0644)
+	return ioutil.WriteFile(filePath, []byte(content), 0o644)
 }
 
 func (r *Runner) Run(args []string) error {
@@ -381,7 +381,7 @@ func (r *Runner) Run(args []string) error {
 		}
 
 		// Make sure that that the file is only `rw` by the user.
-		if ferr := f.Chmod(os.FileMode(0600)); ferr != nil {
+		if ferr := f.Chmod(os.FileMode(0o600)); ferr != nil {
 			return ferr
 		}
 		f.Close()

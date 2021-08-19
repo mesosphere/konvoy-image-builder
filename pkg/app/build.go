@@ -145,7 +145,7 @@ func initAnsibleConfig(path string, config map[string]interface{}) error {
 	if err != nil {
 		return fmt.Errorf("error marshelling ansible data: %w", err)
 	}
-	if err = ioutil.WriteFile(path, ansibleData, 0600); err != nil {
+	if err = ioutil.WriteFile(path, ansibleData, 0o600); err != nil {
 		return fmt.Errorf("error writing ansible vars: %w", err)
 	}
 	return nil
@@ -159,7 +159,7 @@ func initPackerConfig(workDir, extraVarsPath string, config map[string]interface
 
 	log.Printf("writing new packer configuration to %s", workDir)
 	if err = ioutil.WriteFile(
-		filepath.Join(workDir, "packer_vars.json"), packerData, 0600); err != nil {
+		filepath.Join(workDir, "packer_vars.json"), packerData, 0o600); err != nil {
 		return fmt.Errorf("error writing packer variables: %w", err)
 	}
 	return nil
@@ -186,7 +186,7 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 			return fmt.Errorf("error getting internal manifest: %w", err)
 		}
 		manifestPath = filepath.Join(workDir, manifestFileName)
-		if err = ioutil.WriteFile(manifestPath, data, 0600); err != nil {
+		if err = ioutil.WriteFile(manifestPath, data, 0o600); err != nil {
 			return fmt.Errorf("error writing packer manifest: %w", err)
 		}
 	} else {
@@ -355,7 +355,7 @@ const runDirectorySuffixLength = 5
 func createRunDirectory(buildName, dir string) (string, error) {
 	f := fmt.Sprintf("%s-%d-%s", buildName, time.Now().Unix(), stringutil.RandString(runDirectorySuffixLength))
 	s := filepath.Join(dir, f)
-	if err := os.MkdirAll(s, 0755); err != nil {
+	if err := os.MkdirAll(s, 0o755); err != nil {
 		return "", fmt.Errorf("error creating work directory: %w", err)
 	}
 	return s, nil
