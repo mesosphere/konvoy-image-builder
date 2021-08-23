@@ -18,7 +18,7 @@
 - name: run the build
   command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
 
-- name: wait for container being ready
+- name: wait for build being done
   command: "docker logs --tail 1 nvidia-driver"
   register: build_log
   retries: 150
@@ -28,10 +28,13 @@
 - name: tar libs /usr/lib/x86_64-linux-gnu
   command: docker exec -i nvidia-driver "/bin/sh" -c "tar czf /opt/lib/x86_64-linux-gnu.tar.gz /usr/lib/x86_64-linux-gnu"
 
-- name: send signal until build container is gone
+# - name: tar bins /usr/lib/x86_64-linux-gnu
+#   command: docker exec -i nvidia-driver "/bin/sh" -c "tar czf /opt/lib/x86_64-linux-gnu.tar.gz /usr/lib/x86_64-linux-gnu"
+
+- name: send signal to terminate build container
   command: "docker kill -s SIGHUP nvidia-driver"
 
-- name: xtract libs into /opt/lib/x86_64-linux-gnu
+- name: extract libs into /opt/lib/x86_64-linux-gnu
   command: "tar xzf /opt/lib/x86_64-linux-gnu.tar.gz --directory /opt/lib --strip-components 2"
 
 - name: kill dead libs in /opt/lib/x86_64-linux-gnu
@@ -43,94 +46,94 @@
 - name: load nvidia modules
   command: modprobe -d /opt/nvidia/460.73.01/ -a nvidia nvidia-uvm nvidia-modeset
 
-# build container runtime
-- name: create temporary build directory
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: build
-  register: build_dir
+# # build container runtime
+# - name: create temporary build directory
+#   ansible.builtin.tempfile:
+#     state: directory
+#     suffix: build
+#   register: build_dir
 
-- name: clone nvidia-container-runtime sources
-  command: "git clone --depth 1 --branch v3.5.0 https://gitlab.com/nvidia/container-toolkit/container-runtime.git {{ build_dir.path }}/container-runtime"
+# - name: clone nvidia-container-runtime sources
+#   command: "git clone --depth 1 --branch v3.5.0 https://gitlab.com/nvidia/container-toolkit/container-runtime.git {{ build_dir.path }}/container-runtime"
 
-- name: pull golang image
-  command: "docker pull golang:1.16"
+# - name: pull golang image
+#   command: "docker pull golang:1.16"
 
-- name: build the nvidia-container-runtime
-  command: docker run -i -v  {{ build_dir.path }}/container-runtime:/tmp/container-runtime -w /tmp/container-runtime golang:1.16 "/usr/bin/make" "build"
+# - name: build the nvidia-container-runtime
+#   command: docker run -i -v  {{ build_dir.path }}/container-runtime:/tmp/container-runtime -w /tmp/container-runtime golang:1.16 "/usr/bin/make" "build"
 
-# install container runtime
-# FIXME(tillt): proper copy
-- name: copy nvidia-container-runtime
-  command: cp {{ build_dir.path }}/container-runtime/nvidia-container-runtime /opt/bin
+# # install container runtime
+# # FIXME(tillt): proper copy
+# - name: copy nvidia-container-runtime
+#   command: cp {{ build_dir.path }}/container-runtime/nvidia-container-runtime /opt/bin
 
-- name: create nvidia-container-runtime configuration directory
-  file:
-    path: "/etc/nvidia-container-runtime/"
-    state: directory
+# - name: create nvidia-container-runtime configuration directory
+#   file:
+#     path: "/etc/nvidia-container-runtime/"
+#     state: directory
 
-- name: copy nvidia-container-runtime configuration
-  template:
-    src: "./etc/nvidia-container-runtime/config.toml"
-    dest: "/etc/nvidia-container-runtime/config.toml"
+# - name: copy nvidia-container-runtime configuration
+#   template:
+#     src: "./etc/nvidia-container-runtime/config.toml"
+#     dest: "/etc/nvidia-container-runtime/config.toml"
 
-- name: create oci hooks directory
-  file:
-    path: "/opt/usr/libexec/oci/hooks.d/"
-    state: directory
+# - name: create oci hooks directory
+#   file:
+#     path: "/opt/usr/libexec/oci/hooks.d/"
+#     state: directory
 
-- name: copy oci hook
-  template:
-    src: "./usr/libexec/oci/hooks.d/oci-nvidia-hook"
-    dest: "/opt/usr/libexec/oci/hooks.d/oci-nvidia-hook"
-    mode: 0755
+# - name: copy oci hook
+#   template:
+#     src: "./usr/libexec/oci/hooks.d/oci-nvidia-hook"
+#     dest: "/opt/usr/libexec/oci/hooks.d/oci-nvidia-hook"
+#     mode: 0755
 
-- name: create oci hooks configuration directory
-  file:
-    path: "/opt/usr/share/containers/oci/hooks.d/"
-    state: directory
+# - name: create oci hooks configuration directory
+#   file:
+#     path: "/opt/usr/share/containers/oci/hooks.d/"
+#     state: directory
 
-- name: copy oci hook configuration
-  template:
-    src: "./usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
-    dest: "/opt/usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
+# - name: copy oci hook configuration
+#   template:
+#     src: "./usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
+#     dest: "/opt/usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
 
-# build libnvidia-container
-- name: create temporary build directory
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: build
-  register: libnvidia_dir
+# # build libnvidia-container
+# - name: create temporary build directory
+#   ansible.builtin.tempfile:
+#     state: directory
+#     suffix: build
+#   register: libnvidia_dir
 
-- name: clone nvidia-container-runtime sources
-  command: "git clone --depth 1 --branch v1.4.0 https://gitlab.com/nvidia/container-toolkit/libnvidia-container.git {{ libnvidia_dir.path }}/libnvidia-container"
+# - name: clone nvidia-container-runtime sources
+#   command: "git clone --depth 1 --branch v1.4.0 https://gitlab.com/nvidia/container-toolkit/libnvidia-container.git {{ libnvidia_dir.path }}/libnvidia-container"
 
-- name: copy libnvidia build Dockerfile
-  copy:
-    src: "./Dockerfile.libnvidia"
-    dest: "/tmp/Dockerfile.libnvidia"
+# - name: copy libnvidia build Dockerfile
+#   copy:
+#     src: "./Dockerfile.libnvidia"
+#     dest: "/tmp/Dockerfile.libnvidia"
 
-- name: build the libnvidia-container build image
-  command: docker build -f /tmp/Dockerfile.libnvidia --build-arg BUILD_LOCATION={{ libnvidia_dir.path }}/ --tag libnvidia-build ./
+# - name: build the libnvidia-container build image
+#   command: docker build -f /tmp/Dockerfile.libnvidia --build-arg BUILD_LOCATION={{ libnvidia_dir.path }}/ --tag libnvidia-build ./
 
-- name: build libnvidia-container
-  command: docker run -i -v /opt:/opt -v {{ libnvidia_dir.path }}/libnvidia-container:/tmp/libnvidia-container -w /tmp/libnvidia-container libnvidia-build:latest "/bin/sh" -c "make ; mv '/tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/name libelf.so.1' /tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/libelf.so.1 ; make"
+# - name: build libnvidia-container
+#   command: docker run -i -v /opt:/opt -v {{ libnvidia_dir.path }}/libnvidia-container:/tmp/libnvidia-container -w /tmp/libnvidia-container libnvidia-build:latest "/bin/sh" -c "make ; mv '/tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/name libelf.so.1' /tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/libelf.so.1 ; make"
 
-# FIXME(tillt): proper copy
-- name: copy nvidia-container-cli
-  command: cp {{ libnvidia_dir.path }}/libnvidia-container/nvidia-container-cli /opt/bin
+# # FIXME(tillt): proper copy
+# - name: copy nvidia-container-cli
+#   command: cp {{ libnvidia_dir.path }}/libnvidia-container/nvidia-container-cli /opt/bin
 
-# FIXME(tillt): proper copy
-- name: copy libnvidia-container
-  command: cp {{ libnvidia_dir.path }}/libnvidia-container/libnvidia-container.so.1.4.0 /opt/lib
+# # FIXME(tillt): proper copy
+# - name: copy libnvidia-container
+#   command: cp {{ libnvidia_dir.path }}/libnvidia-container/libnvidia-container.so.1.4.0 /opt/lib
 
-# FIXME(tillt): proper link
-- name: link libnvidia-container
-  command: ln -s /opt/lib/libnvidia-container.so.1.4.0 /opt/lib/libnvidia-container.so.1
+# # FIXME(tillt): proper link
+# - name: link libnvidia-container
+#   command: ln -s /opt/lib/libnvidia-container.so.1.4.0 /opt/lib/libnvidia-container.so.1
 
-# FIXME(tillt): proper link
-- name: link libnvidia-container
-  command: ln -s /opt/lib/libnvidia-container.so.1.4.0 /opt/lib/libnvidia-container.so
+# # FIXME(tillt): proper link
+# - name: link libnvidia-container
+#   command: ln -s /opt/lib/libnvidia-container.so.1.4.0 /opt/lib/libnvidia-container.so
 
-- name: run ldconfig
-  command: ldconfig /opt/lib/x86_64-linux-gnu /opt/lib
+# - name: run ldconfig
+#   command: ldconfig /opt/lib/x86_64-linux-gnu /opt/lib
