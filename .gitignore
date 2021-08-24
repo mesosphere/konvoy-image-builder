@@ -58,3 +58,5 @@ flatcar-version.yaml
 
 /ansible/venv/*
 /ansible/molecule/**/__pycache__/
+
+/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
