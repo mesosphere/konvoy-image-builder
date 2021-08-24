@@ -66,6 +66,8 @@ dockers:
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
     skip_push: true
+    extra_files:
+      - bin
 
 release:
   github:

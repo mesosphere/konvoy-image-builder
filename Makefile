@@ -7,8 +7,7 @@ INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
-
-# export REPO_REV := $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=8 --tags --match='v*' HEAD)
+export REPO_REV := $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
 
 UID ?= $(shell id -u)
 GID ?= $(shell id -g)
@@ -26,6 +25,9 @@ export DOCKER_SOCKET_GID ?= $(shell /usr/bin/stat -f "%g" $(DOCKER_SOCKET))
 else
 export DOCKER_SOCKET_GID ?= $(shell stat -c %g $(DOCKER_SOCKET))
 endif
+
+export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)
+export DOCKER_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_IMG)' | tr '/:' '.')
 
 export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit
 export DOCKER_DEVKIT_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_DEVKIT_IMG)' | tr '/:' '.')
@@ -94,6 +96,9 @@ ifneq ($(shell command -v docker),)
 	ifeq ($(shell docker image ls --quiet "$(DOCKER_DEVKIT_IMG)"),)
 		export junk := $(shell rm -rf $(DOCKER_DEVKIT_PHONY_FILE))
 	endif
+	ifeq ($(shell docker image ls --quiet "$(DOCKER_IMG)"),)
+		export junk := $(shell rm -rf $(DOCKER_PHONY_FILE))
+	endif
 endif
 
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
@@ -107,6 +112,15 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 		--tag "$(DOCKER_DEVKIT_IMG)" \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
+
+$(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
+$(DOCKER_PHONY_FILE): bin/konvoy-image
+$(DOCKER_PHONY_FILE): Dockerfile
+	docker build \
+		--file $(REPO_ROOT_DIR)/Dockerfile \
+		--tag "$(DOCKER_IMG)" \
+		$(REPO_ROOT_DIR) \
+	&& touch $(DOCKER_PHONY_FILE)
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
@@ -173,6 +187,7 @@ clean: ## remove files created during build
 	$(call print-target)
 	rm -rf bin
 	rm -rf dist
+	rm -rf "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 	rm -f flatcar-version.yaml
 	rm -f $(COVERAGE)*
 	docker image rm $(DOCKER_DEVKIT_IMG) || echo "image already removed"
@@ -194,6 +209,15 @@ bin/konvoy-image:
 bin/konvoy-image-wrapper:
 	$(call print-target)
 	CGO_ENABLED=0 go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
+
+dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/cmd
+dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
+dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/pkg
+dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
+dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+dist/konvoy-image_linux_amd64/konvoy-image:
+	$(call print-target)
+	goreleaser build --snapshot --rm-dist --id konvoy-image --single-target
 
 .PHONY: build
 build: bin/konvoy-image
@@ -279,8 +303,16 @@ mod-tidy: ## go mod tidy
 	go mod tidy
 
 .PHONY: build-snapshot
+build.snapshot: dist/konvoy-image_linux_amd64/konvoy-image
 build.snapshot:
 	$(call print-target)
+	# NOTE(jkoelker) shenanigans to get around goreleaser and
+	#                `make release-bundle` being able to share the same
+	#                `Dockerfile`. Unfortunatly goreleaser forbids
+	#                copying the dist folder into the temporary folder
+	#                that it uses as its docker build context ;(.
+	mkdir -p bin
+	cp dist/konvoy-image_linux_amd64/konvoy-image bin/konvoy-image
 	goreleaser --parallelism=1 --skip-publish --snapshot --rm-dist
 
 .PHONY: diff
@@ -347,24 +379,19 @@ ci.e2e.ansible:
 	WHAT="make -C test/e2e/ansible e2e.run" DOCKER_DEVKIT_DEFAULT_ARGS="--rm --net=host" make devkit.run
 	make -C test/e2e/ansible e2e.clean
 
-
-VERSION = $(shell git describe --tags)
-IMAGE_REPO = mesosphere
-IMAGE_NAME = konvoy-image-builder
-
 release-bundle-GOOS:
 	GOOS=$(GOOS) CGO_ENABLED=0 go build -tags EMBED_DOCKER_IMAGE \
-		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(VERSION)" \
-		-o "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/konvoy-image" $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go
-	cp -a "$(REPO_ROOT_DIR)/ansible" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
-	cp -a "$(REPO_ROOT_DIR)/goss" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
-	cp -a "$(REPO_ROOT_DIR)/images" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
-	cp -a "$(REPO_ROOT_DIR)/overrides" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
-	cp -a "$(REPO_ROOT_DIR)/packer" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS)/"
-	tar -C "$(REPO_ROOT_DIR)/dist/bundle" -czf "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(VERSION)_$(GOOS).tar.gz" "konvoy-image-bundle-$(VERSION)_$(GOOS)"
+		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
+		-o "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/konvoy-image" $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go
+	cp -a "$(REPO_ROOT_DIR)/ansible" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/goss" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/images" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/overrides" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
+	cp -a "$(REPO_ROOT_DIR)/packer" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
+	tar -C "$(REPO_ROOT_DIR)/dist/bundle" -czf "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS).tar.gz" "konvoy-image-bundle-$(REPO_REV)_$(GOOS)"
 
-$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz:
-	docker save $(IMAGE_REPO)/$(IMAGE_NAME):$(VERSION) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
+$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
+	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 	$(MAKE) GOOS=linux release-bundle-GOOS
