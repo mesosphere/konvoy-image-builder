@@ -41,6 +41,7 @@ const (
 	packerFilterOwnerKey       = "ami_filter_owners"
 	packerBuilderRegionKey     = "aws_region"
 	packerAMIRegionsKey        = "ami_regions"
+	packerInstanceType         = "aws_instance_type"
 
 	ansibleVarsFilename = "ansible_vars.yaml"
 )
@@ -73,6 +74,7 @@ type UserArgs struct {
 	AMIFilterOwner   string   `json:"ami_filter_owner"`
 	AWSBuilderRegion string   `json:"aws_region"`
 	AMIRegions       []string `json:"ami_regions"`
+	AWSInstanceType  string   `json:"aws_instance_type"`
 }
 
 type ClusterArgs struct {
@@ -391,6 +393,10 @@ func mergeUserArgs(config map[string]interface{}, initOptions InitOptions) {
 
 	if initOptions.UserArgs.AMIFilterOwner != "" {
 		packerMap[packerFilterOwnerKey] = initOptions.UserArgs.AMIFilterOwner
+	}
+
+	if initOptions.UserArgs.AWSInstanceType != "" {
+		packerMap[packerInstanceType] = initOptions.UserArgs.AWSInstanceType
 	}
 
 	if len(initOptions.UserArgs.AMIRegions) > 0 {

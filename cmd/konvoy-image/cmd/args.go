@@ -21,4 +21,5 @@ func addAWSUserArgs(fs *pflag.FlagSet, userArgs *app.UserArgs) {
 	fs.StringVar(&userArgs.SourceAMI, "source-ami", "", "a specific ami available in the builder region to source from")
 	fs.StringVar(&userArgs.AMIFilterName, "source-ami-filter-name", "", "a ami name filter on for selecting the source image")
 	fs.StringVar(&userArgs.AMIFilterOwner, "source-ami-filter-owner", "", "only search AMIs belonging to this owner id")
+	fs.StringVar(&userArgs.AWSInstanceType, "aws-instance-type", "", "an instance type available in the builder region to work on")
 }
