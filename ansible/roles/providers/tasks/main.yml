@@ -78,6 +78,11 @@
     mode: 0644
   when: ansible_os_family != "Flatcar"
 
+- name: get cloud_init version
+  register: cloud_init_version
+  shell: cloud-init --version | awk '{print $2}' | cut -d- -f1
+  when: ansible_os_family !=  "Flatcar"
+
 - name: set cloudinit feature flags
   copy:
     src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
@@ -85,12 +90,13 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and  cloud_init_version.stdout  | float > 20.0
 
-- name: set get python3 location for non-debian
+- name: get python3 location for non-debian
   register: python3_version
   shell: python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))"
   when: ansible_os_family not in ["Debian", "Flatcar"]
+
 
 - name: set cloudinit feature flags for non debian systems
   copy:
@@ -99,7 +105,7 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family not in ["Debian", "Flatcar"]
+  when: ansible_os_family not in ["Debian", "Flatcar"] and  cloud_init_version.stdout | float > 20.0
 
 - name: Ensure chrony is running
   systemd:
