@@ -8,6 +8,7 @@
     "aws_profile": "",
     "aws_region": "us-west-2",
     "aws_secret_key": "",
+    "aws_instance_type": "t3.small",
     "build_timestamp": "{{timestamp}}",
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
@@ -33,7 +34,7 @@
     {
       "name": "{{(user `distribution`) | lower}}-{{user `distribution_version`}}{{user `build_name_extra`}}",
       "type": "amazon-ebs",
-      "instance_type": "t3.small",
+      "instance_type": "{{user `aws_instance_type`}}",
       ((- if .SourceAMIDefined ))
       "source_ami": "{{user `source_ami`}}",
       ((- else ))
