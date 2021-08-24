@@ -43,7 +43,7 @@ func init() {
 }
 
 func initGenerateFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
-	addOverridesArg(fs, &generateFlags.overrides)
+	addOverridesArg(fs, &gFlags.overrides)
 	addClusterArgs(
 		fs,
 		&gFlags.userArgs.ClusterArgs.KubernetesVersion,
