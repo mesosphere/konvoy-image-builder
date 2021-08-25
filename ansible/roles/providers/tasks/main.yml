@@ -21,7 +21,6 @@
 - include_tasks: vmware.yml
   when: packer_builder_type is search('vmware') or
         packer_builder_type is search('vsphere')
-
 - include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
 
@@ -79,6 +78,11 @@
     mode: 0644
   when: ansible_os_family != "Flatcar"
 
+- name: get cloud_init version
+  register: cloud_init_version
+  shell: cloud-init --version | awk '{print $2}' | cut -d- -f1
+  when: ansible_os_family !=  "Flatcar"
+
 - name: set cloudinit feature flags
   copy:
     src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
@@ -86,7 +90,22 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and  cloud_init_version.stdout  | float > 20.0
+
+- name: get python3 location for non-debian
+  register: python3_version
+  shell: python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))"
+  when: ansible_os_family not in ["Debian", "Flatcar"]
+
+
+- name: set cloudinit feature flags for non debian systems
+  copy:
+    src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
+    dest: "{{ python3_version.stdout }}/cloudinit/feature_overrides.py"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family not in ["Debian", "Flatcar"] and  cloud_init_version.stdout | float > 20.0
 
 - name: Ensure chrony is running
   systemd:

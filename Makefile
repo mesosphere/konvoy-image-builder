@@ -76,6 +76,7 @@ export DOCKER_DEVKIT_ARGS ?= \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
 	$(DOCKER_DEVKIT_ENV_ARGS)
 
+
 export DOCKER_DEVKIT_DEFAULT_ARGS ?= \
 	--rm \
 	$(if $(INTERACTIVE),--tty) \
@@ -140,6 +141,16 @@ centos8: ## Build Centos 8 image
 centos8-nvidia: build
 centos8-nvidia: ## Build Centos 8 image
 	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml
+
+.PHONY: rhel8
+rhel8: build
+rhel8: ## Build RHEL 8 image
+	./bin/konvoy-image build images/ami/rhel-8.yaml
+
+.PHONY: rhel8-nvidia
+rhel8-nvidia: build
+rhel8-nvidia: ## Build RHEL 8 image
+	./bin/konvoy-image build images/ami/rhel-8.yaml --overrides overrides/nvidia.yaml
 
 flatcar-version.yaml:
 	./hack/fetch-flatcar-ami.sh
