@@ -209,6 +209,22 @@ func (r *Runner) setHTTPProxyEnv() error {
 	return nil
 }
 
+func (r *Runner) setAnsibleHostKeyChecking() {
+	r.env["ANSIBLE_HOST_KEY_CHECKING"] = "false"
+}
+
+func (r *Runner) setupSSHAgent() {
+	value, found := os.LookupEnv("SSH_AUTH_SOCK")
+	if found {
+		r.env["SSH_AUTH_SOCK"] = value
+		r.addBindVolume(value, value)
+	}
+	value, found = os.LookupEnv("SSH_AGENT_PID")
+	if found {
+		r.env["SSH_AGENT_PID"] = value
+	}
+}
+
 func (r *Runner) dockerRun(args []string) error {
 	//nolint:gosec // running docker is inherently insecure
 	cmd := exec.Command(
@@ -412,6 +428,8 @@ func (r *Runner) Run(args []string) error {
 		return err
 	}
 
+	r.setAnsibleHostKeyChecking()
+	r.setupSSHAgent()
 	// Run the command in the konvoy docker container.
 	return r.dockerRun(args)
 }
