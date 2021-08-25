@@ -16,6 +16,7 @@ build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml
 
 ```
       --ami-regions stringArray          a list of regions to publish amis
+      --aws-instance-type string         an instance type available in the builder region to work on
       --containerd-version string        the version of containerd to install
   -h, --help                             help for build
       --kubernetes-version string        the version of kubernetes to install
