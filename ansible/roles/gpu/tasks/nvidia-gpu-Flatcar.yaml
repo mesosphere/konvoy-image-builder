@@ -12,6 +12,7 @@
 # Build Kernel Modules
 
 # The following modules are needed for the build of kernel modules on flatcar.
+# TODO(tillt): Why does ansible modprobe fail here, it should not.
 - name: load loop modules
   command: modprobe -d / -a loop i2c_core ipmi_msghandler
 
@@ -93,6 +94,8 @@
   command: ldconfig /opt/lib/x86_64-linux-gnu
 
 # We load the kernel modules now - but only for validation purposes.
+# Note, we can't use ansible modprobe here as we need to provide a non-
+# standard location.
 - name: load nvidia modules for validation
   command: modprobe -d /opt/nvidia/460.73.01/ -a nvidia nvidia-uvm nvidia-modeset
 
