@@ -9,20 +9,29 @@
     path: "/opt/var/log/"
     state: directory
 
-# build kernel modules
+# Build Kernel Modules
+
+# The following modules are needed for the build of kernel modules on flatcar.
 - name: load loop modules
   command: modprobe -d / -a loop i2c_core ipmi_msghandler
 
-- name: install loop modules
-  command: echo -e "loop\ni2c_core\nipmi_msghandler" | tee /etc/modules-load.d/driver.conf
-
+# The kernel modules as well as a large part of the libraries and binaries like
+# `nvidia-smi` are built within this container. All of these stricly belong together
+# in terms of versioning - especially libnvidia-ml has to exactly match the kernel
+# modules version.
 - name: pull driver build image
   command: "docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar"
 
-# Note, this has be to run privileged as the driver module has to be loaded (briefly).
+# The build runs in background so we can monitor its console output.
+# Note: This has be to run privileged as the driver module is loaded (briefly).
 - name: run the build
   command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
 
+# The build commonly takes about 10 minutes in total, until the console shows
+# "Done, now waiting for signal".
+# There are at least two well known scenarios in which this will just timeout:
+# - the instance is failing the driver load cause it is not offering a GPU
+# - the root volume size is too small as the build can swallow a whopping extra 10GB
 - name: wait for build being done
   command: "docker logs --tail 1 nvidia-driver"
   register: build_log
@@ -37,6 +46,7 @@
 - name: tar nvidia-bins /usr/bin/nvidia*
   command: docker exec -i nvidia-driver "/bin/sh" -c "tar czf /opt/bin/nvidia-bins.tar.gz /usr/bin/nvidia*"
 
+# We got all the artefacts we needed, we can safely tell the build container to gracefully stop.
 - name: send signal to terminate build container
   command: "docker kill -s SIGHUP nvidia-driver"
 
@@ -52,6 +62,9 @@
 - name: remove nvidia-bins tarball
   command: "rm /opt/bin/nvidia-bins.tar.gz"
 
+# The following libraries actually are all dead links created by the rather crude approach
+# of exporting the libraries above. These have to be removed as otherwise `ldd` will prefer
+# them later instead of system provided variants.
 # FIXME(tillt): consider not packing them in the first place
 - name: kill dead libs in /opt/lib/x86_64-linux-gnu
   command: |
@@ -79,11 +92,9 @@
 - name: run ldconfig
   command: ldconfig /opt/lib/x86_64-linux-gnu
 
-- name: load nvidia modules
+# We load the kernel modules now - but only for validation purposes.
+- name: load nvidia modules for validation
   command: modprobe -d /opt/nvidia/460.73.01/ -a nvidia nvidia-uvm nvidia-modeset
-
-- name: install nvidia modules
-  command: echo -e "nvidia\nnvidia-uvm\nnvidia-modeset" | tee /etc/modules-load.d/nvidia.conf
 
 # TODO(tillt): find a more elegant way to load the modules
 - name: create systemd unit file for nvidia-kernel-modules service
@@ -92,7 +103,7 @@
     src: etc/systemd/system/nvidia-flatcar.service
     mode: 0600
 
-# build container runtime
+# Build Container Runtime
 - name: create temporary build directory
   ansible.builtin.tempfile:
     state: directory
@@ -108,7 +119,7 @@
 - name: build the nvidia-container-runtime
   command: docker run -i -v  {{ build_dir.path }}/container-runtime:/tmp/container-runtime -w /tmp/container-runtime golang:1.16 "/usr/bin/make" "build"
 
-# install container runtime
+# Install Container Runtime
 # FIXME(tillt): proper copy
 - name: copy nvidia-container-runtime
   command: cp {{ build_dir.path }}/container-runtime/nvidia-container-runtime /opt/bin
@@ -123,6 +134,7 @@
     src: "./etc/nvidia-container-runtime/config.toml"
     dest: "/etc/nvidia-container-runtime/config.toml"
 
+# These OCI hooks are not used in our setup - but they have to exist.
 - name: create oci hooks directory
   file:
     path: "/opt/usr/libexec/oci/hooks.d/"
@@ -144,7 +156,8 @@
     src: "./usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
     dest: "/opt/usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
 
-# build libnvidia-container
+# Build libnvidia-container including nvidia-container-cli - a dependency of
+# nvidia-container-runtime.
 - name: create temporary build directory
   ansible.builtin.tempfile:
     state: directory
