@@ -174,6 +174,14 @@ flatcar: build flatcar-version.yaml
 flatcar: ## Build flatcar image
 	./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml
 
+.PHONY: flatcar-nvidia
+flatcar-nvidia: build flatcar-version.yaml
+flatcar-nvidia: ## Build flatcar image
+	./bin/konvoy-image build --region us-west-2 \
+	--aws-instance-type p2.xlarge \
+	images/ami/flatcar.yaml \
+	--overrides overrides/nvidia.yaml
+
 .PHONY: dev
 dev: ## dev build
 dev: clean generate build lint test mod-tidy build.snapshot
