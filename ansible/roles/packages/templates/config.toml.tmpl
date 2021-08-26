@@ -76,6 +76,8 @@ imports = ["/etc/containerd/config-konvoy-*.toml"]
       snapshotter = "overlayfs"
 {% if gpu is defined and 'nvidia' in gpu.types %}
       default_runtime_name = "nvidia-container-runtime"
+      disable_snapshot_annotations = true
+      discard_unpacked_layers = false
 {% else %}
       default_runtime_name = "runc"
 {% endif %}
@@ -100,6 +102,7 @@ imports = ["/etc/containerd/config-konvoy-*.toml"]
           runtime_type = "io.containerd.runc.v1"
           [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-container-runtime.options]
             BinaryName = "{{ sysusr_prefix }}/bin/nvidia-container-runtime"
+            SystemdCgroup = true
     [plugins."io.containerd.grpc.v1.cri".cni]
       bin_dir = "/opt/cni/bin"
       conf_dir = "/etc/cni/net.d"
