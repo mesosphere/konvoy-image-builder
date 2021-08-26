@@ -26,8 +26,6 @@ sysusr_prefix: /opt
 sysusrlocal_prefix: /opt
 systemd_prefix: /etc/systemd
 
-containerd_cri_socket: /run/docker/libcontainerd/docker-containerd.sock
-
 containerd_flatcar_bins:
   - ctr
   - containerd
