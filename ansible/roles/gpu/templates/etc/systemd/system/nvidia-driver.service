@@ -2,6 +2,7 @@
 Description=nvidia kernel modules systemd service unit file.
 
 [Service]
+Type=oneshot
 ExecStart=modprobe -d /opt/nvidia/460.73.01/ -a nvidia nvidia-uvm nvidia-modeset
 
 [Install]

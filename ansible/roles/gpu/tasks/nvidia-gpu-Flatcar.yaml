@@ -99,12 +99,48 @@
 - name: load nvidia modules for validation
   command: modprobe -d /opt/nvidia/460.73.01/ -a nvidia nvidia-uvm nvidia-modeset
 
-# TODO(tillt): find a more elegant way to load the modules
-- name: create systemd unit file for nvidia-kernel-modules service
+- name: create systemd unit file for nvidia-driver service
   template:
-    dest: /etc/systemd/system/nvidia.service
-    src: etc/systemd/system/nvidia-flatcar.service
+    dest: /etc/systemd/system/nvidia-driver.service
+    src: etc/systemd/system/nvidia-driver.service
     mode: 0600
+
+- name: create systemd unit file for nvidia-persistenced service
+  template:
+    dest: /etc/systemd/system/nvidia-persistenced.service
+    src: etc/systemd/system/nvidia-persistenced.service
+    mode: 0600
+
+- name: create systemd unit file for nvidia-runbind service
+  template:
+    dest: /etc/systemd/system/nvidia-runbind.service
+    src: etc/systemd/system/nvidia-runbind.service
+    mode: 0600
+
+# Build Container Toolkit
+- name: create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: toolkit_dir
+
+- name: copy nvidia-container-toolkit build Dockerfile
+  copy:
+    src: "./Dockerfile.containertools"
+    dest: "{{ toolkit_dir.path }}/Dockerfile.containertools"
+
+- name: build nvidia-container-toolkit build image
+  command: docker build -f {{ toolkit_dir.path }}/Dockerfile.containertools --build-arg GOLANG_VERSION=1.16.5 --tag container-toolkit-build {{ toolkit_dir.path }}
+
+- name: clone nvidia-container-toolkit sources
+  command: "git clone --depth 1 --branch v1.5.1 https://gitlab.com/nvidia/container-toolkit/container-toolkit.git {{ toolkit_dir.path }}/container-toolkit"
+
+- name: build nvidia-container-toolkit
+  command: docker run -i -v {{ toolkit_dir.path }}/container-toolkit:/go/src/nvidia-container-toolkit -w /go/src/nvidia-container-toolkit container-toolkit-build:latest "/bin/sh" -c "make binary"
+
+# FIXME(tillt): proper copy
+- name: copy nvidia-container-toolkit
+  command: cp {{ toolkit_dir.path }}/container-toolkit/nvidia-container-toolkit /opt/bin
 
 # Build Container Runtime
 - name: create temporary build directory
@@ -137,7 +173,6 @@
     src: "./etc/nvidia-container-runtime/config.toml"
     dest: "/etc/nvidia-container-runtime/config.toml"
 
-# These OCI hooks are not used in our setup - but they have to exist.
 - name: create oci hooks directory
   file:
     path: "/opt/usr/libexec/oci/hooks.d/"
@@ -178,6 +213,9 @@
 - name: build the libnvidia-container build image
   command: docker build -f /tmp/Dockerfile.libnvidia --build-arg BUILD_LOCATION={{ libnvidia_dir.path }}/ --tag libnvidia-build ./
 
+# FIXME(tillt): Due to known issue when building libnvidia-container on improperly configured systems, we have
+# to rename and incorrectly named `libelf.so.1` and restart the build to finish. Unclear what the problem really
+# is - see https://github.com/NVIDIA/libnvidia-container/issues/116.
 - name: build libnvidia-container
   command: docker run -i -v /opt:/opt -v {{ libnvidia_dir.path }}/libnvidia-container:/tmp/libnvidia-container -w /tmp/libnvidia-container libnvidia-build:latest "/bin/sh" -c "make ; mv '/tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/name libelf.so.1' /tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/libelf.so.1 ; make"
 
@@ -204,10 +242,24 @@
 - name: run ldconfig
   command: ldconfig /opt/lib/x86_64-linux-gnu
 
-- name: enable nvidia-kernel-modules service
+- name: enable nvidia-driver service
   service:
-    name: nvidia
+    name: nvidia-driver
     enabled: yes
   notify:
     - reload systemd
     - restart containerd
+
+- name: enable nvidia-persistenced service
+  service:
+    name: nvidia-persistenced
+    enabled: yes
+  notify:
+    - reload systemd
+
+- name: enable nvidia-runbind service
+  service:
+    name: nvidia-runbind
+    enabled: yes
+  notify:
+    - reload systemd

@@ -1,0 +1,14 @@
+[Unit]
+Description=nvidia kernel modules systemd service unit file.
+Requires=nvidia-driver.service
+After=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+ExecStart=mount --make-runbindable /sys
+ExecStart=mount --make-private /sys
+ExecStart=mkdir -p /run/nvidia/driver
+ExecStart=mount --rbind / /run/nvidia/driver
+
+[Install]
+WantedBy=multi-user.target
