@@ -75,6 +75,7 @@ imports = ["/etc/containerd/config-konvoy-*.toml"]
     [plugins."io.containerd.grpc.v1.cri".containerd]
       snapshotter = "overlayfs"
 {% if gpu is defined and 'nvidia' in gpu.types %}
+      default_runtime_name = "nvidia-container-runtime"
 {% else %}
       default_runtime_name = "runc"
 {% endif %}
