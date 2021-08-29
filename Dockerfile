@@ -26,6 +26,6 @@ RUN apk add --no-cache \
 
 COPY --from=devkit /usr/local/bin/packer /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer-provisioner-goss /usr/local/bin/
-COPY konvoy-image /usr/local/bin
+COPY bin/konvoy-image /usr/local/bin
 
 ENTRYPOINT ["/usr/local/bin/konvoy-image"]

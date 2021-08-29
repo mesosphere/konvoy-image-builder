@@ -29,6 +29,36 @@ builds:
     goarch:
       - amd64
 
+  - main: ./cmd/konvoy-image-wrapper/main.go
+    id: konvoy-image-wrapper
+    binary: konvoy-image
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    tags:
+      - EMBED_DOCKER_IMAGE
+    ldflags:
+      - -s -w
+      - -X {{ .ModulePath }}/pkg/version.version={{ .Version }}
+      - -X {{ .ModulePath }}/pkg/version.major={{ .Major }}
+      - -X {{ .ModulePath }}/pkg/version.minor={{ .Minor }}
+      - -X {{ .ModulePath }}/pkg/version.patch={{ .Patch }}
+      - -X {{ .ModulePath }}/pkg/version.revision={{ .FullCommit }}
+      - -X {{ .ModulePath }}/pkg/version.commitDate={{ .CommitDate }}
+      - -X {{ .ModulePath }}/pkg/version.branch={{ .Branch }}
+      - -X {{ .ModulePath }}/pkg/version.builtBy=goreleaser
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+    hooks:
+      pre:
+        - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+
 dockers:
   - dockerfile: Dockerfile.devkit
     image_templates:
@@ -66,7 +96,28 @@ dockers:
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
     skip_push: true
+    extra_files:
+      - bin
+
+archives:
+  - id: konvoy-image-bundle
+    builds:
+      - konvoy-image-wrapper
+    name_template: "konvoy-image-bundle-v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - ansible
+      - goss
+      - images
+      - overrides
+      - packer
+      - LICENSE
+      - README.md
 
 release:
   github:
   prerelease: auto
+  ids:
+    - konvoy-image-bundle

@@ -5,6 +5,8 @@ FROM golang:1.16
 # FIXME(tillt): This is mostly a copy of https://gitlab.com/nvidia/container-toolkit/libnvidia-container/-/blob/master/mk/Dockerfile.debian
 # FIXME(tillt): Maybe we can find built images of the above -  overwriting the startup command (as it does a `make dist`)
 ENV DEBIAN_FRONTEND=noninteractive
+# NOTE(jkoelker) Ignore "Pin versions in apt get install.
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
         apt-utils \
         bmake \
@@ -39,4 +41,4 @@ ENV WITH_LIBELF=${WITH_LIBELF}
 ENV WITH_TIRPC=${WITH_TIRPC}
 ENV WITH_SECCOMP=${WITH_SECCOMP}
 
-CMD bash
+CMD ["bash"]
