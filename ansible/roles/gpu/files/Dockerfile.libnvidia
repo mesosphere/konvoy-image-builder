@@ -1,6 +1,4 @@
-# FIXME(tillt): Using golang as a base image seems stupid - better use Debian or Ubuntu or something.
-ARG golang:1.16
-FROM golang:1.16
+FROM debian:9
 
 # FIXME(tillt): This is mostly a copy of https://gitlab.com/nvidia/container-toolkit/libnvidia-container/-/blob/master/mk/Dockerfile.debian
 # FIXME(tillt): Maybe we can find built images of the above -  overwriting the startup command (as it does a `make dist`)
