@@ -1,7 +1,7 @@
-FROM ubuntu
+FROM ubuntu@sha256:82becede498899ec668628e7cb0ad87b6e1c371cb8a1e597d83a47fac21d6af3
 RUN apt update && apt install gpg curl -y
 RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
     && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey |  apt-key add - \
     && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | tee /etc/apt/sources.list.d/nvidia-docker.list
 
-RUN  apt-get update &&  apt-get install -y nvidia-container-runtime
+RUN  apt-get update &&  apt-get install -y nvidia-container-runtime=3.5.0-1 -V
