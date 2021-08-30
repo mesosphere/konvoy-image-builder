@@ -201,6 +201,17 @@
     dest: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so"
     state: link
 
+- name: copy ubuntu build Dockerfile to copy container-hook binary
+  copy:
+    src: "./Dockerfile.ubuntu"
+    dest: "/tmp/Dockerfile.ubuntu"
+
+- name: build the ubuntu image
+  command: docker build -f /tmp/Dockerfile.ubuntu --tag hook-build ./
+
+- name: copy hook from image
+  command: docker run -v /opt/bin:/opt/bin -w /opt/bin hook-build:latest cp /bin/nvidia-container-runtime-hook .
+
 - name: run ldconfig
   command: ldconfig /opt/lib/x86_64-linux-gnu
 
