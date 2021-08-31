@@ -210,7 +210,7 @@
   command: docker build -f /tmp/Dockerfile.ubuntu --tag hook-build ./
 
 - name: copy hook from image
-  command: docker run -v /opt/bin:/opt/bin -w /opt/bin hook-build:latest cp /bin/nvidia-container-runtime-hook .
+  command: docker run -v /opt/bin:/opt/bin -w /opt/bin hook-build:latest cp -L /bin/nvidia-container-runtime-hook .
 
 - name: run ldconfig
   command: ldconfig /opt/lib/x86_64-linux-gnu
