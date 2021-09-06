@@ -27,6 +27,8 @@
   template:
     src: "config.toml.tmpl"
     dest: "/etc/containerd/config.toml"
+  notify:
+    - restart containerd
 
 - name: create containerd proxy conf
   template:

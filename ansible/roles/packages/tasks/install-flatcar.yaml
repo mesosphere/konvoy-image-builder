@@ -13,7 +13,8 @@
   template:
     src: "config.toml.tmpl"
     dest: "/etc/containerd/config.toml"
-
+  notify:
+    - restart containerd
 
 - name: Fail if pre-installed containerd version does not match for Flatcar
   shell: containerd --version | cut -d\  -f 3
