@@ -1,3 +1,4 @@
+//go:build EMBED_DOCKER_IMAGE
 // +build EMBED_DOCKER_IMAGE
 
 package image
