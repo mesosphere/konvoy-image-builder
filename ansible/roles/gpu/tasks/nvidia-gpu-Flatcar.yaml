@@ -10,7 +10,6 @@
     state: directory
 
 # Build Kernel Modules
-
 # The following modules are needed for the build of kernel modules on flatcar.
 # TODO(tillt): Why does ansible modprobe fail here, it should not.
 - name: load loop modules
@@ -109,12 +108,6 @@
   template:
     dest: /etc/systemd/system/nvidia-persistenced.service
     src: etc/systemd/system/nvidia-persistenced.service
-    mode: 0600
-
-- name: create systemd unit file for nvidia-runbind service
-  template:
-    dest: /etc/systemd/system/nvidia-runbind.service
-    src: etc/systemd/system/nvidia-runbind.service
     mode: 0600
 
 # Build Container Toolkit
@@ -242,24 +235,19 @@
 - name: run ldconfig
   command: ldconfig /opt/lib/x86_64-linux-gnu
 
+# Activate services.
 - name: enable nvidia-driver service
   service:
     name: nvidia-driver
     enabled: yes
+    state: started
   notify:
     - reload systemd
-    - restart containerd
 
 - name: enable nvidia-persistenced service
   service:
     name: nvidia-persistenced
     enabled: yes
-  notify:
-    - reload systemd
-
-- name: enable nvidia-runbind service
-  service:
-    name: nvidia-runbind
-    enabled: yes
+    state: started
   notify:
     - reload systemd
