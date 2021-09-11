@@ -21,7 +21,7 @@ docker_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/o
 docker_rpm_suse_gpg_key_url: "{{ docker_rpm_suse_repository_url }}/gpg.asc"
 
 # nvidia package
-nvidia_cuda_version: "460"
+nvidia_cuda_version: "470"
 libnvidia_container_rpm_repository_package_url: "https://nvidia.github.io/libnvidia-container/centos7/x86_64"
 libnvidia_container_deb_repository_url: "https://nvidia.github.io/libnvidia-container/ubuntu16.04/amd64"
 libnvidia_container_gpg_key_url: "https://nvidia.github.io/libnvidia-container/gpgkey"
@@ -32,7 +32,7 @@ nvidia_driver_rpm_repository_package_url: http://developer.download.nvidia.com/c
 nvidia_driver_rpm_gpg_key_url: http://developer.download.nvidia.com/compute/cuda/repos/rhel{{ ansible_distribution_major_version|int }}/x86_64/7fa2af80.pub
 # On Centos7 installs `nvidia-driver` with dkms for kernel
 nvidia_driver_rpm_package_name: "nvidia-driver-latest-dkms"
-nvidia_driver_rpm_package_version: "460.73.01-1.el7.x86_64"
+nvidia_driver_rpm_package_version: "470.63.01-1.el7_9.x86_64"
 # On Centos8 installs `nvidia-driver` module with given version
 nvidia_driver_dnf_module_name: "nvidia-driver"
 nvidia_driver_dnf_module_version: "{{nvidia_cuda_version}}-dkms"
