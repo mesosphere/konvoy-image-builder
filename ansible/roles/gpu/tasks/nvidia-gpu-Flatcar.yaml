@@ -135,6 +135,12 @@
 - name: copy nvidia-container-toolkit
   command: cp {{ toolkit_dir.path }}/container-toolkit/nvidia-container-toolkit /opt/bin
 
+- name: link nvidia-container-toolkit-hook
+  file:
+    src: "/opt/bin/nvidia-container-toolkit"
+    dest: "/opt/bin/nvidia-container-runtime-hook"
+    state: link
+
 # Build Container Runtime
 - name: create temporary build directory
   ansible.builtin.tempfile:
