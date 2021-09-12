@@ -19,13 +19,15 @@
 # `nvidia-smi` are built within this container. All of these stricly belong together
 # in terms of versioning - especially libnvidia-ml has to exactly match the kernel
 # modules version.
+# Note: We do not have to pull the exact right image for the kernel version as the
+# image itself pulls the correct / current kernel headers.
 - name: pull driver build image
-  command: "docker pull nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar"
+  command: "docker pull nvcr.io/nvidia/driver:{{ nvidia_driver_version }}-5.10.32-flatcar"
 
 # The build runs in background so we can monitor its console output.
 # Note: This has be to run privileged as the driver module is loaded (briefly).
 - name: run the build
-  command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:460.73.01-5.10.32-flatcar
+  command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvcr.io/nvidia/driver:{{ nvidia_driver_version }}-5.10.32-flatcar
 
 # The build commonly takes about 10 minutes in total, until the console shows
 # "Done, now waiting for signal".
@@ -96,7 +98,7 @@
 # Note, we can't use ansible modprobe here as we need to provide a non-
 # standard location.
 - name: load nvidia modules for validation
-  command: modprobe -d /opt/nvidia/460.73.01/ -a nvidia nvidia-uvm nvidia-modeset
+  command: modprobe -d /opt/nvidia/{{ nvidia_driver_version }}/ -a nvidia nvidia-uvm nvidia-modeset
 
 - name: create systemd unit file for nvidia-driver service
   template:
@@ -126,7 +128,7 @@
   command: docker build -f {{ toolkit_dir.path }}/Dockerfile.containertools --build-arg GOLANG_VERSION=1.16.5 --tag container-toolkit-build {{ toolkit_dir.path }}
 
 - name: clone nvidia-container-toolkit sources
-  command: "git clone --depth 1 --branch v1.5.1 https://gitlab.com/nvidia/container-toolkit/container-toolkit.git {{ toolkit_dir.path }}/container-toolkit"
+  command: "git clone --depth 1 --branch v{{ nvidia_container_toolkit_version }} https://gitlab.com/nvidia/container-toolkit/container-toolkit.git {{ toolkit_dir.path }}/container-toolkit"
 
 - name: build nvidia-container-toolkit
   command: docker run -i -v {{ toolkit_dir.path }}/container-toolkit:/go/src/nvidia-container-toolkit -w /go/src/nvidia-container-toolkit container-toolkit-build:latest "/bin/sh" -c "make binary"
@@ -149,7 +151,7 @@
   register: build_dir
 
 - name: clone nvidia-container-runtime sources
-  command: "git clone --depth 1 --branch v3.5.0 https://gitlab.com/nvidia/container-toolkit/container-runtime.git {{ build_dir.path }}/container-runtime"
+  command: "git clone --depth 1 --branch v{{ nvidia_container_runtime_version }} https://gitlab.com/nvidia/container-toolkit/container-runtime.git {{ build_dir.path }}/container-runtime"
 
 - name: pull golang image
   command: "docker pull golang:1.16"
@@ -201,8 +203,8 @@
     suffix: build
   register: libnvidia_dir
 
-- name: clone nvidia-container-runtime sources
-  command: "git clone --depth 1 --branch v1.4.0 https://gitlab.com/nvidia/container-toolkit/libnvidia-container.git {{ libnvidia_dir.path }}/libnvidia-container"
+- name: clone libnvidia-container sources
+  command: "git clone --depth 1 --branch v{{ libnvidia_container_version }} https://gitlab.com/nvidia/container-toolkit/libnvidia-container.git {{ libnvidia_dir.path }}/libnvidia-container"
 
 - name: copy libnvidia build Dockerfile
   copy:
@@ -224,17 +226,17 @@
 
 # FIXME(tillt): proper copy
 - name: copy libnvidia-container
-  command: cp {{ libnvidia_dir.path }}/libnvidia-container/libnvidia-container.so.1.4.0 /opt/lib/x86_64-linux-gnu
+  command: cp {{ libnvidia_dir.path }}/libnvidia-container/libnvidia-container.so.{{ libnvidia_container_version }} /opt/lib/x86_64-linux-gnu
 
 - name: link libnvidia-container
   file:
-    src: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.1.4.0"
+    src: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.{{ libnvidia_container_version }}"
     dest: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.1"
     state: link
 
 - name: link libnvidia-container
   file:
-    src: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.1.4.0"
+    src: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so.{{ libnvidia_container_version }}"
     dest: "/opt/lib/x86_64-linux-gnu/libnvidia-container.so"
     state: link
 
