@@ -1,7 +1,6 @@
 FROM debian:9
 
-# FIXME(tillt): This is mostly a copy of https://gitlab.com/nvidia/container-toolkit/libnvidia-container/-/blob/master/mk/Dockerfile.debian
-# FIXME(tillt): Maybe we can find built images of the above -  overwriting the startup command (as it does a `make dist`)
+# NOTE: This is mostly a copy of https://gitlab.com/nvidia/container-toolkit/libnvidia-container/-/blob/master/mk/Dockerfile.debian
 ENV DEBIAN_FRONTEND=noninteractive
 # NOTE(jkoelker) Ignore "Pin versions in apt get install.
 # hadolint ignore=DL3008

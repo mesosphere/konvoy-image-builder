@@ -19,8 +19,9 @@
 # `nvidia-smi` are built within this container. All of these stricly belong together
 # in terms of versioning - especially libnvidia-ml has to exactly match the kernel
 # modules version.
-# Note: We do not have to pull the exact right image for the kernel version as the
-# image itself pulls the correct / current kernel headers.
+# Note: We do not have to pull the exact matching image for the kernel version as the
+# image contained process pulls the correct / current kernel headers. We should be fine
+# staying on this very version until we are not.
 - name: pull driver build image
   command: "docker pull nvcr.io/nvidia/driver:{{ nvidia_driver_version }}-5.10.32-flatcar"
 
@@ -41,7 +42,7 @@
   delay: 10
   until: "'Done, now waiting for signal' in build_log.stdout"
 
-# FIXME(tillt): consider a proper list of libs to grab - for that we would need a proper dependency tree!
+# TODO(tillt): Consider a proper list of libs to grab - for that we would need a proper dependency tree.
 - name: tar nvidia-libs /usr/lib/x86_64-linux-gnu
   command: docker exec -i nvidia-driver "/bin/sh" -c "tar czf /opt/lib/x86_64-linux-gnu.tar.gz /usr/lib/x86_64-linux-gnu"
 
@@ -133,7 +134,6 @@
 - name: build nvidia-container-toolkit
   command: docker run -i -v {{ toolkit_dir.path }}/container-toolkit:/go/src/nvidia-container-toolkit -w /go/src/nvidia-container-toolkit container-toolkit-build:latest "/bin/sh" -c "make binary"
 
-# FIXME(tillt): proper copy
 - name: copy nvidia-container-toolkit
   command: cp {{ toolkit_dir.path }}/container-toolkit/nvidia-container-toolkit /opt/bin
 
@@ -160,7 +160,6 @@
   command: docker run -i -v  {{ build_dir.path }}/container-runtime:/tmp/container-runtime -w /tmp/container-runtime golang:1.16 "/usr/bin/make" "build"
 
 # Install Container Runtime
-# FIXME(tillt): proper copy
 - name: copy nvidia-container-runtime
   command: cp {{ build_dir.path }}/container-runtime/nvidia-container-runtime /opt/bin
 
@@ -220,11 +219,9 @@
 - name: build libnvidia-container
   command: docker run -i -v /opt:/opt -v {{ libnvidia_dir.path }}/libnvidia-container:/tmp/libnvidia-container -w /tmp/libnvidia-container libnvidia-build:latest "/bin/sh" -c "make ; mv '/tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/name libelf.so.1' /tmp/libnvidia-container/deps/src/elftoolchain-0.7.1/libelf/libelf.so.1 ; make"
 
-# FIXME(tillt): proper copy
 - name: copy nvidia-container-cli
   command: cp {{ libnvidia_dir.path }}/libnvidia-container/nvidia-container-cli /opt/bin
 
-# FIXME(tillt): proper copy
 - name: copy libnvidia-container
   command: cp {{ libnvidia_dir.path }}/libnvidia-container/libnvidia-container.so.{{ libnvidia_container_version }} /opt/lib/x86_64-linux-gnu
 

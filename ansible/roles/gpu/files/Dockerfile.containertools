@@ -1,5 +1,7 @@
 FROM debian:9
-
+#
+# This is mostly a copy of https://gitlab.com/nvidia/container-toolkit/container-toolkit/-/blob/master/docker/Dockerfile.debian
+#
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
