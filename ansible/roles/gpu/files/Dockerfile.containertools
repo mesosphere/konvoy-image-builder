@@ -3,6 +3,7 @@ FROM debian:9
 # This is mostly a copy of https://gitlab.com/nvidia/container-toolkit/container-toolkit/-/blob/master/docker/Dockerfile.debian
 #
 ENV DEBIAN_FRONTEND=noninteractive
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
         ca-certificates \
@@ -14,9 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         lsb-release && \
     rm -rf /var/lib/apt/lists/*
 
+# hadolint ignore=DL3059
 RUN echo "deb http://ftp.debian.org/debian $(lsb_release -cs)-backports main" > /etc/apt/sources.list.d/backports.list
 
 ARG GOLANG_VERSION=0.0.0
+# hadolint ignore=DL4006
 RUN set -eux; \
     \
     arch="$(uname -m)"; \
