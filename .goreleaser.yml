@@ -95,9 +95,12 @@ dockers:
       - "--label=org.opencontainers.image.version={{ .Version }}"
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
-    skip_push: true
+    skip_push: auto
     extra_files:
       - bin
+      - images
+      - ansible
+      - packer
 
 archives:
   - id: konvoy-image-bundle
