@@ -53,6 +53,11 @@ ifneq ($(wildcard $(DOCKER_SOCKET)),)
 		--volume "$(DOCKER_SOCKET)":/var/run/docker.sock
 endif
 
+export DOCKER_DEVKIT_PUSH_ARGS ?= \
+	--volume "$(HOME)/.docker":"/home/$(USER_NAME)/.docker" \
+	--env DOCKER_PASS \
+	--env DOCKER_CLI_EXPERIMENTAL
+
 # ulimit arg is a workaround for golang's "suboptimal" bug workaround that
 # manifests itself in alpine images, resulting in packer plugins sipmly dying.
 #
@@ -76,6 +81,7 @@ export DOCKER_DEVKIT_ARGS ?= \
 	--workdir /kib \
 	$(DOCKER_SOCKET_ARGS) \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
+	$(DOCKER_DEVKIT_PUSH_ARGS) \
 	$(DOCKER_DEVKIT_ENV_ARGS)
 
 
