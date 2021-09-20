@@ -15,7 +15,7 @@ builds:
       - -trimpath
     ldflags:
       - -s -w
-      - -X {{ .ModulePath }}/pkg/version.version={{ .Version }}
+      - -X {{ .ModulePath }}/pkg/version.version=v{{trimprefix .Version "v"}}
       - -X {{ .ModulePath }}/pkg/version.major={{ .Major }}
       - -X {{ .ModulePath }}/pkg/version.minor={{ .Minor }}
       - -X {{ .ModulePath }}/pkg/version.patch={{ .Patch }}
@@ -41,7 +41,7 @@ builds:
       - EMBED_DOCKER_IMAGE
     ldflags:
       - -s -w
-      - -X {{ .ModulePath }}/pkg/version.version={{ .Version }}
+      - -X {{ .ModulePath }}/pkg/version.version=v{{trimprefix .Version "v"}}
       - -X {{ .ModulePath }}/pkg/version.major={{ .Major }}
       - -X {{ .ModulePath }}/pkg/version.minor={{ .Minor }}
       - -X {{ .ModulePath }}/pkg/version.patch={{ .Patch }}
@@ -72,7 +72,7 @@ dockers:
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.name={{ .ProjectName }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
     skip_push: true
@@ -92,7 +92,7 @@ dockers:
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.name={{ .ProjectName }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
     skip_push: auto
