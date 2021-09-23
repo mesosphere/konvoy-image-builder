@@ -28,18 +28,22 @@
     autorefresh: true
   register: cuda_repo_installation_rpm
   until: cuda_repo_installation_rpm is success
-  retries: 3
+  retries: 15
   delay: 3
 
 - name: Install current kernel devel
   zypper:
     name: "kernel-{{ ansible_kernel | regex_search('.*-(\\w+)$', '\\1') | first }}-devel={{ ansible_kernel | regex_search('(.*)-\\w+$', '\\1') | first }}"
     state: present
+  retries: 15
+  delay: 3
 
 - name: Install Nvidia drivers
   zypper:
     name: cuda-drivers-{{ nvidia_cuda_version }}
     state: present
+  retries: 15
+  delay: 3
 
 - name: Import libnvidia-container repository key
   rpm_key:
@@ -58,6 +62,8 @@
   zypper:
     name: libnvidia-container1
     state: present
+  retries: 15
+  delay: 3
 
 - name: Import nvidia-container-runtime repository key
   rpm_key:
@@ -71,13 +77,19 @@
     autorefresh: true
     repo: "{{ nvidia_container_runtime_repo_sles }}"
   changed_when: false # zypper repo is updating for this resource all the time
+  retries: 15
+  delay: 3
 
 - name: Install nvidia-container-tools
   zypper:
     name: libnvidia-container-tools
     state: present
+  retries: 15
+  delay: 3
 
 - name: Install nvidia-container-runtime
   zypper:
     name: "{{ nvidia_container_runtime_package }}"
     state: present
+  retries: 15
+  delay: 3
