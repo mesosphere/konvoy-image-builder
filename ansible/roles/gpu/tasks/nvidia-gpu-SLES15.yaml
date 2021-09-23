@@ -10,17 +10,17 @@
   changed_when: "'Successfully registered' in connect_register.stdout"
   when: not 'PackageHub' in suseconnect_status.stdout
 
-- name: import CUDA rpm repository key
+- name: Import CUDA rpm repository key
   rpm_key:
     state: present
     key: "{{ nvidia_repo_gpgkey }}"
 
-- name: import Nvidia repository key
+- name: Import Nvidia repository key
   rpm_key:
     state: present
     key: "{{ nvidia_repo_gpgkey }}"
 
-- name: Add NVIDIA repo
+- name: Add Nvidia repo
   zypper_repository:
     name: cuda
     repo: "{{ nvidia_repo_baseurl }}"
@@ -28,20 +28,24 @@
     autorefresh: true
   register: cuda_repo_installation_rpm
   until: cuda_repo_installation_rpm is success
-  retries: 3
+  retries: 15
   delay: 3
 
 - name: Install current kernel devel
   zypper:
     name: "kernel-{{ ansible_kernel | regex_search('.*-(\\w+)$', '\\1') | first }}-devel={{ ansible_kernel | regex_search('(.*)-\\w+$', '\\1') | first }}"
     state: present
+  retries: 15
+  delay: 3
 
 - name: Install Nvidia drivers
   zypper:
     name: cuda-drivers-{{ nvidia_cuda_version }}
     state: present
+  retries: 15
+  delay: 3
 
-- name: import libnvidia-container repository key
+- name: Import libnvidia-container repository key
   rpm_key:
     state: present
     key: "{{ libnvidia_container_repo_gpgkey }}"
@@ -54,12 +58,14 @@
     repo: "{{ libnvidia_container_repo_sles }}"
   changed_when: false # zypper repo is updating for this resource all the time
 
-- name: install libnvidia-container
+- name: Install libnvidia-container
   zypper:
     name: libnvidia-container1
     state: present
+  retries: 15
+  delay: 3
 
-- name: import nvidia-container-runtime repository key
+- name: Import nvidia-container-runtime repository key
   rpm_key:
     state: present
     key: "{{ nvidia_container_runtime_repo_gpgkey }}"
@@ -71,13 +77,19 @@
     autorefresh: true
     repo: "{{ nvidia_container_runtime_repo_sles }}"
   changed_when: false # zypper repo is updating for this resource all the time
+  retries: 15
+  delay: 3
 
 - name: Install nvidia-container-tools
   zypper:
     name: libnvidia-container-tools
     state: present
+  retries: 15
+  delay: 3
 
 - name: Install nvidia-container-runtime
   zypper:
     name: "{{ nvidia_container_runtime_package }}"
     state: present
+  retries: 15
+  delay: 3
