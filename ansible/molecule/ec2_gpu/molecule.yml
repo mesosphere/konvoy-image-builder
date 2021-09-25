@@ -4,50 +4,50 @@ scenario:
 driver:
   name: ec2
 platforms:
-  # - name: konvoyimage-centos7.9-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "CentOS 7.9.2009 x86_64"
-  #   image_search_owner: "125523088429"
-  #   region: us-east-1
-  #   instance_type: p2.xlarge
-  #   spot_price: false
-  #   ssh_user: centos
-  # # test vault
-  # - name: konvoyimage-centos7.8-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "CentOS 7.8*"
-  #   image_search_owner: "125523088429"
-  #   region: us-east-1
-  #   instance_type: p2.xlarge
-  #   spot_price: false
-  #   ssh_user: centos
-  # - name: konvoyimage-rhel7.9-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "RHEL-7.9_HVM-*"
-  #   image_search_owner: "309956199498"
-  #   region: us-east-1
-  #   instance_type: p2.xlarge
-  #   spot_price: false
-  #   ssh_user: ec2-user
-  # - name: konvoyimage-rhel8.4-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "RHEL-8.4.0_HVM-*"
-  #   image_search_owner: "309956199498"
-  #   region: us-east-1
-  #   instance_type: p2.xlarge
-  #   spot_price: false
-  #   ssh_user: ec2-user
-  # - name: konvoyimage-flatcar-stable-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "Flatcar*stable*"
-  #   image_search_owner: "075585003325"
-  #   volume_name: /dev/xvda
-  #   region: us-east-1
-  #   instance_type: p2.xlarge
-  #   ssh_user: core
-  #   spot_price: false
-  # - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
-  #   image_search_name: "suse-sles-15-sp3-v*"
-  #   image_search_owner: "amazon"
-  #   region: us-east-1
-  #   instance_type: p2.xlarge
-  #   ssh_user: ec2-user
-  #   spot_price: false
+  - name: konvoyimage-centos7.9-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "CentOS 7.9.2009 x86_64"
+    image_search_owner: "125523088429"
+    region: us-east-1
+    instance_type: p2.xlarge
+    spot_price: false
+    ssh_user: centos
+  # test vault
+  - name: konvoyimage-centos7.8-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "CentOS 7.8*"
+    image_search_owner: "125523088429"
+    region: us-east-1
+    instance_type: p2.xlarge
+    spot_price: false
+    ssh_user: centos
+  - name: konvoyimage-rhel7.9-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "RHEL-7.9_HVM-*"
+    image_search_owner: "309956199498"
+    region: us-east-1
+    instance_type: p2.xlarge
+    spot_price: false
+    ssh_user: ec2-user
+  - name: konvoyimage-rhel8.4-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "RHEL-8.4.0_HVM-*"
+    image_search_owner: "309956199498"
+    region: us-east-1
+    instance_type: p2.xlarge
+    spot_price: false
+    ssh_user: ec2-user
+  - name: konvoyimage-flatcar-stable-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "Flatcar*stable*"
+    image_search_owner: "075585003325"
+    volume_name: /dev/xvda
+    region: us-east-1
+    instance_type: p2.xlarge
+    ssh_user: core
+    spot_price: false
+  - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "suse-sles-15-sp3-v*"
+    image_search_owner: "amazon"
+    region: us-east-1
+    instance_type: p2.xlarge
+    ssh_user: ec2-user
+    spot_price: false
   - name: konvoyimage-ubuntu-20.04-${USER:-ci}-${HOSTNAME:-local}
     image_search_name: "*ubuntu-focal-20.04-amd64-server-*"
     image_search_owner: "099720109477"
