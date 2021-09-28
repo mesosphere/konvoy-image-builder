@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: install pip
+  package:
+    name: python3-pip
+    state: present
+  when:
+    - ansible_os_family == "Debian"
+
 - name: install aws clients
   pip:
     name: "{{ packages }}"
@@ -62,9 +69,3 @@
     enabled: yes
   when: ansible_distribution == "Ubuntu"
 
-- name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
-    name: hv-kvp-daemon
-    state: stopped
-    enabled: false
-  when: ansible_os_family == "Debian"

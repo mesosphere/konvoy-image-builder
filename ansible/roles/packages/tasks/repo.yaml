@@ -3,3 +3,5 @@
   when: ansible_facts['os_family'] == "RedHat"
 - include: repo-suse.yaml
   when: ansible_facts['os_family'] == "Suse"
+- include: repo-debian.yaml
+  when: ansible_facts['os_family'] == "Debian"

@@ -13,3 +13,8 @@
   template:
     src: "crictl.yaml"
     dest: "/etc/crictl.yaml"
+
+- name: restart containerd
+  service:
+    name: containerd
+    state: restarted
