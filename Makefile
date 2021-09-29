@@ -182,11 +182,21 @@ flatcar: ## Build flatcar image
 
 .PHONY: flatcar-nvidia
 flatcar-nvidia: build flatcar-version.yaml
-flatcar-nvidia: ## Build flatcar image
+flatcar-nvidia: ## Build flatcar image with GPU support
 	./bin/konvoy-image build --region us-west-2 \
 	--aws-instance-type p2.xlarge \
 	images/ami/flatcar.yaml \
 	--overrides overrides/nvidia.yaml
+
+.PHONY: ubuntu20
+ubuntu20: build
+ubuntu20: ## Build Ubuntu 20 image
+	./bin/konvoy-image build images/ami/ubuntu-20.yaml
+
+.PHONY: ubuntu20-nvidia
+ubuntu20-nvidia: build
+ubuntu20-nvidia: ## Build Ubuntu 20 image with GPU support
+	./bin/konvoy-image build images/ami/ubuntu-20.yaml --overrides overrides/nvidia.yaml
 
 .PHONY: dev
 dev: ## dev build
