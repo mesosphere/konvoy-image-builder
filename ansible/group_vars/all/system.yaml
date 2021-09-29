@@ -7,6 +7,11 @@ kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
 kubernetes_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/rpm/stable/suse/{{ ansible_distribution_major_version|int }}/x86_64"
 kubernetes_rpm_suse_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
 
+## Debian
+kubernetes_deb_repository_url: "https://packages.cloud.google.com/apt/"
+kubernetes_deb_gpg_key_url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+kubernetes_deb_release_name: "kubernetes-xenial"
+
 # containerd package
 # Appstream is enabled by default in rhel8, so install the package from local repositories in that case
 docker_rpm_container_selinux_package_url: "{{ 'http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-3.el7.noarch.rpm' if ansible_distribution_major_version|int < 8 else 'container-selinux' }}"
@@ -20,6 +25,13 @@ docker_rpm_gpg_key_url: "{{ docker_rpm_repository_url }}/gpg.asc"
 docker_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/opensuse/leap/{{ ansible_distribution_major_version|int }}/x86_64"
 docker_rpm_suse_gpg_key_url: "{{ docker_rpm_suse_repository_url }}/gpg.asc"
 
+docker_deb_repository_url: "https://konvoy-packages-test.s3.amazonaws.com/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}"
+## focal does not yet have a promote to staging job. Need to create one and wait for the 24 hour sync to production s3
+# docker_deb_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}"
+docker_deb_gpg_key_url: "https://packages.d2iq.com/konvoy/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}/gpg.asc"
+docker_deb_release_name: "{{ ansible_distribution_release }}"
+docker_deb_component: "main"
+
 kubernetes_full_version: "{{ kubernetes_version }}{{ kubernetes_build_meta }}"
 package_versions:
   enable_repository_installation: "{{ (spec.osPackages.enableAdditionalRepositories if spec.osPackages is defined else true)|default(true)|bool }}"
@@ -27,6 +39,7 @@ package_versions:
   kubernetes_rpm: "{{ kubernetes_version }}-0"
   kubernetes_deb: "{{ kubernetes_version }}-00"
   kubenode: "{{ kubernetes_version }}"
+  containerd_deb: "{{ containerd_version }}-1"
   containerd_minor_version: "{{ containerd_version[:3] }}"
 
 default_image_registry: ""

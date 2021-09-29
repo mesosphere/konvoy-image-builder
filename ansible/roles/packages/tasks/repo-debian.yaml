@@ -1,0 +1,27 @@
+---
+  - name: add Kubernetes deb key
+    apt_key:
+      url: "{{ kubernetes_deb_gpg_key_url }}"
+    when: ansible_os_family == 'Debian'
+    retries: 3
+    delay: 3
+
+  - name: add Kubernetes deb repository
+    apt_repository:
+      repo: 'deb {{ kubernetes_deb_repository_url }} {{ kubernetes_deb_release_name }} main'
+    retries: 3
+    delay: 3
+
+
+  - name: add Containerd deb key
+    apt_key:
+      url: "{{ docker_deb_gpg_key_url }}"
+    retries: 3
+    delay: 3
+
+
+  - name: add Containerd deb repository
+    apt_repository:
+      repo: 'deb {{ docker_deb_repository_url }} {{ docker_deb_release_name }} {{ docker_deb_component }}'
+    retries: 3
+    delay: 3

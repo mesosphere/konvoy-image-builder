@@ -23,6 +23,9 @@
 - include: install-flatcar.yaml
   when: ansible_os_family == "Flatcar"
 
+- include: install-debian.yaml
+  when: ansible_os_family == "Debian"
+
 - name: copy default configuration to remote
   template:
     src: "config.toml.tmpl"
