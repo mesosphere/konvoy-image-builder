@@ -149,7 +149,7 @@ centos7: ## Build Centos 7 image
 
 .PHONY: centos7-nvidia
 centos7-nvidia: build
-centos7-nvidia: ## Build Centos 7 image
+centos7-nvidia: ## Build Centos 7 image with GPU support
 	./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml
 
 .PHONY: centos8
@@ -159,7 +159,7 @@ centos8: ## Build Centos 8 image
 
 .PHONY: centos8-nvidia
 centos8-nvidia: build
-centos8-nvidia: ## Build Centos 8 image
+centos8-nvidia: ## Build Centos 8 image with GPU support
 	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml
 
 .PHONY: rhel8
@@ -169,7 +169,7 @@ rhel8: ## Build RHEL 8 image
 
 .PHONY: rhel8-nvidia
 rhel8-nvidia: build
-rhel8-nvidia: ## Build RHEL 8 image
+rhel8-nvidia: ## Build RHEL 8 image with GPU support
 	./bin/konvoy-image build images/ami/rhel-8.yaml --overrides overrides/nvidia.yaml
 
 flatcar-version.yaml:
