@@ -385,6 +385,8 @@ ci.e2e.build.all:
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/ubuntu-20.yaml -v ${VERBOSITY}" make devkit.run
+	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/sles-15.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
