@@ -1,0 +1,81 @@
+---
+# Implements the NVIDIA Driver Installation Quickstart Guide for Ubuntu LTS - see
+# https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html#ubuntu-lts
+
+- name: install kernel headers
+  apt:
+    name: linux-headers-{{ ansible_kernel }}
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 3
+
+- name: store distribution version as fact
+  set_fact: distribution="{{ ansible_distribution | lower }}{{ ansible_distribution_version | replace('.','') }}"
+
+# wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-$distribution.pin
+# sudo mv cuda-$distribution.pin /etc/apt/preferences.d/cuda-repository-pin-600
+- name: download {{ distribution }} pin
+  get_url:
+    url: https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution }}/x86_64/cuda-{{ distribution }}.pin
+    dest: /etc/apt/preferences.d/cuda-repository-pin-600
+    mode: '0644'
+  retries: 3
+  delay: 3
+
+# sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/7fa2af80.pub
+- name: install Nvidia CUDA repository public GPG key
+  apt_key:
+    url: https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution }}/x86_64/7fa2af80.pub
+    state: present
+  retries: 3
+  delay: 3
+
+# echo "deb http://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
+- name: add Nvidia CUDA repository
+  apt_repository:
+    repo: deb http://developer.download.nvidia.com/compute/cuda/repos/{{ distribution }}/x86_64 /
+    state: present
+    filename: cuda
+  retries: 3
+  delay: 3
+
+# sudo apt-get -y install cuda-drivers
+- name: install Nvidia CUDA {{ nvidia_cuda_version }} drivers
+  apt:
+    name: cuda-drivers-{{ nvidia_cuda_version }}
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 3
+
+# Implements the NVIDIA Container Toolkit Installation Guide for Ubuntu and Debian - see 
+# https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#installing-on-ubuntu-and-debian
+
+# curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+- name: install Nvidia docker repository public GPG key 
+  apt_key:
+    url: https://nvidia.github.io/nvidia-docker/gpgkey
+    state: present
+  retries: 3
+  delay: 3
+
+# curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+- name: add Nvidia docker repository
+  get_url:
+    url: https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list
+    dest: /etc/apt/sources.list.d/nvidia-docker.list
+    mode: '0644'
+  retries: 3
+  delay: 3
+
+# sudo apt-get install -y nvidia-container-runtime
+- name: install nvidia-container-runtime
+  apt:
+    name: nvidia-container-runtime
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 3
+
+# We rely on a containerd restart -- it currently happens after the config tasks.

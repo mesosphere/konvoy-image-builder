@@ -14,3 +14,6 @@
 - name: "NVIDIA Gpu - Flatcar"
   include_tasks: nvidia-gpu-Flatcar.yaml
   when: ansible_distribution == "Flatcar"
+- name: "NVIDIA Gpu - Ubuntu 20"
+  include_tasks: nvidia-gpu-Ubuntu20.yaml
+  when: ansible_distribution == "Ubuntu"
