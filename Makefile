@@ -188,6 +188,11 @@ flatcar-nvidia: ## Build flatcar image with GPU support
 	images/ami/flatcar.yaml \
 	--overrides overrides/nvidia.yaml
 
+.PHONY: ubuntu18
+ubuntu18: build
+ubuntu18: ## Build Ubuntu 20 image
+	./bin/konvoy-image build images/ami/ubuntu-18.yaml
+
 .PHONY: ubuntu20
 ubuntu20: build
 ubuntu20: ## Build Ubuntu 20 image
@@ -384,6 +389,8 @@ ci.e2e.build.all:
 	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml -v ${VERBOSITY}" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/ubuntu-18.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/ubuntu-20.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
