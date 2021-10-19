@@ -57,6 +57,21 @@
     owner: root
     group: root
   loop: "{{ kubernetes_bins }}"
+  when: ansible_os_family != "Flatcar"
+
+- name: Download Kubernetes Binaries Flatcar
+  get_url:
+    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
+    # TODO(akutz) Write a script to separately download the checksum
+    #             and verify the associated file using the correct
+    #             checksum file format
+    #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
+    dest: "{{ flatcar_sysusr_prefix }}/bin/{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+  loop: "{{ kubernetes_bins }}"
+  when: ansible_os_family == "Flatcar"
 
 - name: Create Kubernetes manifests directory
   file:
@@ -81,6 +96,16 @@
     mode: 0755
     owner: root
     group: root
+  when: ansible_os_family != "Flatcar"
+
+- name: Create kubelet drop-in directory Flatcar
+  file:
+    state: directory
+    path: "{{ flatcar_systemd_prefix }}/system/kubelet.service.d"
+    mode: 0755
+    owner: root
+    group: root
+  when: ansible_os_family == "Flatcar"
 
 - name: Create kubelet kubeadm drop-in file
   template:
@@ -89,6 +114,16 @@
     owner: root
     group: root
     mode: 0644
+  when: ansible_os_family != "Flatcar"
+
+- name: Create kubelet kubeadm drop-in file Flatcar
+  template:
+    src: usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    dest: "{{ flatcar_systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family == "Flatcar"
 
 - name: Create kubelet systemd file
   template:
@@ -97,3 +132,13 @@
     owner: root
     group: root
     mode: 0644
+  when: ansible_os_family != "Flatcar"
+
+- name: Create kubelet systemd file Flatcar
+  template:
+    src: usr/lib/systemd/system/kubelet.service
+    dest: "{{ flatcar_systemd_prefix }}/system/kubelet.service"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family == "Flatcar"

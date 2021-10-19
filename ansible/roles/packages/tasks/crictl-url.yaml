@@ -22,6 +22,17 @@
     dest: "{{ sysusrlocal_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
+  when: ansible_os_family != "Flatcar"
+
+- name: unpack crictl Flatcar
+  unarchive:
+    remote_src: True
+    src: /tmp/crictl.tar.gz
+    dest: "{{ flatcar_sysusrlocal_prefix }}/bin"
+    extra_opts:
+      - --no-overwrite-dir
+  when: ansible_os_family == "Flatcar"
+
 
 - name: Remove crictl tarball
   file:

@@ -31,7 +31,7 @@
 
 - name: Create a directory if it does not exist
   file:
-    path: "{{ sysusr_prefix }}/bin"
+    path: "{{ flatcar_sysusr_prefix }}/bin"
     state: directory
     mode: 0755
 
@@ -75,7 +75,7 @@
 - name: Create symlinks for containerd
   file:
     src: /usr/bin/{{ item }}
-    dest: "{{ sysusr_prefix }}/bin/{{ item }}"
+    dest: "{{ flatcar_sysusr_prefix }}/bin/{{ item }}"
     state: link
   loop: "{{ containerd_flatcar_bins }}"
 
