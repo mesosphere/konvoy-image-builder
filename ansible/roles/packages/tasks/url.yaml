@@ -93,7 +93,7 @@
 - name: Create kubelet systemd file
   template:
     src: usr/lib/systemd/system/kubelet.service
-    dest: "{{ systemd_prefix  if ansible_os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
+    dest: "{{ systemd_prefix  if ansible_os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service"
     owner: root
     group: root
     mode: 0644
