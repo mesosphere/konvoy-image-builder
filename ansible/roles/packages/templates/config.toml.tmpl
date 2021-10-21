@@ -16,7 +16,11 @@ oom_score = 0
 imports = ["/etc/containerd/config-konvoy-*.toml"]
 
 [grpc]
+{% if ansible_os_family == "Flatcar" %}
+  address = "{{ flatcar_containerd_cri_socket }}"
+{% else %}
   address = "{{ containerd_cri_socket }}"
+{% endif %}
   tcp_address = ""
   tcp_tls_cert = ""
   tcp_tls_key = ""

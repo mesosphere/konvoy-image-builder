@@ -5,8 +5,9 @@
 # configure even earlier with a cloud-init / Container Linux Config.
 set -e
 
-[[ "$BUILD_NAME" != *"flatcar"* ]] && exit 0
+source /etc/os-release
 
+[[ "${NAME,,}" != *"flatcar"* ]] && exit 0
 # Prevent systemd from starting `update-engine` and `locksmithd`. The default
 # system unit files check for `/usr/.noupdate`, but since `/usr` is a read-only
 # filesystem we cannot create this. Add `/etc/.noupdate` to perform the same

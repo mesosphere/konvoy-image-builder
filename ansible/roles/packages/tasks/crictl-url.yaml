@@ -10,7 +10,7 @@
 - name: Create "{{ sysusrlocal_prefix }}/bin" directory
   file:
     state: directory
-    path: "{{ sysusrlocal_prefix }}/bin"
+    path: "{{ sysusrlocal_prefix if ansible_os_family != \"Flatcar\" else flatcar_sysusrlocal_prefix }}/bin"
     mode: 0755
     owner: root
     group: root
@@ -19,7 +19,7 @@
   unarchive:
     remote_src: True
     src: /tmp/crictl.tar.gz
-    dest: "{{ sysusrlocal_prefix }}/bin"
+    dest: "{{ sysusrlocal_prefix if ansible_os_family != \"Flatcar\" else flatcar_sysusrlocal_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
 
