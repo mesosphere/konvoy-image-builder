@@ -23,6 +23,7 @@ import (
 const (
 	CommonConfigDefaultPath = "./images/common.yaml"
 	OutputDir               = "./work"
+	defaultBuildName        = "provision_build"
 
 	kubernetesVersionKey       = "kubernetes_version"
 	kubernetesFullVersionKey   = "kubernetes_full_version"
@@ -261,6 +262,9 @@ func buildName(config map[string]interface{}) string {
 	buildNameExtra := getString(config, buildNameExtraKey)
 	if buildNameExtra != "" {
 		return fmt.Sprintf("%s%s", buildName, buildNameExtra)
+	}
+	if buildName == "" {
+		buildName = defaultBuildName
 	}
 	return buildName
 }

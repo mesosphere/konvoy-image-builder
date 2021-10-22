@@ -1,4 +1,4 @@
-download_images: false
+download_images: true
 
 kubernetes_version: "1.21.3"
 containerd_version: "1.4.7"
