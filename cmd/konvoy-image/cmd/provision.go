@@ -12,8 +12,8 @@ var provisionFlags app.ProvisionFlags
 var provisionCmd = &cobra.Command{
 	Use:     "provision <inventory.yaml|hostname,>",
 	Short:   "provision to an inventory.yaml or hostname, note the comma at the end of the hostname",
-	Example: "provision --inventory-file inventory.yaml images/generic/centos-7.yaml",
-	Args:    cobra.ExactArgs(1),
+	Example: "provision --inventory-file inventory.yaml",
+	Args:    cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		provisionFlags.RootFlags = rootFlags
 		builder := newBuilder()
@@ -23,7 +23,7 @@ var provisionCmd = &cobra.Command{
 		if provisionFlags.WorkDir == "" {
 			workDir, err = builder.InitConfig(app.InitOptions{
 				CommonConfigPath: app.CommonConfigDefaultPath,
-				Image:            args[0],
+				Image:            app.CommonConfigDefaultPath,
 				Overrides:        provisionFlags.Overrides,
 				UserArgs: app.UserArgs{
 					ClusterArgs: provisionFlags.ClusterArgs,
