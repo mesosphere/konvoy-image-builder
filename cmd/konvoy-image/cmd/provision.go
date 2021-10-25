@@ -12,7 +12,7 @@ var provisionFlags app.ProvisionFlags
 var provisionCmd = &cobra.Command{
 	Use:     "provision <inventory.yaml|hostname,>",
 	Short:   "provision to an inventory.yaml or hostname, note the comma at the end of the hostname",
-	Example: "provision --inventory-file inventory.yaml images/generic/centos-7.yaml",
+	Example: "provision --inventory-file inventory.yaml",
 	Args:    cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		provisionFlags.RootFlags = rootFlags

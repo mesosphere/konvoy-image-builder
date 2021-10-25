@@ -260,11 +260,11 @@ func buildName(config map[string]interface{}) string {
 	buildName := getString(config, buildNameKey)
 
 	buildNameExtra := getString(config, buildNameExtraKey)
-	if buildNameExtra != "" {
-		return fmt.Sprintf("%s%s", buildName, buildNameExtra)
-	}
 	if buildName == "" {
 		buildName = defaultBuildName
+	}
+	if buildNameExtra != "" {
+		return fmt.Sprintf("%s%s", buildName, buildNameExtra)
 	}
 	return buildName
 }
