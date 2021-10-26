@@ -13,7 +13,7 @@ disabled_plugins = []
 required_plugins = []
 oom_score = 0
 
-imports = ["/etc/containerd/config-konvoy-*.toml"]
+imports = ["/etc/containerd/config.toml", "/etc/containerd/conf.d/*.toml"]
 
 [grpc]
 {% if ansible_os_family == "Flatcar" %}
