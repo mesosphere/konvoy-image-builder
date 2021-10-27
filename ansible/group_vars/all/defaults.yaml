@@ -9,6 +9,7 @@ pause_image_version: "3.4.1"
 # TODO: figure out where this image is used and why the Kubelet tries to pull it
 pause_image_version_prev: "3.2"
 crictl_version: "1.20.0"
+kfips_version: "0.1.0"
 
 # https://github.com/containerd/containerd/releases/download/v1.4.7/cri-containerd-cni-1.4.7-linux-amd64.tar.gz
 containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/cri-containerd-cni-{{ containerd_version }}-linux-amd64.tar.gz
