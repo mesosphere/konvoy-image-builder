@@ -1,6 +1,6 @@
 ---
 python_path: ""
-kubernetes_version: "1.21.3"
+kubernetes_version: "1.21.6"
 containerd_version: "1.4.7"
 kubernetes_cni_version: "0.9.1"
 etcd_version: "3.4.13-0"
