@@ -9,7 +9,7 @@ konvoy-image provision <inventory.yaml|hostname,> [flags]
 ### Examples
 
 ```
-provision --inventory-file inventory.yaml images/generic/centos-7.yaml
+provision --inventory-file inventory.yaml
 ```
 
 ### Options
