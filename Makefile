@@ -203,6 +203,11 @@ ubuntu20-nvidia: build
 ubuntu20-nvidia: ## Build Ubuntu 20 image with GPU support
 	./bin/konvoy-image build images/ami/ubuntu-20.yaml --overrides overrides/nvidia.yaml
 
+.PHONY: oracle7
+oracle7: build
+oracle7: ## Build Oracle Linux 7 image
+	./bin/konvoy-image build images/ami/oracle-7.yaml
+
 .PHONY: oracle8
 oracle8: build
 oracle8: ## Build Oracle Linux 8 image
@@ -406,6 +411,8 @@ ci.e2e.build.all:
 	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/sles-15.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
+	make docker.clean-latest-ami
+	WHAT="./bin/konvoy-image build images/ami/oracle-7.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
 	WHAT="./bin/konvoy-image build images/ami/oracle-8.yaml -v ${VERBOSITY}" make devkit.run
 	make docker.clean-latest-ami
