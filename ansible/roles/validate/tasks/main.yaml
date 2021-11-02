@@ -1,7 +1,7 @@
 ---
   - name: check for supported OS
     fail:
-      msg: "{{ ansible_distribution }} {{ ansible_distribution_major_version }} is not supported. The supported OSes - CentOS 7/8, RHEL 7/8, Suse 15, SLES 15, Ubuntu 16 (xenial) 18 (bionic) 20 (focal) or Debian 9 (stretch)"
+      msg: "{{ ansible_distribution }} {{ ansible_distribution_major_version }} is not supported. The supported OSes - CentOS 7/8, RHEL 7/8, Oracle 8, Suse 15, SLES 15, Ubuntu 16 (xenial) 18 (bionic) 20 (focal) or Debian 9 (stretch)"
     failed_when: not (
                  (ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7, 8])
                  or (ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [7, 8])

@@ -13,3 +13,9 @@
     name: kubelet
     state: restarted
     enabled: yes
+
+- name: restart auditd
+  service:
+    name: auditd
+    state: restarted
+    enabled: yes
