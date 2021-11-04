@@ -14,8 +14,8 @@
     state: restarted
     enabled: yes
 
-- name: restart auditd
+- name: enable auditd
   service:
     name: auditd
-    state: restarted
+    state: started
     enabled: yes
