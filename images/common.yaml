@@ -1,13 +1,13 @@
 download_images: true
 
-kubernetes_version: "1.21.3"
+kubernetes_version: "1.21.6"
 containerd_version: "1.4.7"
 kubernetes_cni_version: "0.9.1"
 etcd_version: "3.4.13-0"
 coredns_version: "1.8.0"
 pause_image_version: "3.4.1"
 pause_image_version_prev: "3.2"
-crictl_version: "1.20.0"
+crictl_version: "1.22.0"
 
 containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/cri-containerd-cni-{{ containerd_version }}-linux-amd64.tar.gz
 containerd_sha256: 3ef2cc781be6e9c06ba405ddd630ac91a3f32858117a040f66110407bb82d83a
@@ -16,7 +16,7 @@ kubernetes_cni_semver: v{{ kubernetes_cni_version }}
 kubernetes_cni_http_checksum: sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
 kubernetes_cni_http_source: https://github.com/containernetworking/plugins/releases/download
 crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
-crictl_sha256: 44d5f550ef3f41f9b53155906e0229ffdbee4b19452b4df540265e29572b899c
+crictl_sha256: 45e0556c42616af60ebe93bf4691056338b3ea0001c0201a6a8ff8b1dbc0652a
 containerd_cri_socket: /run/containerd/containerd.sock
 systemd_prefix: /usr/lib/systemd/site-packages
 sysusr_prefix: /usr
