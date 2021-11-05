@@ -1,0 +1,15 @@
+download_images: true
+
+packer:
+  ami_filter_name: "OL8.4-x86_64-HVM-2021-05-28"
+  ami_filter_owners: "131827586825"
+  distribution: "Oracle"
+  distribution_version: "8"
+  source_ami: ""
+  ssh_username: "ec2-user"
+  root_device_name: "/dev/sda1"
+  volume_size: "15"
+
+build_name: "oracle-8"
+packer_builder_type: "amazon"
+python_path: ""

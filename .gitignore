@@ -52,6 +52,8 @@ flatcar-version.yaml
 /bin/
 /report/
 /super-linter.log
+/debug-goss-spec.yaml
+/goss-spec.yaml
 
 /test/e2e/ansible/generated/*
 !/test/e2e/ansible/generated/.keep

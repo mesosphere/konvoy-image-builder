@@ -35,6 +35,9 @@
   until: result is success
   retries: 5
   delay: 3
+  notify:
+    - reload systemd
+    - enable auditd
 
 - name: install el8 requirements
   yum:
