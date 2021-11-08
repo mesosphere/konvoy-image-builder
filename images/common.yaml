@@ -21,6 +21,10 @@ containerd_cri_socket: /run/containerd/containerd.sock
 systemd_prefix: /usr/lib/systemd/site-packages
 sysusr_prefix: /usr
 sysusrlocal_prefix: /usr/local
+epel_centos_7_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+epel_centos_8_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+epel_centos_8_rpm_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
+
 
 kubernetes_goarch: amd64
 kubernetes_bins:
