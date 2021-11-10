@@ -1,7 +1,7 @@
 ---
 python_path: ""
 kubernetes_version: "1.21.6"
-containerd_version: "1.4.7"
+containerd_version: "1.4.11"
 kubernetes_cni_version: "0.9.1"
 etcd_version: "3.4.13-0"
 coredns_version: "1.8.0"
@@ -11,9 +11,9 @@ pause_image_version_prev: "3.2"
 crictl_version: "1.22.0"
 kfips_version: "0.1.0"
 
-# https://github.com/containerd/containerd/releases/download/v1.4.7/cri-containerd-cni-1.4.7-linux-amd64.tar.gz
+# https://github.com/containerd/containerd/releases/download/v1.4.11/cri-containerd-cni-1.4.11-linux-amd64.tar.gz
 containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/cri-containerd-cni-{{ containerd_version }}-linux-amd64.tar.gz
-containerd_sha256: 3ef2cc781be6e9c06ba405ddd630ac91a3f32858117a040f66110407bb82d83a
+containerd_sha256: 80c47ec5ce2cd91a15204b5f5b534892ca653e75f3fba0c451ca326bca45fb00
 kubernetes_http_source: https://storage.googleapis.com/kubernetes-release/release
 kubernetes_cni_semver: v{{ kubernetes_cni_version }}
 kubernetes_cni_http_checksum: sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
