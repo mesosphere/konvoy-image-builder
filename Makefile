@@ -164,13 +164,23 @@ centos8-nvidia: ## Build Centos 8 image with GPU support
 
 .PHONY: rhel8
 rhel8: build
-rhel8: ## Build RHEL 8 image
+rhel8: ## Build RHEL 8.2 image
 	./bin/konvoy-image build images/ami/rhel-8.yaml
 
 .PHONY: rhel8-nvidia
 rhel8-nvidia: build
-rhel8-nvidia: ## Build RHEL 8 image with GPU support
+rhel8-nvidia: ## Build RHEL 8.2 image with GPU support
 	./bin/konvoy-image build images/ami/rhel-8.yaml --overrides overrides/nvidia.yaml
+
+.PHONY: rhel84
+rhel84: build
+rhel84: ## Build RHEL 8.4 image
+	./bin/konvoy-image build images/ami/rhel-84.yaml
+
+.PHONY: rhel84-nvidia
+rhel84-nvidia: build
+rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
+	./bin/konvoy-image build images/ami/rhel-84.yaml --overrides overrides/nvidia.yaml
 
 flatcar-version.yaml:
 	./hack/fetch-flatcar-ami.sh
