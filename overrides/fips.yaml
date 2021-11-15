@@ -1,4 +1,3 @@
----
 fips:
   enabled: true
   etcdImageTag: v3.4.13_fips
