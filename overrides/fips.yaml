@@ -1,10 +1,12 @@
 ---
+etcd_image_tag: v3.4.13_fips.0
 fips:
   enabled: true
-  etcdImageTag: v3.4.13_fips
+  etcdImageTag: "{{ etcd_image_tag }}"
 build_name_extra: -fips
 kubernetes_build_metadata: fips.0
 default_image_repo: hub.docker.io/mesosphere
+k8s_image_registry: mesosphere
 kubernetes_rpm_repository_url: "https://kubernetes-fips.s3.us-east-2.amazonaws.com\
                             /{{ ansible_distribution_major_version|int }}\
                             /x86_64"

@@ -32,7 +32,8 @@ docker_deb_gpg_key_url: "https://packages.d2iq.com/konvoy/stable/linux/{{ ansibl
 docker_deb_release_name: "{{ ansible_distribution_release }}"
 docker_deb_component: "main"
 
-kubernetes_full_version: "{{ kubernetes_version }}{{ kubernetes_build_meta }}"
+kubernetes_full_version: "{{ kubernetes_version }}{{ kubernetes_build_metadata }}"
+kubernetes_image_tag: "{{ kubernetes_full_version  | replace('+', '_') }}"
 package_versions:
   enable_repository_installation: "{{ (spec.osPackages.enableAdditionalRepositories if spec.osPackages is defined else true)|default(true)|bool }}"
   # the version may contain d2iq specific suffix, remove it when downloading packages
@@ -42,7 +43,11 @@ package_versions:
   containerd_deb: "{{ containerd_version }}-1"
   containerd_minor_version: "{{ containerd_version[:3] }}"
 
+# variable used to set the default image registry for containerd
 default_image_registry: ""
+
+# variable used for seeding images
+k8s_image_registry: "k8s.gcr.io"
 
 fips:
   enabled: false
