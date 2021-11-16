@@ -32,7 +32,9 @@ docker_deb_gpg_key_url: "https://packages.d2iq.com/konvoy/stable/linux/{{ ansibl
 docker_deb_release_name: "{{ ansible_distribution_release }}"
 docker_deb_component: "main"
 
-kubernetes_full_version: "{{ kubernetes_version }}{{ kubernetes_build_metadata }}"
+# Adding kubernetes_full_version for mitogen runs. This variable is always overridden
+# in go code.
+kubernetes_full_version: "{{ kubernetes_version }}+{{ kubernetes_build_metadata }}"
 kubernetes_image_tag: "{{ kubernetes_full_version  | replace('+', '_') }}"
 package_versions:
   enable_repository_installation: "{{ (spec.osPackages.enableAdditionalRepositories if spec.osPackages is defined else true)|default(true)|bool }}"
