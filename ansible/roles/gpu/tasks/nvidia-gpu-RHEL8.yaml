@@ -1,21 +1,29 @@
 ---
-# If possible we use headers from main OS repo for this kernel.
-- name: Install Kernel Header and Devel from OS repo for Current Kernel
-  dnf:
-      name:
-        - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
-        - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
-
-- name: import epel repository key
+- name: add epel gpg key
   rpm_key:
     state: present
     key: "{{ epel_centos_8_rpm_gpg_key }}"
 
-- name: Install EPEL release
-  dnf:
+- name: install epel-release
+  yum:
     name: "{{ epel_centos_8_rpm }}"
     state: present
-    disable_gpg_check: true
+
+- name: find this kernel headers
+  yum:
+    list: "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
+  register: pkgheaders
+
+# If possible we use headers from the main OS repo for this kernel. When
+# this comes back empty, the next step will implicitly install what is
+# needed.
+# TODO(tillt): There must be a more deterministic way.
+- name: Install Kernel Header and Devel from OS repo for Current Kernel
+  yum:
+    name:
+      - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
+      - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+  when: pkgheaders.results|length > 0
 
 # Install NVIDIA repository, driver and tools
 - name: Add NVIDIA repository for CUDA drivers and tools
