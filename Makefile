@@ -351,7 +351,7 @@ mod-tidy: ## go mod tidy
 	$(call print-target)
 	go mod tidy
 
-.PHONY: build-snapshot
+.PHONY: build.snapshot
 build.snapshot: dist/konvoy-image_linux_amd64/konvoy-image
 build.snapshot:
 	$(call print-target)
