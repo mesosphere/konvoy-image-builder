@@ -5,6 +5,8 @@ control_plane_images:
   - "{{ k8s_image_registry }}/kube-scheduler:v{{ kubernetes_image_tag }}"
   - "{{ k8s_image_registry }}/kube-proxy:v{{ kubernetes_image_tag }}"
   - "{{ k8s_image_registry }}/etcd:{{ etcd_image_tag }}"
+  - "{{ k8s_image_registry }}/pause:{{ pause_image_version }}"
+  - "{{ k8s_image_registry }}/pause:{{ pause_image_version_prev }}"
   - "k8s.gcr.io/pause:{{ pause_image_version }}"
   - "k8s.gcr.io/pause:{{ pause_image_version_prev }}"
   - "k8s.gcr.io/coredns/coredns:v{{ coredns_version }}"
