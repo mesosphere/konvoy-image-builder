@@ -84,7 +84,7 @@
         volumes:
           - device_name: "{{ item.item.volume_name if item.item.volume_name is defined else '/dev/sda1' }}"
             delete_on_termination: true
-            volume_size: 20
+            volume_size: 35
             volume_type: gp2
         instance_tags:
           Name: "molecule {{ item.item.name }}"
