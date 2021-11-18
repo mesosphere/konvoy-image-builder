@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/imdario/mergo"
@@ -404,7 +405,7 @@ func mergeUserArgs(config map[string]interface{}, initOptions InitOptions) {
 	}
 
 	if len(initOptions.UserArgs.AMIRegions) > 0 {
-		packerMap[packerAMIRegionsKey] = initOptions.UserArgs.AMIRegions
+		packerMap[packerAMIRegionsKey] = strings.Join(initOptions.UserArgs.AMIRegions, ",")
 	}
 
 	if initOptions.UserArgs.SourceAMI != "" {
