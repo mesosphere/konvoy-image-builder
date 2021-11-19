@@ -36,7 +36,7 @@ platforms:
     spot_price: false
     volume_name: /dev/xvda
   - name: konvoyimage-rhel7.9-${USER:-ci}-${HOSTNAME:-local}
-    image_search_name: "RHEL-7.9_HVM-*"
+    image_search_name: "RHEL-7.9*-x86_64-*"
     image_search_owner: "309956199498"
     region: us-east-1
     instance_type: p2.xlarge
