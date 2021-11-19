@@ -186,6 +186,18 @@ rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
 	--overrides overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge
 
+.PHONY: rhel79
+rhel79: build
+rhel79: ## Build RHEL 7.9 image
+	./bin/konvoy-image build images/ami/rhel-79.yaml
+
+.PHONY: rhel79-nvidia
+rhel79-nvidia: build
+rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
+	./bin/konvoy-image build images/ami/rhel-79.yaml \
+	--overrides overrides/nvidia.yaml \
+	--aws-instance-type p2.xlarge
+
 flatcar-version.yaml:
 	./hack/fetch-flatcar-ami.sh
 
