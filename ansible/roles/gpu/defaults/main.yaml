@@ -48,3 +48,6 @@ suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansibl
 
 # the nvidia-container-runtime package no longer exists for rhel8 so we must install the last available version
 nvidia_container_runtime_package: "{{ 'nvidia-container-runtime' if ansible_distribution_major_version|int < 8 else 'nvidia-container-runtime-3.4.0-1.x86_64' }}"
+
+nvidia_runfile_installer: NVIDIA-Linux-x86_64-470.82.01.run
+nvidia_runfile_installer_url: "https://us.download.nvidia.com/tesla/470.82.01/{{ nvidia_runfile_installer }}"
