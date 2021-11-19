@@ -39,7 +39,7 @@ platforms:
     image_search_name: "RHEL-7.9_HVM-*"
     image_search_owner: "309956199498"
     region: us-east-1
-    instance_type: t3.small
+    instance_type: p2.xlarge
     spot_price: false
     ssh_user: ec2-user
   - name: konvoyimage-rhel8.2-${USER:-ci}-${HOSTNAME:-local}
