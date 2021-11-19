@@ -170,7 +170,9 @@ rhel8: ## Build RHEL 8.2 image
 .PHONY: rhel8-nvidia
 rhel8-nvidia: build
 rhel8-nvidia: ## Build RHEL 8.2 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-8.yaml --overrides overrides/nvidia.yaml
+	./bin/konvoy-image build images/ami/rhel-8.yaml \
+	--overrides overrides/nvidia.yaml \
+	--aws-instance-type p2.xlarge
 
 .PHONY: rhel84
 rhel84: build
@@ -180,7 +182,9 @@ rhel84: ## Build RHEL 8.4 image
 .PHONY: rhel84-nvidia
 rhel84-nvidia: build
 rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-84.yaml --overrides overrides/nvidia.yaml
+	./bin/konvoy-image build images/ami/rhel-84.yaml \
+	--overrides overrides/nvidia.yaml \
+	--aws-instance-type p2.xlarge
 
 flatcar-version.yaml:
 	./hack/fetch-flatcar-ami.sh
