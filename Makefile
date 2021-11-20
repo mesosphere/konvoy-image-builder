@@ -198,6 +198,16 @@ rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
 	--overrides overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge
 
+.PHONY: sles15
+sles15: build
+sles15: ## Build SLES 15 image
+	./bin/konvoy-image build images/ami/sles-15.yaml
+
+.PHONY: sles15-nvidia
+sles15-nvidia: build
+sles15-nvidia: ## Build SLES 15 image with GPU support
+	./bin/konvoy-image build images/ami/sles-15.yaml --overrides overrides/nvidia.yaml
+
 flatcar-version.yaml:
 	./hack/fetch-flatcar-ami.sh
 
