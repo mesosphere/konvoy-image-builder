@@ -162,15 +162,15 @@ centos8-nvidia: build
 centos8-nvidia: ## Build Centos 8 image with GPU support
 	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml
 
-.PHONY: rhel8
-rhel8: build
-rhel8: ## Build RHEL 8.2 image
-	./bin/konvoy-image build images/ami/rhel-8.yaml
+.PHONY: rhel82
+rhel82: build
+rhel82: ## Build RHEL 8.2 image
+	./bin/konvoy-image build images/ami/rhel-82.yaml
 
-.PHONY: rhel8-nvidia
-rhel8-nvidia: build
-rhel8-nvidia: ## Build RHEL 8.2 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-8.yaml \
+.PHONY: rhel82-nvidia
+rhel82-nvidia: build
+rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
+	./bin/konvoy-image build images/ami/rhel-82.yaml \
 	--overrides overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge
 
