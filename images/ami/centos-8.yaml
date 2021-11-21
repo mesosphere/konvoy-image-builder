@@ -4,7 +4,7 @@ packer:
   ami_filter_name: "CentOS 8.3.2011 x86_64"
   ami_filter_owners: "125523088429"
   distribution: "CentOS"
-  distribution_version: "8"
+  distribution_version: "8.3"
   source_ami: ""
   ssh_username: "centos"
   root_device_name: "/dev/sda1"

@@ -4,7 +4,7 @@ packer:
   ami_filter_name: "OL7.9-x86_64-HVM-2020-12-07"
   ami_filter_owners: "131827586825"
   distribution: "Oracle"
-  distribution_version: "7"
+  distribution_version: "7.9"
   source_ami: ""
   ssh_username: "ec2-user"
   root_device_name: "/dev/sda1"

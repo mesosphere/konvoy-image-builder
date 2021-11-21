@@ -4,7 +4,7 @@ packer:
   ami_filter_name: "RHEL-8.2.0*2020*-x86_64-*"
   ami_filter_owners: "309956199498"
   distribution: "RHEL"
-  distribution_version: "8"
+  distribution_version: "8.2"
   source_ami: ""
   ssh_username: "ec2-user"
   root_device_name: "/dev/sda1"
