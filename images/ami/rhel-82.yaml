@@ -1,7 +1,7 @@
 download_images: true
 
 packer:
-  ami_filter_name: "RHEL-8.2*-x86_64-*"
+  ami_filter_name: "RHEL-8.2.0*2020*-x86_64-*"
   ami_filter_owners: "309956199498"
   distribution: "RHEL"
   distribution_version: "8"
