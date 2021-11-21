@@ -10,6 +10,6 @@ packer:
   root_device_name: "/dev/sda1"
   volume_size: "15"
 
-build_name: "rhel-8"
+build_name: "rhel-8.2"
 packer_builder_type: "amazon"
 python_path: ""
