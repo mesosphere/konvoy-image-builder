@@ -87,7 +87,7 @@
 - name: install container-selinux GPG key
   rpm_key:
     state: present
-    key: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+    key: "{{ docker_rpm_container_selinux_gpg_key_url }}"
   register: result
   until: result is success
   retries: 3
