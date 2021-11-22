@@ -62,6 +62,6 @@ func addAWSUserArgs(fs *pflag.FlagSet, userArgs *app.UserArgs) {
 		&userArgs.AMIGroups,
 		"ami-groups",
 		[]string{},
-		"a list of AWS groups which are allowed use the image, use `all` result in a public image",
+		"a list of AWS groups which are allowed use the image, using 'all' result in a public image",
 	)
 }
