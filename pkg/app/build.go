@@ -77,6 +77,9 @@ type UserArgs struct {
 	AWSBuilderRegion string   `json:"aws_region"`
 	AMIRegions       []string `json:"ami_regions"`
 	AWSInstanceType  string   `json:"aws_instance_type"`
+
+	AMIUsers  []string `json:"ami_users"`
+	AMIGroups []string `json:"ami_groups"`
 }
 
 type ClusterArgs struct {
@@ -406,6 +409,14 @@ func mergeUserArgs(config map[string]interface{}, initOptions InitOptions) {
 
 	if len(initOptions.UserArgs.AMIRegions) > 0 {
 		packerMap[packerAMIRegionsKey] = strings.Join(initOptions.UserArgs.AMIRegions, ",")
+	}
+
+	if len(initOptions.UserArgs.AMIUsers) > 0 {
+		packerMap["ami_users"] = strings.Join(initOptions.UserArgs.AMIUsers, ",")
+	}
+
+	if len(initOptions.UserArgs.AMIGroups) > 0 {
+		packerMap["ami_groups"] = strings.Join(initOptions.UserArgs.AMIGroups, ",")
 	}
 
 	if initOptions.UserArgs.SourceAMI != "" {
