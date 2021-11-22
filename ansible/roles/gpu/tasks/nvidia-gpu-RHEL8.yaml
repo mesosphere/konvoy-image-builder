@@ -1,24 +1,30 @@
 ---
-# If possible we use headers from main OS repo for this kernel.
-- name: Install Kernel Header and Devel from OS repo for Current Kernel
-  dnf:
-      name:
-        - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
-        - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
-
-- name: import epel repository key
+- name: add epel gpg key
   rpm_key:
     state: present
     key: "{{ epel_centos_8_rpm_gpg_key }}"
 
-- name: Install EPEL release
+- name: install epel-release
   dnf:
     name: "{{ epel_centos_8_rpm }}"
     state: present
-    disable_gpg_check: true
 
-# Install NVIDIA repository, driver and tools
-- name: Add NVIDIA repository for CUDA drivers and tools
+- name: install kernel {{ hostvars[inventory_hostname].ansible_kernel }} headers and devel
+  dnf:
+    name:
+      - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
+      - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+    state: present
+
+- name: install additional Nvidia runfile prerequisites
+  dnf:
+    name:
+      - elfutils-libelf-devel
+      - gcc
+      - make
+    state: present
+
+- name: add Nvidia repository for cuda drivers and tools
   yum_repository:
     name: cuda
     description: NVIDIA cuda repository
@@ -27,18 +33,28 @@
     gpgkey: "{{ nvidia_repo_gpgkey }}"
     gpgcheck: true
 
-- name: Install cuda drivers and tools
-  dnf:
-    enablerepo:
-      - "codeready-builder-for-rhel-8-{{ ansible_architecture }}-rpms"
-      - "rhel-8-for-{{ ansible_architecture }}-baseos-rpms"
-      - "rhel-8-for-{{ ansible_architecture }}-appstream-rpms"
-    name:
-      - "{{ nvidia_cuda_package }}"
-    state: present
+- name: create temporary run file directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: runfile_dir
 
-# libnvidia-container
-- name: Add libnvidia-container repository
+# It appears impossible to pin a specific CUDA version on RHEL8 unless
+# one uses the runfile installer.
+# Installing `cuda-XX-X` will result in sliding CUDA versions.
+# TODO(tillt): Find a way that spares us the runfile.
+- name: download Nvidia driver installer
+  get_url:
+    url: "{{ nvidia_runfile_installer_url }}"
+    dest: "{{ runfile_dir.path }}/{{ nvidia_runfile_installer }}"
+    mode: 0755
+  retries: 3
+  delay: 3
+
+- name: run Nvidia driver installer
+  command: "{{ runfile_dir.path }}/{{ nvidia_runfile_installer }} --silent"
+
+- name: add libnvidia-container repository
   yum_repository:
     name: libnvidia-container
     description: NVIDIA cuda repository
@@ -53,7 +69,7 @@
     enablerepo: libnvidia-container
     state: present
 
-- name: Add libnvidia-container-runtime repository
+- name: add libnvidia-container-runtime repository
   yum_repository:
     name: nvidia-container-runtime
     description: NVIDIA cuda repository
@@ -62,14 +78,14 @@
     gpgkey: "{{ nvidia_container_runtime_repo_gpgkey }}"
     gpgcheck: true
 
-- name: Install nvidia-container-tools
+- name: install nvidia-container-tools
   dnf:
     name: libnvidia-container-tools
     enablerepo:
       - libnvidia-container
     state: present
 
-- name: Install nvidia-container-runtime
+- name: install nvidia-container-runtime
   dnf:
     name: "{{ nvidia_container_runtime_package }}"
     enablerepo:

@@ -162,15 +162,17 @@ centos8-nvidia: build
 centos8-nvidia: ## Build Centos 8 image with GPU support
 	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml
 
-.PHONY: rhel8
-rhel8: build
-rhel8: ## Build RHEL 8.2 image
-	./bin/konvoy-image build images/ami/rhel-8.yaml
+.PHONY: rhel82
+rhel82: build
+rhel82: ## Build RHEL 8.2 image
+	./bin/konvoy-image build images/ami/rhel-82.yaml
 
-.PHONY: rhel8-nvidia
-rhel8-nvidia: build
-rhel8-nvidia: ## Build RHEL 8.2 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-8.yaml --overrides overrides/nvidia.yaml
+.PHONY: rhel82-nvidia
+rhel82-nvidia: build
+rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
+	./bin/konvoy-image build images/ami/rhel-82.yaml \
+	--overrides overrides/nvidia.yaml \
+	--aws-instance-type p2.xlarge
 
 .PHONY: rhel84
 rhel84: build
@@ -180,7 +182,31 @@ rhel84: ## Build RHEL 8.4 image
 .PHONY: rhel84-nvidia
 rhel84-nvidia: build
 rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-84.yaml --overrides overrides/nvidia.yaml
+	./bin/konvoy-image build images/ami/rhel-84.yaml \
+	--overrides overrides/nvidia.yaml \
+	--aws-instance-type p2.xlarge
+
+.PHONY: rhel79
+rhel79: build
+rhel79: ## Build RHEL 7.9 image
+	./bin/konvoy-image build images/ami/rhel-79.yaml
+
+.PHONY: rhel79-nvidia
+rhel79-nvidia: build
+rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
+	./bin/konvoy-image build images/ami/rhel-79.yaml \
+	--overrides overrides/nvidia.yaml \
+	--aws-instance-type p2.xlarge
+
+.PHONY: sles15
+sles15: build
+sles15: ## Build SLES 15 image
+	./bin/konvoy-image build images/ami/sles-15.yaml
+
+.PHONY: sles15-nvidia
+sles15-nvidia: build
+sles15-nvidia: ## Build SLES 15 image with GPU support
+	./bin/konvoy-image build images/ami/sles-15.yaml --overrides overrides/nvidia.yaml
 
 flatcar-version.yaml:
 	./hack/fetch-flatcar-ami.sh

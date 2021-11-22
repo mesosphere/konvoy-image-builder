@@ -10,13 +10,12 @@
   register: konvoy_repo_installation_rpm
   until: konvoy_repo_installation_rpm is success
   retries: 15
-  delay: 10
+  delay: 60
 
 - name: import Konvoy Kubernetes rpm repository key
   rpm_key:
     state: present
     key: "{{ kubernetes_rpm_suse_gpg_key_url }}"
-
 
 - name: add Konvoy Containerd rpm repository
   zypper_repository:
@@ -28,7 +27,7 @@
   register: konvoy_repo_installation_rpm
   until: konvoy_repo_installation_rpm is success
   retries: 15
-  delay: 10
+  delay: 60
 
 - name: add Konvoy Containerd rpm repository key
   rpm_key:
