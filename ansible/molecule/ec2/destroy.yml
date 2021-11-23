@@ -47,6 +47,10 @@
         name: "{{ security_group_name }}"
         state: absent
         region: "{{ molecule_yml.platforms[0].region }}"
+      register: status
+      retries: 30
+      delay: 10
+      until: status is succeeded
 
     # Mandatory configuration for Molecule to function.
 
