@@ -44,7 +44,7 @@ func addAWSUserArgs(fs *pflag.FlagSet, userArgs *app.UserArgs) {
 		&userArgs.AMIFilterOwner,
 		"source-ami-filter-owner",
 		"",
-		"restricts the source AMI to ones with this owner ID"  
+		"restricts the source AMI to ones with this owner ID",
 	)
 	fs.StringVar(
 		&userArgs.AWSInstanceType,
