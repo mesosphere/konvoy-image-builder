@@ -1,5 +1,7 @@
 # Konvoy Image Builder
 
+Molecule Test: ![Teamcity Status](https://teamcity.mesosphere.io/app/rest/builds/buildType:%28id:ClosedSource_KonvoyImageBuilder_MoleculeTest%29/statusIcon.svg)
+
 This repository contains tools for producing system images for the purpose of
 running Konvoy.
 
