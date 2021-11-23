@@ -18,15 +18,15 @@ generate --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yam
       --ami-groups stringArray           a list of AWS groups which are allowed use the image, using 'all' result in a public image
       --ami-regions stringArray          a list of regions to publish amis
       --ami-users stringArray            a list AWS user accounts which are allowed use the image
-      --aws-instance-type string         an instance type available in the builder region to work on
+      --aws-instance-type string         instance type used to build the AMI; the type must be present in the region in which the AMI is built
       --containerd-version string        the version of containerd to install
   -h, --help                             help for generate
       --kubernetes-version string        the version of kubernetes to install
       --overrides stringArray            a list of override YAML files
-      --region string                    the aws region to run the builder
-      --source-ami string                a specific ami available in the builder region to source from
-      --source-ami-filter-name string    a ami name filter on for selecting the source image
-      --source-ami-filter-owner string   only search AMIs belonging to this owner id
+      --region string                    the region in which to build the AMI
+      --source-ami string                the ID of the AMI to use as the source; must be present in the region in which the AMI is built
+      --source-ami-filter-name string    restricts the set of source AMIs to ones whose Name matches filter
+      --source-ami-filter-owner string   restricts the source AMI to ones with this owner ID
 ```
 
 ### Options inherited from parent commands
