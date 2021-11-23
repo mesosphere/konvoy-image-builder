@@ -20,7 +20,7 @@ func addAWSUserArgs(fs *pflag.FlagSet, userArgs *app.UserArgs) {
 		&userArgs.AWSBuilderRegion,
 		"region",
 		"",
-		"the aws region to run the builder",
+		"the region in which to build the AMI",
 	)
 	fs.StringArrayVar(
 		&userArgs.AMIRegions,
@@ -32,25 +32,25 @@ func addAWSUserArgs(fs *pflag.FlagSet, userArgs *app.UserArgs) {
 		&userArgs.SourceAMI,
 		"source-ami",
 		"",
-		"a specific ami available in the builder region to source from",
+		"the ID of the AMI to use as the source; must be present in the region in which the AMI is built",
 	)
 	fs.StringVar(
 		&userArgs.AMIFilterName,
 		"source-ami-filter-name",
 		"",
-		"a ami name filter on for selecting the source image",
+		"restricts the set of source AMIs to ones whose Name matches filter",
 	)
 	fs.StringVar(
 		&userArgs.AMIFilterOwner,
 		"source-ami-filter-owner",
 		"",
-		"only search AMIs belonging to this owner id",
+		"restricts the source AMI to ones with this owner ID"  
 	)
 	fs.StringVar(
 		&userArgs.AWSInstanceType,
 		"aws-instance-type",
 		"",
-		"an instance type available in the builder region to work on",
+		"instance type used to build the AMI; the type must be present in the region in which the AMI is built",
 	)
 	fs.StringArrayVar(
 		&userArgs.AMIUsers,
