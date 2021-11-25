@@ -44,6 +44,7 @@ platforms:
     image_search_name: "Flatcar*stable*"
     image_search_owner: "075585003325"
     volume_name: /dev/xvda
+    volume_size: 40
     region: us-east-1
     instance_type: p2.xlarge
     ssh_user: core

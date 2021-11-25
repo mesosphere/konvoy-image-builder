@@ -82,9 +82,9 @@
         spot_price: "{{ item.item.spot_price | ternary(item.item.spot_price, omit) if item.item.spot_price is defined else spot_price_max_calc }}"
         group: "{{ security_group_name }}"
         volumes:
-          - device_name: "{{ item.item.volume_name if item.item.volume_name is defined else '/dev/sda1' }}"
+          - device_name: "{{ item.item.volume_name | default('/dev/sda1') }}"
             delete_on_termination: true
-            volume_size: 20
+            volume_size: "{{ item.item.volume_size | default(20) }}"
             volume_type: gp2
         instance_tags:
           Name: "molecule {{ item.item.name }}"
