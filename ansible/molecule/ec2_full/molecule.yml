@@ -32,6 +32,7 @@ platforms:
     image_search_owner: "075585003325"
     region: us-east-1
     instance_type: p2.xlarge
+    volume_size: 40
     ssh_user: core
     spot_price: false
     volume_name: /dev/xvda
