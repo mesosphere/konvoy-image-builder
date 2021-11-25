@@ -187,3 +187,21 @@
   loop:
     - path: /root/.bash_history
     - path: "/home/{{ ansible_env.SUDO_USER }}/.bash_history"
+
+- name: Remove swap from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Check if swap is on
+  command: swapon -s
+  register: swapon
+  changed_when: false
+
+- name: Disable Swap
+  command: swapoff -a
+  when: swapon.stdout
