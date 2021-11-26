@@ -24,6 +24,13 @@
     # TODO(tillt): Why does ansible modprobe fail here, it should not.
     - name: load loop modules
       command: modprobe -d / -a loop i2c_core ipmi_msghandler
+
+    - name: create build directory
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: driver
+      register: driver_dir
+
     # The kernel modules as well as a large part of the libraries and binaries like
     # `nvidia-smi` are built within this container. All of these strictly belong together
     # in terms of versioning - especially libnvidia-ml has to exactly match the kernel
@@ -31,13 +38,34 @@
     # Note: We do not have to pull the exact matching image for the kernel version as the
     # image contained process pulls the correct / current kernel headers. We should be fine
     # staying on this very version until we are not.
-    - name: pull driver build image
-      command: "docker pull tillt/driver:{{ nvidia_driver_version }}-5.10.77-flatcar"
+    - name: copy nvidia-driver build Dockerfile
+      copy:
+        src: "./Dockerfile.nvidia-driver"
+        dest: "{{ driver_dir.path }}/Dockerfile.nvidia-driver"
+        mode: 0644
+
+    - name: copy nvidia-driver build script
+      copy:
+        src: "./nvidia-driver"
+        dest: "{{ driver_dir.path }}/nvidia-driver"
+        mode: 0755
+
+    - name: copy key
+      copy:
+        src: "./empty"
+        dest: "{{ driver_dir.path }}/empty"
+        mode: 0644
+
+    - name: build nvidia-driver build image
+      command: docker build -f {{ driver_dir.path }}/Dockerfile.nvidia-driver --tag nvidia-driver {{ driver_dir.path }}
+
+    # - name: pull driver build image
+    #   command: "docker pull driver:{{ nvidia_driver_version }}-5.10.77-flatcar"
 
     # The build runs in background so we can monitor its console output.
     # Note: This has be to run privileged as the driver module is loaded (briefly).
     - name: run the build
-      command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver tillt/driver:{{ nvidia_driver_version }}-5.10.77-flatcar init
+      command: docker run -d --rm --privileged --pid=host -v /run/nvidia:/run/nvidia:shared -v /tmp/nvidia:/var/log -v /usr/lib64/modules:/usr/lib64/modules -v /opt:/opt --name nvidia-driver nvidia-driver:latest init
 
     # The build commonly takes about 10 minutes in total, until the console shows
     # "Done, now waiting for signal".
