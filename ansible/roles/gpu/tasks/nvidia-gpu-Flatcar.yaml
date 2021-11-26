@@ -13,7 +13,7 @@
 - name: check if the nvidia kernel modules exist
   changed_when: false
   stat:
-    path: /opt/nvidia/460.32.03
+    path: /opt/nvidia/{{ nvidia_driver_version }}
   register: kmodules
 
 - name: nvidia kernel modules build
