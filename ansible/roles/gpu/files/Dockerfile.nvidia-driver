@@ -10,8 +10,7 @@ RUN mkdir /run/nvidia
 # The installer expects these to be defined. The orignal base image brought it in.
 # We have to do this manually here now as we are depending on a new base image.
 ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
-# We are building 460.32.03.
-ENV DRIVER_VERSION=460.73.01
+
 ENV CUDA_VERSION=11.2.2
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV NVIDIA_REQUIRE_CUDA=cuda>=11.2 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441 driver>=450
