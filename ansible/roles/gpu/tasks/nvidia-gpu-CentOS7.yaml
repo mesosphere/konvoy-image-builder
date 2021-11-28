@@ -4,11 +4,16 @@
     name: epel-release
     state: present
     update_cache: true
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
 
 - name: find this kernel headers
   yum:
     list: "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
   register: pkgheaders
+
 - name: get CentOS specific release version
   slurp:
     src: /etc/centos-release
@@ -89,6 +94,10 @@
     name:
       - "{{ nvidia_driver_package }}"
     state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
 
 # libnvidia-container
 - name: Add libnvidia-container repository
@@ -105,6 +114,10 @@
     name: libnvidia-container1
     enablerepo: libnvidia-container
     state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
 
 - name: Add libnvidia-container-runtime repository
   yum_repository:
@@ -121,6 +134,10 @@
     enablerepo:
       - libnvidia-container
     state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
 
 - name: Install nvidia-container-runtime
   yum:
@@ -128,3 +145,7 @@
     enablerepo:
       - nvidia-container-runtime
     state: present
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
