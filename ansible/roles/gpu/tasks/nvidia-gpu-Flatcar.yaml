@@ -57,7 +57,7 @@
         mode: 0644
 
     - name: build nvidia-driver build image
-      command: docker build -f {{ driver_dir.path }}/Dockerfile.nvidia-driver --tag nvidia-driver {{ driver_dir.path }}
+      command: docker build -f {{ driver_dir.path }}/Dockerfile.nvidia-driver --build-arg DRIVER_VERSION={{ nvidia_driver_version }} --tag nvidia-driver {{ driver_dir.path }}
 
     # - name: pull driver build image
     #   command: "docker pull driver:{{ nvidia_driver_version }}-5.10.77-flatcar"
