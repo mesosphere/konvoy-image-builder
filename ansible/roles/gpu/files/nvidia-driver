@@ -5,6 +5,7 @@
 # https://gitlab.com/nvidia/container-images/driver/-/blob/master/flatcar/nvidia-driver
 # See https://gitlab.com/nvidia/container-images/driver/-/issues/33
 
+# shellcheck disable=SC1000-SC9999
 set -eu
 
 RUN_DIR=/run/nvidia
@@ -20,21 +21,21 @@ COREOS_ALL_RELEASES="https://www.flatcar-linux.org/releases-json/releases-${CORE
 export DEBIAN_FRONTEND=noninteractive
 
 # The developement environment is required to access gcc and binutils
-# binutils is particularly required even if we have precompiled kernel interfaces 
+# binutils is particularly required even if we have precompiled kernel interfaces
 # as the ld version needs to match the version used to build the linked kernel interfaces later
 # Note that container images can only contain precompiled (but not linked) kernel modules
 _install_development_env() {
 
     echo "Installing the Flatcar development environment on the filesystem $PWD..."
 
-    # Get the flatcar development environment for a given kernel version. 
-    # The environment is mounted on a loop device and then we chroot into 
-    # the mount to build the NVIDIA kernel driver interface. 
+    # Get the flatcar development environment for a given kernel version.
+    # The environment is mounted on a loop device and then we chroot into
+    # the mount to build the NVIDIA kernel driver interface.
     # The resulting module files and module dependencies are then archived.
     local kernel
     kernel=$(echo "${KERNEL_VERSION}" | cut -d "-" -f1)
     local os_release
-    os_release=$(curl -Ls "${COREOS_ALL_RELEASES}" | jq -r --arg kernel_ver "${kernel}" 'to_entries[] | select ((.value.major_software.kernel[0] == $kernel_ver) and (.key != "current")) | .key')    
+    os_release=$(curl -Ls "${COREOS_ALL_RELEASES}" | jq -r --arg kernel_ver "${kernel}" 'to_entries[] | select ((.value.major_software.kernel[0] == $kernel_ver) and (.key != "current")) | .key')
     local latest_release
     latest_release=$(echo "${os_release}" | awk '{ print $1 }')
     local dev_image="flatcar_developer_container.bin"
@@ -58,7 +59,7 @@ _install_development_env() {
     losetup -c ${loop_dev}
     resize2fs ${loop_dev}
 
-    # Version.txt contains some pre-defined environment variables 
+    # Version.txt contains some pre-defined environment variables
     # that we will use when building the kernel modules
     curl -fOSsL https://${COREOS_RELEASE_CHANNEL}.release.flatcar-linux.net/${COREOS_RELEASE_BOARD}/${latest_release}/version.txt
     cp version.txt /usr/src
@@ -93,16 +94,16 @@ _cleanup_development_env() {
 }
 
 # Install the kernel modules header/builtin/order files and generate the kernel version string.
-# The kernel sources are installed on the loop mount by following the official documentation at 
+# The kernel sources are installed on the loop mount by following the official documentation at
 # https://kinvolk.io/docs/flatcar-container-linux/latest/reference/developer-guides/kernel-modules/
-# We also ensure that the kernel version string (/proc/version) is written so it can be 
-# archived along with the precompiled kernel interfaces. 
+# We also ensure that the kernel version string (/proc/version) is written so it can be
+# archived along with the precompiled kernel interfaces.
 _install_prerequisites() (
-    
+
     rm -rf "/lib/modules/${KERNEL_VERSION}"
     rm -rf /usr/src/linux*
 
-    _install_development_env 
+    _install_development_env
     echo "Installing the Flatcar kernel sources into the development environment..."
 
     cat <<'EOF' | chroot /mnt/coreos /bin/bash
@@ -142,7 +143,7 @@ EOF
     mkdir -p /lib/modules/${KERNEL_VERSION}
     cp -r /mnt/coreos/lib/modules/${KERNEL_VERSION}/* /lib/modules/${KERNEL_VERSION}/
     depmod "${KERNEL_VERSION}"
-    
+
     _cleanup_development_env
 )
 
@@ -158,7 +159,7 @@ _kernel_requires_package() {
     fi
     # Note that mkprecompiled does not handle empty double-quotes;
     # so don't wrap variables in double-quotes
-    # The precompiled directory structure is laid out as one directory per KERNEL_VERSION 
+    # The precompiled directory structure is laid out as one directory per KERNEL_VERSION
     # and it includes the packed kernel interfaces and other files. So we use the following search pattern:
     for pkg_name in $(ls -d -1 precompiled/*/nvidia-modules* 2> /dev/null); do
         if ! ../mkprecompiled --match ${pkg_name} ${proc_mount_arg} > /dev/null; then
@@ -210,13 +211,13 @@ _create_driver_package() (
                                         --target-directory .
     # Archive the module files, so we can re-link later
     # The archive is created one per kernel version, including the package created above
-    # and the corresponding module files. 
+    # and the corresponding module files.
     # Finally, delete any linked kernel modules (.ko) as they cannot be part of the container image
     local archive_dir=precompiled/${KERNEL_VERSION}
     mkdir -p "${archive_dir}"
     mv "${pkg_name}" "${archive_dir}"
     local kmods="nvidia nvidia-uvm nvidia-modeset nvidia-drm"
-    for m in $kmods; do 
+    for m in $kmods; do
        cp ${m}.mod.o "${archive_dir}"
        rm -f ${m}.ko
     done
@@ -295,10 +296,10 @@ _install_driver() {
     if [ "${ACCEPT_LICENSE}" = "yes" ]; then
         install_args+=("--accept-license")
     fi
-    # Prepare the final destination of the kernel modules and a staging directory 
-    # We will also setup some variables needed in the chroot 
-    # The precompiled kernel interfaces are first unpacked, and then re-linked using 
-    # the same linker that was used to build the precompiled modules 
+    # Prepare the final destination of the kernel modules and a staging directory
+    # We will also setup some variables needed in the chroot
+    # The precompiled kernel interfaces are first unpacked, and then re-linked using
+    # the same linker that was used to build the precompiled modules
     mkdir -p ${NVIDIA_KMODS_DIR}/lib/modules/${KERNEL_VERSION}
     local staging_dir=${base_dir}/staging/${KERNEL_VERSION}
     mkdir -p ${staging_dir}
@@ -310,7 +311,7 @@ _install_driver() {
     ../mkprecompiled --unpack ${archive_dir}/${pkg_name} -o ${staging_dir}
     cp ${archive_dir}/*.mod.o ${staging_dir}
 
-    # Re-link the modules by using the binutils we archived from the development 
+    # Re-link the modules by using the binutils we archived from the development
     # environment.
     local old_ld_path=$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=${NVIDIA_BINUITLS_DIR}/libs:$LD_LIBRARY_PATH
@@ -321,7 +322,7 @@ _install_driver() {
     ${NVIDIA_BINUITLS_DIR}/bin/ld -d -r -T ${base_dir}/module.lds -o nvidia.ko ./nv-linux.o ./nv-kernel.o_binary ./nvidia.mod.o
     ${NVIDIA_BINUITLS_DIR}/bin/ld -d -r -T ${base_dir}/module.lds -o nvidia-modeset.ko ./nv-modeset-linux.o ./nv-modeset-kernel.o_binary nvidia-modeset.mod.o
     export LD_LIBRARY_PATH=${old_ld_path}
-    
+
 
     # Copy the kernel modules to their final destination and generate the module dependencies
     cp ${staging_dir}/*.ko ${NVIDIA_KMODS_DIR}/lib/modules/${KERNEL_VERSION}

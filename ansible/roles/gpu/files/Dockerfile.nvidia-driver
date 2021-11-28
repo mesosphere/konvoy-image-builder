@@ -1,6 +1,7 @@
 # Forked until upstream is fixed from
 # https://gitlab.com/nvidia/container-images/driver/-/blob/master/flatcar/Dockerfile
 # See https://gitlab.com/nvidia/container-images/driver/-/issues/35
+
 FROM ubuntu:21.04
 
 # The installer expects this to exist. The orignal base image brought it in.
@@ -18,8 +19,10 @@ ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bi
 
 ENV NVIDIA_VISIBLE_DEVICES=void
 
+# hadolint ignore=DL4006,DL3059
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
+# hadolint ignore=DL3008,DL3059
 RUN dpkg --add-architecture i386 && \
     apt-get update && apt-get install -y --no-install-recommends \
         apt-transport-https \
@@ -39,11 +42,13 @@ RUN dpkg --add-architecture i386 && \
         software-properties-common && \
     rm -rf /var/lib/apt/lists/*
 
+# hadolint ignore=DL3059
 RUN echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ hirsute main" > /etc/apt/sources.list && \
     echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ hirsute-updates main" >> /etc/apt/sources.list && \
     echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ hirsute-security main" >> /etc/apt/sources.list && \
     usermod -o -u 0 -g 0 _apt
 
+# hadolint ignore=DL3059
 RUN curl -fsSL -o /usr/local/bin/donkey https://github.com/3XX0/donkey/releases/download/v1.1.0/donkey && \
     curl -fsSL -o /usr/local/bin/extract-vmlinux https://raw.githubusercontent.com/torvalds/linux/master/scripts/extract-vmlinux && \
     chmod +x /usr/local/bin/donkey /usr/local/bin/extract-vmlinux
@@ -55,6 +60,7 @@ ENV DRIVER_VERSION=$DRIVER_VERSION
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install the userspace components and copy the kernel module sources.
+# hadolint ignore=DL3003,DL3059
 RUN cd /tmp && \
     curl -fSsl -O $BASE_URL/$DRIVER_VERSION/NVIDIA-Linux-x86_64-$DRIVER_VERSION.run && \
     sh NVIDIA-Linux-x86_64-$DRIVER_VERSION.run -x && \
