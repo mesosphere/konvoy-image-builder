@@ -60,7 +60,7 @@ else run:
 make super-lint
 ```
 
-*NOTE* Konvoy Image Builder makes use of the `embed` feature of `go` 1.16.
+*NOTE*: Konvoy Image Builder makes use of the `embed` feature of `go` 1.16.
 `super-linter` currently uses `go` 1.15. It is expected that the `go` linter
 will fail under `super-linter`, and is skipped for
 [CI](.github/workflows/lint.yml).
@@ -71,25 +71,4 @@ To build the CLI command run:
 
 ```sh
 make build
-```
-### Building the Wrapper
-
-These are temporary instructions for building the wrapper for testing
-
-```shell
-make build.snapshot
-```
-
-Replace image tag with the version created by go releaser
-
-```shell
-docker save mesosphere/konvoy-image-builder:v1.0.0-alpha1-SNAPSHOT-e590962 \
- | gzip -c - > cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
-```
-
-Build the wrapper
-```shell
-go build -tags EMBED_DOCKER_IMAGE \
- -ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=v1.0.0-alpha1-SNAPSHOT-e590962" \
- -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 ```
