@@ -19,7 +19,7 @@
   register: result
   until: result is success
   retries: 15
-  delay: 3
+  delay: 60
 
 - name: check if versionlock exists
   command: zypper locks -s
@@ -60,8 +60,8 @@
     update_cache: yes
   register: result
   until: result is success
-  retries: 5
-  delay: 3
+  retries: 15
+  delay: 60
 
 - name: add versionlock for containerd
   command: zypper addlock containerd.io
@@ -92,8 +92,8 @@
     update_cache: yes
   register: result
   until: result is success
-  retries: 3
-  delay: 3
+  retries: 15
+  delay: 60
 
 - name: install kubelet package
   zypper:
@@ -102,8 +102,8 @@
     update_cache: yes
   register: kubelet_installation_rpm
   until: kubelet_installation_rpm is success
-  retries: 3
-  delay: 3
+  retries: 15
+  delay: 60
   notify:
     - reload systemd
     - restart kubelet
@@ -125,5 +125,5 @@
     update_cache: yes
   register: result
   until: result is success
-  retries: 3
-  delay: 3
+  retries: 15
+  delay: 60
