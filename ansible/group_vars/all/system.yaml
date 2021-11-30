@@ -25,9 +25,9 @@ docker_rpm_gpg_key_url: "{{ docker_rpm_repository_url }}/gpg.asc"
 docker_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/opensuse/leap/{{ ansible_distribution_major_version|int }}/x86_64"
 docker_rpm_suse_gpg_key_url: "{{ docker_rpm_suse_repository_url }}/gpg.asc"
 
-docker_deb_repository_url: "https://konvoy-packages-test.s3.amazonaws.com/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}"
+# docker_deb_repository_url: "https://konvoy-packages-test.s3.amazonaws.com/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}"
 ## focal does not yet have a promote to staging job. Need to create one and wait for the 24 hour sync to production s3
-# docker_deb_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}"
+docker_deb_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}"
 docker_deb_gpg_key_url: "https://packages.d2iq.com/konvoy/stable/linux/{{ ansible_distribution |lower }}/{{ ansible_distribution_release }}/gpg.asc"
 docker_deb_release_name: "{{ ansible_distribution_release }}"
 docker_deb_component: "main"
