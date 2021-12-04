@@ -229,6 +229,22 @@
         src: "./usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
         dest: "/opt/usr/share/containers/oci/hooks.d/oci-nvidia-hook.json"
 
+    # The Nvidia container runtime is not compatible with cgroups v2.
+    - name: ensure cgroups v2 are disabled
+      command: grep -q systemd.unified_cgroup_hierarchy=0 /usr/share/oem/grub.cfg
+      changed_when: no
+      failed_when: false
+      register: cgroupsv2_check
+
+    - name: cgroups setup
+      when:
+        - cgroupsv2_check.rc != 0
+      block:
+        - name: disable cgroups v2
+          command: sed -E -i 's/^(set linux_append=.*)"$/\1 systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"/g' /usr/share/oem/grub.cfg
+        - name: reboot to activate new kernel settings
+          reboot:
+
 # Check if libnvidia-container exists.
 - name: check if the libnvidia-container exists
   changed_when: false
