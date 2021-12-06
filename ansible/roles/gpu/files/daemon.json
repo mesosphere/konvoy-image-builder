@@ -1,0 +1,8 @@
+{
+    "runtimes": {
+        "nvidia": {
+            "path": "/opt/bin/nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
