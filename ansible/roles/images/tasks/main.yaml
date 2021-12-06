@@ -4,6 +4,13 @@
     name: containerd
     state: restarted
 
+- name: list images
+  when: list_images is defined
+  tags:
+    - list
+  shell: "echo {{ item }} >> ../images.out"
+  loop: "{{ control_plane_images + extra_images + aws_images }}"
+
 - name: pull control plane images
   shell: "crictl pull {{ item }}"
   loop: "{{ control_plane_images }}"
