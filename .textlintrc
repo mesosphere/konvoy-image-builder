@@ -1,0 +1,9 @@
+{
+    "filters": {
+        "allowlist": {
+            "allowlistConfigPaths": [
+                ".textlint-whitelist.yaml"
+            ]
+        }
+    }
+}
