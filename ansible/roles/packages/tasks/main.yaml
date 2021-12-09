@@ -1,3 +1,14 @@
 ---
+- name: check for offline bundle
+  stat:
+    path: "{{ offline.remote_bundle_os_packages_path }}"
+  register: offline_path
+
+- name: set offline enabled fact
+  set_fact:
+    offline_mode_enabled: "{{ offline_path.stat.exists }}"
+
 - include: repo.yaml
+  when: not offline_path.stat.exists
 - include: install.yaml
+  when: not offline_path.stat.exists

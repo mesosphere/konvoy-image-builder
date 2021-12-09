@@ -1,32 +1,9 @@
 ---
-- name: add epel gpg key
-  rpm_key:
-    state: present
-    key: "{{ epel_centos_8_rpm_gpg_key }}"
-  when:
-    - ansible_distribution_major_version == '8'
-
-- name: add epel gpg key
-  rpm_key:
-    state: present
-    key: "{{ epel_centos_7_rpm_gpg_key }}"
-  when:
-    - ansible_distribution_major_version == '7'
-
-- name: install epel-release
-  yum:
-    name: "{{ epel_centos_8_rpm }}"
-    state: present
-  when:
-    - ansible_distribution_major_version == '8'
-
-- name: install epel-release
-  yum:
-    name: "{{ epel_centos_7_rpm }}"
-    state: present
-  when:
-    - ansible_distribution_major_version == '7'
-
+- name: upload offline repository
+  copy:
+    src: offline.repo
+    dest: /etc/yum.repos.d/offline.repo
+  when: offline_mode_enabled
 
 - name: install common RPMS
   yum:
@@ -48,6 +25,8 @@
       - nfs-utils
       - NetworkManager
     state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
   retries: 5
@@ -61,6 +40,8 @@
     name:
       - iproute-tc
     state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   when:
     - ansible_distribution_major_version == '8'
 
@@ -98,9 +79,11 @@
 
 - name: install container-selinux rpm package
   yum:
-    name: "{{ docker_rpm_container_selinux_package_url }}"
+    name: "{{ 'container-selinux' if offline_mode_enabled else docker_rpm_container_selinux_package_url }}"
     state: present
     update_cache: yes
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
   retries: 3
@@ -111,17 +94,12 @@
     name: "{{ 'containerd.io-' + containerd_version }}"
     state: present
     update_cache: yes
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
   retries: 5
   delay: 3
-
-- name: add versionlock for containerd
-  command: yum versionlock add containerd.io
-  args:
-    warn: false
-  register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
 
 - name: remove versionlock for kubelet and kubectl packages
   command: yum versionlock delete {{ item }}
@@ -143,6 +121,8 @@
     name: "{{ 'kubectl-' + package_versions.kubernetes_rpm }}"
     state: present
     update_cache: yes
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
   retries: 3
@@ -153,6 +133,8 @@
     name: "{{ 'kubelet-' + package_versions.kubernetes_rpm }}"
     state: present
     update_cache: yes
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: kubelet_installation_rpm
   until: kubelet_installation_rpm is success
   retries: 3
@@ -160,16 +142,6 @@
   notify:
     - reload systemd
     - restart kubelet
-
-- name: add versionlock for kubelet and kubectl packages
-  command: yum versionlock add {{ item }}
-  with_items:
-    - kubelet
-    - kubectl
-  args:
-    warn: false
-  register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
 
 - name: remove versionlock for kubeadm packages
   command: yum versionlock delete kubeadm
@@ -187,14 +159,11 @@
     name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
     state: present
     update_cache: yes
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
   retries: 3
   delay: 3
 
-- name: add versionlock for kubeadm package
-  command: yum versionlock add kubeadm
-  args:
-    warn: false
-  register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+- include_tasks: install-redhat-versionlock.yaml

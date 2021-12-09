@@ -1,23 +1,8 @@
 ---
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
-- name: create containerd directory
-  file:
-    path: "/etc/containerd/"
-    state: directory
-
-- name: create containerd imports directory
-  file:
-    path: "/etc/containerd/conf.d"
-    state: directory
-
-- name: create kubelet systemd directory
-  file:
-    path: "/etc/systemd/system/kubelet.service.d/"
-    state: directory
+- include: install-epel.yaml
+  when:
+    - ansible_os_family == "RedHat"
+    - not offline_mode_enabled
 
 - include: install-redhat.yaml
   when: ansible_os_family == "RedHat"
@@ -31,35 +16,4 @@
 - include: install-debian.yaml
   when: ansible_os_family == "Debian"
 
-- name: copy default configuration to remote
-  template:
-    src: "config.toml.tmpl"
-    dest: "/etc/containerd/config.toml"
-  notify:
-    - restart containerd
-
-- name: create containerd proxy conf
-  template:
-    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
-    src: etc/systemd/system/containerd.service.d/http-proxy.conf
-    mode: 0644
-  when: http_proxy is defined or https_proxy is defined or no_proxy is defined
-  notify:
-    - reload systemd
-    - restart containerd
-
-- name: enable containerd
-  service:
-    name: containerd
-    enabled: true
-  notify:
-    - reload systemd
-    - restart containerd
-
-- name: enable kubelet
-  service:
-    name: kubelet
-    enabled: true
-  notify:
-    - reload systemd
-    - restart kubelet
+- include: config.yaml
