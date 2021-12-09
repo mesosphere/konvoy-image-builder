@@ -29,6 +29,7 @@
     - include_vars: vars/flatcar/flatcar.yaml
       when: ansible_os_family == "Flatcar"
   roles:
+    - role: offline
     - role: packages
     - role: gpu
     - role: config
