@@ -4,6 +4,10 @@
             "allowlistConfigPaths": [
                 ".textlint-whitelist.yaml"
             ]
-        }
+        },
+        "comments": true
+    },
+    "rules": {
+        "terminology": true
     }
 }
