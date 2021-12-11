@@ -36,6 +36,12 @@
       state: present
       reload: yes
 
+  - name: Flush Iptable rules
+    iptables:
+      flush: true
+    when:
+      - flush_iptables_rules | default(true)
+
   - name: add iptable ALLOW rules for control-plane
     iptables:
       chain: INPUT
@@ -44,7 +50,7 @@
       jump: ACCEPT
       comment: "{{ item.comment }}"
     with_items:
-      - port: "{{ apiserver.secure_port }}"
+      - port: "{{ apiserver_port }}"
         comment: "Konvoy: kube-apiserver --secure-port"
       - port: 10250
         comment: "Konvoy: kubelet --port"
