@@ -4,7 +4,7 @@ FROM golangci/golangci-lint:v1.43.0-alpine as golangci-lint
 FROM goreleaser/goreleaser:v0.184.0 as goreleaser
 FROM docker:20.10 as docker
 
-FROM golang:1.17.4 as builder
+FROM golang:1.17.5 as builder
 
 # NOTE(jkoelker) since this is a multistage build we
 #                can have an explosion at the layer
@@ -56,7 +56,7 @@ RUN wget \
     && chmod +x /tools/gocover-cobertura
 
 # NOTE(jkoelker) From here we care about layers
-FROM golang:1.17.4
+FROM golang:1.17.5
 
 ARG ANSIBLE_VERSION=2.10.7
 ENV ANSIBLE_PATH=/usr/local
