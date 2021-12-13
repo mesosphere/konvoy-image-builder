@@ -2,7 +2,7 @@
 - name: start containerd
   service:
     name: containerd
-    state: started
+    state: restarted
 
 - name: pull control plane images
   shell: "crictl pull {{ item }}"
