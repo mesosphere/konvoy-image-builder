@@ -498,6 +498,6 @@ create-image-list:
 
 .PHONY: save-images
 save-images:
-#save-images: create-image-list
+save-images: create-image-list
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
 	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) $(SAVE_IMAGE_TAR_FILE_NAME)
