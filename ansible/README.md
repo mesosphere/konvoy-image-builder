@@ -23,8 +23,8 @@ set bridge utils and iptables
 Installs and configures tooling for the cloud provider being used to generate
 this image
 
-### `images` - prepare image cache
-This role ensures images are present. If an image is not present, it pulls it from a remote registry. This role is skipped when `download_images` is false.
+### `images` - prepare images cache
+This role ensures images are present. First, all images in the local cache are imported. Then, every required image is checked; if it was not imported, or if it is missing one or more layers, the image is pulled from a remote registry. This role is skipped when `download_images` is false.
 
 ### `sysprep` - prepare image for distribution
 truncate logs, system id, host key etc.

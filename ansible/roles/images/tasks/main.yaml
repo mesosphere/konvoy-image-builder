@@ -4,6 +4,9 @@
     name: containerd
     state: restarted
 
+- name: load images
+  import_tasks: load.yaml
+
 - name: pull control plane images
   include_tasks: check-or-pull-images.yaml
   vars:
