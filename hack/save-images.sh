@@ -2,9 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# Some boiler plate
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Some constants
 IMAGE_LIST_FILE="${1:-images.out}"
 EXTRA_LIST_FILE="${2:-}"
