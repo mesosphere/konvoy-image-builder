@@ -36,11 +36,23 @@
       state: present
       reload: yes
 
-  - name: Flush Iptable rules
-    iptables:
-      flush: true
+  - name: Check if iptables service exists
+    command: systemctl cat iptables
+    check_mode: no
+    register: iptables_exists
+    changed_when: False
+    failed_when: iptables_exists.rc not in [0, 1]
     when:
-      - flush_iptables_rules | default(true)
+      - disable_iptables | default(true)
+
+  - name: Stop and disable defualt iptables service
+    systemd:
+      name: iptables
+      enabled: false
+      masked: false
+      state: stopped
+    when:
+      - iptables_exists.rc == 0
 
   - name: add iptable ALLOW rules for control-plane
     iptables:
