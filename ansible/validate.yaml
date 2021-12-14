@@ -1,2 +1,2 @@
 ---
-- import_playbook: _list-images.yaml
+- import_playbook: _validate.yaml
