@@ -5,14 +5,8 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 kubernetes_version: "1.21.6"
 
-
 containerd_version: "1.4.11"
 kubernetes_cni_version: "0.9.1"
-etcd_version: "3.4.13-0"
-coredns_version: "1.8.0"
-pause_image_version: "3.4.1"
-# TODO: figure out where this image is used and why the Kubelet tries to pull it
-pause_image_version_prev: "3.2"
 crictl_version: "1.22.0"
 kfips_version: "0.1.0"
 kubernetes_semver: "v{{ kubernetes_version }}"
@@ -34,23 +28,11 @@ package_versions:
 k8s_image_registry: "k8s.gcr.io"
 
 control_plane_images:
-  - "{{ k8s_image_registry }}/kube-apiserver:v{{ kubernetes_image_tag }}"
-  - "{{ k8s_image_registry }}/kube-controller-manager:v{{ kubernetes_image_tag }}"
-  - "{{ k8s_image_registry }}/kube-scheduler:v{{ kubernetes_image_tag }}"
-  - "{{ k8s_image_registry }}/kube-proxy:v{{ kubernetes_image_tag }}"
-  - "{{ k8s_image_registry }}/etcd:{{ etcd_image_tag }}"
-  - "{{ k8s_image_registry }}/pause:{{ pause_image_version }}"
-  - "{{ k8s_image_registry }}/pause:{{ pause_image_version_prev }}"
-  - "k8s.gcr.io/pause:{{ pause_image_version }}"
-  - "k8s.gcr.io/pause:{{ pause_image_version_prev }}"
-  - "k8s.gcr.io/coredns/coredns:v{{ coredns_version }}"
   - "docker.io/mesosphere/kfips:v{{ kfips_version }}"
 
 aws_images: []
 
 extra_images: []
-
-etcd_image_tag: "{{ etcd_version }}"
 
 # https://github.com/containerd/containerd/releases/download/v1.4.11/cri-containerd-cni-1.4.11-linux-amd64.tar.gz
 containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/cri-containerd-cni-{{ containerd_version }}-linux-amd64.tar.gz

@@ -7,21 +7,22 @@
 - name: load images
   import_tasks: load.yaml
 
-- name: pull control plane images
-  include_tasks: check-or-pull-images.yaml
-  vars:
-    image_name: "{{ item }}"
-  loop: "{{ control_plane_images }}"
+- name: set images fact
+  set_fact:
+    pull_images: "{{
+      kubernetes_images +
+      containerd_images +
+      control_plane_images +
+      extra_images
+    }}"
 
-- name: pull extra images
-  include_tasks: check-or-pull-images.yaml
-  vars:
-    image_name: "{{ item }}"
-  loop: "{{ extra_images }}"
-
-- name: pull aws images
-  include_tasks: check-or-pull-images.yaml
-  vars:
-    image_name: "{{ item }}"
-  loop: "{{ aws_images }}"
+- name: set aws images
+  set_fact:
+    pull_images: "{{ pull_images + aws_images }}"
   when: packer_builder_type.startswith('amazon')
+
+- name: pull images
+  include_tasks: check-or-pull-images.yaml
+  vars:
+    image_name: "{{ item }}"
+  loop: "{{ pull_images }}"

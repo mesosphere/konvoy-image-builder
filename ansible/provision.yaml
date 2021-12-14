@@ -31,6 +31,7 @@
   roles:
     - role: offline
     - role: packages
+    - role: version
     - role: gpu
     - role: config
     - role: networking

@@ -1,3 +1,2 @@
 ---
 list_images: true
-kubernetes_image_tag: "{{ kubernetes_version }}"
