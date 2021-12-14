@@ -24,7 +24,7 @@ Installs and configures tooling for the cloud provider being used to generate
 this image
 
 ### `images` - prepare image cache
-This roll pulls a list of images when `download_images` is set
+This role ensures images are present. If an image is not present, it pulls it from a remote registry. This role is skipped when `download_images` is false.
 
 ### `sysprep` - prepare image for distribution
 truncate logs, system id, host key etc.

@@ -5,14 +5,20 @@
     state: restarted
 
 - name: pull control plane images
-  shell: "crictl pull {{ item }}"
+  include_tasks: check-or-pull-images.yaml
+  vars:
+    image_name: "{{ item }}"
   loop: "{{ control_plane_images }}"
 
 - name: pull extra images
-  shell: "crictl pull {{ item }}"
+  include_tasks: check-or-pull-images.yaml
+  vars:
+    image_name: "{{ item }}"
   loop: "{{ extra_images }}"
 
 - name: pull aws images
-  shell: "crictl pull {{ item }}"
+  include_tasks: check-or-pull-images.yaml
+  vars:
+    image_name: "{{ item }}"
   loop: "{{ aws_images }}"
   when: packer_builder_type.startswith('amazon')
