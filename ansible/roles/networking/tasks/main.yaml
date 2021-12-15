@@ -36,6 +36,24 @@
       state: present
       reload: yes
 
+  - name: Check if iptables service exists
+    command: systemctl cat iptables
+    check_mode: no
+    register: iptables_exists
+    changed_when: False
+    failed_when: iptables_exists.rc not in [0, 1]
+    when:
+      - disable_iptables | default(true)
+
+  - name: Stop and disable defualt iptables service
+    systemd:
+      name: iptables
+      enabled: false
+      masked: false
+      state: stopped
+    when:
+      - iptables_exists.rc == 0
+
   - name: add iptable ALLOW rules for control-plane
     iptables:
       chain: INPUT
@@ -44,7 +62,7 @@
       jump: ACCEPT
       comment: "{{ item.comment }}"
     with_items:
-      - port: "{{ apiserver.secure_port }}"
+      - port: "{{ apiserver_port }}"
         comment: "Konvoy: kube-apiserver --secure-port"
       - port: 10250
         comment: "Konvoy: kubelet --port"
