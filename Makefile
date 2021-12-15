@@ -140,7 +140,7 @@ WHAT ?= bash
 
 export SAVE_IMAGE_LIST_FILE ?= images.out
 export SAVE_IMAGE_EXTRA_LIST_FILE ?= ""
-export SAVE_IMAGE_TAR_FILE_NAME ?= kib_image_bundle_${VERSION}_linux_amd64.tar.gz
+export SAVE_IMAGE_TAR_FILE_NAME ?= k8s_image_bundle_${REPO_REV}_linux_amd64.tar.gz
 
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
