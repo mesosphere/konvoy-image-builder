@@ -44,6 +44,7 @@
     failed_when: iptables_exists.rc not in [0, 1]
     when:
       - disable_iptables | default(true)
+      - ansible_os_family != "Flatcar"
 
   - name: Stop and disable defualt iptables service
     systemd:
@@ -52,7 +53,9 @@
       masked: false
       state: stopped
     when:
+      - disable_iptables | default(true)
       - iptables_exists.rc == 0
+      - ansible_os_family != "Flatcar"
 
   - name: add iptable ALLOW rules for control-plane
     iptables:
