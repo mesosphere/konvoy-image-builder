@@ -59,7 +59,7 @@ export DOCKER_DEVKIT_PUSH_ARGS ?= \
 	--env DOCKER_CLI_EXPERIMENTAL
 
 # ulimit arg is a workaround for golang's "suboptimal" bug workaround that
-# manifests itself in alpine images, resulting in packer plugins sipmly dying.
+# manifests itself in alpine images, resulting in packer plugins simply dying.
 #
 # On LTS distros like Ubuntu, kernel bugs are backported, so the kernel version
 # may seem old even though it is not vulnerable. Golang ignores it and just
@@ -137,6 +137,11 @@ $(DOCKER_PHONY_FILE): Dockerfile
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 
 WHAT ?= bash
+
+export SAVE_IMAGE_KUBERNETES_VERSION ?= v$(shell grep -E -e "kubernetes_version:" ansible/group_vars/all/defaults.yaml | cut -d\" -f2)
+export SAVE_IMAGE_LIST_FILE ?= images.out
+export SAVE_IMAGE_EXTRA_LIST_FILE ?= ""
+export SAVE_IMAGE_TAR_FILE_NAME ?= k8s_image_bundle_${SAVE_IMAGE_KUBERNETES_VERSION}_linux_amd64.tar.gz
 
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
@@ -485,3 +490,15 @@ release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 	$(MAKE) GOOS=linux release-bundle-GOOS
 	$(MAKE) GOOS=windows release-bundle-GOOS
 	$(MAKE) GOOS=darwin release-bundle-GOOS
+
+.PHONY: create-image-list
+create-image-list:
+	@rm -f images.out
+	@ansible-playbook ./ansible/list-images.yaml -e="@./overrides/image-list.yaml"
+	@cat images.out
+
+.PHONY: save-images
+save-images:
+save-images: create-image-list
+	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
+	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) $(SAVE_IMAGE_TAR_FILE_NAME)

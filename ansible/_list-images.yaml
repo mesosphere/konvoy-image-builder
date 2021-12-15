@@ -1,0 +1,9 @@
+---
+  - hosts: localhost
+    name: List Images
+    tasks:
+    - name: list images
+      shell: "echo {{ item }} >> ../images.out"
+      loop: "{{ control_plane_images + extra_images + aws_images }}"
+      changed_when: False
+
