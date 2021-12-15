@@ -1,2 +1,8 @@
 ---
-- import_playbook: _validate.yaml
+  - hosts: all
+    name: "{{ play_name | default('Check Machine Readiness') }}"
+    serial: "100%"
+    become: yes
+
+    roles:
+      - role: validate
