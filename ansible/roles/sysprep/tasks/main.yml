@@ -205,22 +205,3 @@
 - name: Disable Swap
   command: swapoff -a
   when: swapon.stdout
-
-- name: Check if firewalld service exists
-  command: systemctl cat firewalld
-  check_mode: no
-  register: firewalld_exists
-  changed_when: False
-  failed_when: firewalld_exists.rc not in [0, 1]
-  when:
-    - disable_firewalld | default(true)
-
-- name: Stop and disable firewalld service
-  systemd:
-    name: firewalld
-    enabled: false
-    masked: false
-    state: stopped
-  when:
-    - disable_firewalld | default(true)
-    - firewalld_exists.rc == 0
