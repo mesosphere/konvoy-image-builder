@@ -138,9 +138,10 @@ devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 
 WHAT ?= bash
 
+export SAVE_IMAGE_KUBERNETES_VERSION ?= v$(shell grep -E -e "kubernetes_version:" ansible/group_vars/all/defaults.yaml | cut -d\" -f2)
 export SAVE_IMAGE_LIST_FILE ?= images.out
 export SAVE_IMAGE_EXTRA_LIST_FILE ?= ""
-export SAVE_IMAGE_TAR_FILE_NAME ?= k8s_image_bundle_${REPO_REV}_linux_amd64.tar.gz
+export SAVE_IMAGE_TAR_FILE_NAME ?= k8s_image_bundle_${SAVE_IMAGE_KUBERNETES_VERSION}_linux_amd64.tar.gz
 
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
