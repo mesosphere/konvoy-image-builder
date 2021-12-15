@@ -74,6 +74,10 @@ export DOCKER_DEVKIT_USER_ARGS ?= \
 	--user $(UID):$(GID) \
 	--group-add $(DOCKER_SOCKET_GID)
 
+export DOCKER_DEVKIT_SSH_ARGS ?= \
+	--env SSH_AUTH_SOCK=/run/ssh-agent.sock \
+	--volume $(SSH_AUTH_SOCK):/run/ssh-agent.sock
+
 export DOCKER_DEVKIT_ARGS ?= \
 	$(DOCKER_ULIMIT_ARGS) \
 	$(DOCKER_DEVKIT_USER_ARGS) \
@@ -82,7 +86,8 @@ export DOCKER_DEVKIT_ARGS ?= \
 	$(DOCKER_SOCKET_ARGS) \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
 	$(DOCKER_DEVKIT_PUSH_ARGS) \
-	$(DOCKER_DEVKIT_ENV_ARGS)
+	$(DOCKER_DEVKIT_ENV_ARGS) \
+	$(DOCKER_DEVKIT_SSH_ARGS)
 
 
 export DOCKER_DEVKIT_DEFAULT_ARGS ?= \
