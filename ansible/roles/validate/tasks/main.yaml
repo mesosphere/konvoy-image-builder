@@ -99,16 +99,10 @@
       - not kubeadm_already_run.stat.exists
     changed_when: False
 
+  # Need to properly handle larger clusters
   - name: verify machine connectivity
     command: ping -c 2 {{ item }}
     with_items: "{{ groups['all'] }}"
-    changed_when: False
-
-  # Every node should be able to reach all other nodes.
-  # Use a random sampling of nodes to avoid quadratic complexity.
-  - name: verify machine to machine connectivity with random sample
-    command: ping -c 2 {{ item }}
-    with_random_choice: "{{ groups['all'] | map('extract', hostvars, 'inventory_hostname') | list }}"
     changed_when: False
 
 
