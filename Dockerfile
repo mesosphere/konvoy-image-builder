@@ -22,6 +22,7 @@ RUN apk add --no-cache \
         py3-wheel \
     && pip3 install --no-cache-dir \
         ansible=="${ANSIBLE_VERSION}" \
+        netaddr \
     && rm -rf /root/.cache
 
 COPY --from=devkit /usr/local/bin/packer /usr/local/bin/
