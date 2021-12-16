@@ -53,9 +53,9 @@
       masked: false
       state: stopped
     when:
+      - ansible_os_family != "Flatcar"
       - disable_iptables | default(true)
       - iptables_exists.rc == 0
-      - ansible_os_family != "Flatcar"
 
   - name: add iptable ALLOW rules for control-plane
     iptables:
