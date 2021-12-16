@@ -2,6 +2,7 @@ data "amazon-ami" "flatcar" {
   filters = {
     virtualization-type = "hvm"
     name                = "Flatcar-stable-*-hvm"
+    architecture        = "x86_64"
   }
   owners      = ["075585003325"]
   most_recent = true
