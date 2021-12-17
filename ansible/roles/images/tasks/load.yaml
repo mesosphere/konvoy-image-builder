@@ -12,7 +12,7 @@
 - name: import images from files in the local images cache  # noqa no-changed-when
   shell:
     executable: /bin/bash
-    cmd: ctr --address {{ flatcar_containerd_cri_socket if ansible_os_family == "Flatcar" else containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }})
+    cmd: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }})
   when: images_cache_find_result.files | length > 0
   register: ctr_images_import
   failed_when: ctr_images_import.rc != 0
