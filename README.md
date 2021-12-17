@@ -65,6 +65,20 @@ make super-lint
 will fail under `super-linter`, and is skipped for
 [CI](.github/workflows/lint.yml).
 
+### Testing
+
+To run an specific end-to-end test, use a subset of the commands used to run the complete set of end-to-end tests in CI.
+
+In this example, we run the end-to-end test against the latest version of Flatcar Linux:
+
+```sh
+WHAT="make flatcar-version.yaml" make devkit.run
+make devkit.run \
+    WHAT="./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml -v 5" \
+    INTERACTIVE=""
+make docker.clean-latest-ami
+```
+
 ### Building
 
 To build the CLI command run:

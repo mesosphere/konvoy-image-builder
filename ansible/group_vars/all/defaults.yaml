@@ -37,6 +37,7 @@ containerd_flatcar_bins:
 
 
 download_images: Null
+images_cache: /opt/dkp/images
 
 kubernetes_goarch: amd64
 kubernetes_bins:

@@ -1,0 +1,20 @@
+- name: list files in the local image cache
+  find:
+    paths:
+    - "{{ images_cache }}"
+    use_regex: false
+    patterns:
+    - "*.tar.gz"
+    file_type: file
+  register: images_cache_find_result
+  changed_when: false
+
+- name: import images from files in the local images cache  # noqa no-changed-when
+  shell:
+    executable: /bin/bash
+    cmd: ctr --address {{ flatcar_containerd_cri_socket if ansible_os_family == "Flatcar" else containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }})
+  when: images_cache_find_result.files | length > 0
+  register: ctr_images_import
+  failed_when: ctr_images_import.rc != 0
+  changed_when: ctr_images_import.rc == 0
+  with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
