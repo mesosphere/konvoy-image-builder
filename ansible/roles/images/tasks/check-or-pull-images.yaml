@@ -8,13 +8,13 @@
 #   > ctr --namespace k8s.io images check -q name==docker.io/mesosphere/pause-alpine:999; echo $?
 #   0
 - name: check existing image to ensure all content is available locally  # noqa no-changed-when
-  command: ctr --address {{ flatcar_containerd_cri_socket if ansible_os_family == "Flatcar" else containerd_cri_socket }} --namespace k8s.io images check name=={{ image_name }}
+  command: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images check name=={{ image_name }}
   register: ctr_images_check
   failed_when: ctr_images_check.rc != 0
   changed_when: false
 
 - name: pull image  # noqa no-changed-when
-  command: ctr --address {{ flatcar_containerd_cri_socket if ansible_os_family == "Flatcar" else containerd_cri_socket }} --namespace k8s.io images pull {{ image_name }}
+  command: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images pull {{ image_name }}
   when: image_name not in ctr_images_check.stdout
   register: ctr_images_pull
   failed_when: ctr_images_pull.rc != 0

@@ -1,6 +1,11 @@
 ---
 python_path: ""
+
+# This is also in images/common.yaml as that's where the go code expects it to be.
+# If it's not there, the kubernetes_full_version will have "None" for a version number.
 kubernetes_version: "1.21.6"
+
+
 containerd_version: "1.4.11"
 kubernetes_cni_version: "0.9.1"
 etcd_version: "3.4.13-0"
@@ -10,6 +15,40 @@ pause_image_version: "3.4.1"
 pause_image_version_prev: "3.2"
 crictl_version: "1.22.0"
 kfips_version: "0.1.0"
+kubernetes_semver: "v{{ kubernetes_version }}"
+
+# Adding kubernetes_full_version for mitogen runs. This variable is always overridden
+# in go code.
+kubernetes_full_version: "{{ kubernetes_version }}+{{ kubernetes_build_metadata }}"
+kubernetes_image_tag: "{{ kubernetes_full_version  | replace('+', '_') }}"
+package_versions:
+  enable_repository_installation: "{{ (spec.osPackages.enableAdditionalRepositories if spec.osPackages is defined else true)|default(true)|bool }}"
+  # the version may contain d2iq specific suffix, remove it when downloading packages
+  kubernetes_rpm: "{{ kubernetes_version }}-0"
+  kubernetes_deb: "{{ kubernetes_version }}-00"
+  kubenode: "{{ kubernetes_version }}"
+  containerd_deb: "{{ containerd_version }}-1"
+  containerd_minor_version: "{{ containerd_version[:3] }}"
+
+# variable used for seeding images
+k8s_image_registry: "k8s.gcr.io"
+
+control_plane_images:
+  - "{{ k8s_image_registry }}/kube-apiserver:v{{ kubernetes_image_tag }}"
+  - "{{ k8s_image_registry }}/kube-controller-manager:v{{ kubernetes_image_tag }}"
+  - "{{ k8s_image_registry }}/kube-scheduler:v{{ kubernetes_image_tag }}"
+  - "{{ k8s_image_registry }}/kube-proxy:v{{ kubernetes_image_tag }}"
+  - "{{ k8s_image_registry }}/etcd:{{ etcd_image_tag }}"
+  - "{{ k8s_image_registry }}/pause:{{ pause_image_version }}"
+  - "{{ k8s_image_registry }}/pause:{{ pause_image_version_prev }}"
+  - "k8s.gcr.io/pause:{{ pause_image_version }}"
+  - "k8s.gcr.io/pause:{{ pause_image_version_prev }}"
+  - "k8s.gcr.io/coredns/coredns:v{{ coredns_version }}"
+  - "docker.io/mesosphere/kfips:v{{ kfips_version }}"
+
+aws_images: []
+
+extra_images: []
 
 etcd_image_tag: "{{ etcd_version }}"
 

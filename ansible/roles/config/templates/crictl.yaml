@@ -1,2 +1,2 @@
 ---
-runtime-endpoint: unix://{{ flatcar_containerd_cri_socket if ansible_os_family == "Flatcar" else containerd_cri_socket }}
+runtime-endpoint: unix://{{ containerd_cri_socket }}
