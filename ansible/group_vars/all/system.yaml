@@ -88,8 +88,5 @@ validate:
   minimum_cpu_cores: 2
 
 offline:
-  local_bundle_path: "{{ offline_local_bundle_path }}"
-  remote_bundle_dir: "{{ offline_remote_bundle_dir }}"
-  remote_bundle_file: "{{ offline_remote_bundle_file }}"
-  remote_bundle_path: "{{ offline_remote_bundle_dir}}/{{ offline_remote_bundle_file }}"
-  remote_bundle_os_packages_path: "{{ offline_remote_bundle_dir }}/packages"
+  local_bundle_path: "{{ offline_package_local_bundle_path }}"
+  remote_bundle_os_packages_path: "{{ offline_packages_remote_bundle_dir }}"
