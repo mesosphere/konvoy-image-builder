@@ -8,12 +8,9 @@
   copy:
     src: "{{ offline.os_packages_local_bundle_file }}"
     dest: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
-  register: copied
 
 - name: unarchive OS packages bundle on remote
   unarchive:
     src: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
     dest: "{{ offline.os_packages_remote_bundle_path }}/offline-repo/"
     remote_src: yes
-  when:
-    - copied.changed
