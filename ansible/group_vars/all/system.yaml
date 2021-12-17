@@ -88,5 +88,5 @@ validate:
   minimum_cpu_cores: 2
 
 offline:
-  os_packages_local_bundle_path: "{{ os_packages_local_bundle_path }}"
+  os_packages_local_bundle_file: "{{ os_packages_local_bundle_file }}"
   os_packages_remote_bundle_path: "{{ os_packages_remote_bundle_path }}"

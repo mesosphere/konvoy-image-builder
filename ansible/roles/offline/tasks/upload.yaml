@@ -7,5 +7,5 @@
 - name: upload and extract offline bundle
   unarchive:
     copy: true
-    src: "{{ offline.os_packages_local_bundle_path }}"
+    src: "{{ offline.os_packages_local_bundle_file }}"
     dest: "{{ offline.os_packages_remote_bundle_path }}"
