@@ -1,7 +1,7 @@
 ---
 - name: check for offline bundle
   stat:
-    path: "{{ offline.remote_bundle_os_packages_dir }}"
+    path: "{{ offline.os_packages_remote_bundle_path }}"
   register: offline_path
 
 - name: set offline enabled fact
