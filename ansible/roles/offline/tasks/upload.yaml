@@ -1,7 +1,7 @@
 ---
 - name: create offline directory
   file:
-    path: "{{ offline.os_packages_remote_bundle_path }}"
+    path: "{{ offline.os_packages_remote_bundle_path }}/offline-repo/"
     state: directory
 
 - name: upload OS packages bundle to remote
