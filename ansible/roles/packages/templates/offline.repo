@@ -1,0 +1,4 @@
+[offline]
+name=D2IQ offline repo
+gpgcheck=0
+baseurl=file://{{ offline.os_packages_remote_bundle_path }}/offline-repo
