@@ -1,11 +1,11 @@
 ---
 - name: create offline directory
   file:
-    path: "{{ offline.remote_bundle_os_packages_dir }}"
+    path: "{{ offline.os_packages_remote_bundle_path }}"
     state: directory
 
 - name: upload and extract offline bundle
   unarchive:
     copy: true
-    src: "{{ offline.local_bundle_path }}"
-    dest: "{{ offline.remote_bundle_os_packages_dir }}"
+    src: "{{ offline.os_packages_local_bundle_path }}"
+    dest: "{{ offline.os_packages_remote_bundle_path }}"

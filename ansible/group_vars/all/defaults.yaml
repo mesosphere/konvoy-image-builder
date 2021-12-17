@@ -47,5 +47,5 @@ kubernetes_bins:
 
 sysprep: true
 
-offline_packages_local_bundle_path: ""
-offline_packages_remote_bundle_dir: "/opt/dkp/packages/"
+os_packages_local_bundle_path: ""
+os_packages_remote_bundle_path: "/opt/dkp/packages/"
