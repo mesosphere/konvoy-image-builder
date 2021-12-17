@@ -440,30 +440,67 @@ ifeq ($(CI), true)
 export DOCKER_DEVKIT_AWS_ARGS := --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY
 endif
 
-ci.e2e.build.all:
-	WHAT="make build" make devkit.run
-	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml -v ${VERBOSITY}" make devkit.run
+# Run every E2E test in its own devkit container.
+# All tests run in parallel. Adjust parallelism with --jobs.
+# Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
+ci.e2e.build.all: ci.e2e.build.centos-7
+ci.e2e.build.all: ci.e2e.build.centos-8
+ci.e2e.build.all: ci.e2e.build.ubuntu-18
+ci.e2e.build.all: ci.e2e.build.ubuntu-20
+ci.e2e.build.all: ci.e2e.build.sles-15
+ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
+ci.e2e.build.all: ci.e2e.build.centos-8-nvidia
+ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
+ci.e2e.build.all: ci.e2e.build.oracle-7
+ci.e2e.build.all: ci.e2e.build.oracle-8
+ci.e2e.build.all: ci.e2e.build.flatcar
+
+# Run an E2E test in its own devkit container.
+ci.e2e.build.%:
+	make devkit.run WHAT="make e2e.build.$*"
+
+e2e.build.centos-7: build
+	./bin/konvoy-image build images/ami/centos-7.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.centos-8: build
+	./bin/konvoy-image build images/ami/centos-8.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/ubuntu-18.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.ubuntu-18: build
+	./bin/konvoy-image build images/ami/ubuntu-18.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/ubuntu-20.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.ubuntu-20: build
+	./bin/konvoy-image build images/ami/ubuntu-20.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/sles-15.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.sles-15: build
+	./bin/konvoy-image build images/ami/sles-15.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.centos-7-nvidia: build
+	./bin/konvoy-image build images/ami/centos-7.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.centos-8-nvidia: build
+	./bin/konvoy-image build images/ami/centos-8.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/sles-15.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.sles-15-nvidia: build
+	./bin/konvoy-image build images/ami/sles-15.yaml --overrides overrides/nvidia.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/oracle-7.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.oracle-7: build
+	./bin/konvoy-image build images/ami/oracle-7.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="./bin/konvoy-image build images/ami/oracle-8.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.oracle-8: build
+	./bin/konvoy-image build images/ami/oracle-8.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
-	WHAT="make flatcar-version.yaml" make devkit.run
-	WHAT="./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml -v ${VERBOSITY}" make devkit.run
+
+e2e.build.flatcar: build flatcar-version.yaml
+	./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml -v ${VERBOSITY}
 	make docker.clean-latest-ami
 
 # use sibling containers to handle dependencies and avoid DinD
