@@ -3,7 +3,7 @@
   when:
     - ansible_facts['os_family'] == "RedHat"
     - not offline_mode_enabled
-- include: repo-redhat-offile.yaml
+- include: repo-redhat-offline.yaml
   when:
     - ansible_facts['os_family'] == "RedHat"
     - offline_mode_enabled
