@@ -1,10 +1,4 @@
 ---
-- name: upload offline repository
-  copy:
-    src: offline.repo
-    dest: /etc/yum.repos.d/offline.repo
-  when: offline_mode_enabled
-
 - name: install common RPMS
   yum:
     name:

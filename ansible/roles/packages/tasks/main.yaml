@@ -9,6 +9,4 @@
     offline_mode_enabled: "{{ offline_path.stat.exists }}"
 
 - include: repo.yaml
-  when: not offline_path.stat.exists
 - include: install.yaml
-  when: not offline_path.stat.exists
