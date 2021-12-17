@@ -1,4 +1,4 @@
 [offline]
 name=D2IQ offline repo
 gpgcheck=0
-baseurl=file:///.konvoy/offline-repo
+baseurl=file:///opt/dkp/packages/offline-repo

@@ -45,6 +45,6 @@ kubernetes_bins:
   - kubelet
 
 sysprep: true
-offline_local_bundle_path: ""
-offline_remote_bundle_dir: "/root/.konvoy/offline"
-offline_remote_bundle_file: "offline.tar.gz"
+
+offline_packages_local_bundle_path: ""
+offline_packages_remote_bundle_dir: "/opt/dkp/packages/"
