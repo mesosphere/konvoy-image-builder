@@ -75,6 +75,7 @@ RUN apt-get update \
         libc-dev \
         git \
         gcc \
+        jq \
         make \
         bash \
         openssl \

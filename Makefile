@@ -430,7 +430,7 @@ define print-target
 endef
 
 docker.clean-latest-ami:
-	WHAT="./test/scripts/clean-latest-ami.sh" make -C test/scripts docker.run
+	./test/scripts/clean-latest-ami.sh
 
 # requires ANSIBLE_PATH, otherwise run `make ci.e2e.ansible`
 e2e.ansible:
