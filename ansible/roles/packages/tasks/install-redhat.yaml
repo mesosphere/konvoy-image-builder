@@ -101,6 +101,13 @@
   retries: 5
   delay: 3
 
+- name: add versionlock for containerd
+  command: yum versionlock add containerd.io
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+
 - name: remove versionlock for kubelet and kubectl packages
   command: yum versionlock delete {{ item }}
   with_items:
@@ -143,6 +150,16 @@
     - reload systemd
     - restart kubelet
 
+- name: add versionlock for kubelet and kubectl packages
+  command: yum versionlock add {{ item }}
+  with_items:
+    - kubelet
+    - kubectl
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+
 - name: remove versionlock for kubeadm packages
   command: yum versionlock delete kubeadm
   args:
@@ -166,4 +183,9 @@
   retries: 3
   delay: 3
 
-- include_tasks: install-redhat-versionlock.yaml
+- name: add versionlock for kubeadm package
+  command: yum versionlock add kubeadm
+  args:
+    warn: false
+  register: command_result
+  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
