@@ -35,10 +35,6 @@ containerd_flatcar_bins:
   - containerd
   - containerd-shim
 
-
-download_images: Null
-images_cache: /opt/dkp/images
-
 kubernetes_goarch: amd64
 kubernetes_bins:
   - kubeadm
@@ -46,6 +42,10 @@ kubernetes_bins:
   - kubelet
 
 sysprep: true
+
+download_images: Null
+images_local_bundle_dir: ""
+images_cache: /opt/dkp/images
 
 os_packages_local_bundle_file: ""
 os_packages_remote_bundle_path: "/opt/dkp/packages/"

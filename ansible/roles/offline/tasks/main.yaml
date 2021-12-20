@@ -1,3 +1,2 @@
 ---
 - include_tasks: upload.yaml
-  when: offline.os_packages_local_bundle_file != ""
