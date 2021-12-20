@@ -1,0 +1,5 @@
+[konvoy-packages]
+baseurl = https://packages.d2iq.com/konvoy/stable/linux/centos/7/x86_64
+gpgcheck = 1
+gpgkey = https://packages.d2iq.com/konvoy/stable/linux/centos/7/x86_64/gpg.asc
+name = Konvoy Containerd package repository

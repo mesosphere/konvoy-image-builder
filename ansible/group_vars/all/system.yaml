@@ -86,3 +86,8 @@ validate:
   minimum_memory_worker_mb: 2048
   # Minimum CPU cores allocated to each machine.
   minimum_cpu_cores: 2
+
+offline:
+  os_packages_local_bundle_file: "{{ os_packages_local_bundle_file }}"
+  os_packages_remote_bundle_path: "{{ os_packages_remote_bundle_path }}"
+  os_packages_remote_filesystem_repo_path: "{{ os_packages_remote_bundle_path }}/offline-repo/"

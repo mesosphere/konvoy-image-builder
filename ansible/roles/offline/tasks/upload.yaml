@@ -1,0 +1,63 @@
+---
+
+- block:
+    - name: create images directory
+      file:
+        path: "{{ images_cache }}"
+        state: directory
+
+    - name: list tar.gz files in the local image cache
+      find:
+        paths:
+          - "{{ images_local_bundle_dir }}"
+        use_regex: false
+        patterns:
+          - "*.tar.gz"
+        file_type: file
+      register: images_cache_find_result
+      delegate_to: 127.0.0.1
+      become: no
+      changed_when: false
+
+    - name: upload image bundles to remote
+      copy:
+        src: "{{ item }}"
+        dest: "{{ images_cache}}/{{ item | basename }}"
+      with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
+  when: images_local_bundle_dir != ""
+
+- block:
+    - name: create offline OS packages directory
+      file:
+        path: "{{ offline.os_packages_remote_filesystem_repo_path }}"
+        state: directory
+
+    - name: upload OS packages bundle to remote
+      copy:
+        src: "{{ offline.os_packages_local_bundle_file }}"
+        dest: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
+
+    - name: unarchive OS packages bundle on remote
+      unarchive:
+        src: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
+        dest: "{{ offline.os_packages_remote_filesystem_repo_path }}"
+        remote_src: yes
+  when: offline.os_packages_local_bundle_file != ""
+
+- block:
+    - name: create offline pip packages directory
+      file:
+        path: "{{ pip_packages_remote_filesystem_repo_path }}"
+        state: directory
+
+    - name: upload OS packages bundle to remote
+      copy:
+        src: "{{ pip_packages_local_bundle_file }}"
+        dest: "{{ pip_packages_remote_bundle_path }}/pip-repo.tar.gz"
+
+    - name: unarchive OS packages bundle on remote
+      unarchive:
+        src: "{{ pip_packages_remote_bundle_path }}/pip-repo.tar.gz"
+        dest: "{{ pip_packages_remote_filesystem_repo_path }}"
+        remote_src: yes
+  when: pip_packages_local_bundle_file != ""
