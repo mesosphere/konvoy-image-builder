@@ -48,8 +48,8 @@ rpm-artifacts-getter:
 	  -f hack/os-packages/$(getter_target)-$(rhel_major_version)/Dockerfile \
 	  -t $(rpm_getter_image):$(DEFAULT_KUBERNETES_VERSION_SEMVER) ./hack/os-packages/$(getter_target)-$(rhel_major_version)/
 
-$(artifact_dir):
-	mkdir -p $(artifact_dir)
+$(artifacts_dir):
+	mkdir -p $(artifacts_dir)
 
 .PHONY: download-rpm
 download-rpm: $(artifact_dir)
@@ -59,4 +59,4 @@ download-rpm: $(artifact_dir)
 .PHONY: createrepo
 createrepo:
 	docker run --rm -v "$(artifacts_dir):/opt/dkp/rpms/" -v /tmp/dnfcache:/var/cache/dnf -w /opt/dkp/rpms $(rpm_getter_image):$(DEFAULT_KUBERNETES_VERSION_SEMVER) \
-		/bin/sh -c 'createrepo -v .'
+		/bin/sh -c 'createrepo -v . && chown -R $(shell id -u):$(shell id -g) repodata/'

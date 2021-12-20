@@ -1,6 +1,6 @@
 PIP_PACKAGES_GETTER_IMAGE = mesosphere/pip-artifacts-getter
 
-pip_artifact_dir = $(shell pwd)/artifacts/pip-packages
+pip_artifacts_dir = $(shell pwd)/artifacts/pip-packages
 
 .PHONY: pip-packages-artifacts
 pip-packages-artifacts: download-pip-packages artifacts/pip-packages.tar.gz
@@ -23,11 +23,11 @@ pip-artifacts-getter:
 	  -f hack/pip-packages/pip-getter/Dockerfile \
 	  -t $(PIP_PACKAGES_GETTER_IMAGE):latest ./hack/pip-packages/pip-getter/.
 
-$(pip_artifact_dir):
-	mkdir -p $(pip_artifact_dir)
+$(pip_artifacts_dir):
+	mkdir -p $(pip_artifacts_dir)
 
 .PHONY: download-pip-package
-download-pip-package: $(pip_artifact_dir)
-	docker run --rm -v "$(pip_artifact_dir):/opt/dkp/pip/" -w /opt/dkp/pip $(PIP_PACKAGES_GETTER_IMAGE):latest \
+download-pip-package: $(pip_artifacts_dir)
+	docker run --rm -v "$(pip_artifacts_dir):/opt/dkp/pip/" -w /opt/dkp/pip $(PIP_PACKAGES_GETTER_IMAGE):latest \
 		/bin/sh -c 'mkdir -p $(packages) && pip3 download --destination-directory=/opt/dkp/pip/$(packages) $(packages)'
 
