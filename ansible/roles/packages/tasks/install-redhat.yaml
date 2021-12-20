@@ -10,8 +10,8 @@
       - ebtables
       - open-vm-tools
       - python3-pip
-      - python3-netifaces
-      - python3-requests
+      - "python{{ '3' if ansible_distribution_major_version == '8' }}-netifaces"
+      - "python{{ '3' if ansible_distribution_major_version == '8' }}-requests"
       - socat
       - sysstat
       - yum-utils
