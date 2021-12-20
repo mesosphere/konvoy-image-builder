@@ -21,11 +21,9 @@
 
 - name: install aws clients
   pip:
-    name: "{{ packages }}"
+    name: "awscli"
     executable: pip3
-  vars:
-    packages:
-      - awscli
+    extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path + 'awscli' if offline_mode_enabled }}"
   when:
     - ansible_distribution != "Amazon"
     - ansible_os_family != "Suse"
@@ -36,10 +34,24 @@
     state: present
     # must be fixed by amazon https://github.com/aws/amazon-ssm-agent/issues/235
     disable_gpg_check: yes
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  with_items:
+    - "{{ 'amazon-ssm-agent' if offline_mode_enabled else 'https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm' }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution != "Amazon"
+
+- name: install aws agents RPM
+  package:
+    name: "{{ item }}"
+    state: present
+    # must be fixed by amazon https://github.com/aws/amazon-ssm-agent/issues/235
+    disable_gpg_check: yes
   with_items:
     - https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
   when:
-    - ansible_os_family in ["RedHat", "Suse"]
+    - ansible_os_family == "Suse"
     - ansible_distribution != "Amazon"
 
 - name: install aws agents RPM

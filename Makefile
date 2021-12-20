@@ -113,6 +113,7 @@ ifneq ($(shell command -v docker),)
 endif
 
 include hack/os-packages/Makefile
+include hack/pip-packages/Makefile
 
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 	docker build \

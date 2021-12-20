@@ -29,7 +29,7 @@
 - block:
     - name: create offline OS packages directory
       file:
-        path: "{{ offline.os_packages_remote_bundle_path }}/offline-repo/"
+        path: "{{ offline.os_packages_remote_filesystem_repo_path }}"
         state: directory
 
     - name: upload OS packages bundle to remote
@@ -40,7 +40,24 @@
     - name: unarchive OS packages bundle on remote
       unarchive:
         src: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
-        dest: "{{ offline.os_packages_remote_bundle_path }}/offline-repo/"
+        dest: "{{ offline.os_packages_remote_filesystem_repo_path }}"
         remote_src: yes
   when: offline.os_packages_local_bundle_file != ""
 
+- block:
+    - name: create offline pip packages directory
+      file:
+        path: "{{ pip_packages_remote_filesystem_repo_path }}"
+        state: directory
+
+    - name: upload OS packages bundle to remote
+      copy:
+        src: "{{ pip_packages_local_bundle_file }}"
+        dest: "{{ pip_packages_remote_bundle_path }}/pip-repo.tar.gz"
+
+    - name: unarchive OS packages bundle on remote
+      unarchive:
+        src: "{{ pip_packages_remote_bundle_path }}/pip-repo.tar.gz"
+        dest: "{{ pip_packages_remote_filesystem_repo_path }}"
+        remote_src: yes
+  when: pip_packages_local_bundle_file != ""

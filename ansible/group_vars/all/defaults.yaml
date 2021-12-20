@@ -49,3 +49,7 @@ images_cache: /opt/dkp/images
 
 os_packages_local_bundle_file: ""
 os_packages_remote_bundle_path: "/opt/dkp/packages/"
+
+pip_packages_local_bundle_file: ""
+pip_packages_remote_bundle_path: "/opt/dkp/pip-packages/"
+pip_packages_remote_filesystem_repo_path: "/opt/dkp/pip-packages/offline-packages/"

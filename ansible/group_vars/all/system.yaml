@@ -90,3 +90,4 @@ validate:
 offline:
   os_packages_local_bundle_file: "{{ os_packages_local_bundle_file }}"
   os_packages_remote_bundle_path: "{{ os_packages_remote_bundle_path }}"
+  os_packages_remote_filesystem_repo_path: "{{ os_packages_remote_bundle_path }}/offline-repo/"
