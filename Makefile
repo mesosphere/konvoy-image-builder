@@ -18,6 +18,8 @@ COVERAGE ?= $(REPO_ROOT_DIR)/coverage
 
 VERBOSITY ?= 6
 
+export CGO_ENABLED=0
+
 export DOCKER_REPOSITORY ?= mesosphere/konvoy-image-builder
 export DOCKER_SOCKET ?= /var/run/docker.sock
 ifeq ($(OS),Darwin)
@@ -299,7 +301,7 @@ bin/konvoy-image:
 
 bin/konvoy-image-wrapper:
 	$(call print-target)
-	CGO_ENABLED=0 go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
+	go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 
 dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/cmd
 dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
@@ -375,7 +377,7 @@ super-lint-shell: ## open a shell in the super-linter container
 .PHONY: test
 test: ## go test with race detector and code coverage
 	$(call print-target)
-	go-acc --covermode=atomic --output=$(COVERAGE).out --ignore=e2e ./... -- -race -short -v
+	CGO_ENABLED=1 go-acc --covermode=atomic --output=$(COVERAGE).out --ignore=e2e ./... -- -race -short -v
 ifneq ($(CI),)
 	gocover-cobertura -by-files < $(COVERAGE).out > $(COVERAGE).xml
 else
@@ -386,7 +388,7 @@ endif
 .PHONY: integration-test
 integration-test: ## go test with race detector for integration tests
 	$(call print-target)
-	go test -race -run Integration -v ./...
+	CGO_ENABLED=1 go test -race -run Integration -v ./...
 
 .PHONY: mod-tidy
 mod-tidy: ## go mod tidy
@@ -516,7 +518,7 @@ ci.e2e.ansible:
 	make -C test/e2e/ansible e2e.clean
 
 release-bundle-GOOS:
-	GOOS=$(GOOS) CGO_ENABLED=0 go build -tags EMBED_DOCKER_IMAGE \
+	GOOS=$(GOOS) go build -tags EMBED_DOCKER_IMAGE \
 		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
 		-o "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/konvoy-image" $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go
 	cp -a "$(REPO_ROOT_DIR)/ansible" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
