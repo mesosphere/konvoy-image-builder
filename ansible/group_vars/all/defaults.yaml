@@ -10,6 +10,7 @@ pause_image_version: "3.4.1"
 pause_image_version_prev: "3.2"
 crictl_version: "1.22.0"
 kfips_version: "0.1.0"
+kubevip_version: "0.3.7"
 
 etcd_image_tag: "{{ etcd_version }}"
 
