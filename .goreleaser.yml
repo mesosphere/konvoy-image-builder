@@ -63,10 +63,6 @@ dockers:
   - dockerfile: Dockerfile.devkit
     image_templates:
       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
-      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}.{{ .Minor }}-devkit{{ end }}"
-      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}.{{ .Minor }}-devkit{{ end }}"
-      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}-devkit{{ end }}"
-      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:latest-devkit{{ end }}"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{ .Date }}"
@@ -80,9 +76,6 @@ dockers:
   - dockerfile: Dockerfile
     image_templates:
       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}'
-      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}.{{ .Minor }}{{ end }}"
-      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:v{{ .Major }}{{ end }}"
-      - "{{ if not .IsSnapshot }}mesosphere/konvoy-image-builder:latest{{ end }}"
     ids:
       - konvoy-image
     # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
