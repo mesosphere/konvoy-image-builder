@@ -95,7 +95,7 @@ dockers:
       - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
-    skip_push: auto
+    skip_push: false
     extra_files:
       - bin
       - images
