@@ -36,6 +36,20 @@
       copy:
         src: "{{ offline.os_packages_local_bundle_file }}"
         dest: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
+      register: os_packages_copied
+
+    - name: remove outdated os packages
+      file:
+        path: "{{ offline.os_packages_remote_filesystem_repo_path }}"
+        state: absent
+      when: os_packages_copied.changed
+
+    # recreate the directory as it may be deleted in the previous step
+    - name: create offline OS packages directory after cleanup
+      file:
+        path: "{{ offline.os_packages_remote_filesystem_repo_path }}"
+        state: directory
+      when: os_packages_copied.changed
 
     - name: unarchive OS packages bundle on remote
       unarchive:
@@ -50,12 +64,26 @@
         path: "{{ pip_packages_remote_filesystem_repo_path }}"
         state: directory
 
-    - name: upload OS packages bundle to remote
+    - name: upload pip packages bundle to remote
       copy:
         src: "{{ pip_packages_local_bundle_file }}"
         dest: "{{ pip_packages_remote_bundle_path }}/pip-repo.tar.gz"
+      register: pip_packages_copied
 
-    - name: unarchive OS packages bundle on remote
+    - name: remove outdated pip packages
+      file:
+        path: "{{ pip_packages_remote_filesystem_repo_path }}"
+        state: absent
+      when: pip_packages_copied.changed
+
+    # recreate the directory as it may be deleted in the previous step
+    - name: create offline pip packages directory after cleanup
+      file:
+        path: "{{ pip_packages_remote_filesystem_repo_path }}"
+        state: directory
+      when: pip_packages_copied.changed
+
+    - name: unarchive pip packages bundle on remote
       unarchive:
         src: "{{ pip_packages_remote_bundle_path }}/pip-repo.tar.gz"
         dest: "{{ pip_packages_remote_filesystem_repo_path }}"
