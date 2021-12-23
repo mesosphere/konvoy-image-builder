@@ -27,3 +27,11 @@ service:
   auditd:
     running: true
     enabled: true
+
+  firewalld:
+    running: false
+    enabled: false
+
+  iptables:
+    running: false
+    enabled: false
