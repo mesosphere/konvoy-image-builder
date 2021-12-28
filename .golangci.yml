@@ -37,8 +37,6 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/mesosphere/konvoy-image-builder
-  golint:
-    min-confidence: 0
   gomnd:
     settings:
       mnd:
@@ -61,6 +59,9 @@ linters-settings:
     allow-unused: false
     require-explanation: true
     require-specific: true
+  revive:
+    confidence: 0.0
+    errorCode: 1
 
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
@@ -85,7 +86,6 @@ linters:
     - gofmt
     - gofumpt
     - goimports
-    - golint
     - gomnd
     - goprintffuncname
     - gosec
@@ -101,6 +101,7 @@ linters:
     - nolintlint
     - prealloc
     - predeclared
+    - revive
     - staticcheck
     - structcheck
     - stylecheck
