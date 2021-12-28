@@ -1,9 +1,19 @@
 {
-    "filters": {
-        "allowlist": {
-            "allowlistConfigPaths": [
-                ".textlint-whitelist.yaml"
+# TODO: disable the allow list pending https://github.com/github/super-linter/pull/2222
+#       and replace it with the rules map
+#     "filters": {
+#         "allowlist": {
+#             "allowlistConfigPaths": [
+#                 ".textlint-whitelist.yaml"
+#             ]
+#         }
+#     },
+    "rules": {
+        "terminology": {
+            "exclude": [
+                "Node(?:js)?"
             ]
         }
     }
 }
+# vim: set ft=json:
