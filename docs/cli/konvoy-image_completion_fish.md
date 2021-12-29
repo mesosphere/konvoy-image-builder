@@ -1,17 +1,18 @@
 ## konvoy-image completion fish
 
-generate the autocompletion script for fish
+Generate the autocompletion script for fish
 
 ### Synopsis
-
 
 Generate the autocompletion script for the fish shell.
 
 To load completions in your current shell session:
-$ konvoy-image completion fish | source
+
+	konvoy-image completion fish | source
 
 To load completions for every new session, execute once:
-$ konvoy-image completion fish > ~/.config/fish/completions/konvoy-image.fish
+
+	konvoy-image completion fish > ~/.config/fish/completions/konvoy-image.fish
 
 You will need to start a new shell for this setup to take effect.
 
@@ -37,5 +38,5 @@ konvoy-image completion fish [flags]
 
 ### SEE ALSO
 
-* [konvoy-image completion](konvoy-image_completion.md)	 - generate the autocompletion script for the specified shell
+* [konvoy-image completion](konvoy-image_completion.md)	 - Generate the autocompletion script for the specified shell
 

@@ -1,9 +1,8 @@
 ## konvoy-image completion
 
-generate the autocompletion script for the specified shell
+Generate the autocompletion script for the specified shell
 
 ### Synopsis
-
 
 Generate the autocompletion script for konvoy-image for the specified shell.
 See each sub-command's help for details on how to use the generated script.
@@ -26,8 +25,8 @@ See each sub-command's help for details on how to use the generated script.
 ### SEE ALSO
 
 * [konvoy-image](konvoy-image.md)	 - Create, provision, and customize images for running Konvoy
-* [konvoy-image completion bash](konvoy-image_completion_bash.md)	 - generate the autocompletion script for bash
-* [konvoy-image completion fish](konvoy-image_completion_fish.md)	 - generate the autocompletion script for fish
-* [konvoy-image completion powershell](konvoy-image_completion_powershell.md)	 - generate the autocompletion script for powershell
-* [konvoy-image completion zsh](konvoy-image_completion_zsh.md)	 - generate the autocompletion script for zsh
+* [konvoy-image completion bash](konvoy-image_completion_bash.md)	 - Generate the autocompletion script for bash
+* [konvoy-image completion fish](konvoy-image_completion_fish.md)	 - Generate the autocompletion script for fish
+* [konvoy-image completion powershell](konvoy-image_completion_powershell.md)	 - Generate the autocompletion script for powershell
+* [konvoy-image completion zsh](konvoy-image_completion_zsh.md)	 - Generate the autocompletion script for zsh
 
