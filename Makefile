@@ -511,49 +511,27 @@ ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
 ci.e2e.build.%:
 	make devkit.run WHAT="make e2e.build.$*"
 
-e2e.build.centos-7:
-	make centos7
-	make docker.clean-latest-ami
+e2e.build.centos-7: centos7 docker.clean-latest-ami
 
-e2e.build.centos-8:
-	make centos8
-	make docker.clean-latest-ami
+e2e.build.centos-8: centos8 docker.clean-latest-ami
 
-e2e.build.ubuntu-18:
-	make ubuntu18
-	make docker.clean-latest-ami
+e2e.build.ubuntu-18: ubuntu18 docker.clean-latest-ami
 
-e2e.build.ubuntu-20:
-	make ubuntu20
-	make docker.clean-latest-ami
+e2e.build.ubuntu-20: ubuntu20 docker.clean-latest-ami
 
-e2e.build.sles-15:
-	make sles15
-	make docker.clean-latest-ami
+e2e.build.sles-15: sles15 docker.clean-latest-ami
 
-e2e.build.oracle-7:
-	make oracle7
-	make docker.clean-latest-ami
+e2e.build.oracle-7: oracle7 docker.clean-latest-ami
 
-e2e.build.oracle-8:
-	make oracle8
-	make docker.clean-latest-ami
+e2e.build.oracle-8: oracle8 docker.clean-latest-ami
 
-e2e.build.flatcar:
-	make flatcar
-	make docker.clean-latest-ami
+e2e.build.flatcar: flatcar docker.clean-latest-ami
 
-e2e.build.centos-7-nvidia:
-	make centos7-nvidia
-	make docker.clean-latest-ami
+e2e.build.centos-7-nvidia: centos7-nvidia docker.clean-latest-ami
 
-e2e.build.centos-8-nvidia:
-	make centos8-nvidia
-	make docker.clean-latest-ami
+e2e.build.centos-8-nvidia: centos8-nvidia docker.clean-latest-ami
 
-e2e.build.sles-15-nvidia:
-	make sles15-nvidia
-	make docker.clean-latest-ami
+e2e.build.sles-15-nvidia: sles15-nvidia docker.clean-latest-ami
 
 # use sibling containers to handle dependencies and avoid DinD
 ci.e2e.ansible:
