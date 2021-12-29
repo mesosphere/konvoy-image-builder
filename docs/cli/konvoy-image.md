@@ -14,7 +14,7 @@ Create, provision, and customize images for running Konvoy
 ### SEE ALSO
 
 * [konvoy-image build](konvoy-image_build.md)	 - build and provision images
-* [konvoy-image completion](konvoy-image_completion.md)	 - generate the autocompletion script for the specified shell
+* [konvoy-image completion](konvoy-image_completion.md)	 - Generate the autocompletion script for the specified shell
 * [konvoy-image generate](konvoy-image_generate.md)	 - generate files relating to building images
 * [konvoy-image generate-docs](konvoy-image_generate-docs.md)	 - generate docs in path
 * [konvoy-image provision](konvoy-image_provision.md)	 - provision to an inventory.yaml or hostname, note the comma at the end of the hostname
