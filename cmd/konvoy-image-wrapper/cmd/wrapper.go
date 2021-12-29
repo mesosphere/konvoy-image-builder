@@ -14,7 +14,7 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 	errors2 "github.com/pkg/errors"
-	"golang.org/x/crypto/ssh/terminal"
+	terminal "golang.org/x/term"
 
 	"github.com/mesosphere/konvoy-image-builder/cmd/konvoy-image-wrapper/image"
 )
