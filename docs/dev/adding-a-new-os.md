@@ -1,25 +1,6 @@
 # Konvoy Image Builder - Adding Operating Systems
 
-## Introduction
-
-The goal of Konvoy Image Builder (KIB) is to produce a common operating surface to run konvoy across heterogeneous infrastructure. KIB relies on ansible to install software, configure, and sanitize systems for running konvoy. Packer is used to build images for cloud environments. Goss is used to validate system’s are capable of running konvoy. 
-
-## Supported OS Families
-
-Presently KIB supports four OS families:
-
-- Debian
-- Red Hat
-- Flatcar
-- and SUSE
-
 An OS family represents major branches in how machines are provisioned. Adding an OS family is an advanced task and will require detailed knowledge of the OS family being added and familiarity with ansible. Differences within OS family distributions (Ubuntu vs Debian) and versions (Centos 7 vs Centos 8) are handled only as needed. In most cases, version and distribution differences are handled by ansible, and likely will not require any changes to the existing playbooks.
-
-## KIB Repository Layout
-
-- `ansible`: contains the ansible playbooks, roles, and default variables
-- `images`: contains image definitions for supported platforms. Presently, we provide AMI image definitions and generic image definitions. Generic image definitions are useful for preprovisioned infrastructure
-- `overrides`: contains variable overrides for nvidia and fips. Unless adding an overlay feature, these files can safely be ignored.
 
 ## Adding a New OS Family
 
