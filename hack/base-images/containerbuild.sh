@@ -8,7 +8,6 @@ KICKSTART="$1"
 KSNAME=${KICKSTART%.*}
 BUILDDATE=$(date +%Y%m%d)
 BUILDROOT=/var/tmp/containers/$BUILDDATE/$KSNAME
-CONT_ARCH=$(uname -m)
 CENTOS_ISO_URL="$2"
 DOCKER_TAG="${DOCKER_TAG:=7.9.2009.minimal}"
 
@@ -23,22 +22,21 @@ fi
 PACKAGES=( anaconda-tui lorax yum-langpacks)
 for Element in "${PACKAGES[@]}"
   do
-    TEST=`rpm -q --whatprovides $Element`
-    if [ "$?" -gt 0 ]
-    then echo "RPM $Element missing"
-    exit 1
+    if ! rpm -q --whatprovides "$Element"; then
+     echo "RPM $Element missing"
+     exit 1
     fi
 done
 
 # Is the buildroot already present
 if [ -d "$BUILDROOT" ]; then
     echo "The Build root, $BUILDROOT, already exists.  Would you like to remove it? [y/N] "
-    read REMOVE
+    read -r REMOVE
     if [ "$REMOVE" == "Y" ] || [ "$REMOVE" == "y" ]
       then
-      if [ ! "$BUILDROOT" == "/" ]
+      if [ ! "$BUILDROOT" == "/" ]  
         then
-        rm -rf $BUILDROOT
+        rm -rf "$BUILDROOT"
       fi
     else
       exit 1
@@ -46,7 +44,7 @@ if [ -d "$BUILDROOT" ]; then
 fi
 
 #download the ISO
-ISO_FILE=`basename $CENTOS_ISO_URL`
+ISO_FILE=$(basename "$CENTOS_ISO_URL")
 if [ ! -f /tmp/"$ISO_FILE" ]
 then
   echo "downloading: $CENTOS_ISO_URL"
@@ -61,13 +59,13 @@ time livemedia-creator --logfile=/tmp/"$KSNAME"-"$BUILDDATE".log \
      --releasever "7"
 
 # Put the rootfs someplace
-mkdir -p $BUILDROOT/docker
-mv /var/tmp/"$KSNAME"-docker.tar.xz $BUILDROOT/docker/
+mkdir -p "$BUILDROOT"/docker
+mv /var/tmp/"$KSNAME"-docker.tar.xz "$BUILDROOT"/docker/
 
 # Create a Dockerfile to go along with the rootfs.
 
-BUILDDATE_RFC3339="$(date -d $BUILDDATE --rfc-3339=seconds)"
-cat << EOF > $BUILDROOT/docker/Dockerfile
+BUILDDATE_RFC3339="$(date -d "$BUILDDATE" --rfc-3339=seconds)"
+cat << EOF > "$BUILDROOT"/docker/Dockerfile
 FROM scratch
 ADD $KSNAME-docker.tar.xz /
 LABEL \\
@@ -84,4 +82,4 @@ CMD ["/bin/bash"]
 EOF
 
 # import docker image
-cat $BUILDROOT/docker/"$KSNAME"-docker.tar.xz | docker import - centos:"$DOCKER_TAG"
+docker import - centos:"$DOCKER_TAG" < "$BUILDROOT"/docker/"$KSNAME"-docker.tar.xz
