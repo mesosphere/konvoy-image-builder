@@ -1,0 +1,79 @@
+# Konvoy Image Builder - Adding Operating Systems
+
+## Introduction
+
+The goal of Konvoy Image Builder (KIB) is to produce a common operating surface to run konvoy across heterogeneous infrastructure. KIB relies on ansible to install software, configure, and sanitize systems for running konvoy. Packer is used to build images for cloud environments. Goss is used to validate system’s are capable of running konvoy. 
+
+## Supported OS Families
+
+Presently KIB supports four OS families:
+
+- Debian
+- Red Hat
+- Flatcar
+- and SUSE
+
+An OS family represents major branches in how machines are provisioned. Adding an OS family is an advanced task and will require detailed knowledge of the OS family being added and familiarity with ansible. Differences within OS family distributions (Ubuntu vs Debian) and versions (Centos 7 vs Centos 8) are handled only as needed. In most cases, version and distribution differences are handled by ansible, and likely will not require any changes to the existing playbooks.
+
+## KIB Repository Layout
+
+- `ansible`: contains the ansible playbooks, roles, and default variables
+- `images`: contains image definitions for supported platforms. Presently, we provide AMI image definitions and generic image definitions. Generic image definitions are useful for preprovisioned infrastructure
+- `overrides`: contains variable overrides for nvidia and fips. Unless adding an overlay feature, these files can safely be ignored.
+
+## Adding a New OS Family
+
+Adding support for a new OS family will be implemented primarily in ansible. As ansible abstracts many common OS features, the process for adding a new OS is fairly painless. For example, this PR represents the addition of the Debian OS family and the addition of Ubuntu 20.04:
+
+- [PR #100](https://github.com/mesosphere/konvoy-image-builder/pull/100)
+
+The most critical piece of the PR is specifying the location of the Kubernetes and containerd artifacts and the orchestration of the installation. For the build to succeed, a working containerd installation is required at build time as this is required for seeding control plane images into the containerd image store. Any OS family which is added will need to satisfy this requirement.
+
+### Packages
+
+The installation process of Kubernetes, containerd, and dependencies will vary depending on OS family. For instance, both Debian and Red Hat families use vendored repositories and package managers to install dependencies. Where Flatcar, which doesn’t have a package manager, simply downloads binaries and copies them to `/opt`.
+
+Since we do not have containerd build pipelines for other OS families, using upstream sources and installation mechanisms for the target OS is the best course of action.
+
+- Repositories for Debian and Red Hat families are defined [here](https://github.com/mesosphere/konvoy-image-builder/blob/main/ansible/group_vars/all/system.yaml#L1-L33).
+- Release links to the actual binaries are defined [here](https://github.com/mesosphere/konvoy-image-builder/blob/main/ansible/group_vars/all/defaults.yaml#L55-L62).
+
+### Images
+
+Image definitions for AMIs should contain variables which allow packer to properly discover the base image for the OS family and version of the target.
+
+An example of an image definition for producing a centos-8 image is defined [here](https://github.com/mesosphere/konvoy-image-builder/blob/main/images/ami/centos-8.yaml).
+
+#### Goss
+
+When adding a new OS family, a GOSS spec needs to be added to the repo.
+
+For [PR #100](https://github.com/mesosphere/konvoy-image-builder/pull/100/files), all that was done to achieve this was to simply copy `goss/centos` to `goss/ubuntu`.
+
+## Adding a New Supported Version
+
+If the OS family is supported, adding a new image definition is straightforward. Here is an example of adding Ubuntu 18.04 support, which is part of the Debian OS family: 
+
+- [PR #104](https://github.com/mesosphere/konvoy-image-builder/pull/104)
+
+All that's needed is to provide an image definition which instructs packer where to find the base image. You can make changes in the ansible roles to account for any differences.
+
+### Image Builder Commands and Testing
+
+#### Build
+
+An AWS machine image can be built using the following following command:
+
+```sh
+./konvoy-image build images/ami/<image>.yaml
+```
+
+#### Generate
+
+When developing ansible roles and tasks it’s much easier to test against a long running instance. KIB can be used to generate extravars for a given target.
+
+```sh
+./konvoy-image generate images/ami/<image>.yaml
+```
+
+This will create a directory in `./work` which will contain files needed to use ansible and packer directly.
