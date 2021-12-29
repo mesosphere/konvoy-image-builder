@@ -58,3 +58,5 @@ When developing ansible roles and tasks it’s much easier to test against a lon
 ```
 
 This will create a directory in `./work` which will contain files needed to use ansible and packer directly.
+
+To review the rest of the CLI commands, go to the [CLI docs](../cli).
