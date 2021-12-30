@@ -167,14 +167,6 @@ centos7: ## Build Centos 7 image
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
-.PHONY: centos7-offline
-centos7-offline: build
-centos7-offline: os-packages-artifacts
-centos7-offline: ## Build Centos 7 image
-	./bin/konvoy-image build images/ami/centos-7.yaml \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
 .PHONY: centos7-nvidia
 centos7-nvidia: build
 centos7-nvidia: ## Build Centos 7 image with GPU support
@@ -513,7 +505,7 @@ endif
 # All tests run in parallel. Adjust parallelism with --jobs.
 # Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
 ci.e2e.build.all: ci.e2e.build.centos-7
-ci.e2e.build.all: ci.e2e.build.centos-7-offline
+ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: ci.e2e.build.centos-8
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
@@ -532,8 +524,10 @@ ci.e2e.build.%:
 
 e2e.build.centos-7: centos7 docker.clean-latest-ami
 
+# Run os-packages-artifacts outside devkit container.
 e2e.build.centos-7-offline:
-	$(MAKE) centos7-offline ADDITIONAL_OVERRIDES="$(REPO_ROOT_DIR)/overrides/offline.yaml"
+	$(MAKE) os-packages-artifacts
+	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
 	$(MAKE) docker.clean-latest-ami
 
 e2e.build.centos-8: centos8 docker.clean-latest-ami
