@@ -1,1 +1,1 @@
-os_packages_local_bundle_file: "/kib/artifacts/os-packages_{{ kubernetes_version }}_x86_64_rpms.tar.gz"
+os_packages_local_bundle_file: "{{ playbook_dir }}/../artifacts/os-packages_{{ kubernetes_version }}_x86_64_rpms.tar.gz"
