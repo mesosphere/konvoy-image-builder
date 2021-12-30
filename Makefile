@@ -526,7 +526,7 @@ e2e.build.centos-7: centos7 docker.clean-latest-ami
 
 # Run os-packages-artifacts outside devkit container.
 e2e.build.centos-7-offline:
-	$(MAKE) os-packages-artifacts
+	$(MAKE) os-packages-artifacts pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
 	$(MAKE) docker.clean-latest-ami
 
