@@ -32,33 +32,10 @@ zerombr
 clearpart --all --initlabel
 part / --size 3000 --fstype ext4
 
-# Package setup
+# Package setup. only minimal packages installed for minimal installation. ref: https://github.com/CentOS/Community-Kickstarts/blob/master/centos7-minimal.cfg
 %packages --excludedocs --instLangs=en --nocore
-bind-utils
-bash
-yum
-vim-minimal
-centos-release
-less
--kernel*
--*firmware
--firewalld-filesystem
--os-prober
--gettext*
--GeoIP
--bind-license
--freetype
-iputils
-iproute
-systemd
-rootfiles
--libteam
--teamd
-tar
-passwd
-yum-utils
-yum-plugin-ovl
-
+@Core
+chrony
 %end
 
 %pre
@@ -92,7 +69,7 @@ rm -rf /boot
 rm -rf /etc/firewalld
 
 # Lock roots account, keep roots account password-less.
-passwd -l root
+#passwd -l root
 
 #LANG="en_US"
 #echo "%_install_lang $LANG" > /etc/rpm/macros.image-language-conf

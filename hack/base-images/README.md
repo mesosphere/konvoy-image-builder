@@ -22,9 +22,8 @@ export DOCKER_TAG=7.9.2009.minimal
 ```
 Creates docker image `centos:7.9.2009.minimal`
 
-
-## Alternate method of creating docker image from ISO
-This method mounts ISO on loop device and extracts Liveos readonly squash file system to create uncompressed rootfs.
+- tag and push image
 ```bash
-./iso-to-docker.sh
+docker tag centos:7.9.2009.minimal mesosphere/centos:7.9.2009.minimal
+docker push mesosphere/centos:7.9.2009.minimal
 ```
