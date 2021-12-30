@@ -1,20 +1,14 @@
 # Konvoy Image Builder - Adding Operating Systems
 
-An OS family represents major branches in how machines are provisioned. Adding an OS family is an advanced task and will require detailed knowledge of the OS family being added and familiarity with ansible. Differences within OS family distributions (Ubuntu vs Debian) and versions (Centos 7 vs Centos 8) are handled only as needed. In most cases, version and distribution differences are handled by ansible, and likely will not require any changes to the existing playbooks.
+An OS family represents major branches in how machines are provisioned. Adding an OS family is an advanced task and will require detailed knowledge of the OS family being added and familiarity with ansible.
+
+Differences within OS family distributions (Ubuntu vs Debian) and versions (Centos 7 vs Centos 8) are handled only as needed. In most cases, version and distribution differences are handled by ansible, and likely will not require any changes to the existing playbooks.
 
 ## Adding a New OS Family
 
 Adding support for a new OS family will be implemented primarily in ansible. As ansible abstracts many common OS features, the process for adding a new OS is fairly painless. For example, this PR represents the addition of the Debian OS family and the addition of Ubuntu 20.04:
 
 - [PR #100](https://github.com/mesosphere/konvoy-image-builder/pull/100)
-
-The most critical piece of the PR is specifying the location of the Kubernetes and containerd artifacts and the orchestration of the installation. For the build to succeed, a working containerd installation is required at build time as this is required for seeding control plane images into the containerd image store. Any OS family which is added will need to satisfy this requirement.
-
-### Packages
-
-The installation process of Kubernetes, containerd, and dependencies will vary depending on OS family. For instance, both Debian and Red Hat families use vendored repositories and package managers to install dependencies. Where Flatcar, which doesn’t have a package manager, simply downloads binaries and copies them to `/opt`.
-
-Since we do not have containerd build pipelines for other OS families, using upstream sources and installation mechanisms for the target OS is the best course of action.
 
 - Repositories for Debian and Red Hat families are defined [here](https://github.com/mesosphere/konvoy-image-builder/blob/main/ansible/group_vars/all/system.yaml#L1-L33).
 - Release links to the actual binaries are defined [here](https://github.com/mesosphere/konvoy-image-builder/blob/main/ansible/group_vars/all/defaults.yaml#L55-L62).
@@ -27,13 +21,13 @@ An example of an image definition for producing a centos-8 image is defined [her
 
 #### Goss
 
-When adding a new OS family, a GOSS spec needs to be added to the repo.
+When adding a new OS family, a GOSS spec is required.
 
 For [PR #100](https://github.com/mesosphere/konvoy-image-builder/pull/100/files), all that was done to achieve this was to simply copy `goss/centos` to `goss/ubuntu`.
 
 ## Adding a New Supported Version
 
-If the OS family is supported, adding a new image definition is straightforward. Here is an example of adding Ubuntu 18.04 support, which is part of the Debian OS family: 
+If the OS family is supported, adding a new image definition is straightforward. Here is an example of adding Ubuntu 18.04 support, which is part of the Debian OS family:
 
 - [PR #104](https://github.com/mesosphere/konvoy-image-builder/pull/104)
 
