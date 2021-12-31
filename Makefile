@@ -149,7 +149,8 @@ export CONTAINERD_VERSION ?= $(shell grep -E -e "containerd_version:" ansible/gr
 
 export SAVE_IMAGE_LIST_FILE ?= images.out
 export SAVE_IMAGE_EXTRA_LIST_FILE ?= ""
-export SAVE_IMAGE_TAR_FILE_NAME ?= artifacts/kubernetes_image_bundle_${DEFAULT_KUBERNETES_VERSION}_linux_amd64.tar.gz
+export SAVE_IMAGE_TAR_FILE_NAME ?= kubernetes_image_bundle_${DEFAULT_KUBERNETES_VERSION}_linux_amd64.tar.gz
+
 
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
@@ -526,7 +527,7 @@ e2e.build.centos-7: centos7 docker.clean-latest-ami
 
 # Run os-packages-artifacts outside devkit container.
 e2e.build.centos-7-offline:
-	$(MAKE) os-packages-artifacts pip-packages-artifacts
+	$(MAKE) os-packages-artifacts pip-packages-artifacts save-images
 	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
 	$(MAKE) docker.clean-latest-ami
 
@@ -583,8 +584,11 @@ create-image-list:
 	@ansible-playbook ./ansible/list-images.yaml -e="@./overrides/image-list.yaml"
 	@cat images.out
 
+artifacts/images:
+	mkdir -p artifacts/images
+
 .PHONY: save-images
-save-images:
+save-images: artifacts/images
 save-images: create-image-list
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
-	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) $(SAVE_IMAGE_TAR_FILE_NAME)
+	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)
