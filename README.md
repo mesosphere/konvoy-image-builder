@@ -2,8 +2,24 @@
 
 Molecule Test: ![Teamcity Status](https://teamcity.mesosphere.io/app/rest/builds/buildType:%28id:ClosedSource_KonvoyImageBuilder_MoleculeTest%29/statusIcon.svg)
 
-This repository contains tools for producing system images for the purpose of
-running Konvoy.
+The goal of Konvoy Image Builder (KIB) is to produce a common operating surface to run konvoy across heterogeneous infrastructure. KIB relies on ansible to install software, configure, and sanitize systems for running konvoy. Packer is used to build images for cloud environments. Goss is used to validate system’s are capable of running Konvoy.
+
+## Supported OS Families
+
+Presently, KIB supports four OS families:
+
+- Debian
+- Red Hat
+- Flatcar
+- and SUSE
+
+## KIB Repository Layout
+
+- `ansible`: contains the ansible playbooks, roles, and default variables
+- `images`: contains image definitions for supported platforms. Presently, we provide AMI image definitions and generic image definitions. Generic image definitions are useful for preprovisioned infrastructure
+- `overrides`: contains variable overrides for nvidia and fips. Unless adding an overlay feature, these files can safely be ignored.
+
+## Quickstart
 
 ## `konvoy-image` CLI
 
@@ -22,7 +38,6 @@ See [`konvoy-image`](docs/cli/konvoy-image.md)
 | aws-region | base-os  | ami-id                | image params                                           |
 |------------|----------|-----------------------|--------------------------------------------------------|
 | us-west-2  | centos 7 | ami-0bc38a003a647b084 | [`images/ami/centos-7.yaml`](images/ami/centos-7.yaml) |
-
 
 ## Development
 
@@ -86,24 +101,28 @@ To build the CLI command run:
 ```sh
 make build
 ```
+
 ### Building the Wrapper
 
 These are temporary instructions for building the wrapper for testing
 
-```shell
+```sh
 make build.snapshot
 ```
 
 Replace image tag with the version created by go releaser
 
-```shell
+```sh
 docker save mesosphere/konvoy-image-builder:v1.0.0-alpha1-SNAPSHOT-e590962 \
  | gzip -c - > cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 ```
 
 Build the wrapper
-```shell
+
+```sh
 go build -tags EMBED_DOCKER_IMAGE \
  -ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=v1.0.0-alpha1-SNAPSHOT-e590962" \
  -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 ```
+
+For further development, see the [Dev Docs](docs/dev).
