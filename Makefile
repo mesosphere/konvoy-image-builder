@@ -208,6 +208,14 @@ rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
 	--aws-instance-type p2.xlarge
 
+.PHONY: rhel82-fips
+rhel82-fips: build
+rhel82-fips: ## Build RHEL 8.2 FIPS image
+	./bin/konvoy-image build images/ami/rhel-82.yaml \
+	-v ${VERBOSITY} \
+	--overrides=overrides/fips.yaml \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+
 .PHONY: rhel84
 rhel84: build
 rhel84: ## Build RHEL 8.4 image
@@ -503,6 +511,7 @@ ci.e2e.build.all: ci.e2e.build.sles-15
 ci.e2e.build.all: ci.e2e.build.oracle-7
 ci.e2e.build.all: ci.e2e.build.oracle-8
 ci.e2e.build.all: ci.e2e.build.flatcar
+ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.centos-8-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
@@ -526,6 +535,8 @@ e2e.build.oracle-7: oracle7 docker.clean-latest-ami
 e2e.build.oracle-8: oracle8 docker.clean-latest-ami
 
 e2e.build.flatcar: flatcar docker.clean-latest-ami
+
+e2e.build.rhel-8-fips: rhel82-fips docker.clean-latest-ami
 
 e2e.build.centos-7-nvidia: centos7-nvidia docker.clean-latest-ami
 
