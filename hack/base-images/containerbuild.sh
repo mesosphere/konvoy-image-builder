@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# The original script https://github.com/CentOS/sig-cloud-instance-build/blob/master/docker/containerbuild.sh
+# is modified to use ISO file explicitly.
+
 set -eo pipefail
 
 #### Basic VAR definitions

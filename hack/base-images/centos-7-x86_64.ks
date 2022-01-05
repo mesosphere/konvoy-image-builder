@@ -1,4 +1,9 @@
 # This is a minimal CentOS kickstart designed for docker.
+# Kickstarts maintained by community: https://github.com/CentOS/Community-Kickstarts
+# This kickstart file includes instructions to support docker image created from ISO.
+# It is creatd using community maintained kickstart files:
+# Docker compatible KS file for centos7: https://github.com/CentOS/sig-cloud-instance-build/blob/master/docker/centos-7-x86_64.ks
+# Centos7 minmal KS file: https://github.com/CentOS/Community-Kickstarts/blob/master/centos7-minimal.cfg
 # It will not produce a bootable system
 # To use this kickstart, run the following command
 # livemedia-creator --make-tar \
