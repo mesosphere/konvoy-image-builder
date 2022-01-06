@@ -19,6 +19,7 @@ import (
 	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/packer"
 	"github.com/mesosphere/konvoy-image-builder/pkg/stringutil"
+	"github.com/mesosphere/konvoy-image-builder/pkg/version"
 )
 
 const (
@@ -44,6 +45,7 @@ const (
 	packerBuilderRegionKey     = "aws_region"
 	packerAMIRegionsKey        = "ami_regions"
 	packerInstanceType         = "aws_instance_type"
+	packerKIBVersionKey        = "konvoy_image_builder_version"
 
 	ansibleVarsFilename = "ansible_vars.yaml"
 )
@@ -302,6 +304,7 @@ func genPackerVars(config map[string]interface{}, extraVarsPath string) ([]byte,
 	p[httpProxyKey] = getString(config, httpProxyKey)
 	p[httpsProxyKey] = getString(config, httpsProxyKey)
 	p[noProxyKey] = getString(config, noProxyKey)
+	p[packerKIBVersionKey] = version.Version()
 
 	data, err := json.Marshal(p)
 	if err != nil {
