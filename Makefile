@@ -149,7 +149,8 @@ export CONTAINERD_VERSION ?= $(shell grep -E -e "containerd_version:" ansible/gr
 
 export SAVE_IMAGE_LIST_FILE ?= images.out
 export SAVE_IMAGE_EXTRA_LIST_FILE ?= ""
-export SAVE_IMAGE_TAR_FILE_NAME ?= artifacts/kubernetes_image_bundle_${DEFAULT_KUBERNETES_VERSION}_linux_amd64.tar.gz
+export SAVE_IMAGE_TAR_FILE_NAME ?= kubernetes_image_bundle_${DEFAULT_KUBERNETES_VERSION}_linux_amd64.tar.gz
+
 
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
@@ -335,6 +336,7 @@ clean: ## remove files created during build
 	rm -rf "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 	rm -f flatcar-version.yaml
 	rm -f $(COVERAGE)*
+	rm -rf artifacts
 	docker image rm $(DOCKER_DEVKIT_IMG) || echo "image already removed"
 
 .PHONY: generate
@@ -504,6 +506,7 @@ endif
 # All tests run in parallel. Adjust parallelism with --jobs.
 # Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
 ci.e2e.build.all: ci.e2e.build.centos-7
+ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: ci.e2e.build.centos-8
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
@@ -521,6 +524,13 @@ ci.e2e.build.%:
 	make devkit.run WHAT="make e2e.build.$*"
 
 e2e.build.centos-7: centos7 docker.clean-latest-ami
+
+# Run os-packages-artifacts outside devkit container.
+e2e.build.centos-7-offline:
+	$(MAKE) os-packages-artifacts pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
+	$(MAKE) docker.clean-latest-ami
 
 e2e.build.centos-8: centos8 docker.clean-latest-ami
 
@@ -575,8 +585,11 @@ create-image-list:
 	@ansible-playbook ./ansible/list-images.yaml -e="@./overrides/image-list.yaml"
 	@cat images.out
 
+artifacts/images:
+	mkdir -p artifacts/images
+
 .PHONY: save-images
-save-images:
+save-images: artifacts/images
 save-images: create-image-list
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
-	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) $(SAVE_IMAGE_TAR_FILE_NAME)
+	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)

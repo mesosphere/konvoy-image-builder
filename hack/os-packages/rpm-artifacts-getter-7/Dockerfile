@@ -1,4 +1,4 @@
-FROM centos:7.9.2009
+FROM mesosphere/centos:7.9.2009.minimal
 
 COPY *.repo /etc/yum.repos.d/
 

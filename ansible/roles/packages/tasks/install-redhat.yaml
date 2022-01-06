@@ -1,4 +1,8 @@
 ---
+
+- name: clean yum cache
+  command: yum clean expire-cache
+
 - name: install common RPMS
   yum:
     name:
