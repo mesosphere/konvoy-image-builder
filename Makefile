@@ -351,11 +351,15 @@ bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image:
 	$(call print-target)
-	go build -o ./bin/konvoy-image ./cmd/konvoy-image/main.go
+	go build \
+		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
+		-o ./bin/konvoy-image ./cmd/konvoy-image/main.go
 
 bin/konvoy-image-wrapper:
 	$(call print-target)
-	go build -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
+	go build \
+		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
+		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 
 dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/cmd
 dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
