@@ -1,18 +1,21 @@
 ---
-etcd_image_tag: v3.4.13_fips.0
+k8s_image_registry: docker.io/mesosphere
+
 fips:
   enabled: true
-  etcdImageTag: "{{ etcd_image_tag }}"
+
 build_name_extra: -fips
 kubernetes_build_metadata: fips.0
 default_image_repo: hub.docker.io/mesosphere
-k8s_image_registry: docker.io/mesosphere
-kubernetes_rpm_repository_url: "https://kubernetes-fips.s3.us-east-2.amazonaws.com\
-                            /{{ ansible_distribution_major_version|int }}\
-                            /x86_64"
-kubernetes_rpm_gpg_key_url: "https://kubernetes-fips.s3.us-east-2.amazonaws.com\
-                             /{{ ansible_distribution_major_version|int }}\
-                             /rpm-gpg-pub-key"
-docker_rpm_repository_url: "https://containerd-fips.s3.us-east-2.amazonaws.com\
-                            /{{ ansible_distribution_major_version|int }}\
-                            /x86_64"
+kubernetes_rpm_repository_url: "\
+  https://kubernetes-fips.s3.us-east-2.amazonaws.com\
+  /{{ ansible_distribution_major_version|int }}\
+  /x86_64"
+kubernetes_rpm_gpg_key_url: "\
+  https://kubernetes-fips.s3.us-east-2.amazonaws.com\
+  /{{ ansible_distribution_major_version|int }}\
+  /rpm-gpg-pub-key"
+docker_rpm_repository_url: "\
+  https://containerd-fips.s3.us-east-2.amazonaws.com\
+  /{{ ansible_distribution_major_version|int }}\
+  /x86_64"

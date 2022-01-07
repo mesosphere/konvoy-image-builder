@@ -9,6 +9,12 @@ Following roles are included
 This role installs packages like kubelet or kubeadm and sets the right
 repositories to be used
 
+### `version` - determines versions
+Sets determines the kubernetes build tag (eg. `fips.0` from `v1.21.6+fips.0`)
+and gathers the required images from `kubeadm` and `containerd` modifying them
+to match the build tag (a `fips.0` build tag will pull images suffixed with
+`_fips.0`) with the exception of the `pause` image).
+
 ### `gpu` - maintains driver packages for GPU support
 Currently `gpu.types` only support nvidia.
 It can be activated when `gpu.types = ['nvidia',...]`
@@ -25,6 +31,7 @@ this image
 
 ### `images` - prepare images cache
 This role ensures images are present. First, all images in the local cache are imported. Then, every required image is checked; if it was not imported, or if it is missing one or more layers, the image is pulled from a remote registry. This role is skipped when `download_images` is false.
+If `download_images` is false, the variable `pause_image` must be set to the image tag to use as containerd's sandbox image.
 
 ### `sysprep` - prepare image for distribution
 truncate logs, system id, host key etc.

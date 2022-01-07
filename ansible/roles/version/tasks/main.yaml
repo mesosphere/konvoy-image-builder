@@ -1,0 +1,48 @@
+---
+# NOTE(jkoelker) Grab the build tag (eg. `fips.0` from `v1.21.6+fips.0`)
+- name: detect build
+  shell: kubeadm version -o short | cut -d+ -f2 -s
+  register: kubeadm_build_tag
+
+- name: set kubernetes build tag
+  set_fact:
+    kubernetes_build_tag: "{{ kubeadm_build_tag.stdout | trim }}"
+
+# NOTE(jkoelker) If `kubeadm` has a build tag, append that to the images.
+#                Since kubernets uses a build tag on their `etcd` images (e.g
+#                `-0` from `k8s.gcr.io/etcd:3.4.13-0`), strip it prior to
+#                appending the build tag from `kubeadm`. Since the `pause`
+#                image does not need a fips version, it is not tagged with
+#                the build tag.
+- name: determine kubernetes images
+  shell: |
+    kubeadm config images list
+      --image-repository '{{ k8s_image_registry }}' |
+    sed 's/^\(.\+etcd:.\+\)-\([0-9]\+\)$/\1{{ "-\2" if not kubernetes_build_tag }}/' |
+    sed 's/$/{{ '_' + kubernetes_build_tag if kubernetes_build_tag }}/' |
+    sed 's/^\(.\+pause:.\+\)_{{ kubernetes_build_tag }}$/\1/'
+  register: kubernetes_kubeadm_images
+
+- name: set kubernetes images
+  set_fact:
+    kubernetes_images: "{{ kubernetes_kubeadm_images.stdout_lines }}"
+
+- name: set pause image
+  set_fact:
+    pause_image: "{{
+      kubernetes_images |
+      select('match', '.*/pause:.*') |
+      first
+    }}"
+
+- name: determine containerd pause image
+  shell: >
+    containerd config default |
+    sed -n 's/^.*sandbox_image\s*=\s"\(\S*\)".*$/\1/p'
+  register: containerd_sandbox_image
+
+# NOTE(jkoelker) Event though this will only be a single element, it is a list
+#                for concatination convience.
+- name: set containerd images
+  set_fact:
+    containerd_images: "{{ containerd_sandbox_image.stdout_lines }}"

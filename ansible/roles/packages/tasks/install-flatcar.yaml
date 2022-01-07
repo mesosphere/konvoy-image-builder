@@ -4,18 +4,6 @@
     path: "/etc/systemd/system/containerd.service.d/"
     state: directory
 
-- name: create containerd directory
-  file:
-    path: "/etc/containerd/"
-    state: directory
-
-- name: copy default configuration to remote
-  template:
-    src: "config.toml.tmpl"
-    dest: "/etc/containerd/config.toml"
-  notify:
-    - restart containerd
-
 - name: Fail if pre-installed containerd version does not match for Flatcar
   shell: containerd --version | cut -d\  -f 3
   register: system_containerd_version

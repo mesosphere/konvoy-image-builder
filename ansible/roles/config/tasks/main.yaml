@@ -17,3 +17,20 @@
   template:
     src: "crictl.yaml"
     dest: "/etc/crictl.yaml"
+
+- name: create containerd directory
+  file:
+    path: "/etc/containerd/"
+    state: directory
+
+- name: create containerd imports directory
+  file:
+    path: "/etc/containerd/conf.d"
+    state: directory
+
+- name: copy default configuration to remote
+  template:
+    src: "config.toml.tmpl"
+    dest: "/etc/containerd/config.toml"
+  notify:
+    - restart containerd
