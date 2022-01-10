@@ -1,7 +1,7 @@
 #
 FROM hashicorp/packer:1.7.8 as packer
 FROM golangci/golangci-lint:v1.43.0-alpine as golangci-lint
-FROM goreleaser/goreleaser:v1.2.2 as goreleaser
+FROM goreleaser/goreleaser:v1.2.5 as goreleaser
 FROM docker:20.10 as docker
 
 FROM golang:1.17.6 as builder
