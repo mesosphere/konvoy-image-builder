@@ -511,6 +511,7 @@ endif
 # Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
 ci.e2e.build.all: ci.e2e.build.centos-7
 ci.e2e.build.all: e2e.build.centos-7-offline
+ci.e2e.build.all: e2e.build.centos-7-offline-fips
 ci.e2e.build.all: ci.e2e.build.centos-8
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
@@ -534,6 +535,12 @@ e2e.build.centos-7-offline:
 	$(MAKE) os-packages-artifacts pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
+	$(MAKE) docker.clean-latest-ami
+
+e2e.build.centos-7-offline-fips:
+	$(MAKE) os-packages-artifacts pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
 	$(MAKE) docker.clean-latest-ami
 
 e2e.build.centos-8: centos8 docker.clean-latest-ami
