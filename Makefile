@@ -329,6 +329,7 @@ ci: ## CI build
 ci: dev diff
 
 .PHONY: clean
+clean: clean-artifacts
 clean: ## remove files created during build
 	$(call print-target)
 	rm -rf bin
@@ -336,7 +337,6 @@ clean: ## remove files created during build
 	rm -rf "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 	rm -f flatcar-version.yaml
 	rm -f $(COVERAGE)*
-	rm -rf artifacts
 	docker image rm $(DOCKER_DEVKIT_IMG) || echo "image already removed"
 
 .PHONY: generate
