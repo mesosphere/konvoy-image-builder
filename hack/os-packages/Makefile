@@ -1,5 +1,4 @@
 RPM_PACKAGES_GETTER_IMAGE = mesosphere/rpm-artifacts-getter
-CENTOS_BASE_IMAGE=mesosphere/centos:7.9.2009.minimal
 KUBERNETES_RPM_PATCH = 0
 
 .PHONY: os-packages-artifacts
@@ -45,13 +44,12 @@ endif
 
 .PHONY: rpm-artifacts-getter.check
 rpm-artifacts-getter.check:
-	docker image inspect $(rpm_getter_image) > /dev/null || $(MAKE) build_args='--build-arg BASE_IMAGE=$(CENTOS_BASE_IMAGE)' rpm-artifacts-getter
+	docker image inspect $(rpm_getter_image) > /dev/null || $(MAKE) rpm-artifacts-getter
 
 .PHONY: rpm-artifacts-getter
 rpm-artifacts-getter:
 	@docker build \
 	  -f hack/os-packages/$(getter_target)/Dockerfile \
-	  $(build_args) \
 	  -t $(rpm_getter_image) ./hack/os-packages/$(getter_target)
 
 $(artifacts_dir):

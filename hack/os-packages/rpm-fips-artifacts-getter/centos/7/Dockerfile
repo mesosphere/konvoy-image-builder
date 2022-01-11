@@ -1,6 +1,4 @@
-ARG BASE_IMAGE=mesosphere/centos:7.9.2009.minimal
-# hadolint ignore=DL3006
-FROM $BASE_IMAGE
+FROM mesosphere/centos:7.9.2009.minimal
 
 COPY *.repo /etc/yum.repos.d/
 
