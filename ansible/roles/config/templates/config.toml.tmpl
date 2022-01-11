@@ -120,10 +120,18 @@ imports = ["/etc/containerd/conf.d/*.toml"]
       [plugins."io.containerd.grpc.v1.cri".registry.configs]
 {% for registry in image_registries_with_auth %}
         [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ registry.host }}".auth]
+        {% if registry.username is defined %}
             username = "{{ registry.username }}"
+        {% endif %}
+        {% if registry.password is defined %}
             password = "{{ registry.password }}"
+        {% endif %}
+        {% if registry.auth is defined %}
             auth = "{{ registry.auth }}"
+        {% endif %}
+        {% if registry.identityToken is defined %}
             identitytoken = "{{ registry.identityToken }}"
+        {% endif %}
 {% endfor %}
 {% endif %}
     [plugins."io.containerd.grpc.v1.cri".x509_key_pair_streaming]
