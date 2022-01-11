@@ -6,18 +6,6 @@ fips:
 build_name_extra: -fips
 kubernetes_build_metadata: fips.0
 default_image_repo: hub.docker.io/mesosphere
-kubernetes_rpm_repository_url: "\
-  https://kubernetes-fips.s3.us-east-2.amazonaws.com\
-  /{{ ansible_distribution_major_version|int }}\
-  /x86_64"
-kubernetes_rpm_gpg_key_url: "\
-  https://kubernetes-fips.s3.us-east-2.amazonaws.com\
-  /{{ ansible_distribution_major_version|int }}\
-  /rpm-gpg-pub-key"
-docker_rpm_repository_url: "\
-  https://containerd-fips.s3.us-east-2.amazonaws.com\
-  /{{ ansible_distribution_major_version|int }}\
-  /x86_64"
 
 # fips os-packages
 os_packages_local_bundle_file: "{{ playbook_dir }}/../artifacts/os-packages_{{ kubernetes_version }}_x86_64_fips_rpms.tar.gz"
