@@ -74,6 +74,7 @@
   when:
     - ansible_distribution == 'RedHat'
     - ansible_distribution_major_version|int == 7
+    - not offline_mode_enabled
 
 - name: install container-selinux rpm package
   yum:
