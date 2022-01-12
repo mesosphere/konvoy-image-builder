@@ -239,6 +239,14 @@ rhel79: ## Build RHEL 7.9 image
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
+.PHONY: rhel79-fips
+rhel79-fips: build
+rhel79-fips: ## Build RHEL 7.9 image
+	./bin/konvoy-image build images/ami/rhel-79.yaml \
+	-v ${VERBOSITY} \
+	--overrides=overrides/fips.yaml \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+
 .PHONY: rhel79-nvidia
 rhel79-nvidia: build
 rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
@@ -511,7 +519,6 @@ endif
 # Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
 ci.e2e.build.all: ci.e2e.build.centos-7
 ci.e2e.build.all: e2e.build.centos-7-offline
-ci.e2e.build.all: e2e.build.centos-7-offline-fips
 ci.e2e.build.all: ci.e2e.build.centos-8
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
@@ -519,6 +526,7 @@ ci.e2e.build.all: ci.e2e.build.sles-15
 ci.e2e.build.all: ci.e2e.build.oracle-7
 ci.e2e.build.all: ci.e2e.build.oracle-8
 ci.e2e.build.all: ci.e2e.build.flatcar
+ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
 ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.centos-8-nvidia
@@ -537,10 +545,10 @@ e2e.build.centos-7-offline:
 	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
 	$(MAKE) docker.clean-latest-ami
 
-e2e.build.centos-7-offline-fips:
+e2e.build.rhel-7.9-offline-fips:
 	$(MAKE) os-packages-artifacts pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
-	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
+	$(MAKE) devkit.run WHAT="make rhel79-fips ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
 	$(MAKE) docker.clean-latest-ami
 
 e2e.build.centos-8: centos8 docker.clean-latest-ami

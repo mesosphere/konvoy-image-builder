@@ -1,15 +1,4 @@
-k8s_image_registry: docker.io/mesosphere
-
-fips:
-  enabled: true
-
-build_name_extra: -fips
-kubernetes_build_metadata: fips.0
-default_image_repo: hub.docker.io/mesosphere
-
 # fips os-packages
 os_packages_local_bundle_file: "{{ playbook_dir }}/../artifacts/os-packages_{{ kubernetes_version }}_x86_64_fips_rpms.tar.gz"
 pip_packages_local_bundle_file: "{{ playbook_dir }}/../artifacts/pip-packages.tar.gz"
 images_local_bundle_dir: "{{ playbook_dir}}/../artifacts/images"
-
-
