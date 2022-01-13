@@ -1,31 +1,37 @@
 RPM_PACKAGES_GETTER_IMAGE = mesosphere/rpm-artifacts-getter
 KUBERNETES_RPM_PATCH = 0
+rhel_major_version ?= 7
+fips ?= 0
 
 .PHONY: os-packages-artifacts
-os-packages-artifacts: download-all-rpms artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_x86_64_rpms.tar.gz artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_x86_64_fips_rpms.tar.gz
+os-packages-artifacts: archive-os-packages.$(fips)
 
-artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_x86_64_rpms.tar.gz:
-	cd artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el7_x86_64_rpms && tar -czf ../os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_x86_64_rpms.tar.gz *
+# fips disabled
+.PHONY: archive-os-packages.0
+archive-os-packages.0: artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_rpms.tar.gz
 
-artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_x86_64_fips_rpms.tar.gz:
-	cd artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el7_x86_64_fips_rpms && tar -czf ../os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_x86_64_fips_rpms.tar.gz *
+# fips enabled
+,PHONY: archive-os-packages.1
+archive-os-packages.1: artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_fips_rpms.tar.gz
+
+artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_rpms.tar.gz:
+	$(MAKE) download-all-rpms
+	cd artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_rpms && tar -czf ../os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_rpms.tar.gz *
+
+artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_fips_rpms.tar.gz:
+	$(MAKE) download-all-rpms
+	cd artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_fips_rpms && tar -czf ../os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_fips_rpms.tar.gz *
 
 .PHONY: download-all-rpms
 download-all-rpms:
-	$(MAKE) rhel_major_version=7 download-rpms
-	$(MAKE) rhel_major_version=7 fips=1 download-rpms
-#	$(MAKE) rhel_major_version=8 fips=0 bastion=0  download-rpms
-#	$(MAKE) rhel_major_version=7 fips=0 bastion=1  download-rpms
-#	$(MAKE) rhel_major_version=8 fips=0 bastion=1  download-rpms
-#	$(MAKE) rhel_major_version=7 fips=1 bastion=0  download-rpms
-#	$(MAKE) rhel_major_version=8 fips=1 bastion=0  download-rpms
+	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) download-rpms
 
 .PHONY: download-rpms
 download-rpms:
 	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) rpm-artifacts-getter.check
-	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) packages="audit ca-certificates conntrack-tools chrony curl ebtables open-vm-tools python3-pip python-netifaces python-requests socat sysstat yum-utils yum-plugin-versionlock nfs-utils NetworkManager" download-rpm
+	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) packages="audit ca-certificates conntrack-tools chrony curl ebtables open-vm-tools python3-pip python3-netifaces python3-requests socat sysstat yum-utils yum-plugin-versionlock nfs-utils NetworkManager" download-rpm
 # packages that are not in CentOS-7 Minimal
-	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) packages="tzdata nspr nss python-chardet yum-utils nss-softokn-freebl nss-util nss-softokn nss nss-tools  NetworkManager-libnm libdrm libpciaccess libxml2-python python-kitchen yum-plugin-ovl" download-rpm
+	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) packages="tzdata nspr nss python3-chardet yum-utils nss-softokn-freebl nss-util nss-softokn nss nss-tools  NetworkManager-libnm libdrm libpciaccess python3-libxml2 python3-kitchen dnf-plugin-ovl" download-rpm
 	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) packages="container-selinux containerd.io-$(CONTAINERD_VERSION) container-selinux" download-rpm
 	$(MAKE) rhel_major_version=$(rhel_major_version) fips=$(fips) packages="kubectl-$(DEFAULT_KUBERNETES_VERSION_SEMVER)-$(KUBERNETES_RPM_PATCH) kubelet-$(DEFAULT_KUBERNETES_VERSION_SEMVER)-$(KUBERNETES_RPM_PATCH) conntrack ebtables ethtool iproute iptables kubernetes-cni libnetfilter_cthelper libnetfilter_cttimeout libnetfilter_queue libblkid libmount libsmartcols libuuid socat util-linux kubeadm-$(DEFAULT_KUBERNETES_VERSION_SEMVER)-$(KUBERNETES_RPM_PATCH) kubernetes-cni cri-tools" download-rpm
 	curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o $(artifacts_dir)/amazon-ssm-agent.rpm
