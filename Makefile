@@ -535,6 +535,8 @@ ci.e2e.build.all: ci.e2e.build.oracle-7
 ci.e2e.build.all: ci.e2e.build.oracle-8
 ci.e2e.build.all: ci.e2e.build.flatcar
 ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
+ci.e2e.build.all: e2e.build.rhel-8.2-offline-fips
+ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
 ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.centos-8-nvidia
