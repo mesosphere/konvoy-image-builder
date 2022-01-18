@@ -1,8 +1,11 @@
 ---
+# FIXME: remove after upgrading ansible
+  - name: update apt cache
+    command: apt-get update
+
   - name: add Kubernetes deb key
     apt_key:
       url: "{{ kubernetes_deb_gpg_key_url }}"
-    when: ansible_os_family == 'Debian'
     retries: 3
     delay: 3
 
