@@ -18,6 +18,8 @@ COVERAGE ?= $(REPO_ROOT_DIR)/coverage
 
 VERBOSITY ?= 6
 
+INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
+
 export CGO_ENABLED=0
 
 export DOCKER_REPOSITORY ?= mesosphere/konvoy-image-builder
@@ -336,6 +338,14 @@ oracle8: ## Build Oracle Linux 8 image
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
+.PHONY: provision
+provision: build
+provision:
+	./bin/konvoy-image provision --inventory-file $(INVENTORY_FILE)  \
+	-v ${VERBOSITY} \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
+	$(if $(EXTRA_OVERRIDE_VARS), --extra-vars=${EXTRA_OVERRIDE_VARS})
+
 .PHONY: dev
 dev: ## dev build
 dev: clean generate build lint test mod-tidy build.snapshot
@@ -550,28 +560,28 @@ e2e.build.centos-7: centos7 docker.clean-latest-ami
 
 # Run os-packages-artifacts outside devkit container.
 e2e.build.centos-7-offline:
-	$(MAKE) rhel_major_version=7 fips=0 os-packages-artifacts
+	$(MAKE) os_distribution=centos os_distribution_major_version=7 fips=0 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
 	$(MAKE) docker.clean-latest-ami
 
 e2e.build.rhel-7.9-offline-fips:
-	$(MAKE) rhel_major_version=7 fips=1 os-packages-artifacts
+	$(MAKE) os_distribution=redhat os_distribution_major_version=7 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make rhel79-fips ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
 	$(MAKE) docker.clean-latest-ami
 
 e2e.build.rhel-8.2-offline-fips:
-	$(MAKE) rhel_major_version=8 fips=1 os-packages-artifacts
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make rhel82-fips ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
 	$(MAKE) docker.clean-latest-ami
 
 e2e.build.rhel-8.4-offline-fips:
-	$(MAKE) rhel_major_version=8 fips=1 os-packages-artifacts
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make rhel84-fips ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"

@@ -1,0 +1,6 @@
+[kubernetes]
+name=Konvoy Kubernetes package repository
+# kubernetes packages are common between centos 7 and 8
+baseurl=https://packages.d2iq.com/konvoy/rpm/stable/centos/7/x86_64
+gpgcheck=1
+gpgkey=https://packages.d2iq.com/konvoy/rpm-gpg-pub-key
