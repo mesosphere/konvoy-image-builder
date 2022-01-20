@@ -1,2 +1,48 @@
 ---
-- import_playbook: _list-images.yaml
+- hosts: localhost
+  name: Setup Container
+  gather_facts: false
+
+  tasks:
+    - set_fact:
+        container_name: "{{
+          lookup('password', '/dev/null chars=ascii_letters')
+        }}"
+
+    - docker_container:
+        name: "{{ container_name }}"
+        image: docker.io/centos:8
+        auto_remove: yes
+        command: sleep 10m
+
+    - add_host:
+        name: "{{ container_name }}"
+        ansible_connection: docker
+        changed_when: false
+        ansible_python_interpreter: /usr/libexec/platform-python
+
+- hosts: "{{ hostvars['localhost'].container_name }}"
+  roles:
+    - role: packages
+    - role: version
+
+  tasks:
+    - set_fact:
+        images: "{{
+          kubernetes_images +
+          containerd_images +
+          control_plane_images +
+          extra_images +
+          aws_images
+        }}"
+
+- hosts: localhost
+  name: Remove Container
+  tasks:
+    - docker_container:
+        name: "{{ container_name }}"
+        state: absent
+        force_kill: yes
+
+    - shell: "echo '{{ item }}' >> ../images.out"
+      loop: "{{ hostvars[container_name].images }}"

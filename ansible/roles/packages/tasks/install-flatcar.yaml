@@ -93,12 +93,9 @@
   when: http_proxy is defined or https_proxy is defined
 
 - name: enable containerd
-  service:
+  systemd:
     name: containerd
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart containerd
+    enabled: true
 
 - include: url.yaml
 
@@ -117,9 +114,6 @@
     state: directory
 
 - name: enable kubelet
-  service:
+  systemd:
     name: kubelet
-    enabled: yes
-  notify:
-    - reload systemd
-    - restart kubelet
+    enabled: true

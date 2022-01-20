@@ -224,3 +224,15 @@
   when:
     - disable_firewalld | default(true)
     - firewalld_exists.rc == 0
+
+- name: Ensure containterd is started
+  systemd:
+    name: containerd
+    enabled: true
+    state: started
+
+- name: Ensure kubelet is started
+  systemd:
+    name: kubelet
+    enabled: true
+    state: started
