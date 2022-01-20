@@ -1,2 +1,53 @@
 ---
-- import_playbook: _list-images.yaml
+- hosts: localhost
+  name: List Images
+
+  pre_tasks:
+    - set_fact:
+        container_name: "{{
+          lookup('password', '/dev/null chars=ascii_letters')
+        }}"
+
+    - docker_container:
+        name: "{{ container_name }}"
+        image: registry.access.redhat.com/ubi8/ubi:latest
+        auto_remove: yes
+        command: tail -f /dev/null
+
+    - add_host:
+        name: "{{ container_name }}"
+        ansible_connection: docker
+        changed_when: false
+        override_os_family: "RedHat"
+        ansible_python_interpreter: /usr/libexec/platform-python
+
+  tasks:
+    - block:
+        - include_role:
+            name: packages
+            apply:
+              delegate_to: "{{ container_name }}"
+
+        - include_role:
+            name: version
+            apply:
+              delegate_to: "{{ container_name }}"
+      always:
+        - docker_container:
+            name: "{{ container_name }}"
+            state: absent
+            force_kill: yes
+
+  post_tasks:
+    - name: list images
+      shell: "echo {{ item }} >> ../images.out"
+      loop: "{{
+        kubernetes_images +
+        containerd_images +
+        control_plane_images +
+        extra_images +
+        aws_images
+      }}"
+      changed_when: False
+
+  handlers:

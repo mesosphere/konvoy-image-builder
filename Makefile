@@ -601,7 +601,7 @@ release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 .PHONY: create-image-list
 create-image-list:
 	@rm -f images.out
-	@ansible-playbook ./ansible/list-images.yaml -e="@./overrides/image-list.yaml"
+	@ansible-playbook ./ansible/list-images.yaml
 	@cat images.out
 
 artifacts/images:

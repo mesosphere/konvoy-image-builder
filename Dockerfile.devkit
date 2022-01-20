@@ -59,6 +59,7 @@ RUN wget \
 FROM golang:1.17.6
 
 ARG ANSIBLE_VERSION=2.10.7
+ARG DOCKER_PY_VERSION=5.0.3
 ENV ANSIBLE_PATH=/usr/local
 ENV PYTHON_PATH=/usr
 
@@ -88,6 +89,7 @@ RUN apt-get update \
     && pip3 install --no-cache-dir \
         ansible=="${ANSIBLE_VERSION}" \
         awscli \
+        docker=="${DOCKER_PY_VERSION}" \
         netaddr \
     && rm -rf \
         /root/.cache \
