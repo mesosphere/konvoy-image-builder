@@ -71,4 +71,9 @@ createrepo:
 .PHONY: clean-artifacts
 clean-artifacts:
 	rm -rf $(shell pwd)/artifacts
-	docker images | grep $(RPM_PACKAGES_GETTER_IMAGE) | awk '{ print $$1":"$$2}' | xargs docker image rm
+	for image in $$(\
+		docker image ls \
+			--filter=reference='$(RPM_PACKAGES_GETTER_IMAGE)*' \
+			--format "{{.Repository}}:{{.Tag}}"); do \
+		docker image rm $$image;\
+	done
