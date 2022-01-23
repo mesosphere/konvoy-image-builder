@@ -11,7 +11,7 @@
     - ctr
     - crictl
     - critest
-  when: ansible_os_family != "Flatcar"
+  when: os_family != "Flatcar"
 
 - name: Create CNI directory
   register: cni_directory
@@ -52,7 +52,7 @@
     #             and verify the associated file using the correct
     #             checksum file format
     #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
-    dest: "{{ sysusr_prefix if ansible_os_family != \"Flatcar\" else flatcar_sysusr_prefix  }}/bin/{{ item }}"
+    dest: "{{ sysusr_prefix if os_family != \"Flatcar\" else flatcar_sysusr_prefix  }}/bin/{{ item }}"
     mode: 0755
     owner: root
     group: root
@@ -77,7 +77,7 @@
 - name: Create kubelet drop-in directory
   file:
     state: directory
-    path: "{{ systemd_prefix  if ansible_os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service.d"
+    path: "{{ systemd_prefix  if os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service.d"
     mode: 0755
     owner: root
     group: root
@@ -85,7 +85,7 @@
 - name: Create kubelet kubeadm drop-in file
   template:
     src: usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
-    dest: "{{ systemd_prefix  if ansible_os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
+    dest: "{{ systemd_prefix  if os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
     owner: root
     group: root
     mode: 0644
@@ -93,7 +93,7 @@
 - name: Create kubelet systemd file
   template:
     src: usr/lib/systemd/system/kubelet.service
-    dest: "{{ systemd_prefix  if ansible_os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service"
+    dest: "{{ systemd_prefix  if os_family != \"Flatcar\" else flatcar_systemd_prefix }}/system/kubelet.service"
     owner: root
     group: root
     mode: 0644

@@ -1,19 +1,19 @@
 ---
 - include: install-epel.yaml
   when:
-    - ansible_os_family == "RedHat"
+    - os_family == "RedHat"
     - not offline_mode_enabled
 
 - include: install-redhat.yaml
-  when: ansible_os_family == "RedHat"
+  when: os_family == "RedHat"
 
 - include: install-suse.yaml
-  when: ansible_os_family == "Suse"
+  when: os_family == "Suse"
 
 - include: install-flatcar.yaml
-  when: ansible_os_family == "Flatcar"
+  when: os_family == "Flatcar"
 
 - include: install-debian.yaml
-  when: ansible_os_family == "Debian"
+  when: os_family == "Debian"
 
 - include: config.yaml

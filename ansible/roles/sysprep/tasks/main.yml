@@ -13,19 +13,19 @@
 # limitations under the License.
 ---
 - import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+  when: os_family == "Debian"
 
 - import_tasks: flatcar.yml
-  when: ansible_os_family == "Flatcar"
+  when: os_family == "Flatcar"
 
 - import_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
+  when: os_family == "RedHat"
 
 - import_tasks: suse.yml
-  when: ansible_os_family == "Suse"
+  when: os_family == "Suse"
 
 - import_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+  when: os_family == "VMware Photon OS"
 
 - name: Truncate machine id
   file:
@@ -60,7 +60,7 @@
 - name: Set hostname
   hostname:
     name: localhost.local
-  when: ansible_os_family != "VMware Photon OS"
+  when: os_family != "VMware Photon OS"
 
 - name: Remove containerd http proxy conf file if needed
   file:
@@ -147,7 +147,7 @@
   loop:
     - path: /root/.ssh/authorized_keys
     - path: "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys"
-  when: ansible_os_family != "Flatcar"
+  when: os_family != "Flatcar"
 
 - name: Remove SSH authorized users for Flatcar
   file:
@@ -155,19 +155,19 @@
     path: "{{ item.path }}"
   loop:
     - path: /root/.ssh/authorized_keys
-  when: ansible_os_family == "Flatcar"
+  when: os_family == "Flatcar"
 
 - name: Truncate all remaining log files in /var/log
   shell:
     cmd: |
       find /var/log -type f -iname '*.log' | xargs truncate -s 0
-  when: ansible_os_family != "Flatcar"
+  when: os_family != "Flatcar"
 
 - name: Delete all logrotated log zips
   shell:
     cmd: |
       find /var/log -type f -name '*.gz' -exec rm {} +
-  when: ansible_os_family != "Flatcar"
+  when: os_family != "Flatcar"
 
 - name: Remove swapfile
   file:

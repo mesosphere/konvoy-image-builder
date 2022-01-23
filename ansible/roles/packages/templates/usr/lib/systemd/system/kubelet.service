@@ -5,7 +5,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart={{ sysusr_prefix if ansible_os_family != "Flatcar" else flatcar_sysusr_prefix }}/bin/kubelet
+ExecStart={{ sysusr_prefix if os_family != "Flatcar" else flatcar_sysusr_prefix }}/bin/kubelet
 Restart=always
 StartLimitInterval=0
 RestartSec=10

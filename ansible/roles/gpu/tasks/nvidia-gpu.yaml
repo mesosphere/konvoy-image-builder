@@ -1,19 +1,19 @@
 ---
 - name: "NVIDIA Gpu - CentOS 7"
   include_tasks: nvidia-gpu-CentOS7.yaml
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
+  when: os_distribution == "CentOS" and os_distribution_major_version == '7'
 - name: "NVIDIA Gpu - RHEL 7"
   include_tasks: nvidia-gpu-RHEL7.yaml
-  when: ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7'
+  when: os_distribution == 'RedHat' and os_distribution_major_version == '7'
 - name: "NVIDIA Gpu - RHEL 8"
   include_tasks: nvidia-gpu-RHEL8.yaml
-  when: ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8'
+  when: os_distribution == 'RedHat' and os_distribution_major_version == '8'
 - name: "NVIDIA Gpu - SLES 15"
   include_tasks: nvidia-gpu-SLES15.yaml
-  when: ansible_distribution == "SLES" and ansible_distribution_major_version == '15'
+  when: os_distribution == "SLES" and os_distribution_major_version == '15'
 - name: "NVIDIA Gpu - Flatcar"
   include_tasks: nvidia-gpu-Flatcar.yaml
-  when: ansible_distribution == "Flatcar"
+  when: os_distribution == "Flatcar"
 - name: "NVIDIA Gpu - Ubuntu 20"
   include_tasks: nvidia-gpu-Ubuntu20.yaml
-  when: ansible_distribution == "Ubuntu"
+  when: os_distribution == "Ubuntu"

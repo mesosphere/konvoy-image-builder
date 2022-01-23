@@ -4,14 +4,14 @@
 
 - name: install kernel headers
   apt:
-    name: linux-headers-{{ ansible_kernel }}
+    name: linux-headers-{{ os_kernel }}
     state: present
     update_cache: true
   retries: 3
   delay: 3
 
 - name: store distribution version as fact
-  set_fact: distribution="{{ ansible_distribution | lower }}{{ ansible_distribution_version | replace('.','') }}"
+  set_fact: distribution="{{ os_distribution | lower }}{{ os_distribution_version | replace('.','') }}"
 
 # wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-$distribution.pin
 # sudo mv cuda-$distribution.pin /etc/apt/preferences.d/cuda-repository-pin-600
@@ -63,7 +63,7 @@
 # curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 - name: add Nvidia docker repository
   get_url:
-    url: https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list
+    url: https://nvidia.github.io/nvidia-docker/{{ os_distribution | lower }}{{ os_distribution_version }}/nvidia-docker.list
     dest: /etc/apt/sources.list.d/nvidia-docker.list
     mode: '0644'
   retries: 3

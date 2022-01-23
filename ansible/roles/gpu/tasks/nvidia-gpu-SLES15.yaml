@@ -4,7 +4,7 @@
   register: suseconnect_status
   changed_when: false
 
-- name: Activate PackageHub {{ ansible_distribution_version }} {{ ansible_architecture }}
+- name: Activate PackageHub {{ os_distribution_version }} {{ os_architecture }}
   command: SUSEConnect -p {{ suse_packagehub_product }}
   register: connect_register
   changed_when: "'Successfully registered' in connect_register.stdout"
@@ -33,7 +33,7 @@
 
 - name: Install current kernel devel
   zypper:
-    name: "kernel-{{ ansible_kernel | regex_search('.*-(\\w+)$', '\\1') | first }}-devel={{ ansible_kernel | regex_search('(.*)-\\w+$', '\\1') | first }}"
+    name: "kernel-{{ os_kernel | regex_search('.*-(\\w+)$', '\\1') | first }}-devel={{ os_kernel | regex_search('(.*)-\\w+$', '\\1') | first }}"
     state: present
   retries: 15
   delay: 60

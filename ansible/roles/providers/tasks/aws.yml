@@ -17,7 +17,7 @@
     name: python3-pip
     state: present
   when:
-    - ansible_os_family == "Debian"
+    - os_family == "Debian"
 
 - name: install aws clients
   pip:
@@ -25,8 +25,8 @@
     executable: pip3
     extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path + 'awscli' if offline_mode_enabled }}"
   when:
-    - ansible_distribution != "Amazon"
-    - ansible_os_family != "Suse"
+    - os_distribution != "Amazon"
+    - os_family != "Suse"
 
 - name: install aws agents RPM
   package:
@@ -39,8 +39,8 @@
   with_items:
     - "{{ 'amazon-ssm-agent' if offline_mode_enabled else 'https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm' }}"
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution != "Amazon"
+    - os_family == "RedHat"
+    - os_distribution != "Amazon"
 
 - name: install aws agents RPM
   package:
@@ -51,8 +51,8 @@
   with_items:
     - https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
   when:
-    - ansible_os_family == "Suse"
-    - ansible_distribution != "Amazon"
+    - os_family == "Suse"
+    - os_distribution != "Amazon"
 
 - name: install aws agents RPM
   package:
@@ -61,23 +61,23 @@
   with_items:
     - amazon-ssm-agent
     - awscli
-  when: ansible_distribution == "Amazon"
+  when: os_distribution == "Amazon"
 
 - name: Ensure ssm agent is running RPM
   service:
     name: amazon-ssm-agent
     state: started
     enabled: yes
-  when: ansible_os_family in ["RedHat", "Suse"]
+  when: os_family in ["RedHat", "Suse"]
 
 - name: install aws agents Ubuntu
   shell: snap install amazon-ssm-agent --classic
-  when: ansible_distribution == "Ubuntu"
+  when: os_distribution == "Ubuntu"
 
 - name: Ensure ssm agent is running Ubuntu
   service:
     name: snap.amazon-ssm-agent.amazon-ssm-agent.service
     state: started
     enabled: yes
-  when: ansible_distribution == "Ubuntu"
+  when: os_distribution == "Ubuntu"
 

@@ -24,7 +24,7 @@
       - cloud-initramfs-copymods
       - cloud-initramfs-dyn-netconf
       - cloud-initramfs-growroot
-  when: ansible_os_family == "Debian"
+  when: os_family == "Debian"
 
 - name: Install cloud-init packages
   yum:
@@ -34,7 +34,7 @@
     packages:
       - cloud-init
       - cloud-utils-growpart
-  when: ansible_os_family == "RedHat"
+  when: os_family == "RedHat"
 
 - name: Install cloud-init packages
   zypper:
@@ -43,7 +43,7 @@
   vars:
     packages:
       - cloud-init
-  when: ansible_os_family == "Suse"
+  when: os_family == "Suse"
 
 # - name: Unlock password
 #   replace:
@@ -59,11 +59,11 @@
     dest: "{{ sysusr_prefix }}/lib/cloud-init"
     mode: 0777
     state: link
-  when: ansible_os_family == "RedHat"
+  when: os_family == "RedHat"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
   systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
-  when: ansible_os_family == "Debian"
+  when: os_family == "Debian"

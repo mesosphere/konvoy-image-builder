@@ -9,11 +9,11 @@
     name: "{{ epel_centos_8_rpm }}"
     state: present
 
-- name: install kernel {{ hostvars[inventory_hostname].ansible_kernel }} headers and devel
+- name: install kernel {{ hostvars[inventory_hostname].os_kernel }} headers and devel
   dnf:
     name:
-      - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
-      - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+      - "kernel-headers-{{ hostvars[inventory_hostname].os_kernel }}"
+      - "kernel-devel-{{ hostvars[inventory_hostname].os_kernel }}"
     state: present
 
 - name: install additional Nvidia runfile prerequisites

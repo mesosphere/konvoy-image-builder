@@ -1,6 +1,6 @@
 version = 2
 root = "/var/lib/containerd"
-{% if ansible_os_family == "Flatcar" %}
+{% if os_family == "Flatcar" %}
 # runtime state information
 state = "/run/docker/libcontainerd/containerd"
 # set containerd as a subreaper on linux when it is not running as PID 1

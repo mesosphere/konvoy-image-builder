@@ -1,16 +1,16 @@
 ---
   - name: check for supported OS
     fail:
-      msg: "{{ ansible_distribution }} {{ ansible_distribution_major_version }} is not supported. The supported OSes - CentOS 7/8, RHEL 7/8, Oracle 7/8, Suse 15, SLES 15, Ubuntu 16 (xenial) 18 (bionic) 20 (focal) or Debian 9 (stretch)"
+      msg: "{{ os_distribution }} {{ os_distribution_major_version }} is not supported. The supported OSes - CentOS 7/8, RHEL 7/8, Oracle 7/8, Suse 15, SLES 15, Ubuntu 16 (xenial) 18 (bionic) 20 (focal) or Debian 9 (stretch)"
     failed_when: not (
-                 (ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7, 8])
-                 or (ansible_distribution == "RedHat" and ansible_distribution_major_version|int in [7, 8])
-                 or (ansible_distribution == 'Ubuntu' and ((ansible_distribution_major_version|int == 16) or (ansible_distribution_major_version|int == 18) or (ansible_distribution_major_version|int == 20)))
-                 or (ansible_distribution == 'Debian' and ((ansible_distribution_major_version|int == 9) or (ansible_distribution_major_version|int == 10)))
-                 or (ansible_distribution == 'Flatcar' )
-                 or (ansible_distribution == 'Suse' and ansible_distribution_major_version|int == 15)
-                 or (ansible_distribution == 'SLES' and ansible_distribution_major_version|int == 15)
-                 or (ansible_distribution == 'openSUSE Leap' and ansible_distribution_major_version|int == 15)
+                 (os_distribution == "CentOS" and os_distribution_major_version|int in [7, 8])
+                 or (os_distribution == "RedHat" and os_distribution_major_version|int in [7, 8])
+                 or (os_distribution == 'Ubuntu' and ((os_distribution_major_version|int == 16) or (os_distribution_major_version|int == 18) or (os_distribution_major_version|int == 20)))
+                 or (os_distribution == 'Debian' and ((os_distribution_major_version|int == 9) or (os_distribution_major_version|int == 10)))
+                 or (os_distribution == 'Flatcar' )
+                 or (os_distribution == 'Suse' and os_distribution_major_version|int == 15)
+                 or (os_distribution == 'SLES' and os_distribution_major_version|int == 15)
+                 or (os_distribution == 'openSUSE Leap' and os_distribution_major_version|int == 15)
                  )
 
   # kubernetes checks /proc/swaps lines > 1

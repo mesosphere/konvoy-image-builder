@@ -15,23 +15,23 @@ nvidia_repo_distributionmap:
   CentOS: "rhel"
   RedHat: "rhel"
 
-nvidia_repo_distro: "{{ nvidia_repo_distributionmap[ansible_distribution] | default(ansible_distribution) }}"
-nvidia_repo_baseurl: https://developer.download.nvidia.com/compute/cuda/repos/{{ nvidia_repo_distro | lower }}{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+nvidia_repo_distro: "{{ nvidia_repo_distributionmap[os_distribution] | default(os_distribution) }}"
+nvidia_repo_baseurl: https://developer.download.nvidia.com/compute/cuda/repos/{{ nvidia_repo_distro | lower }}{{ os_distribution_major_version }}/{{ os_architecture }}
 # nvidia_repo_gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/7fa2af80.pub
 nvidia_repo_gpgkey: "{{ nvidia_repo_baseurl }}/7fa2af80.pub"
 
 libnvidia_container_repo: "https://nvidia.github.io/libnvidia-container/stable"
-libnvidia_container_repo_centos: "{{ libnvidia_container_repo }}/{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}/$basearch"
-libnvidia_container_repo_rhel: "{{ libnvidia_container_repo }}/centos{{ ansible_distribution_major_version }}/$basearch"
-libnvidia_container_repo_ubuntu: "{{ libnvidia_container_repo }}/{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}/$(ARCH)"
+libnvidia_container_repo_centos: "{{ libnvidia_container_repo }}/{{ os_distribution | lower }}{{ os_distribution_major_version }}/$basearch"
+libnvidia_container_repo_rhel: "{{ libnvidia_container_repo }}/centos{{ os_distribution_major_version }}/$basearch"
+libnvidia_container_repo_ubuntu: "{{ libnvidia_container_repo }}/{{ os_distribution | lower }}{{ os_distribution_major_version }}/$(ARCH)"
 libnvidia_container_repo_sles: "{{ libnvidia_container_repo }}/opensuse-leap15.1/$basearch"
 
 libnvidia_container_repo_gpgkey: https://nvidia.github.io/libnvidia-container/gpgkey
 
 nvidia_container_runtime_repo: "https://nvidia.github.io/nvidia-container-runtime/stable"
-nvidia_container_runtime_repo_centos: "{{ nvidia_container_runtime_repo }}/{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}/$basearch"
-nvidia_container_runtime_repo_rhel: "{{ nvidia_container_runtime_repo }}/centos{{ ansible_distribution_major_version }}/$basearch"
-nvidia_container_runtime_repo_ubuntu: "{{ nvidia_container_runtime_repo }}/{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}/$(ARCH)"
+nvidia_container_runtime_repo_centos: "{{ nvidia_container_runtime_repo }}/{{ os_distribution | lower }}{{ os_distribution_major_version }}/$basearch"
+nvidia_container_runtime_repo_rhel: "{{ nvidia_container_runtime_repo }}/centos{{ os_distribution_major_version }}/$basearch"
+nvidia_container_runtime_repo_ubuntu: "{{ nvidia_container_runtime_repo }}/{{ os_distribution | lower }}{{ os_distribution_major_version }}/$(ARCH)"
 nvidia_container_runtime_repo_sles: "{{ nvidia_container_runtime_repo }}/opensuse-leap15.1/$basearch"
 
 nvidia_container_runtime_repo_gpgkey: https://nvidia.github.io/nvidia-container-runtime/gpgkey
@@ -44,10 +44,10 @@ epel_centos_8_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.n
 epel_centos_8_rpm_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
 epel_centos_7_rpm_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
 
-suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansible_architecture }}
+suse_packagehub_product: PackageHub/{{ os_distribution_version }}/{{ os_architecture }}
 
 # the nvidia-container-runtime package no longer exists for rhel8 so we must install the last available version
-nvidia_container_runtime_package: "{{ 'nvidia-container-runtime' if ansible_distribution_major_version|int < 8 else 'nvidia-container-runtime-3.4.0-1.x86_64' }}"
+nvidia_container_runtime_package: "{{ 'nvidia-container-runtime' if os_distribution_major_version|int < 8 else 'nvidia-container-runtime-3.4.0-1.x86_64' }}"
 
 nvidia_runfile_installer: NVIDIA-Linux-x86_64-470.82.01.run
 nvidia_runfile_installer_url: "https://us.download.nvidia.com/tesla/470.82.01/{{ nvidia_runfile_installer }}"

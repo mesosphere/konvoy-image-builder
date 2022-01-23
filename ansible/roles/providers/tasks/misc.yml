@@ -39,7 +39,7 @@
     - cloud-config
     - cloud-init
     - cloud-init-local
-  when: ansible_os_family != "Flatcar"
+  when: os_family != "Flatcar"
 
 - name: Create cloud-init config file
   copy:
@@ -48,12 +48,12 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family != "Flatcar"
+  when: os_family != "Flatcar"
 
 - name: get cloud_init version
   register: cloud_init_version
   shell: cloud-init --version | awk '{print $2}' | cut -d- -f1
-  when: ansible_os_family !=  "Flatcar"
+  when: os_family !=  "Flatcar"
 
 - name: set cloudinit feature flags
   copy:
@@ -62,12 +62,12 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family == "Debian" and  cloud_init_version.stdout  | float > 20.0
+  when: os_family == "Debian" and  cloud_init_version.stdout  | float > 20.0
 
 - name: get python3 location for non-debian
   register: python3_version
   shell: python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))"
-  when: ansible_os_family not in ["Debian", "Flatcar"]
+  when: os_family not in ["Debian", "Flatcar"]
 
 - name: set cloudinit feature flags for non debian systems
   copy:
@@ -76,7 +76,7 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family not in ["Debian", "Flatcar"] and  cloud_init_version.stdout | float > 20.0
+  when: os_family not in ["Debian", "Flatcar"] and  cloud_init_version.stdout | float > 20.0
 
 - name: Ensure chrony is running
   systemd:
@@ -88,4 +88,4 @@
     packer_builder_type.startswith('azure') or
     packer_builder_type is search('vmware') or
     packer_builder_type is search('vsphere')) and
-    ansible_os_family != "Flatcar"
+    os_family != "Flatcar"

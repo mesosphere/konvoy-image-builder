@@ -49,7 +49,7 @@
           - /etc/zypp/credentials.d/*
           - /etc/zypp/repos.d/*
           - /etc/zypp/services.d/*
-  when: ansible_distribution == "sles"
+  when: os_distribution == "sles"
 
 - name: Remove zypper package cache
   command: zypper clean -a

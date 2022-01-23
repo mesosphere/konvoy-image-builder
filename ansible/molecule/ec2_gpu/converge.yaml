@@ -26,9 +26,9 @@
   # TODO: hack to pass vars easily for now
   pre_tasks:
     - include_vars: ../../vars/centos/centos-7.yaml
-      when: ansible_os_family == "RedHat"
+      when: os_family == "RedHat"
     - include_vars: ../../vars/flatcar/flatcar.yaml
-      when: ansible_os_family == "Flatcar"
+      when: os_family == "Flatcar"
 
 - name: Converge
   hosts: all

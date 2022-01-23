@@ -23,7 +23,7 @@
       - cloud-guest-utils
       - cloud-initramfs-copymods
       - cloud-initramfs-dyn-netconf
-  when: ansible_os_family == "Debian"
+  when: os_family == "Debian"
 
 - name: Install cloud-init packages
   yum:
@@ -34,7 +34,7 @@
       - cloud-init
       - cloud-utils-growpart
       - python2-pip
-  when: ansible_os_family == "RedHat"
+  when: os_family == "RedHat"
 
 - name: Install cloud-init packages
   zypper:
@@ -44,13 +44,13 @@
     packages:
       - cloud-init
       - cloud-init-vmware-guestinfo
-  when: ansible_os_family == "Suse"
+  when: os_family == "Suse"
 
 - name: Install cloud-init and tools for VMware Photon OS
   command: tdnf install {{ packages }} -y
   vars:
     packages: "cloud-init cloud-utils python3-netifaces"
-  when: ansible_os_family == "VMware Photon OS"
+  when: os_family == "VMware Photon OS"
 
 - name: Download cloud-init datasource for VMware Guestinfo
   get_url:
@@ -74,7 +74,7 @@
   file:
     path: /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
     state: absent
-  when: ansible_os_family == "VMware Photon OS"
+  when: os_family == "VMware Photon OS"
 
 # - name: Unlock password
 #   replace:
@@ -87,7 +87,7 @@
     name: hv-kvp-daemon
     state: stopped
     enabled: false
-  when: ansible_os_family == "Debian"
+  when: os_family == "Debian"
 
 - name: Create provider vmtools config drop-in file
   copy:

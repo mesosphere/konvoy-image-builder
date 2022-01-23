@@ -1,0 +1,26 @@
+---
+os_architecture: "{{
+  (override_os_architecture is defined) |
+  ternary(override_os_architecture, ansible_architecture) }}"
+
+os_distribution: "{{
+  (override_os_distribution is defined) |
+  ternary(override_os_distribution, ansible_distribution) }}"
+
+os_distribution_major_version: "{{
+  (override_os_distribution_major_version is defined) |
+  ternary(override_os_distribution_major_version,
+          ansible_distribution_major_version) }}"
+
+os_distribution_release: "{{
+  (override_os_distribution_relese is defined) |
+  ternary(override_os_distribution_release,
+          ansible_distribution_release) }}"
+
+os_family: "{{
+  (override_os_family is defined) |
+  ternary(override_os_family, ansible_os_family) }}"
+
+os_kernel: "{{
+  (override_os_kernel is defined) |
+  ternary(override_os_kernel, ansible_kernel) }}"

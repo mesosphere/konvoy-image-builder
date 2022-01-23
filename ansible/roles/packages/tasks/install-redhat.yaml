@@ -14,8 +14,8 @@
       - ebtables
       - open-vm-tools
       - python3-pip
-      - "python{{ '3' if ansible_distribution_major_version == '8' }}-netifaces"
-      - "python{{ '3' if ansible_distribution_major_version == '8' }}-requests"
+      - "python{{ '3' if os_distribution_major_version == '8' }}-netifaces"
+      - "python{{ '3' if os_distribution_major_version == '8' }}-requests"
       - socat
       - sysstat
       - yum-utils
@@ -41,7 +41,7 @@
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   when:
-    - ansible_distribution_major_version == '8'
+    - os_distribution_major_version == '8'
 
 - name: check if versionlock exists
   command: yum versionlock list
@@ -72,8 +72,8 @@
   retries: 3
   delay: 3
   when:
-    - ansible_distribution == 'RedHat'
-    - ansible_distribution_major_version|int == 7
+    - os_distribution == 'RedHat'
+    - os_distribution_major_version|int == 7
     - not offline_mode_enabled
 
 - name: install container-selinux rpm package

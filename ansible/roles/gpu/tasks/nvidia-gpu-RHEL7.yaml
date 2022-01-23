@@ -2,8 +2,8 @@
 - name: install kernel headers and devel
   yum:
     name:
-      - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
-      - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+      - "kernel-headers-{{ hostvars[inventory_hostname].os_kernel }}"
+      - "kernel-devel-{{ hostvars[inventory_hostname].os_kernel }}"
 
 # ensure nouveau being unloaded
 - name: ensure nouveau being unloaded
