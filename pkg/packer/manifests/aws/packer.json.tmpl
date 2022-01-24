@@ -22,6 +22,7 @@
     "snapshot_users": "",
     "subnet_id": "",
     "vpc_id": "",
+    "security_group_id":  "",
     "volume_size": "20",
     "extra_vars_file": "",
     "build_name": "",
@@ -71,6 +72,7 @@
       "ssh_username": "{{user `ssh_username`}}",
       "vpc_id": "{{ user `vpc_id` }}",
       "subnet_id": "{{ user `subnet_id` }}",
+      "security_group_id": "{{ user `security_group_id` }}",
       "tags": {
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
