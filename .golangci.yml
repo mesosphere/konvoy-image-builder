@@ -35,8 +35,6 @@ linters-settings:
       - style
   gocyclo:
     min-complexity: 15
-  goimports:
-    local-prefixes: github.com/mesosphere/konvoy-image-builder
   gomnd:
     settings:
       mnd:

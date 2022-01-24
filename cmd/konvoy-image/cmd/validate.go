@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
@@ -11,14 +12,13 @@ var validateFlags app.ValidateFlags
 
 // validateCmd runs validations against nodes to provision.
 var validateCmd = &cobra.Command{
-	SilenceUsage:  true,
-	SilenceErrors: true,
-	Use:           "validate",
-	Short:         "validate existing infrastructure",
-	Args:          cobra.ExactArgs(0),
+	SilenceUsage: true, SilenceErrors: true,
+	Use:   "validate",
+	Short: "validate existing infrastructure",
+	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := app.Validate(validateFlags); err != nil {
-			return errors.Wrap(err, "error running validate")
+			return fmt.Errorf("failed running validate %w", err)
 		}
 
 		return nil
