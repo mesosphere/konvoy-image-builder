@@ -46,3 +46,9 @@
   file:
     state: absent
     path: /root/anaconda-ks.cfg
+
+- name: Ensure auditd is started
+  systemd:
+    name: auditd
+    enabled: true
+    state: started

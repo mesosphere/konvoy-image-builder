@@ -15,22 +15,13 @@
     src: etc/systemd/system/containerd.service.d/http-proxy.conf
     mode: 0644
   when: http_proxy is defined or https_proxy is defined or no_proxy is defined
-  notify:
-    - reload systemd
-    - restart containerd
 
 - name: enable containerd
-  service:
+  systemd:
     name: containerd
     enabled: true
-  notify:
-    - reload systemd
-    - restart containerd
 
 - name: enable kubelet
-  service:
+  systemd:
     name: kubelet
     enabled: true
-  notify:
-    - reload systemd
-    - restart kubelet

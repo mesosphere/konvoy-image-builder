@@ -51,8 +51,6 @@
     until: result is success
     retries: 5
     delay: 3
-    notify:
-      - reload systemd
 
   - name: add version hold for containerd package
     command: apt-mark hold containerd.io
@@ -100,8 +98,6 @@
     until: kubelet_installation_deb is success
     retries: 3
     delay: 3
-    notify:
-      - reload systemd
 
   - name: install kubectl remote deb package
     apt:

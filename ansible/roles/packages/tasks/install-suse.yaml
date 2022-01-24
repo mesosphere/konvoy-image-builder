@@ -104,9 +104,6 @@
   until: kubelet_installation_rpm is success
   retries: 15
   delay: 60
-  notify:
-    - reload systemd
-    - restart kubelet
 
 - name: add versionlock for kubelet and kubectl packages
   command: zypper addlock {{ item }}

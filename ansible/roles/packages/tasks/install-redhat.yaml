@@ -29,9 +29,11 @@
   until: result is success
   retries: 5
   delay: 3
-  notify:
-    - reload systemd
-    - enable auditd
+
+- name: enable auditd
+  systemd:
+    name: auditd
+    enabled: true
 
 - name: install el8 requirements
   yum:
@@ -145,9 +147,6 @@
   until: kubelet_installation_rpm is success
   retries: 3
   delay: 3
-  notify:
-    - reload systemd
-    - restart kubelet
 
 - name: add versionlock for kubelet and kubectl packages
   command: yum versionlock add {{ item }}

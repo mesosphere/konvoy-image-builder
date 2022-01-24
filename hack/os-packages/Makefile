@@ -12,7 +12,7 @@ artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_x86_64_fips_rpms.tar.
 
 .PHONY: download-all-rpms
 download-all-rpms:
-	$(MAKE) rhel_major_version=7 fips=0 download-rpms
+	$(MAKE) rhel_major_version=7 download-rpms
 	$(MAKE) rhel_major_version=7 fips=1 download-rpms
 #	$(MAKE) rhel_major_version=8 fips=0 bastion=0  download-rpms
 #	$(MAKE) rhel_major_version=7 fips=0 bastion=1  download-rpms
@@ -35,11 +35,14 @@ ifeq ($(fips), 1)
 artifacts_dir = $(shell pwd)/artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_fips_rpms
 rpm_getter_image = $(RPM_PACKAGES_GETTER_IMAGE)-fips-centos:$(rhel_major_version)
 getter_target = rpm-fips-artifacts-getter/centos/$(rhel_major_version)
-endif
-ifeq ($(fips), 0)
+else
 artifacts_dir = $(shell pwd)/artifacts/os-packages_$(DEFAULT_KUBERNETES_VERSION_SEMVER)_el$(rhel_major_version)_x86_64_rpms
 rpm_getter_image = $(RPM_PACKAGES_GETTER_IMAGE)-centos:$(rhel_major_version)
 getter_target = rpm-artifacts-getter/centos/$(rhel_major_version)
+endif
+
+ifndef rhel_major_version
+rhel_major_version = 7
 endif
 
 .PHONY: rpm-artifacts-getter.check
@@ -68,4 +71,9 @@ createrepo:
 .PHONY: clean-artifacts
 clean-artifacts:
 	rm -rf $(shell pwd)/artifacts
-	docker images | grep $(RPM_PACKAGES_GETTER_IMAGE) | awk '{ print $$1":"$$2}' | xargs docker image rm
+	for image in $$(\
+		docker image ls \
+			--filter=reference='$(RPM_PACKAGES_GETTER_IMAGE)*' \
+			--format "{{.Repository}}:{{.Tag}}"); do \
+		docker image rm $$image;\
+	done

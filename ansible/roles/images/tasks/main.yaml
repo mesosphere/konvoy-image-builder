@@ -1,8 +1,9 @@
 ---
 - name: start containerd
-  service:
+  systemd:
     name: containerd
     state: restarted
+    daemon_reload: true
 
 - name: load images
   import_tasks: load.yaml
