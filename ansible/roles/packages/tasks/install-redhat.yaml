@@ -1,8 +1,4 @@
 ---
-
-- name: clean yum cache
-  command: yum clean expire-cache
-
 - name: install common RPMS
   yum:
     name:
@@ -18,13 +14,12 @@
       - "python{{ '3' if ansible_distribution_major_version == '8' }}-requests"
       - socat
       - sysstat
-      - yum-utils
-      - yum-plugin-versionlock
       - nfs-utils
       - NetworkManager
     state: present
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    update_cache: yes
   register: result
   until: result is success
   retries: 5
@@ -34,6 +29,27 @@
   systemd:
     name: auditd
     enabled: true
+
+# yum-plugin-versionlock is deprecated in rhel 8 and replaced with python3-dnf-plugin-versionlock.
+# python3-dnf-plugin-versionlock has hard dependency on dnf and yum versions which are protected packages on RedHat 8.x and not allowed to upgraded by the OS
+- name: set use package versionlock fact
+  set_fact:
+    versionlock_plugin_enabled: "{{ not (offline_mode_enabled and ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') }}"
+
+- name: install yum utilities
+  yum:
+    name:
+     - yum-utils
+     - yum-plugin-versionlock
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
+  when: 
+    - versionlock_plugin_enabled
 
 - name: install el8 requirements
   yum:
@@ -61,7 +77,7 @@
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
-    - versionlocklist is defined and versionlocklist.stdout is defined
+    - versionlock_plugin_enabled
     - "'containerd.io' in versionlocklist.stdout and not 'containerd.io-' + containerd_version in versionlocklist.stdout"
 
 # only required for RHEL when not installing from a local file
@@ -108,6 +124,8 @@
     warn: false
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+  when:
+    - versionlock_plugin_enabled
 
 - name: remove versionlock for kubelet and kubectl packages
   command: yum versionlock delete {{ item }}
@@ -120,7 +138,7 @@
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
-    - versionlocklist is defined and versionlocklist.stdout is defined
+    - versionlock_plugin_enabled
     - item in versionlocklist.stdout
     - not package_versions.kubernetes_rpm in versionlocklist.stdout
 
@@ -157,6 +175,8 @@
     warn: false
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+  when:
+    - versionlock_plugin_enabled
 
 - name: remove versionlock for kubeadm packages
   command: yum versionlock delete kubeadm
@@ -166,7 +186,7 @@
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
-    - versionlocklist is defined and versionlocklist.stdout is defined
+    - versionlock_plugin_enabled
     - "'kubeadm' in versionlocklist.stdout and not 'kubeadm-' + package_versions.kubernetes_rpm in versionlocklist.stdout"
 
 - name: install kubeadm rpm package
@@ -187,3 +207,5 @@
     warn: false
   register: command_result
   changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+  when:
+    - versionlock_plugin_enabled
