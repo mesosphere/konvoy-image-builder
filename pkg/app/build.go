@@ -119,7 +119,10 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 		return "", fmt.Errorf("error merging overrides: %w", err)
 	}
 
-	enrichKubernetesFullVersion(config)
+	if err = enrichKubernetesFullVersion(config, initOptions.UserArgs.KubernetesVersion); err != nil {
+		//nolint:golint // error has context needed
+		return "", err
+	}
 	mergeUserArgs(config, initOptions)
 
 	buildName := buildName(config)
@@ -316,14 +319,30 @@ func genPackerVars(config map[string]interface{}, extraVarsPath string) ([]byte,
 
 // enrichKubernetesFullVersion will enrich the kubernetes semver with build metadata added in via
 // overrides. A common example is the fips override, which adds +fips.buildnumber to the version.
-func enrichKubernetesFullVersion(config map[string]interface{}) {
+func enrichKubernetesFullVersion(config map[string]interface{}, userDefinedKubernetesVersion string) error {
+	var k8sVersion string
+	if k8sRaw, configHasK8s := config[kubernetesVersionKey]; configHasK8s {
+		if k8sFromConfig, isString := k8sRaw.(string); isString {
+			k8sVersion = k8sFromConfig
+		}
+	}
+	// If we have something from the user, use that
+	if userDefinedKubernetesVersion != "" {
+		k8sVersion = userDefinedKubernetesVersion
+	}
+
+	// if we couldn't find it in the config or the user didn't define it
+	if len(k8sVersion) == 0 {
+		return ErrKubernetesVersionMissing
+	}
 	metadata, ok := config[kubernetesBuildMetadataKey]
 	if !ok {
-		config[kubernetesFullVersionKey] = config[kubernetesVersionKey]
+		config[kubernetesFullVersionKey] = k8sVersion
 	} else {
 		config[kubernetesFullVersionKey] = fmt.Sprintf(
-			"%s+%s", config[kubernetesVersionKey], metadata)
+			"%s+%s", k8sVersion, metadata)
 	}
+	return nil
 }
 
 func getString(config map[string]interface{}, key string) string {

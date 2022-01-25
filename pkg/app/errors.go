@@ -8,8 +8,9 @@ import (
 
 // errors.
 var (
-	ErrInitConfig = errors.New("init configuration failure")
-	ErrBuild      = errors.New("build failure")
+	ErrInitConfig               = errors.New("init configuration failure")
+	ErrBuild                    = errors.New("build failure")
+	ErrKubernetesVersionMissing = errors.New("necessary kubernetes_version key missing")
 )
 
 func InitConfigError(op string, err error) error {
