@@ -5,10 +5,7 @@
     - not offline_mode_enabled
 
 - include: install-redhat.yaml
-  when: ansible_distribution == "RedHat" or ansible_distribution == "OracleLinux"
-
-- include: install-centos.yaml
-  when: ansible_distribution == "CentOS"
+  when: ansible_os_family == "RedHat"
 
 - include: install-suse.yaml
   when: ansible_os_family == "Suse"
