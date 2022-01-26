@@ -91,7 +91,7 @@ clean-artifacts:
 	rm -rf $(shell pwd)/artifacts
 	for image in $$(\
 		docker image ls \
-			--filter=reference='$(RPM_PACKAGES_GETTER_IMAGE)*' \
+			--filter=reference='$(rpm_packages_getter_image)*' \
 			--format "{{.Repository}}:{{.Tag}}"); do \
 		docker image rm $$image;\
 	done

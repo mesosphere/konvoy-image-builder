@@ -7,7 +7,7 @@ import (
 )
 
 func addOverridesArg(fs *pflag.FlagSet, overrides *[]string) {
-	fs.StringArrayVar(overrides, "overrides", []string{}, "a list of override YAML files")
+	fs.StringSliceVar(overrides, "overrides", []string{}, "a list of override YAML files")
 }
 
 func addClusterArgs(fs *pflag.FlagSet, kubernetesVersion, containerdVersion *string) {
