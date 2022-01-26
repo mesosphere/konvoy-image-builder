@@ -580,7 +580,7 @@ ci.e2e.build.%:
 e2e.build.centos-7: centos7 docker.clean-latest-ami
 
 # Run os-packages-artifacts outside devkit container.
-e2e.build.centos-7-offline: docker.clean-latest-ami
+e2e.build.centos-7-offline: centos7-offline docker.clean-latest-ami
 
 e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline docker.clean-latest-ami
 
