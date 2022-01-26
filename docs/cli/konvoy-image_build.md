@@ -21,7 +21,7 @@ build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml
       --aws-instance-type string         instance type used to build the AMI; the type must be present in the region in which the AMI is built
       --containerd-version string        the version of containerd to install
   -h, --help                             help for build
-      --kubernetes-version string        the version of kubernetes to install
+      --kubernetes-version string        The version of kubernetes to install. Example: 1.21.6
       --overrides stringArray            a list of override YAML files
       --packer-manifest string           provide the path to a custom packer manifest
       --packer-on-error string           [advanced] set error strategy for packer. strategies [cleanup, abort, run-cleanup-provisioner]

@@ -11,7 +11,7 @@ func addOverridesArg(fs *pflag.FlagSet, overrides *[]string) {
 }
 
 func addClusterArgs(fs *pflag.FlagSet, kubernetesVersion, containerdVersion *string) {
-	fs.StringVar(kubernetesVersion, "kubernetes-version", "", "the version of kubernetes to install")
+	fs.StringVar(kubernetesVersion, "kubernetes-version", "", "The version of kubernetes to install. Example: 1.21.6")
 	fs.StringVar(containerdVersion, "containerd-version", "", "the version of containerd to install")
 }
 
