@@ -1,5 +1,7 @@
 # Infra related goals
 # ---------------------------------------------------------------------
+export GOOS ?= $(shell go env GOOS 2>/dev/null)
+export GOARCH ?= $(shell go env GOARCH 2>/dev/null)
 export TERRAFORM_VERSION ?= 0.15.3
 export TERRAFORM_ASSETS ?= $(CURDIR)/.local/terraform/$(TERRAFORM_VERSION)/bin/
 export TERRAFORM_URL ?= https://releases.hashicorp.com/terraform/$(TERRAFORM_VERSION)/terraform_$(TERRAFORM_VERSION)_$(GOOS)_$(GOARCH).zip
