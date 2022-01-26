@@ -81,9 +81,9 @@ output "vpc_id" {
 }
 
 output "public_subnets" {
-  value = aws_subnet.konvoy_public.*.id
+  value = aws_subnet.konvoy_public.[0].id
 }
 
 output  "security_group_id" {
-  value = aws_security_group.konvoy_ssh.*.id
+  value = aws_security_group.konvoy_ssh.[0].id
 }

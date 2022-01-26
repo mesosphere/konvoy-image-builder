@@ -18,30 +18,6 @@ COVERAGE ?= $(REPO_ROOT_DIR)/coverage
 
 VERBOSITY ?= 0
 
-export GOOS ?= $(shell go env GOOS 2>/dev/null)
-export GOARCH ?= $(shell go env GOARCH 2>/dev/null)
-
-# GOJQ
-ifeq ($(GOOS),darwin)
-  GOJQ_EXT := zip
-else
-  GOJQ_EXT := tar.gz
-endif
-GOJQ_VERSION ?= v0.12.4
-export GOJQ_URL ?= https://github.com/itchyny/gojq/releases/download/$(GOJQ_VERSION)/gojq_$(GOJQ_VERSION)_$(GOOS)_$(GOARCH).$(GOJQ_EXT)
-export GOJQ_ASSETS ?= $(CURDIR)/.local/gojq/$(GOJQ_VERSION)
-export GOJQ_BIN=$(GOJQ_ASSETS)/gojq
-
-.PHONY: install-gojq
-install-gojq: ## install gojq for non go environments
-install-gojq: $(GOJQ_ASSETS)/gojq
-
-$(GOJQ_ASSETS)/gojq:
-	$(call print-target,install-gojq)
-	mkdir -p $(GOJQ_ASSETS)
-	curl -Lf $(GOJQ_URL) |tar xzf - -C $(GOJQ_ASSETS) --strip-components 1
-	chmod +x $(GOJQ_ASSETS)/gojq
-
 INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
 
