@@ -16,7 +16,31 @@ GROUP_NAME ?= $(shell id -g -n)
 
 COVERAGE ?= $(REPO_ROOT_DIR)/coverage
 
-VERBOSITY ?= 6
+VERBOSITY ?= 0
+
+export GOOS ?= $(shell go env GOOS 2>/dev/null)
+export GOARCH ?= $(shell go env GOARCH 2>/dev/null)
+
+# GOJQ
+ifeq ($(GOOS),darwin)
+  GOJQ_EXT := zip
+else
+  GOJQ_EXT := tar.gz
+endif
+GOJQ_VERSION ?= v0.12.4
+export GOJQ_URL ?= https://github.com/itchyny/gojq/releases/download/$(GOJQ_VERSION)/gojq_$(GOJQ_VERSION)_$(GOOS)_$(GOARCH).$(GOJQ_EXT)
+export GOJQ_ASSETS ?= $(CURDIR)/.local/gojq/$(GOJQ_VERSION)
+export GOJQ_BIN=$(GOJQ_ASSETS)/gojq
+
+.PHONY: install-gojq
+install-gojq: ## install gojq for non go environments
+install-gojq: $(GOJQ_ASSETS)/gojq
+
+$(GOJQ_ASSETS)/gojq:
+	$(call print-target,install-gojq)
+	mkdir -p $(GOJQ_ASSETS)
+	curl -Lf $(GOJQ_URL) |tar xzf - -C $(GOJQ_ASSETS) --strip-components 1
+	chmod +x $(GOJQ_ASSETS)/gojq
 
 INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
@@ -119,6 +143,7 @@ endif
 
 include hack/os-packages/Makefile
 include hack/pip-packages/Makefile
+include test/infra/aws/Makefile
 
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 	docker build \
@@ -176,8 +201,9 @@ centos7-offline: ## Build Centos 7 image
 	$(MAKE) os_distribution=centos os_distribution_major_version=7 fips=0 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) packer-custom-vpc-override.yaml
 	$(MAKE) devkit.run WHAT="make centos7 \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-custom-vpc-override.yaml(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: centos7-nvidia
 centos7-nvidia: build
@@ -562,7 +588,7 @@ ci.e2e.build.%:
 e2e.build.centos-7: centos7 docker.clean-latest-ami
 
 # Run os-packages-artifacts outside devkit container.
-e2e.build.centos-7-offline: centos7-offline docker.clean-latest-ami
+e2e.build.centos-7-offline: centos7-offline docker.clean-latest-ami infra.aws.destroy
 
 e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline docker.clean-latest-ami
 

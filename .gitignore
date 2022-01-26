@@ -63,3 +63,4 @@ flatcar-version.yaml
 /ansible/molecule/**/__pycache__/
 
 /cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+packer-custom-vpc-override.yaml
