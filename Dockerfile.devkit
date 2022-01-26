@@ -82,6 +82,7 @@ RUN apt-get update \
         openssl \
         openssh-client \
         python3 \
+        envsubst \
         unzip \
         python3-cryptography \
         python3-pip \
