@@ -22,7 +22,7 @@ generate --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yam
       --containerd-version string        the version of containerd to install
   -h, --help                             help for generate
       --kubernetes-version string        The version of kubernetes to install. Example: 1.21.6
-      --overrides stringArray            a list of override YAML files
+      --overrides strings                a comma separated list of override YAML files
       --region string                    the region in which to build the AMI
       --source-ami string                the ID of the AMI to use as the source; must be present in the region in which the AMI is built
       --source-ami-filter-name string    restricts the set of source AMIs to ones whose Name matches filter
