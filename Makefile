@@ -19,6 +19,7 @@ COVERAGE ?= $(REPO_ROOT_DIR)/coverage
 VERBOSITY ?= 6
 
 INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
+COMMA:=,
 
 export CGO_ENABLED=0
 
@@ -170,6 +171,14 @@ centos7: ## Build Centos 7 image
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
+.PHONY: centos7-offline
+centos7-offline: ## Build Centos 7 image
+	$(MAKE) os_distribution=centos os_distribution_major_version=7 fips=0 os-packages-artifacts
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make centos7 \
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+
 .PHONY: centos7-nvidia
 centos7-nvidia: build
 centos7-nvidia: ## Build Centos 7 image with GPU support
@@ -212,12 +221,16 @@ rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
 	--aws-instance-type p2.xlarge
 
 .PHONY: rhel82-fips
-rhel82-fips: build
 rhel82-fips: ## Build RHEL 8.2 FIPS image
-	./bin/konvoy-image build images/ami/rhel-82.yaml \
-	-v ${VERBOSITY} \
-	--overrides=overrides/fips.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	$(MAKE) rhel82 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
+
+.PHONY: rhel82-fips-offline
+rhel82-fips-offline:
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make rhel82-fips \
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel84
 rhel84: build
@@ -227,12 +240,16 @@ rhel84: ## Build RHEL 8.4 image
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel84-fips
-rhel84-fips: build
 rhel84-fips: ## Build RHEL 8.4 FIPS image
-	./bin/konvoy-image build images/ami/rhel-84.yaml \
-	-v ${VERBOSITY} \
-	--overrides=overrides/fips.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	$(MAKE) rhel84 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
+
+.PHONY: rhel84-fips-offline
+rhel84-fips-offline: 
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make rhel84-fips \
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel84-nvidia
 rhel84-nvidia: build
@@ -250,12 +267,16 @@ rhel79: ## Build RHEL 7.9 image
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel79-fips
-rhel79-fips: build
 rhel79-fips: ## Build RHEL 7.9 FIPS image
-	./bin/konvoy-image build images/ami/rhel-79.yaml \
-	-v ${VERBOSITY} \
-	--overrides=overrides/fips.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	$(MAKE) rhel79 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
+
+.PHONY: rhel79-fips-offline
+rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
+	$(MAKE) os_distribution=redhat os_distribution_major_version=7 fips=1 os-packages-artifacts
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make rhel79-fips \
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel79-nvidia
 rhel79-nvidia: build
@@ -536,7 +557,6 @@ endif
 # All tests run in parallel. Adjust parallelism with --jobs.
 # Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
 ci.e2e.build.all: ci.e2e.build.centos-7
-ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: ci.e2e.build.centos-8
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
@@ -544,6 +564,7 @@ ci.e2e.build.all: ci.e2e.build.sles-15
 ci.e2e.build.all: ci.e2e.build.oracle-7
 ci.e2e.build.all: ci.e2e.build.oracle-8
 ci.e2e.build.all: ci.e2e.build.flatcar
+ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.2-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
@@ -559,33 +580,13 @@ ci.e2e.build.%:
 e2e.build.centos-7: centos7 docker.clean-latest-ami
 
 # Run os-packages-artifacts outside devkit container.
-e2e.build.centos-7-offline:
-	$(MAKE) os_distribution=centos os_distribution_major_version=7 fips=0 os-packages-artifacts
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
-	$(MAKE) devkit.run WHAT="make centos7 ADDITIONAL_OVERRIDES=overrides/offline.yaml"
-	$(MAKE) docker.clean-latest-ami
+e2e.build.centos-7-offline: centos7-offline docker.clean-latest-ami
 
-e2e.build.rhel-7.9-offline-fips:
-	$(MAKE) os_distribution=redhat os_distribution_major_version=7 fips=1 os-packages-artifacts
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
-	$(MAKE) devkit.run WHAT="make rhel79-fips ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
-	$(MAKE) docker.clean-latest-ami
+e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline docker.clean-latest-ami
 
-e2e.build.rhel-8.2-offline-fips:
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
-	$(MAKE) devkit.run WHAT="make rhel82-fips ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
-	$(MAKE) docker.clean-latest-ami
+e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline docker.clean-latest-ami
 
-e2e.build.rhel-8.4-offline-fips:
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
-	$(MAKE) devkit.run WHAT="make rhel84-fips ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml"
-	$(MAKE) docker.clean-latest-ami
+e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline docker.clean-latest-ami
 
 e2e.build.centos-8: centos8 docker.clean-latest-ami
 
