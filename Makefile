@@ -177,9 +177,9 @@ centos7-offline: ## Build Centos 7 image
 	$(MAKE) os_distribution=centos os_distribution_major_version=7 fips=0 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
-	$(MAKE) packer-custom-vpc-override.yaml
+	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make centos7 \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-custom-vpc-override.yaml(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: centos7-nvidia
 centos7-nvidia: build
