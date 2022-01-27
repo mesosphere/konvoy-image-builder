@@ -13,7 +13,7 @@ konvoy-image upload artifacts [flags]
   -h, --help                          help for artifacts
       --inventory-file string         an ansible inventory defining your infrastructure (default "inventory.yaml")
       --os-packages-bundle string     path to os-packages tar file for install on remote hosts.
-      --pip-packages-bundle string    path to pip-packages tar filefor install on remote hosts.
+      --pip-packages-bundle string    path to pip-packages tar file for install on remote hosts.
 ```
 
 ### Options inherited from parent commands
