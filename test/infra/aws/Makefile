@@ -32,17 +32,18 @@ infra.aws.init: install-terraform
 
 .PHONY: infra.aws.create
 infra.aws.create: ## Create infrastructure
-infra.aws.create: install-terraform
+infra.aws.create: install-terraform infra.aws.init
 	$(call print-target)
+	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/aws plan
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/aws apply -auto-approve
 
 packer-custom-vpc-override.yaml:
-packer-custom-vpc-override.yaml:
+packer-custom-vpc-override.yaml: infra.aws.create
 	@$(TEST_INFRA_STATE_DIR)/aws/export.sh
 
 .PHONY: infra.aws.destroy
 infra.aws.destroy: ## Destroy infrastructure
-infra.aws.destroy: install-terraform
+infra.aws.destroy: install-terraform infra.aws.init
 	$(call print-target)
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/aws destroy -auto-approve
 	rm -r $(TEST_INFRA_STATE_DIR)/aws
