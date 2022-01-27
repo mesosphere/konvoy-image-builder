@@ -24,6 +24,7 @@ variable "tags" {
 }
 
 resource "aws_vpc" "konvoy_vpc" {
+  #ts:skip=AWS.VPC.Logging.Medium.0470 we don't need flow logging
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -63,6 +64,7 @@ resource "aws_route_table_association" "konvoy_public_rta" {
 }
 
 resource "aws_security_group" "konvoy_ssh" {
+  #ts:skip=AC_AWS_0227 temporary sg doesnt need to be secure
   description = "Allow inbound SSH for Konvoy."
   vpc_id      = aws_vpc.konvoy_vpc.id
 
