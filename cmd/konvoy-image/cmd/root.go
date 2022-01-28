@@ -83,6 +83,7 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(generateDocsCmd)
 	rootCmd.AddCommand(provisionCmd)
+	rootCmd.AddCommand(uploadCmd)
 	rootCmd.DisableAutoGenTag = true
 
 	fs := rootCmd.PersistentFlags()
