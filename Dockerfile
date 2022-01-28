@@ -25,6 +25,7 @@ RUN apk add --no-cache \
         netaddr \
     && rm -rf /root/.cache
 
+COPY --from=devkit /usr/local/bin/goss /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer-provisioner-goss /usr/local/bin/
 COPY bin/konvoy-image /usr/local/bin

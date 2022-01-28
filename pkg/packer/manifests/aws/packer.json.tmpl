@@ -167,14 +167,13 @@
     {
       "type": "shell",
       "inline": [
-        "mkdir -p /opt/bin",
-        "export PATH=$PATH:/opt/bin"
+        "mkdir -p /tmp/goss-dir"
       ]
     },
     {
         "type": "file",
         "source": "/usr/local/bin/goss",
-        "destination": "/opt/bin/goss",
+        "destination": "/tmp/goss-dir/goss",
         "direction": "upload",
         "max_retries": 10
     },
@@ -198,7 +197,7 @@
       "goss_file": "{{user `goss_entry_file`}}",
       "inspect": "{{user `goss_inspect_mode`}}",
       "skip_install": true,
-      "download_path": "/opt/bin/goss",
+      "download_path": "/tmp/goss-dir",
       "type": "goss",
       "tests": [
         "{{user `goss_tests_dir`}}"
