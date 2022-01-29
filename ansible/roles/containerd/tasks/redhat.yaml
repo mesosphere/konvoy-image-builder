@@ -1,0 +1,66 @@
+---
+- name: remove versionlock for containerd
+  command: yum versionlock delete containerd.io
+  args:
+    warn: false
+  ignore_errors: true
+  register: command_result
+  changed_when: |
+    'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
+  when:
+    - versionlock_plugin_enabled
+    - "(
+      'containerd.io' in versionlocklist.stdout and
+      not 'containerd.io-' + containerd_version in versionlocklist.stdout
+      )"
+
+# only required for RHEL when not installing from a local file
+- name: install container-selinux GPG key
+  rpm_key:
+    state: present
+    key: "{{ docker_rpm_container_selinux_gpg_key_url }}"
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+  when:
+    - ansible_distribution == 'RedHat'
+    - ansible_distribution_major_version|int == 7
+    - not offline_mode_enabled
+
+- name: install container-selinux rpm package
+  yum:
+    name: "{{
+      'container-selinux' if offline_mode_enabled
+      else docker_rpm_container_selinux_package_url
+    }}"
+    state: present
+    update_cache: true
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: install containerd.io rpm package
+  yum:
+    name: "{{ 'containerd.io-' + containerd_version }}"
+    state: present
+    update_cache: true
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
+
+- name: add versionlock for containerd
+  command: yum versionlock add containerd.io
+  args:
+    warn: false
+  register: command_result
+  changed_when: |
+    'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+  when:
+    - versionlock_plugin_enabled
