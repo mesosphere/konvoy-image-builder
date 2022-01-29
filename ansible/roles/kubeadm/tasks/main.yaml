@@ -1,0 +1,12 @@
+---
+- include: redhat.yaml
+  when: ansible_os_family == "RedHat"
+
+- include: suse.yaml
+  when: ansible_os_family == "Suse"
+
+- include: flatcar.yaml
+  when: ansible_os_family == "Flatcar"
+
+- include: debian.yaml
+  when: ansible_os_family == "Debian"

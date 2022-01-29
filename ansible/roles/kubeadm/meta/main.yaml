@@ -2,4 +2,3 @@
 dependencies:
   - repo
   - setup_versionlock
-  - kubeadm

@@ -1,0 +1,8 @@
+---
+- name: Download kubeadm
+  get_url:
+    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_goarch }}/kubeadm"
+    dest: "{{ flatcar_sysusr_prefix }}/bin/kubeadm"
+    mode: 0755
+    owner: root
+    group: root

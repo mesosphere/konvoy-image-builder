@@ -21,22 +21,6 @@
   retries: 15
   delay: 60
 
-- name: check if versionlock exists
-  command: zypper locks -s
-  register: versionlocklist
-  args:
-    warn: false
-  ignore_errors: True
-  changed_when: false
-
-- name: check if versionlock exists
-  command: zypper locks -s
-  register: versionlocklist
-  args:
-    warn: false
-  ignore_errors: True
-  changed_when: false
-
 - name: remove preinstalled containerd
   zypper:
     name: containerd
@@ -114,13 +98,3 @@
     warn: false
   register: command_result
   changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'
-
-- name: install kubeadm package
-  zypper:
-    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: yes
-  register: result
-  until: result is success
-  retries: 15
-  delay: 60

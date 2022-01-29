@@ -30,27 +30,6 @@
     name: auditd
     enabled: true
 
-# yum-plugin-versionlock is deprecated in rhel 8 and replaced with python3-dnf-plugin-versionlock.
-# python3-dnf-plugin-versionlock has hard dependency on dnf and yum versions which are protected packages on RedHat 8.x and not allowed to upgraded by the OS
-- name: set use package versionlock fact
-  set_fact:
-    versionlock_plugin_enabled: "{{ not (offline_mode_enabled and ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') }}"
-
-- name: install yum utilities
-  yum:
-    name:
-     - yum-utils
-     - yum-plugin-versionlock
-    state: present
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  register: result
-  until: result is success
-  retries: 5
-  delay: 3
-  when: 
-    - versionlock_plugin_enabled
-
 - name: install el8 requirements
   yum:
     name:
@@ -60,14 +39,6 @@
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   when:
     - ansible_distribution_major_version == '8'
-
-- name: check if versionlock exists
-  command: yum versionlock list
-  register: versionlocklist
-  args:
-    warn: false
-  ignore_errors: True
-  changed_when: false
 
 - name: remove versionlock for containerd
   command: yum versionlock delete containerd.io
@@ -171,38 +142,6 @@
   with_items:
     - kubelet
     - kubectl
-  args:
-    warn: false
-  register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
-  when:
-    - versionlock_plugin_enabled
-
-- name: remove versionlock for kubeadm packages
-  command: yum versionlock delete kubeadm
-  args:
-    warn: false
-  ignore_errors: True
-  register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
-  when:
-    - versionlock_plugin_enabled
-    - "'kubeadm' in versionlocklist.stdout and not 'kubeadm-' + package_versions.kubernetes_rpm in versionlocklist.stdout"
-
-- name: install kubeadm rpm package
-  yum:
-    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: yes
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
-
-- name: add versionlock for kubeadm package
-  command: yum versionlock add kubeadm
   args:
     warn: false
   register: command_result
