@@ -1,12 +1,14 @@
 ---
-- name: check for offline bundle
-  stat:
-    path: "{{ offline.os_packages_remote_bundle_path }}"
-  register: offline_path
+- include: redhat.yaml
+  when: ansible_os_family == "RedHat"
 
-- name: set offline enabled fact
-  set_fact:
-    offline_mode_enabled: "{{ offline_path.stat.exists }}"
+- include: suse.yaml
+  when: ansible_os_family == "Suse"
 
-- include: repo.yaml
-- include: install.yaml
+- include: flatcar.yaml
+  when: ansible_os_family == "Flatcar"
+
+- include: debian.yaml
+  when: ansible_os_family == "Debian"
+
+- include: config.yaml

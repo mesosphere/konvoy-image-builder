@@ -1,2 +1,11 @@
 ---
 - include_tasks: upload.yaml
+
+- name: check for offline bundle
+  stat:
+    path: "{{ offline.os_packages_remote_bundle_path }}"
+  register: offline_path
+
+- name: set offline enabled fact
+  set_fact:
+    offline_mode_enabled: "{{ offline_path.stat.exists }}"
