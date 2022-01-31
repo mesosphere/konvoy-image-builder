@@ -27,6 +27,7 @@ var provisionCmd = &cobra.Command{
 				Overrides:        provisionFlags.Overrides,
 				UserArgs: app.UserArgs{
 					ClusterArgs: provisionFlags.ClusterArgs,
+					ExtraVars:   provisionFlags.ExtraVars,
 				},
 			})
 			if err != nil {
@@ -48,7 +49,7 @@ func init() {
 		&provisionFlags.ClusterArgs.KubernetesVersion,
 		&provisionFlags.ClusterArgs.ContainerdVersion,
 	)
-	fs.StringArrayVar(&provisionFlags.ExtraVars, "extra-vars", []string{}, "flag passed Ansible's extra-vars")
+	addExtraVarsArg(fs, &provisionFlags.ExtraVars)
 	fs.StringVar(&provisionFlags.Provider, "provider", "", "specify a provider if you wish to install provider specific utilities")
 	fs.StringVar(&provisionFlags.Inventory, "inventory-file", "", "an ansible inventory defining your infrastructure")
 	addOverridesArg(fs, &provisionFlags.Overrides)
