@@ -50,4 +50,5 @@ func initGenerateFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
 		&gFlags.userArgs.ClusterArgs.ContainerdVersion,
 	)
 	addAWSUserArgs(fs, &gFlags.userArgs)
+	addExtraVarsArg(fs, &gFlags.userArgs.ExtraVars)
 }
