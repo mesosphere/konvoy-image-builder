@@ -647,7 +647,7 @@ artifacts/images:
 .PHONY: save-images
 save-images: artifacts/images
 save-images:
-    $(MAKE) create-image-list EXTRA_VARS=$(EXTRA_VARS)
+	$(MAKE) create-image-list EXTRA_VARS=${EXTRA_VARS}
 save-images:
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
 	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)
