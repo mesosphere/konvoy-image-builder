@@ -1,9 +1,4 @@
 ---
-- include: install-epel.yaml
-  when:
-    - ansible_os_family == "RedHat"
-    - not offline_mode_enabled
-
 - include: install-redhat.yaml
   when: ansible_os_family == "RedHat"
 

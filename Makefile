@@ -228,7 +228,7 @@ rhel82-fips: ## Build RHEL 8.2 FIPS image
 rhel82-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make rhel82-fips \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -247,7 +247,7 @@ rhel84-fips: ## Build RHEL 8.4 FIPS image
 rhel84-fips-offline: 
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make rhel84-fips \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -274,7 +274,7 @@ rhel79-fips: ## Build RHEL 7.9 FIPS image
 rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make rhel79-fips \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -638,7 +638,7 @@ release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 .PHONY: create-image-list
 create-image-list:
 	@rm -f images.out
-	@ansible-playbook ./ansible/list-images.yaml -e="@./images/common.yaml"
+	@ansible-playbook ./ansible/list-images.yaml -e="@./images/common.yaml" $(if $(EXTRA_VARS),-e=${EXTRA_VARS})
 	@cat images.out
 
 artifacts/images:
@@ -646,6 +646,8 @@ artifacts/images:
 
 .PHONY: save-images
 save-images: artifacts/images
-save-images: create-image-list
+save-images:
+    $(MAKE) create-image-list EXTRA_VARS=$(EXTRA_VARS)
+save-images:
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
 	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)

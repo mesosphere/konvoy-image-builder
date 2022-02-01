@@ -1,13 +1,4 @@
 ---
-- name: add epel gpg key
-  rpm_key:
-    state: present
-    key: "{{ epel_centos_8_rpm_gpg_key }}"
-
-- name: install epel-release
-  dnf:
-    name: "{{ epel_centos_8_rpm }}"
-    state: present
 
 - name: install kernel {{ hostvars[inventory_hostname].ansible_kernel }} headers and devel
   dnf:

@@ -1,4 +1,39 @@
 ---
+# The EPEL repo for Centos 8 is deperacated.
+# AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
+# Alma linux's extra repository symlinks epel repository rpms. https://wiki.almalinux.org/repos/AlmaLinux.html
+# Why not RHEL repo?: RHEL is RHEL though the free subscription expires once a year.
+# it cannot be renewed until it does expire and then you have to re-register your systems to pick up the new subscription.
+# Also RHEL repos are missing some python3 rpms that we need.
+- name: Add Alma linux extra repository
+  yum_repository:
+    name: alma-linux-extra
+    description: Extra repository for alma linux
+    file: almalinux
+    baseurl: https://repo.almalinux.org/almalinux/$releasever/extras/$basearch/os/
+    mirrorlist: https://mirrors.almalinux.org/mirrorlist/$releasever/extras
+    enabled: yes
+    gpgkey: https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
+    gpgcheck: yes
+  when:
+    - not offline_mode_enabled
+    - ansible_distribution_major_version == '8'
+
+# The correct epel-release rpms will be downloaded for Centos, RHEL and oracle 7 repos from in-built extra repos
+# epel-release for Centos/RHEL/Oracle 8 will be installed using Alma linux "extra" repository
+- name: install epel-release
+  yum:
+    name: epel-release
+    state: present
+  when:
+    - not offline_mode_enabled
+
+- name: upload offline repository
+  template:
+    src: offline.repo
+    dest: /etc/yum.repos.d/offline.repo
+  when: offline_mode_enabled
+
 # RPM
 - name: add Konvoy Kubernetes rpm repository
   yum_repository:

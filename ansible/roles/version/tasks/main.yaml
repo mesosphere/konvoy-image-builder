@@ -16,8 +16,7 @@
 #                the build tag.
 - name: determine kubernetes images
   shell: |
-    kubeadm config images list
-      --image-repository '{{ k8s_image_registry }}' |
+    kubeadm config images list --image-repository '{{ k8s_image_registry }}' |
     sed 's/^\(.\+etcd:.\+\)-\([0-9]\+\)$/\1{{ "-\2" if not kubernetes_build_tag }}/' |
     sed 's/$/{{ '_' + kubernetes_build_tag if kubernetes_build_tag }}/' |
     sed 's/^\(.\+pause:.\+\)_{{ kubernetes_build_tag }}$/\1/'

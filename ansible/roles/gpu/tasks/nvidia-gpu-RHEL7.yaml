@@ -25,11 +25,6 @@
     name: vulkan-filesystem
     enablerepo: vulkanfs-repo
 
-- name: install EPEL release
-  yum:
-    name: "{{ epel_centos_7_rpm }}"
-    state: present
-
 - name: install additional Nvidia runfile prerequisites
   yum:
     name:
