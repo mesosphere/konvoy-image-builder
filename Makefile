@@ -638,7 +638,7 @@ release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 .PHONY: create-image-list
 create-image-list:
 	@rm -f images.out
-	@ansible-playbook ./ansible/list-images.yaml -e="@./images/common.yaml" $(if $(EXTRA_VARS),-e=${EXTRA_VARS})
+	@ansible-playbook ./ansible/list-images.yaml -e="@./images/common.yaml" $(if $(EXTRA_VARS),-e="${EXTRA_VARS}")
 	@cat images.out
 
 artifacts/images:
@@ -647,7 +647,6 @@ artifacts/images:
 .PHONY: save-images
 save-images: artifacts/images
 save-images:
-	$(MAKE) create-image-list EXTRA_VARS=${EXTRA_VARS}
-save-images:
+	$(MAKE) create-image-list $(if $(EXTRA_VARS),EXTRA_VARS=${EXTRA_VARS})
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
 	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)
