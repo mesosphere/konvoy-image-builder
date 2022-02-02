@@ -188,22 +188,6 @@ centos7-nvidia: ## Build Centos 7 image with GPU support
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
 	--aws-instance-type p2.xlarge
 
-.PHONY: centos8
-centos8: build
-centos8: ## Build Centos 8 image
-	./bin/konvoy-image build images/ami/centos-8.yaml \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: centos8-nvidia
-centos8-nvidia: build
-centos8-nvidia: ## Build Centos 8 image with GPU support
-	./bin/konvoy-image build images/ami/centos-8.yaml \
-	-v ${VERBOSITY} \
-	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
-
 .PHONY: rhel82
 rhel82: build
 rhel82: ## Build RHEL 8.2 image
@@ -557,7 +541,6 @@ endif
 # All tests run in parallel. Adjust parallelism with --jobs.
 # Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
 ci.e2e.build.all: ci.e2e.build.centos-7
-ci.e2e.build.all: ci.e2e.build.centos-8
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
 ci.e2e.build.all: ci.e2e.build.sles-15
@@ -570,7 +553,6 @@ ci.e2e.build.all: e2e.build.rhel-8.2-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
 ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
-ci.e2e.build.all: ci.e2e.build.centos-8-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
 
 # Run an E2E test in its own devkit container.
@@ -588,8 +570,6 @@ e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline docker.clean-latest-ami
 
 e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline docker.clean-latest-ami
 
-e2e.build.centos-8: centos8 docker.clean-latest-ami
-
 e2e.build.ubuntu-18: ubuntu18 docker.clean-latest-ami
 
 e2e.build.ubuntu-20: ubuntu20 docker.clean-latest-ami
@@ -605,8 +585,6 @@ e2e.build.flatcar: flatcar docker.clean-latest-ami
 e2e.build.rhel-8-fips: rhel82-fips docker.clean-latest-ami
 
 e2e.build.centos-7-nvidia: centos7-nvidia docker.clean-latest-ami
-
-e2e.build.centos-8-nvidia: centos8-nvidia docker.clean-latest-ami
 
 e2e.build.sles-15-nvidia: sles15-nvidia docker.clean-latest-ami
 

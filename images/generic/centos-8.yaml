@@ -1,4 +1,0 @@
-download_images: true
-build_name: "centos-8"
-packer_builder_type: ""
-python_path: ""
