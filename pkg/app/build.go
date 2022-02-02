@@ -91,6 +91,7 @@ type ClusterArgs struct {
 	ContainerdVersion string `json:"containerd_version" yaml:"containerd_version"`
 }
 
+//nolint:gocyclo // this will be refactored
 func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	config, err := loadYAML(initOptions.CommonConfigPath)
 	if err != nil {
