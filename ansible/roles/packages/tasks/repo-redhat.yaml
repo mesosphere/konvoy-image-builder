@@ -1,21 +1,11 @@
 ---
-
-# "appstream" repo on existing centos 8 docker images and AMI is broken as it is removed upstream.
-- name: Remove appstream repository
-  yum_repository:
-    name: appstream
-    state: absent
-  ignore_errors: True
-  when:
-    - ansible_distribution_major_version == '8'
-
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
 # Alma linux's extra repository symlinks epel repository rpms. https://wiki.almalinux.org/repos/AlmaLinux.html
 # Why not RHEL repo?: RHEL is RHEL though the free subscription expires once a year.
 # it cannot be renewed until it does expire and then you have to re-register your systems to pick up the new subscription.
 # Also RHEL repos are missing some python3 rpms that we need.
-- name: Add Alma linux extra repository
+- name: add Alma linux extra repository
   yum_repository:
     name: alma-linux-extra
     description: Extra repository for alma linux
@@ -34,6 +24,7 @@
   yum:
     name: epel-release
     state: present
+    disablerepo: appstream
 
 # RPM
 - name: add Konvoy Kubernetes rpm repository
