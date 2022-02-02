@@ -1,3 +1,7 @@
+# Alma linux
+alma_linux_extra_repo_base_url: https://repo.almalinux.org/almalinux/$releasever/extras/$basearch/os/
+alma_linux_extra_repo_mirror_list_url: https://mirrors.almalinux.org/mirrorlist/$releasever/extras
+alma_linux_gpg_key_url: https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
 # TODO: use overrides to set these
 kubernetes_rpm_repository_url: "https://packages.d2iq.com/konvoy/rpm/stable/centos/7/x86_64"
 kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
