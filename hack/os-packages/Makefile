@@ -70,12 +70,12 @@ rpm-artifacts-getter:
 
 .PHONY: download-rpm
 download-rpm: $(artifacts_dir)
-	docker run --rm -v "$(artifacts_dir):/opt/dkp/rpms/" -v /tmp/dnfcache:/var/cache/dnf -w /opt/dkp/rpms $(rpm_getter_image) \
+	docker run --rm -v "$(artifacts_dir):/opt/dkp/rpms/" --tmpfs /var/cache/dnf -w /opt/dkp/rpms $(rpm_getter_image) \
 	/bin/sh -c 'yumdownloader -y --setopt=skip_missing_names_on_install=False --destdir=. -x \*i686 --archlist=x86_64,noarch --resolve $(packages) && chown -R $(shell id -u):$(shell id -g) .'
 
 .PHONY: createrepo-centos
 createrepo-centos-%:
-	docker run --rm -v "$(artifacts_dir):/opt/dkp/rpms/" -v /tmp/dnfcache:/var/cache/dnf -w /opt/dkp/rpms $(rpm_getter_image) \
+	docker run --rm -v "$(artifacts_dir):/opt/dkp/rpms/" --tmpfs /var/cache/dnf -w /opt/dkp/rpms $(rpm_getter_image) \
 		/bin/sh -c 'createrepo -v . && chown -R $(shell id -u):$(shell id -g) repodata/'
 
 .PHONY: createrepo-redhat-7
@@ -83,7 +83,7 @@ createrepo-redhat-7: createrepo-centos-7
 
 .PHONY: createrepo-redhat-8
 createrepo-redhat-8:
-	docker run --rm -v "$(artifacts_dir):/opt/dkp/rpms/" -v /tmp/dnfcache:/var/cache/dnf -w /opt/dkp/rpms $(rpm_getter_image) \
+	docker run --rm -v "$(artifacts_dir):/opt/dkp/rpms/" --tmpfs /var/cache/dnf -w /opt/dkp/rpms $(rpm_getter_image) \
 		/bin/sh -c 'createrepo -v . && chown -R $(shell id -u):$(shell id -g) repodata/ && repo2module . --module-name offline && createrepo_mod .'
 
 .PHONY: clean-artifacts

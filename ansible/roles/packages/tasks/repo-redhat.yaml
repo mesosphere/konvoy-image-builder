@@ -1,4 +1,46 @@
 ---
+# The AppStream repo for Centos 8 is not available from centos mirror list.
+# AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
+# Alma linux's extra repository symlinks epel repository rpms. https://wiki.almalinux.org/repos/AlmaLinux.html
+# Why not RHEL repo?: RHEL is RHEL though the free subscription expires once a year.
+# it cannot be renewed until it does expire and then you have to re-register your systems to pick up the new subscription.
+# Also RHEL repos are missing some python3 rpms that we need.
+- name: add alma linux extra repository
+  yum_repository:
+    name: alma-linux-extra
+    description: Extra repository for alma linux
+    file: almalinux
+    baseurl: "{{ alma_linux_extra_repo_base_url }}"
+    mirrorlist: "{{ alma_linux_extra_repo_mirror_list_url }}"
+    enabled: yes
+    gpgkey: "{{ alma_linux_gpg_key_url }}"
+    gpgcheck: yes
+  when:
+    - ansible_distribution_major_version == '8'
+
+# epel-release for Centos/RHEL/Oracle 8 will be installed using Alma linux "extra" repository
+- name: install epel-release for RHEL 8.x
+  yum:
+    name: epel-release
+    state: present
+    disablerepo: appstream
+  when:
+    - ansible_distribution_major_version == '8'
+
+- name: add epel gpg key for centos 7
+  rpm_key:
+    state: present
+    key: "{{ epel_centos_7_rpm_gpg_key }}"
+  when:
+    - ansible_distribution_major_version == '7'
+
+- name: install epel-release for centos 7
+  yum:
+    name: "{{ epel_centos_7_rpm }}"
+    state: present
+  when:
+    - ansible_distribution_major_version == '7'
+
 # RPM
 - name: add Konvoy Kubernetes rpm repository
   yum_repository:

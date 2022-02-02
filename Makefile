@@ -188,22 +188,6 @@ centos7-nvidia: ## Build Centos 7 image with GPU support
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
 	--aws-instance-type p2.xlarge
 
-.PHONY: centos8
-centos8: build
-centos8: ## Build Centos 8 image
-	./bin/konvoy-image build images/ami/centos-8.yaml \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: centos8-nvidia
-centos8-nvidia: build
-centos8-nvidia: ## Build Centos 8 image with GPU support
-	./bin/konvoy-image build images/ami/centos-8.yaml \
-	-v ${VERBOSITY} \
-	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
-
 .PHONY: rhel82
 rhel82: build
 rhel82: ## Build RHEL 8.2 image
@@ -228,7 +212,7 @@ rhel82-fips: ## Build RHEL 8.2 FIPS image
 rhel82-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make rhel82-fips \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -247,7 +231,7 @@ rhel84-fips: ## Build RHEL 8.4 FIPS image
 rhel84-fips-offline: 
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make rhel84-fips \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -274,7 +258,7 @@ rhel79-fips: ## Build RHEL 7.9 FIPS image
 rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make rhel79-fips \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -557,7 +541,6 @@ endif
 # All tests run in parallel. Adjust parallelism with --jobs.
 # Output is interleaved when run in parallel. Use --output-sync=recurse to serialize output.
 ci.e2e.build.all: ci.e2e.build.centos-7
-ci.e2e.build.all: ci.e2e.build.centos-8
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
 ci.e2e.build.all: ci.e2e.build.sles-15
@@ -570,7 +553,6 @@ ci.e2e.build.all: e2e.build.rhel-8.2-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
 ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
-ci.e2e.build.all: ci.e2e.build.centos-8-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
 
 # Run an E2E test in its own devkit container.
@@ -588,8 +570,6 @@ e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline docker.clean-latest-ami
 
 e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline docker.clean-latest-ami
 
-e2e.build.centos-8: centos8 docker.clean-latest-ami
-
 e2e.build.ubuntu-18: ubuntu18 docker.clean-latest-ami
 
 e2e.build.ubuntu-20: ubuntu20 docker.clean-latest-ami
@@ -605,8 +585,6 @@ e2e.build.flatcar: flatcar docker.clean-latest-ami
 e2e.build.rhel-8-fips: rhel82-fips docker.clean-latest-ami
 
 e2e.build.centos-7-nvidia: centos7-nvidia docker.clean-latest-ami
-
-e2e.build.centos-8-nvidia: centos8-nvidia docker.clean-latest-ami
 
 e2e.build.sles-15-nvidia: sles15-nvidia docker.clean-latest-ami
 
@@ -638,7 +616,7 @@ release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 .PHONY: create-image-list
 create-image-list:
 	@rm -f images.out
-	@ansible-playbook ./ansible/list-images.yaml -e="@./images/common.yaml"
+	@ansible-playbook ./ansible/list-images.yaml -e="@./images/common.yaml" $(if $(EXTRA_VARS),-e="${EXTRA_VARS}")
 	@cat images.out
 
 artifacts/images:
@@ -646,6 +624,7 @@ artifacts/images:
 
 .PHONY: save-images
 save-images: artifacts/images
-save-images: create-image-list
+save-images:
+	$(MAKE) create-image-list $(if $(EXTRA_VARS),EXTRA_VARS=${EXTRA_VARS})
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
 	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)

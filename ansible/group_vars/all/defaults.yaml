@@ -26,7 +26,7 @@ package_versions:
 
 # variable used for seeding images
 k8s_image_registry: "k8s.gcr.io"
-
+coredns_image_registry_repository: "k8s.gcr.io/coredns/coredns"
 control_plane_images:
   - "docker.io/mesosphere/kfips:v{{ kfips_version }}"
 

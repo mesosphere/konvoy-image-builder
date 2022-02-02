@@ -11,7 +11,7 @@
 
     - docker_container:
         name: "{{ container_name }}"
-        image: docker.io/centos:8
+        image: docker.io/almalinux:8
         auto_remove: yes
         command: sleep 10m
 

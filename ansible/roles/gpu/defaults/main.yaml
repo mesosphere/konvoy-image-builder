@@ -40,8 +40,6 @@ rhel7_vulkan_repo_baseurl: http://mirror.centos.org/centos/7/os/$basearch/
 rhel7_vulkan_repo_gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
 
 epel_centos_7_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-epel_centos_8_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-epel_centos_8_rpm_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
 epel_centos_7_rpm_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
 
 suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansible_architecture }}
