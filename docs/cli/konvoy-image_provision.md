@@ -16,7 +16,7 @@ provision --inventory-file inventory.yaml
 
 ```
       --containerd-version string   the version of containerd to install
-      --extra-vars stringArray      flag passed Ansible's extra-vars
+      --extra-vars strings          flag passed Ansible's extra-vars
   -h, --help                        help for provision
       --inventory-file string       an ansible inventory defining your infrastructure
       --kubernetes-version string   The version of kubernetes to install. Example: 1.21.6

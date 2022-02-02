@@ -72,6 +72,8 @@ type BuildOptions struct {
 
 type UserArgs struct {
 	ClusterArgs
+	// ExtraVars provided to ansible
+	ExtraVars []string
 	// AMI options
 	SourceAMI        string   `json:"source_ami"`
 	AMIFilterName    string   `json:"ami_filter_name"`
@@ -89,6 +91,7 @@ type ClusterArgs struct {
 	ContainerdVersion string `json:"containerd_version" yaml:"containerd_version"`
 }
 
+//nolint:gocyclo // this will be refactored
 func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	config, err := loadYAML(initOptions.CommonConfigPath)
 	if err != nil {
@@ -138,6 +141,23 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	extraVarsPath, err := filepath.Abs(filepath.Join(workDir, ansibleVarsFilename))
 	if err != nil {
 		return "", InitConfigError("failed to get ansible variables path", err)
+	}
+
+	// merge extraVars passed through args into config -- which will
+	// show up in extraVarsPath
+	extraVarSet := make(map[string]interface{})
+	for _, extraVars := range initOptions.UserArgs.ExtraVars {
+		set := strings.Split(extraVars, "=")
+		//nolint:gomnd // the code is splitting on the equal
+		if len(set) == 2 {
+			k := set[0]
+			v := set[1]
+			extraVarSet[k] = v
+		}
+	}
+
+	if err = mergeMapsOverwrite(config, extraVarSet); err != nil {
+		return "", fmt.Errorf("error merging overrides: %w", err)
 	}
 
 	if err = initAnsibleConfig(extraVarsPath, config); err != nil {

@@ -20,6 +20,7 @@ generate --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yam
       --ami-users stringArray            a list AWS user accounts which are allowed use the image
       --aws-instance-type string         instance type used to build the AMI; the type must be present in the region in which the AMI is built
       --containerd-version string        the version of containerd to install
+      --extra-vars strings               flag passed Ansible's extra-vars
   -h, --help                             help for generate
       --kubernetes-version string        The version of kubernetes to install. Example: 1.21.6
       --overrides strings                a comma separated list of override YAML files
