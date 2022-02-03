@@ -531,9 +531,6 @@ define print-target
     @printf "Executing target: \033[36m$@\033[0m\n"
 endef
 
-docker.clean-latest-ami:
-	./test/scripts/clean-latest-ami.sh
-
 # requires ANSIBLE_PATH, otherwise run `make ci.e2e.ansible`
 e2e.ansible:
 	make -C test/e2e/ansible e2e
@@ -564,34 +561,34 @@ ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
 ci.e2e.build.%:
 	make devkit.run WHAT="make e2e.build.$*"
 
-e2e.build.centos-7: centos7 docker.clean-latest-ami
+e2e.build.centos-7: centos7
 
 # Run os-packages-artifacts outside devkit container.
-e2e.build.centos-7-offline: centos7-offline docker.clean-latest-ami infra.aws.destroy
+e2e.build.centos-7-offline: centos7-offline infra.aws.destroy
 
-e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline docker.clean-latest-ami infra.aws.destroy
+e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline infra.aws.destroy
 
-e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline docker.clean-latest-ami infra.aws.destroy
+e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline infra.aws.destroy
 
-e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline docker.clean-latest-ami infra.aws.destroy
+e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline infra.aws.destroy
 
-e2e.build.ubuntu-18: ubuntu18 docker.clean-latest-ami
+e2e.build.ubuntu-18: ubuntu18
 
-e2e.build.ubuntu-20: ubuntu20 docker.clean-latest-ami
+e2e.build.ubuntu-20: ubuntu20
 
-e2e.build.sles-15: sles15 docker.clean-latest-ami
+e2e.build.sles-15: sles15
 
-e2e.build.oracle-7: oracle7 docker.clean-latest-ami
+e2e.build.oracle-7: oracle7
 
-e2e.build.oracle-8: oracle8 docker.clean-latest-ami
+e2e.build.oracle-8: oracle8
 
-e2e.build.flatcar: flatcar docker.clean-latest-ami
+e2e.build.flatcar: flatcar
 
-e2e.build.rhel-8-fips: rhel82-fips docker.clean-latest-ami
+e2e.build.rhel-8-fips: rhel82-fips
 
-e2e.build.centos-7-nvidia: centos7-nvidia docker.clean-latest-ami
+e2e.build.centos-7-nvidia: centos7-nvidia
 
-e2e.build.sles-15-nvidia: sles15-nvidia docker.clean-latest-ami
+e2e.build.sles-15-nvidia: sles15-nvidia
 
 # use sibling containers to handle dependencies and avoid DinD
 ci.e2e.ansible:
