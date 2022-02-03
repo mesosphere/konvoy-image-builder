@@ -12,6 +12,7 @@ import (
 
 type RenderOptions struct {
 	SourceAMIDefined bool
+	DryRun           bool
 }
 
 var packerManifests = map[string][]byte{

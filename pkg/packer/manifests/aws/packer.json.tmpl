@@ -50,6 +50,9 @@
         "most_recent": true
       },
       ((- end ))
+      ((- if .DryRun ))
+      "skip_create_ami": true,
+      ((- end ))
       "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}",
       "snapshot_tags": {
         "ami_name": "konvoy-ami-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}"
