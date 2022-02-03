@@ -68,6 +68,7 @@ type BuildOptions struct {
 	PackerPath         string
 	PackerBuildFlags   packer.BuildFlags
 	CustomManifestPath string
+	DryRun             bool
 }
 
 type UserArgs struct {
