@@ -82,6 +82,8 @@ RUN apt-get update \
         openssl \
         openssh-client \
         python3 \
+        unzip \
+        gettext-base \
         python3-cryptography \
         python3-pip \
         python3-setuptools \
@@ -95,6 +97,8 @@ RUN apt-get update \
         /root/.cache \
         /var/lib/apt/lists/*
 
+# hadolint ignore=DL3059,DL4006
+RUN  curl -fsSL https://goss.rocks/install | GOSS_VER=v0.3.16 GOSS_DST=/usr/local/bin sh
 COPY --from=packer /bin/packer /usr/local/bin/
 COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
 COPY --from=goreleaser /usr/local/bin/goreleaser /usr/local/bin/

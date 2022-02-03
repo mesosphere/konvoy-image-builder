@@ -16,7 +16,7 @@ GROUP_NAME ?= $(shell id -g -n)
 
 COVERAGE ?= $(REPO_ROOT_DIR)/coverage
 
-VERBOSITY ?= 6
+VERBOSITY ?= 0
 
 INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
@@ -119,6 +119,7 @@ endif
 
 include hack/os-packages/Makefile
 include hack/pip-packages/Makefile
+include test/infra/aws/Makefile
 
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 	docker build \
@@ -176,8 +177,9 @@ centos7-offline: ## Build Centos 7 image
 	$(MAKE) os_distribution=centos os_distribution_major_version=7 fips=0 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make centos7 \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: centos7-nvidia
 centos7-nvidia: build
@@ -213,8 +215,9 @@ rhel82-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make rhel82-fips \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel84
 rhel84: build
@@ -228,12 +231,13 @@ rhel84-fips: ## Build RHEL 8.4 FIPS image
 	$(MAKE) rhel84 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel84-fips-offline
-rhel84-fips-offline: 
+rhel84-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make rhel84-fips \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel84-nvidia
 rhel84-nvidia: build
@@ -259,8 +263,9 @@ rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 fips=1 os-packages-artifacts
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make rhel79-fips \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel79-nvidia
 rhel79-nvidia: build
@@ -562,13 +567,13 @@ ci.e2e.build.%:
 e2e.build.centos-7: centos7 docker.clean-latest-ami
 
 # Run os-packages-artifacts outside devkit container.
-e2e.build.centos-7-offline: centos7-offline docker.clean-latest-ami
+e2e.build.centos-7-offline: centos7-offline docker.clean-latest-ami infra.aws.destroy
 
-e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline docker.clean-latest-ami
+e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline docker.clean-latest-ami infra.aws.destroy
 
-e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline docker.clean-latest-ami
+e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline docker.clean-latest-ami infra.aws.destroy
 
-e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline docker.clean-latest-ami
+e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline docker.clean-latest-ami infra.aws.destroy
 
 e2e.build.ubuntu-18: ubuntu18 docker.clean-latest-ami
 

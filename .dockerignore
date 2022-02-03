@@ -2,3 +2,5 @@
 .git
 dist/
 *.swp
+work/
+ansible-runs/

@@ -22,6 +22,7 @@
     "snapshot_users": "",
     "subnet_id": "",
     "vpc_id": "",
+    "security_group_id":  "",
     "volume_size": "20",
     "extra_vars_file": "",
     "build_name": "",
@@ -71,6 +72,7 @@
       "ssh_username": "{{user `ssh_username`}}",
       "vpc_id": "{{ user `vpc_id` }}",
       "subnet_id": "{{ user `subnet_id` }}",
+      "security_group_id": "{{ user `security_group_id` }}",
       "tags": {
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
@@ -163,6 +165,19 @@
       "execute_command": "BUILD_NAME={{ user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
     },
     {
+      "type": "shell",
+      "inline": [
+        "mkdir -p /tmp/.goss-dir"
+      ]
+    },
+    {
+        "type": "file",
+        "source": "/usr/local/bin/goss",
+        "destination": "/tmp/.goss-dir/goss",
+        "direction": "upload",
+        "max_retries": 10
+    },
+    {
       "type": "ansible",
       "playbook_file": "./ansible/provision.yaml",
       "user": "{{user `ssh_username`}}",
@@ -181,6 +196,8 @@
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
       "inspect": "{{user `goss_inspect_mode`}}",
+      "skip_install": true,
+      "download_path": "/tmp/.goss-dir/goss",
       "type": "goss",
       "tests": [
         "{{user `goss_tests_dir`}}"
@@ -202,6 +219,12 @@
         "no_proxy": "{{user `no_proxy`}}"
       },
       "version": "{{user `goss_version`}}"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "rm -r  /tmp/.goss-dir"
+      ]
     }
   ],
   "post-processors": [

@@ -35,6 +35,8 @@
   yum:
     autoremove: true
     lock_timeout: 60
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
 
 - name: Remove yum package lists
   command: "{{ sysusr_prefix }}/bin/yum -y clean all"
