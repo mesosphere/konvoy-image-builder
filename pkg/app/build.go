@@ -68,6 +68,7 @@ type BuildOptions struct {
 	PackerPath         string
 	PackerBuildFlags   packer.BuildFlags
 	CustomManifestPath string
+	DryRun             bool
 }
 
 type UserArgs struct {
@@ -210,7 +211,10 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 		if builderType == "" {
 			return BuildError(fmt.Sprintf("%s is not defined in image manifest", packerBuilderTypeKey))
 		}
-		opts := packer.RenderOptions{SourceAMIDefined: isSourceAMIProvided(config)}
+		opts := packer.RenderOptions{
+			SourceAMIDefined: isSourceAMIProvided(config),
+			DryRun:           buildOptions.DryRun,
+		}
 
 		var data []byte
 		data, err = packer.GetManifest(builderType, &opts)
