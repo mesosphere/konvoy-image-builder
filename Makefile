@@ -5,6 +5,9 @@ OS := $(shell uname -s)
 
 INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
+# BUILD_DRY_RUN determines the value of the --dry-run flag of the build command. Should be 'true' or 'false'.
+BUILD_DRY_RUN := true
+
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
 export REPO_REV := $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
@@ -169,6 +172,7 @@ devkit.run: devkit
 centos7: build
 centos7: ## Build Centos 7 image
 	./bin/konvoy-image build images/ami/centos-7.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -185,6 +189,7 @@ centos7-offline: ## Build Centos 7 image
 centos7-nvidia: build
 centos7-nvidia: ## Build Centos 7 image with GPU support
 	./bin/konvoy-image build images/ami/centos-7.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
@@ -194,6 +199,7 @@ centos7-nvidia: ## Build Centos 7 image with GPU support
 rhel82: build
 rhel82: ## Build RHEL 8.2 image
 	./bin/konvoy-image build images/ami/rhel-82.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -201,6 +207,7 @@ rhel82: ## Build RHEL 8.2 image
 rhel82-nvidia: build
 rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
 	./bin/konvoy-image build images/ami/rhel-82.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
@@ -223,6 +230,7 @@ rhel82-fips-offline:
 rhel84: build
 rhel84: ## Build RHEL 8.4 image
 	./bin/konvoy-image build images/ami/rhel-84.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -243,6 +251,7 @@ rhel84-fips-offline:
 rhel84-nvidia: build
 rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
 	./bin/konvoy-image build images/ami/rhel-84.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
 	--aws-instance-type p2.xlarge
@@ -251,6 +260,7 @@ rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
 rhel79: build
 rhel79: ## Build RHEL 7.9 image
 	./bin/konvoy-image build images/ami/rhel-79.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -271,6 +281,7 @@ rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
 rhel79-nvidia: build
 rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
 	./bin/konvoy-image build images/ami/rhel-79.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 	--aws-instance-type p2.xlarge
@@ -279,6 +290,7 @@ rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
 sles15: build
 sles15: ## Build SLES 15 image
 	./bin/konvoy-image build images/ami/sles-15.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -286,6 +298,7 @@ sles15: ## Build SLES 15 image
 sles15-nvidia: build
 sles15-nvidia: ## Build SLES 15 image with GPU support
 	./bin/konvoy-image build images/ami/sles-15.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
@@ -298,6 +311,7 @@ flatcar-version.yaml:
 flatcar: build flatcar-version.yaml
 flatcar: ## Build flatcar image
 	./bin/konvoy-image build images/ami/flatcar.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=flatcar-version.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
@@ -306,6 +320,7 @@ flatcar: ## Build flatcar image
 flatcar-nvidia: build flatcar-version.yaml
 flatcar-nvidia: ## Build flatcar image with GPU support
 	./bin/konvoy-image build images/ami/flatcar.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
@@ -315,6 +330,7 @@ flatcar-nvidia: ## Build flatcar image with GPU support
 ubuntu18: build
 ubuntu18: ## Build Ubuntu 20 image
 	./bin/konvoy-image build images/ami/ubuntu-18.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -322,6 +338,7 @@ ubuntu18: ## Build Ubuntu 20 image
 ubuntu20: build
 ubuntu20: ## Build Ubuntu 20 image
 	./bin/konvoy-image build images/ami/ubuntu-20.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -329,6 +346,7 @@ ubuntu20: ## Build Ubuntu 20 image
 ubuntu20-nvidia: build
 ubuntu20-nvidia: ## Build Ubuntu 20 image with GPU support
 	./bin/konvoy-image build images/ami/ubuntu-20.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
@@ -338,6 +356,7 @@ ubuntu20-nvidia: ## Build Ubuntu 20 image with GPU support
 oracle7: build
 oracle7: ## Build Oracle Linux 7 image
 	./bin/konvoy-image build images/ami/oracle-7.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
@@ -345,6 +364,7 @@ oracle7: ## Build Oracle Linux 7 image
 oracle8: build
 oracle8: ## Build Oracle Linux 8 image
 	./bin/konvoy-image build images/ami/oracle-8.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
