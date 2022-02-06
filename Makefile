@@ -182,7 +182,7 @@ centos7-offline: ## Build Centos 7 image
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make centos7 \
+	$(MAKE) devkit.run WHAT="make centos7 BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: centos7-nvidia
@@ -223,7 +223,7 @@ rhel82-fips-offline:
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make rhel82-fips \
+	$(MAKE) devkit.run WHAT="make rhel82-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel84
@@ -244,7 +244,7 @@ rhel84-fips-offline:
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make rhel84-fips \
+	$(MAKE) devkit.run WHAT="make rhel84-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel84-nvidia
@@ -274,7 +274,7 @@ rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make rhel79-fips \
+	$(MAKE) devkit.run WHAT="make rhel79-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel79-nvidia

@@ -62,11 +62,16 @@
         [keyfile]
         unmanaged-devices=interface-name:cali*;interface-name:tunl*;interface-name:vxlan.calico;interface-name:wireguard.cali
 
+  - name: populate service facts
+    ansible.builtin.service_facts:
+
+  # workaround to prevent conflicting route table entry: https://github.com/projectcalico/calico/issues/4662
   - name: stop and disable nm-cloud-setup services
     service:
       name: "{{ item }}"
       state: stopped
       enabled: false
+    when: "item in services"
     with_items:
       - nm-cloud-setup.timer
       - nm-cloud-setup.service
