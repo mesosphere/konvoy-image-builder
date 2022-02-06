@@ -6,7 +6,7 @@ OS := $(shell uname -s)
 INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
 # BUILD_DRY_RUN determines the value of the --dry-run flag of the build command. Should be 'true' or 'false'.
-BUILD_DRY_RUN := true
+BUILD_DRY_RUN ?= true
 
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(dir $(root_mkfile_path))

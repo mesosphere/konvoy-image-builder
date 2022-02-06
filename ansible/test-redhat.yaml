@@ -1,0 +1,45 @@
+---
+- hosts: localhost
+  name: Setup Container
+  gather_facts: false
+  tags:
+    debug
+  tasks:
+    - set_fact:
+        container_name: "{{
+          lookup('password', '/dev/null chars=ascii_letters')
+        }}"
+
+    - docker_container:
+        name: "{{ container_name }}"
+        image: registry.access.redhat.com/ubi8/ubi:8.2
+        auto_remove: yes
+        command: sleep 10m
+
+    - add_host:
+        name: "{{ container_name }}"
+        ansible_connection: docker
+        changed_when: false
+        ansible_python_interpreter: /usr/libexec/platform-python
+
+- hosts: "{{ hostvars['localhost'].container_name }}"
+  roles:
+    #- role: packages
+    #- role: version
+    #- role: gpu
+    #- role: config
+    #- role: networking
+    #- role: providers
+    #- role: images
+    #  when: download_images
+    - role: sysprep
+      when: sysprep # make the finalize process skipable
+
+  
+- hosts: localhost
+  name: Remove Container
+  tasks:
+    - docker_container:
+        name: "{{ container_name }}"
+        state: absent
+        force_kill: yes

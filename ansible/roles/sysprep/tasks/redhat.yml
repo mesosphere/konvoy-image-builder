@@ -44,6 +44,33 @@
 - name: Reset network interface IDs
   shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
 
+
+- name: configure NetworkManager on RHEL 8.x
+  when: ansible_distribution_major_version == '8'
+  block:
+  - name: ensure NetworkManager's conf.d directory exists
+    file:
+      path: /etc/NetworkManager/conf.d
+      state: directory
+
+  # prevent NetworkManager to create conflicting entries in the routing table.
+  # https://projectcalico.docs.tigera.io/maintenance/troubleshoot/troubleshooting#configure-networkmanager
+  - name: configure network manager to prevent it from interfearing with interfaces
+    copy:
+      dest: /etc/NetworkManager/conf.d/calico.conf
+      content: |
+        [keyfile]
+        unmanaged-devices=interface-name:cali*;interface-name:tunl*;interface-name:vxlan.calico;interface-name:wireguard.cali
+
+  - name: stop and disable nm-cloud-setup services
+    service:
+      name: "{{ item }}"
+      state: stopped
+      enabled: false
+    with_items:
+      - nm-cloud-setup.timer
+      - nm-cloud-setup.service
+
 - name: Remove the kickstart log
   file:
     state: absent
