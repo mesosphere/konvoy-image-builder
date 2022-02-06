@@ -57,6 +57,13 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--env AWS_DEFAULT_REGION \
 	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
 
+export DOCKER_DEVKIT_AZURE_ARGS ?= \
+	--env AZURE_LOCATION \
+	--env AZURE_CLIENT_ID \
+	--env AZURE_CLIENT_SECRET \
+	--env AZURE_SUBSCRIPTION_ID \
+	--volume "$(HOME)/.azure":"/home/$(USER_NAME)/.azure"
+
 export DOCKER_DEVKIT_VSPHERE_ARGS ?= \
 	--env VSPHERE_SERVER \
 	--env VSPHERE_USERNAME \
@@ -101,6 +108,7 @@ export DOCKER_DEVKIT_ARGS ?= \
 	--workdir /kib \
 	$(DOCKER_SOCKET_ARGS) \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
+	$(DOCKER_DEVKIT_AZURE_ARGS) \
 	$(DOCKER_DEVKIT_VSPHERE_ARGS) \
 	$(DOCKER_DEVKIT_PUSH_ARGS) \
 	$(DOCKER_DEVKIT_ENV_ARGS) \
