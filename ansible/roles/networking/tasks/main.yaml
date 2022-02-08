@@ -1,124 +1,157 @@
-  - name: load br_netfilter kernel module
-    modprobe:
-      name: br_netfilter
-      state: present
-    register: br_netfilter
+- name: load br_netfilter kernel module
+  modprobe:
+    name: br_netfilter
+    state: present
+  register: br_netfilter
 
-  - name: persist br_netfilter kernel module
+- name: persist br_netfilter kernel module
+  copy:
+    dest: /etc/modules-load.d/konvoy-br_netfilter.conf
+    content: br_netfilter
+
+- name: set bridge-nf-call-iptables to 1
+  sysctl:
+    name: "{{ item }}"
+    state: present
+    value: "1"
+    sysctl_file: /etc/sysctl.d/bridge-nf-call.conf
+    reload: yes
+  with_items:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+
+- name: set net.ipv4.ip_forward to 1
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_file: /etc/sysctl.d/ipv4-ip_forward.conf
+    state: present
+    reload: yes
+
+- name: set net.ipv6.conf.all.forwarding to 1
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    sysctl_file: /etc/sysctl.d/ipv6-forwarding.conf
+    state: present
+    reload: yes
+
+- name: Check if iptables service exists
+  command: systemctl cat iptables
+  check_mode: no
+  register: iptables_exists
+  changed_when: False
+  failed_when: iptables_exists.rc not in [0, 1]
+  when:
+    - disable_iptables | default(true)
+    - ansible_os_family != "Flatcar"
+
+- name: Stop and disable defualt iptables service
+  systemd:
+    name: iptables
+    enabled: false
+    masked: false
+    state: stopped
+  when:
+    - ansible_os_family != "Flatcar"
+    - disable_iptables | default(true)
+    - iptables_exists.rc == 0
+
+- name: add iptable ALLOW rules for control-plane
+  iptables:
+    chain: INPUT
+    destination_port: "{{ item.port }}"
+    protocol: tcp
+    jump: ACCEPT
+    comment: "{{ item.comment }}"
+  with_items:
+    - port: "{{ apiserver_port }}"
+      comment: "Konvoy: kube-apiserver --secure-port"
+    - port: 10250
+      comment: "Konvoy: kubelet --port"
+    - port: 10248
+      comment: "Konvoy: kubelet --healthz-port"
+    - port: 10249
+      comment: "Konvoy: kube-proxy --metrics-bind-address"
+    - port: 10256
+      comment: "Konvoy: kube-proxy --healthz-port"
+    - port: 10257
+      comment: "Konvoy: kube-controller-manager --secure-port"
+    - port: 10259
+      comment: "Konvoy: kube-scheduler --secure-port"
+    - port: 2379
+      comment: "Konvoy: etcd client"
+    - port: 2380
+      comment: "Konvoy: etcd peer"
+    - port: 9091
+      comment: "Konvoy: calico-node felix (used for metrics)"
+    - port: 9092
+      comment: "Konvoy: calico-node bird (used for metrics)"
+    - port: 9099
+      comment: "Konvoy: calico-node felix (used for liveness)"
+    - port: 179
+      comment: "Konvoy: calico-node BGP"
+    - port: 30000:32767
+      comment: "Konvoy: NodePorts"
+    - port: 5473
+      comment: "Konvoy: calico-typha (used for syncserver)"
+    - port: 9093
+      comment: "Konvoy: calico-typha (used for metrics)"
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+  when:
+    - apply_iptables_rules | default(false)
+
+- name: add iptable ALLOW rules for ICMP
+  iptables:
+    chain: INPUT
+    protocol: icmp
+    icmp_type: echo-request
+    jump: ACCEPT
+    comment: "Konvoy: ICMP"
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+  when:
+    - allow_icmp | default(false)
+
+- name: configure NetworkManager on RHEL 8.x
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == '8'
+  block:
+  - name: ensure NetworkManager's conf.d directory exists
+    file:
+      path: /etc/NetworkManager/conf.d
+      state: directory
+
+  # prevent NetworkManager to create conflicting entries in the routing table.
+  # https://projectcalico.docs.tigera.io/maintenance/troubleshoot/troubleshooting#configure-networkmanager
+  - name: configure network manager to prevent it from interfering with interfaces
     copy:
-      dest: /etc/modules-load.d/konvoy-br_netfilter.conf
-      content: br_netfilter
+      dest: /etc/NetworkManager/conf.d/calico.conf
+      content: |
+        [keyfile]
+        unmanaged-devices=interface-name:cali*;interface-name:tunl*;interface-name:vxlan.calico;interface-name:wireguard.cali
 
-  - name: set bridge-nf-call-iptables to 1
-    sysctl:
+  - name: populate service facts
+    ansible.builtin.service_facts:
+
+  # workaround to prevent conflicting route table entry: https://github.com/projectcalico/calico/issues/4662
+  - name: stop and disable nm-cloud-setup services
+    service:
       name: "{{ item }}"
-      state: present
-      value: "1"
-      sysctl_file: /etc/sysctl.d/bridge-nf-call.conf
-      reload: yes
-    with_items:
-      - net.bridge.bridge-nf-call-ip6tables
-      - net.bridge.bridge-nf-call-iptables
-
-  - name: set net.ipv4.ip_forward to 1
-    sysctl:
-      name: net.ipv4.ip_forward
-      value: "1"
-      sysctl_file: /etc/sysctl.d/ipv4-ip_forward.conf
-      state: present
-      reload: yes
-
-  - name: set net.ipv6.conf.all.forwarding to 1
-    sysctl:
-      name: net.ipv6.conf.all.forwarding
-      value: "1"
-      sysctl_file: /etc/sysctl.d/ipv6-forwarding.conf
-      state: present
-      reload: yes
-
-  - name: Check if iptables service exists
-    command: systemctl cat iptables
-    check_mode: no
-    register: iptables_exists
-    changed_when: False
-    failed_when: iptables_exists.rc not in [0, 1]
-    when:
-      - disable_iptables | default(true)
-      - ansible_os_family != "Flatcar"
-
-  - name: Stop and disable defualt iptables service
-    systemd:
-      name: iptables
-      enabled: false
-      masked: false
       state: stopped
-    when:
-      - ansible_os_family != "Flatcar"
-      - disable_iptables | default(true)
-      - iptables_exists.rc == 0
-
-  - name: add iptable ALLOW rules for control-plane
-    iptables:
-      chain: INPUT
-      destination_port: "{{ item.port }}"
-      protocol: tcp
-      jump: ACCEPT
-      comment: "{{ item.comment }}"
+      enabled: false
+    when: "item in services"
     with_items:
-      - port: "{{ apiserver_port }}"
-        comment: "Konvoy: kube-apiserver --secure-port"
-      - port: 10250
-        comment: "Konvoy: kubelet --port"
-      - port: 10248
-        comment: "Konvoy: kubelet --healthz-port"
-      - port: 10249
-        comment: "Konvoy: kube-proxy --metrics-bind-address"
-      - port: 10256
-        comment: "Konvoy: kube-proxy --healthz-port"
-      - port: 10257
-        comment: "Konvoy: kube-controller-manager --secure-port"
-      - port: 10259
-        comment: "Konvoy: kube-scheduler --secure-port"
-      - port: 2379
-        comment: "Konvoy: etcd client"
-      - port: 2380
-        comment: "Konvoy: etcd peer"
-      - port: 9091
-        comment: "Konvoy: calico-node felix (used for metrics)"
-      - port: 9092
-        comment: "Konvoy: calico-node bird (used for metrics)"
-      - port: 9099
-        comment: "Konvoy: calico-node felix (used for liveness)"
-      - port: 179
-        comment: "Konvoy: calico-node BGP"
-      - port: 30000:32767
-        comment: "Konvoy: NodePorts"
-      - port: 5473
-        comment: "Konvoy: calico-typha (used for syncserver)"
-      - port: 9093
-        comment: "Konvoy: calico-typha (used for metrics)"
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
-    when:
-      - apply_iptables_rules | default(false)
+      - nm-cloud-setup.timer
+      - nm-cloud-setup.service
 
-  - name: add iptable ALLOW rules for ICMP
-    iptables:
-      chain: INPUT
-      protocol: icmp
-      icmp_type: echo-request
-      jump: ACCEPT
-      comment: "Konvoy: ICMP"
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
-    when:
-      - allow_icmp | default(false)
-
-  - name: copy /etc/host.conf
-    copy:
-      src: host.conf
-      dest: /etc/host.conf
+- name: copy /etc/host.conf
+  copy:
+    src: host.conf
+    dest: /etc/host.conf
