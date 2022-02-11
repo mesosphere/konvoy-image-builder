@@ -74,8 +74,9 @@
 # The NetworkManager bug in RHEL 8.4 (https://bugzilla.redhat.com/show_bug.cgi?id=2007341) adds conflicting entry in route table
 # the conflicting entry hijacks traffic from host to containers.
 # Until the fix is available in upstream RHEL 8.X AMI, configure the nm-cloud-setup to prevent adding conflicting entry in route table in AWS.
-- name: configure NetworkManager-cloud-setup service to disable cloud setup on RHEL 8.x
+- name: configure NetworkManager-cloud-setup service to disable cloud setup on RHEL 8.x on AWS
   when:
+    - packer_builder_type.startswith('amazon')
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version == '8'
   block:
