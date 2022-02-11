@@ -1,5 +1,0 @@
-[containerd-fips]
-baseurl = https://containerd-fips.s3.us-east-2.amazonaws.com/7/x86_64
-gpgcheck = 1
-gpgkey = https://containerd-fips.s3.us-east-2.amazonaws.com/7/x86_64/gpg.asc
-name = FIPS enabled containerd package repository
