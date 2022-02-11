@@ -57,6 +57,40 @@
     - disable_iptables | default(true)
     - iptables_exists.rc == 0
 
+- name: ensure NetworkManager's conf.d directory exists
+  file:
+    path: /etc/NetworkManager/conf.d
+    state: directory
+
+# prevent NetworkManager to create conflicting entries in the routing table.
+# https://projectcalico.docs.tigera.io/maintenance/troubleshoot/troubleshooting#configure-networkmanager
+- name: configure network manager to prevent it from interfering with calico interfaces
+  copy:
+    dest: /etc/NetworkManager/conf.d/calico.conf
+    content: |
+      [keyfile]
+      unmanaged-devices=interface-name:cali*;interface-name:tunl*;interface-name:vxlan.calico;interface-name:wireguard.cali
+
+# The NetworkManager bug in RHEL 8.4 (https://bugzilla.redhat.com/show_bug.cgi?id=2007341) adds conflicting entry in route table
+# the conflicting entry hijacks traffic from host to containers.
+# Until the fix is available in upstream RHEL 8.X AMI, configure the nm-cloud-setup to prevent adding conflicting entry in route table in AWS.
+- name: configure NetworkManager-cloud-setup service to disable cloud setup on RHEL 8.x on AWS
+  when:
+    - packer_builder_type.startswith('amazon')
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == '8'
+  block:
+  - name: ensure /etc/systemd/system/nm-cloud-setup.service.d exists
+    file:
+      path: /etc/systemd/system/nm-cloud-setup.service.d
+      state: directory
+  - name: create drop-in to disable nm-cloud-setup for AWS
+    copy:
+      dest: /etc/systemd/system/nm-cloud-setup.service.d/override.conf
+      content: |
+        [Service]
+        Environment=NM_CLOUD_SETUP_EC2=no
+
 - name: add iptable ALLOW rules for control-plane
   iptables:
     chain: INPUT
@@ -117,39 +151,6 @@
   delay: 3
   when:
     - allow_icmp | default(false)
-
-- name: configure NetworkManager on RHEL 8.x
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version == '8'
-  block:
-  - name: ensure NetworkManager's conf.d directory exists
-    file:
-      path: /etc/NetworkManager/conf.d
-      state: directory
-
-  # prevent NetworkManager to create conflicting entries in the routing table.
-  # https://projectcalico.docs.tigera.io/maintenance/troubleshoot/troubleshooting#configure-networkmanager
-  - name: configure network manager to prevent it from interfering with interfaces
-    copy:
-      dest: /etc/NetworkManager/conf.d/calico.conf
-      content: |
-        [keyfile]
-        unmanaged-devices=interface-name:cali*;interface-name:tunl*;interface-name:vxlan.calico;interface-name:wireguard.cali
-
-  - name: populate service facts
-    ansible.builtin.service_facts:
-
-  # workaround to prevent conflicting route table entry: https://github.com/projectcalico/calico/issues/4662
-  - name: stop and disable nm-cloud-setup services
-    service:
-      name: "{{ item }}"
-      state: stopped
-      enabled: false
-    when: "item in services"
-    with_items:
-      - nm-cloud-setup.timer
-      - nm-cloud-setup.service
 
 - name: copy /etc/host.conf
   copy:
