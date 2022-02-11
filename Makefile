@@ -120,7 +120,6 @@ ifneq ($(shell command -v docker),)
 	endif
 endif
 
-include hack/os-packages/Makefile
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 
@@ -178,7 +177,7 @@ centos7: ## Build Centos 7 image
 
 .PHONY: centos7-offline
 centos7-offline: ## Build Centos 7 image
-	$(MAKE) os_distribution=centos os_distribution_major_version=7 fips=0 os-packages-artifacts
+	$(MAKE) os_distribution=centos os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
@@ -219,7 +218,7 @@ rhel82-fips: ## Build RHEL 8.2 FIPS image
 
 .PHONY: rhel82-fips-offline
 rhel82-fips-offline:
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
@@ -240,7 +239,7 @@ rhel84-fips: ## Build RHEL 8.4 FIPS image
 
 .PHONY: rhel84-fips-offline
 rhel84-fips-offline:
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 fips=1 os-packages-artifacts
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
@@ -270,7 +269,7 @@ rhel79-fips: ## Build RHEL 7.9 FIPS image
 
 .PHONY: rhel79-fips-offline
 rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
-	$(MAKE) os_distribution=redhat os_distribution_major_version=7 fips=1 os-packages-artifacts
+	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
@@ -385,11 +384,11 @@ ci: ## CI build
 ci: dev diff
 
 .PHONY: clean
-clean: clean-artifacts
 clean: ## remove files created during build
 	$(call print-target)
 	rm -rf bin
 	rm -rf dist
+	rm -rf artifacts
 	rm -rf "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 	rm -f flatcar-version.yaml
 	rm -f $(COVERAGE)*
@@ -583,7 +582,6 @@ ci.e2e.build.%:
 
 e2e.build.centos-7: centos7
 
-# Run os-packages-artifacts outside devkit container.
 e2e.build.centos-7-offline: centos7-offline infra.aws.destroy
 
 e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline infra.aws.destroy
@@ -650,3 +648,10 @@ save-images:
 	$(MAKE) create-image-list $(if $(EXTRA_VARS),EXTRA_VARS=${EXTRA_VARS})
 	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
 	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)
+
+OS_PACKAGES_BUNDLE_URL = konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
+
+.PHONY: download-os-packages-bundle
+download-os-packages-bundle:
+	mkdir -p artifacts/
+	curl -o artifacts/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(OS_PACKAGES_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
