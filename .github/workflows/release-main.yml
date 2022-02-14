@@ -3,12 +3,14 @@
   push:
     branches:
       - main
+
 name: release-please
 jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v3
+      - uses: google-github-actions/release-please-action@v3
+        id: release-please
         with:
           release-type: go
           package-name: konvoy-image-builder
@@ -18,3 +20,30 @@ jobs:
               {"type":"fix","section":"Bug Fixes","hidden":false},
               {"type":"chore","section":"Miscellaneous","hidden":true}
             ]
+
+      - if: ${{ steps.release-please.outputs.release_created }}
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - if: ${{ steps.release-please.outputs.release_created }}
+        name: Snapshot
+        run: make devkit.run
+        env:
+          WHAT: make build.snapshot
+
+      - if: ${{ steps.release-please.outputs.release_created }}
+        name: Docker Login
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: mesosphereci
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - if: ${{ steps.release-please.outputs.release_created }}
+        name: Release
+        run: make devkit.run
+        env:
+          DOCKER_CLI_EXPERIMENTAL: "enabled"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WHAT: make release
