@@ -4,6 +4,10 @@ before:
     - go mod download
     - go mod tidy
 
+# NOTE(jkoelker) the changelog is managed by `release-please`
+changelog:
+  skip: true
+
 builds:
   - main: ./cmd/konvoy-image/main.go
     id: konvoy-image
