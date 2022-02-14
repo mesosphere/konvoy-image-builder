@@ -1,5 +1,0 @@
-[kubernetes-fips]
-name=FIPS enabled Konvoy Kubernetes package repository
-baseurl=https://kubernetes-fips.s3.us-east-2.amazonaws.com/7/x86_64
-gpgcheck=1
-gpgkey=https://kubernetes-fips.s3.us-east-2.amazonaws.com/7/rpm-gpg-pub-key
