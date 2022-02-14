@@ -13,6 +13,7 @@ var (
 	ErrKubernetesVersionMissing = errors.New("necessary kubernetes_version key missing")
 	ErrPathNotString            = errors.New("path value is not a string")
 	ErrPathNotSlice             = errors.New("path value is not a slice")
+	ErrConfigRequired           = errors.New("config value is required")
 )
 
 func InitConfigError(op string, err error) error {

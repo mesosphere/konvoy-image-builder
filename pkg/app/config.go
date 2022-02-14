@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/mitchellh/pointerstructure"
@@ -26,6 +28,57 @@ const (
 	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file" //nolint:gosec // just a key
 
 )
+
+// NOTE(jkoelker) `strval` and `strslice` are taken from https://github.com/Masterminds/sprig.
+func strval(v interface{}) string {
+	switch v := v.(type) {
+	case string:
+		return v
+	case []byte:
+		return string(v)
+	case error:
+		return v.Error()
+	case fmt.Stringer:
+		return v.String()
+	default:
+		return fmt.Sprintf("%v", v)
+	}
+}
+
+func strslice(v interface{}) ([]string, error) {
+	switch v := v.(type) {
+	case []string:
+		return v, nil
+	case []interface{}:
+		b := make([]string, 0, len(v))
+		for _, s := range v {
+			if s != nil {
+				b = append(b, strval(s))
+			}
+		}
+		return b, nil
+	default:
+		val := reflect.ValueOf(v)
+		switch val.Kind() {
+		case reflect.Array, reflect.Slice:
+			l := val.Len()
+			b := make([]string, 0, l)
+			for i := 0; i < l; i++ {
+				value := val.Index(i).Interface()
+				if value != nil {
+					b = append(b, strval(value))
+				}
+			}
+			return b, nil
+		default:
+			if v == nil {
+				return nil, nil
+			}
+
+			return nil, ErrPathNotSlice
+		}
+	}
+}
 
 type Config map[string]interface{}
 
@@ -48,12 +101,12 @@ func (config Config) GetSliceWithError(path string) ([]string, error) {
 		return nil, err
 	}
 
-	str, ok := value.([]string)
-	if !ok {
-		return nil, fmt.Errorf("error %s is not a slice: %w", path, ErrPathNotSlice)
+	slice, err := strslice(value)
+	if err != nil {
+		return nil, fmt.Errorf("error %s is not a string slice (%T): %w", path, value, err)
 	}
 
-	return str, nil
+	return slice, nil
 }
 
 func (config Config) GetWithError(path string) (string, error) {
@@ -77,6 +130,20 @@ func (config Config) Get(path string) string {
 	}
 
 	return str
+}
+
+func (config Config) GetWithEnvironment(path string, environmentVariable string) (string, error) {
+	value, ok := os.LookupEnv(environmentVariable)
+	if ok {
+		return value, nil
+	}
+
+	value, err := config.GetWithError(path)
+	if err != nil {
+		return "", fmt.Errorf("error getting %s from config: %w", path, err)
+	}
+
+	return value, nil
 }
 
 func (config Config) Set(path string, value interface{}) error {
@@ -171,20 +238,24 @@ func EnrichKubernetesFullVersion(config Config, userDefinedKubernetesVersion str
 
 func GenPackerVars(config Config, extraVarsPath string) ([]byte, error) {
 	i, found := config["packer"]
-	p := make(map[string]string)
+	p := make(map[string]interface{})
 	if found {
 		for k, v := range i.(map[interface{}]interface{}) {
+			key := k.(string)
+
 			switch v := v.(type) {
 			case string:
-				p[k.(string)] = v
+				p[key] = v
 			case []byte:
-				p[k.(string)] = string(v)
+				p[key] = string(v)
 			case fmt.Stringer:
-				p[k.(string)] = v.String()
+				p[key] = v.String()
 			case nil:
-				p[k.(string)] = ""
+				p[key] = ""
+			case []string:
+				p[key] = strings.Join(v, ",")
 			default:
-				p[k.(string)] = fmt.Sprintf("%v", v)
+				p[key] = fmt.Sprintf("%v", v)
 			}
 		}
 	}
@@ -290,6 +361,12 @@ func MergeUserArgs(config Config, userArgs UserArgs) error {
 		}
 	}
 
+	if userArgs.Azure != nil {
+		if err := MergeAzureUserArgs(config, userArgs.Azure); err != nil {
+			return fmt.Errorf("failed to set azure args: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -351,6 +428,73 @@ func MergeAmazonUserArgs(config Config, amazonArgs *AmazonArgs) error {
 		if err := config.Set(PackerAMIGroupsPath, value); err != nil {
 			return fmt.Errorf("failed to set %s: %w", PackerAMIGroupsPath, err)
 		}
+	}
+
+	return nil
+}
+
+func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
+	if err := config.Set(PackerAzureClientIDPath, azureArgs.ClientID); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureTenantIDPath, err)
+	}
+
+	galleryImageLocations := azureArgs.GalleryImageLocations
+	if len(galleryImageLocations) == 0 {
+		galleryImageLocations = []string{azureArgs.Location}
+	}
+
+	if err := config.Set(PackerAzureGalleryLocations, galleryImageLocations); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryLocations, err)
+	}
+
+	galleryImageName := azureArgs.GalleryImageName
+	if galleryImageName == "" {
+		galleryImageName = fmt.Sprintf("dkp-%s", BuildName(config))
+	}
+
+	if err := config.Set(PackerAzureGalleryImageNamePath, galleryImageName); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImageNamePath, err)
+	}
+
+	if err := config.Set(
+		PackerAzureGalleryImageOfferPath,
+		azureArgs.GalleryImageOffer,
+	); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImageOfferPath, err)
+	}
+
+	if err := config.Set(
+		PackerAzureGalleryImagePublisherPath,
+		azureArgs.GalleryImagePublisher,
+	); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImagePublisherPath, err)
+	}
+
+	if err := config.Set(PackerAzureGalleryImageSKU, azureArgs.GalleryImageSKU); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImageSKU, err)
+	}
+
+	if err := config.Set(PackerAzureLocation, azureArgs.Location); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureLocation, err)
+	}
+
+	if err := config.Set(PackerAzureGalleryNamePath, azureArgs.GalleryName); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryNamePath, err)
+	}
+
+	if err := config.Set(
+		PackerAzureResourceGroupNamePath,
+		azureArgs.ResourceGroupName,
+	); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureResourceGroupNamePath, err)
+	}
+
+	if err := config.Set(PackerAzureSubscriptionIDPath, azureArgs.SubscriptionID); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureSubscriptionIDPath, err)
+	}
+
+	if err := config.Set(PackerAzureTenantIDPath, azureArgs.TenantID); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureTenantIDPath, err)
 	}
 
 	return nil
