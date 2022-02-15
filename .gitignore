@@ -64,3 +64,4 @@ flatcar-version.yaml
 
 /cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 packer-custom-vpc-override.yaml
+.env

@@ -1,4 +1,13 @@
 ---
+
+- name: RHEL subscription
+  redhat_subscription:
+    state: present
+    username: "{{ lookup('env', 'RHSM_USER') }}"
+    password: "{{ lookup('env', 'RHSM_PASS') }}"
+    auto_attach: true
+  when: packer_builder_type.startswith('vsphere') or packer_builder_type.startswith('vmware')
+
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
 # Alma linux's extra repository symlinks epel repository rpms. https://wiki.almalinux.org/repos/AlmaLinux.html

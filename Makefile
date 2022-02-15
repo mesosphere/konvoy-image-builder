@@ -6,7 +6,7 @@ OS := $(shell uname -s)
 INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
 # BUILD_DRY_RUN determines the value of the --dry-run flag of the build command. Should be 'true' or 'false'.
-BUILD_DRY_RUN := true
+BUILD_DRY_RUN ?= true
 
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
@@ -47,6 +47,7 @@ export DOCKER_DEVKIT_GO_ENV_ARGS ?= \
 export DOCKER_DEVKIT_ENV_ARGS ?= \
 	--env CI \
 	--env GITHUB_TOKEN \
+	--env BUILD_DRY_RUN \
 	$(DOCKER_DEVKIT_GO_ENV_ARGS)
 
 export DOCKER_DEVKIT_AWS_ARGS ?= \
@@ -55,6 +56,13 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--env AWS_SESSION_TOKEN \
 	--env AWS_DEFAULT_REGION \
 	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
+
+export DOCKER_DEVKIT_VSPHERE_ARGS ?= \
+	--env VSPHERE_SERVER \
+	--env VSPHERE_USERNAME \
+	--env VSPHERE_PASSWORD \
+	--env RHSM_USER \
+	--env RHSM_PASS
 
 ifneq ($(wildcard $(DOCKER_SOCKET)),)
 	export DOCKER_SOCKET_ARGS ?= \
@@ -93,6 +101,7 @@ export DOCKER_DEVKIT_ARGS ?= \
 	--workdir /kib \
 	$(DOCKER_SOCKET_ARGS) \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
+	$(DOCKER_DEVKIT_VSPHERE_ARGS) \
 	$(DOCKER_DEVKIT_PUSH_ARGS) \
 	$(DOCKER_DEVKIT_ENV_ARGS) \
 	$(DOCKER_DEVKIT_SSH_ARGS)
@@ -233,6 +242,14 @@ rhel84: ## Build RHEL 8.4 image
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
+.PHONY: rhel84-ova
+rhel84-ova: build
+rhel84-ova: ## Build RHEL 8.4 image
+	./bin/konvoy-image build images/ova/rhel-84.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
+	-v ${VERBOSITY} \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+
 .PHONY: rhel84-fips
 rhel84-fips: ## Build RHEL 8.4 FIPS image
 	$(MAKE) rhel84 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
@@ -259,6 +276,14 @@ rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
 rhel79: build
 rhel79: ## Build RHEL 7.9 image
 	./bin/konvoy-image build images/ami/rhel-79.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
+	-v ${VERBOSITY} \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+
+.PHONY: rhel79-ova
+rhel79-ova: build
+rhel79-ova: ## Build RHEL 7.9 image
+	./bin/konvoy-image build images/ova/rhel-79.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
@@ -575,6 +600,8 @@ ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
 ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
+ci.e2e.build.all: ci.e2e.build.rhel-8.4-ova
+ci.e2e.build.all: ci.e2e.build.rhel-7.9-ova
 
 # Run an E2E test in its own devkit container.
 ci.e2e.build.%:
@@ -603,6 +630,10 @@ e2e.build.oracle-8: oracle8
 e2e.build.flatcar: flatcar
 
 e2e.build.rhel-8-fips: rhel82-fips
+
+e2e.build.rhel-8.4-ova: rhel84-ova
+
+e2e.build.rhel-7.9-ova: rhel79-ova
 
 e2e.build.centos-7-nvidia: centos7-nvidia
 
