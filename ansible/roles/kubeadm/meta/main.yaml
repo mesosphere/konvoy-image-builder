@@ -1,0 +1,4 @@
+---
+dependencies:
+  - repo
+  - setup_versionlock

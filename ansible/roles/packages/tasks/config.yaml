@@ -1,26 +1,4 @@
 ---
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
-- name: create kubelet systemd directory
-  file:
-    path: "/etc/systemd/system/kubelet.service.d/"
-    state: directory
-
-- name: create containerd proxy conf
-  template:
-    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
-    src: etc/systemd/system/containerd.service.d/http-proxy.conf
-    mode: 0644
-  when: http_proxy is defined or https_proxy is defined or no_proxy is defined
-
-- name: enable containerd
-  systemd:
-    name: containerd
-    enabled: true
-
 - name: enable kubelet
   systemd:
     name: kubelet

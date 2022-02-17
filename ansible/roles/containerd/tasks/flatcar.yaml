@@ -11,11 +11,9 @@
   # failed_when: "containerd_version not in system_containerd_version.stdout"
   changed_when: false
 
-
 - name: Store the Flatcar containerd version as fact
   set_fact:
     containerd_version: "{{ system_containerd_version.stdout }}"
-
 
 - name: Create a directory if it does not exist
   file:
@@ -47,7 +45,7 @@
 
     - name: unpack containerd
       unarchive:
-        remote_src: True
+        remote_src: true
         src: /tmp/containerd.tar.gz
         dest: /opt
         extra_opts:
@@ -95,25 +93,4 @@
 - name: enable containerd
   systemd:
     name: containerd
-    enabled: true
-
-- include: url.yaml
-
-- name: Get crictl version
-  shell: crictl --version | cut -d\  -f 3
-  register: system_crictl_version
-  changed_when: false
-# must include crictl-url.yml after installing containerd,
-# as the cri-containerd tarball also includes crictl.
-- include: crictl-url.yaml
-  when: crictl_version not in system_crictl_version.stdout
-
-- name: create kubelet systemd directory
-  file:
-    path: "/etc/systemd/system/kubelet.service.d/"
-    state: directory
-
-- name: enable kubelet
-  systemd:
-    name: kubelet
     enabled: true

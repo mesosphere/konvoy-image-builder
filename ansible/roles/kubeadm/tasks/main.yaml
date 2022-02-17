@@ -1,14 +1,12 @@
 ---
-- include: install-redhat.yaml
+- include: redhat.yaml
   when: ansible_os_family == "RedHat"
 
-- include: install-suse.yaml
+- include: suse.yaml
   when: ansible_os_family == "Suse"
 
-- include: install-flatcar.yaml
+- include: flatcar.yaml
   when: ansible_os_family == "Flatcar"
 
-- include: install-debian.yaml
+- include: debian.yaml
   when: ansible_os_family == "Debian"
-
-- include: config.yaml

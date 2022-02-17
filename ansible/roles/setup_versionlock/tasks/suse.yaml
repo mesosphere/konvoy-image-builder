@@ -1,0 +1,8 @@
+---
+- name: check if versionlock exists
+  command: zypper locks -s
+  register: versionlocklist
+  args:
+    warn: false
+  ignore_errors: true
+  changed_when: false

@@ -1,13 +1,16 @@
 ---
-- include: repo-redhat.yaml
+- include: redhat.yaml
   when:
     - ansible_facts['os_family'] == "RedHat"
     - not offline_mode_enabled
-- include: repo-redhat-offline.yaml
+
+- include: redhat-offline.yaml
   when:
     - ansible_facts['os_family'] == "RedHat"
     - offline_mode_enabled
-- include: repo-suse.yaml
+
+- include: suse.yaml
   when: ansible_facts['os_family'] == "Suse"
-- include: repo-debian.yaml
+
+- include: debian.yaml
   when: ansible_facts['os_family'] == "Debian"

@@ -1,0 +1,10 @@
+---
+- name: install kubeadm package
+  zypper:
+    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+    state: present
+    update_cache: true
+  register: result
+  until: result is success
+  retries: 15
+  delay: 60

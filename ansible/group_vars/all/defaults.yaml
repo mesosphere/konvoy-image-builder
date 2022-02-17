@@ -58,7 +58,6 @@ containerd_flatcar_bins:
 
 kubernetes_goarch: amd64
 kubernetes_bins:
-  - kubeadm
   - kubectl
   - kubelet
 

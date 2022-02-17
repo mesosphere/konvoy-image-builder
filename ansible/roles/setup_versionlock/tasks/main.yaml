@@ -1,0 +1,6 @@
+---
+- include: redhat.yaml
+  when: ansible_os_family == "RedHat"
+
+- include: suse.yaml
+  when: ansible_os_family == "Suse"

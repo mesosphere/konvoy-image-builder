@@ -1,0 +1,36 @@
+---
+# yum-plugin-versionlock is deprecated in rhel 8 and replaced with
+# python3-dnf-plugin-versionlock. python3-dnf-plugin-versionlock has hard
+# dependency on dnf and yum versions which are protected packages on
+# RedHat 8.x and not allowed to upgraded by the OS
+- name: set use package versionlock fact
+  set_fact:
+    versionlock_plugin_enabled: "{{
+      not (
+        offline_mode_enabled and
+        ansible_distribution == 'RedHat' and
+        ansible_distribution_major_version == '8'
+      ) }}"
+
+- name: install yum utilities
+  yum:
+    name:
+      - yum-utils
+      - yum-plugin-versionlock
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
+  when:
+    - versionlock_plugin_enabled
+
+- name: check if versionlock exists
+  command: yum versionlock list
+  register: versionlocklist
+  args:
+    warn: false
+  ignore_errors: true
+  changed_when: false

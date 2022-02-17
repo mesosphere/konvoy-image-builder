@@ -1,0 +1,17 @@
+---
+- name: remove version hold for kubeadm packages
+  command: apt-mark unhold kubeadm
+
+- name: install kubeadm remote deb package
+  shell: |
+    apt-get install --force-yes --yes \
+      kubeadm={{ package_versions.kubernetes_deb }}
+  args:
+    warn: false
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: add version hold for kubeadm packages
+  command: apt-mark hold kubeadm

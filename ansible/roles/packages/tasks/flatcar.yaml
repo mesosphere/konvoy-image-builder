@@ -1,0 +1,27 @@
+---
+- name: Create a directory if it does not exist
+  file:
+    path: "{{ flatcar_sysusr_prefix }}/bin"
+    state: directory
+    mode: 0755
+
+- include: url.yaml
+
+- name: Get crictl version
+  shell: crictl --version | cut -d\  -f 3
+  register: system_crictl_version
+  changed_when: false
+# must include crictl-url.yml after installing containerd,
+# as the cri-containerd tarball also includes crictl.
+- include: crictl-url.yaml
+  when: crictl_version not in system_crictl_version.stdout
+
+- name: create kubelet systemd directory
+  file:
+    path: "/etc/systemd/system/kubelet.service.d/"
+    state: directory
+
+- name: enable kubelet
+  systemd:
+    name: kubelet
+    enabled: true

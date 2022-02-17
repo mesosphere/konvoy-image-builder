@@ -23,7 +23,6 @@
 
 - hosts: "{{ hostvars['localhost'].container_name }}"
   roles:
-    - role: packages
     - role: version
 
   tasks:

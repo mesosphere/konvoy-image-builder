@@ -36,42 +36,6 @@
     retries: 3
     delay: 3
 
-  - name: remove version hold for containerd package
-    command: apt-mark unhold containerd.io
-    register: remove_version_hold
-    failed_when:
-      - remove_version_hold.rc != 0
-      - remove_version_hold.rc != 100 # package does not exist
-
-  - name: install containerd.io remote deb package
-    apt:
-      name: containerd.io={{ package_versions.containerd_deb }}
-      state: present
-    register: result
-    until: result is success
-    retries: 5
-    delay: 3
-
-  - name: add version hold for containerd package
-    command: apt-mark hold containerd.io
-
-  ## kubeadm
-
-  - name: remove version hold for kubeadm packages
-    command: apt-mark unhold kubeadm
-
-  - name: install kubeadm remote deb package
-    shell: apt-get install --force-yes --yes kubeadm={{ package_versions.kubernetes_deb }}
-    args:
-      warn: false
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
-
-  - name: add version hold for kubeadm packages
-    command: apt-mark hold kubeadm
-
   - name: remove version hold for kubelet and kubectl packages
     command: apt-mark unhold {{ item }}
     with_items:
