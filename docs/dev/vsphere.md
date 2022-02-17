@@ -11,7 +11,7 @@ This base image template can be used to create more customized images.
 
 [TODO: Add steps and screenshots]
 
-## Create OVA for CAPI
+## Create vSphere template image for CAPI
 ----
 The process to create base OS image will create a vSphere template in Vsphere. This template is a linked clone of the VM so any VM created from template will be provisioned quickly.
 
@@ -46,7 +46,7 @@ packer:
   distribution_version: "example_7.9"
 ```
 
-## Create OVA on vsphere
+## Create template image on vsphere
 ```bash
 konvoy-image build path/to/image.yaml
 ```
