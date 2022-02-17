@@ -19,4 +19,3 @@ packer:
   # goss params
   distribution: "RHEL"
   distribution_version: "8.4"
-  
