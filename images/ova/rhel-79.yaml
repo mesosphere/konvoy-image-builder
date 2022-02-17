@@ -19,3 +19,4 @@ packer:
   #goss params
   distribution: "RHEL"
   distribution_version: "7.9"
+  
