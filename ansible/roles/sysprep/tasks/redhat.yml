@@ -54,3 +54,19 @@
     name: auditd
     enabled: true
     state: started
+
+- name: Remove RHEL subscription
+  block:
+    - name: Remove subscriptions
+      rhsm_repository:
+        name: '*'
+        state: absent
+    - name: Unregister system
+      redhat_subscription:
+        state: absent
+    - name: clean local subscription data
+      command: subscription-manager clean
+  when:
+    - packer_builder_type is defined
+    - not offline_mode_enabled
+    - packer_builder_type.startswith('vsphere') or packer_builder_type.startswith('vmware')

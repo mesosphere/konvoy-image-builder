@@ -16,7 +16,8 @@ type RenderOptions struct {
 }
 
 var packerManifests = map[string][]byte{
-	"amazon": manifests.PackerAmazon,
+	"amazon":  manifests.PackerAmazon,
+	"vsphere": manifests.PackerVsphere,
 }
 
 var ErrManifestNotSupported = errors.New("manifest not support")
