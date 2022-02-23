@@ -52,25 +52,48 @@
     packages: "cloud-init cloud-utils python3-netifaces"
   when: ansible_os_family == "VMware Photon OS"
 
-- name: Download cloud-init datasource for VMware Guestinfo
-  get_url:
-    url: '{{ guestinfo_datasource_script }}'
-    dest: /tmp/cloud-init-vmware.sh
-    mode: 0700
-
 # pip on CentOS needs to be upgraded, but since it's still
 # Python 2.7, need < 21.0
 - name: Upgrade pip
   pip:
     name: pip<21.0
+    extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path + 'pip' if offline_mode_enabled }}"
     state: forcereinstall
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
+
+- name: Copy vmware guestinfo datasource
+  copy:
+    src: "{{ item }}"
+    dest: /tmp/
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - cloud-init-vmware.sh
+    - DataSourceVMwareGuestInfo.py
+
+- name: Copy cloud-init config file for vmware
+  copy:
+    src: files/etc/cloud/cloud.cfg.d/99-DataSourceVMwareGuestInfo.cfg
+    dest: /etc/cloud/cloud.cfg.d/99-DataSourceVMwareGuestInfo.cfg
+    owner: root
+    group: root
+    mode: 0644
+
+# this program used by ds-identify to determine whether or not the
+# VMwareGuestInfo datasource is useable.
+- name: Create ds-check program to verify VMwareGuestInfo datasource
+  copy:
+    src: files/dscheck_VMwareGuestInfo.sh
+    dest: /usr/bin/dscheck_VMwareGuestInfo
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Execute cloud-init-vmware.sh
   shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
   environment:
-    REPO_SLUG: '{{ guestinfo_datasource_slug }}'
-    GIT_REF: '{{ guestinfo_datasource_ref }}'
+    VMWARE_DS_PATH: '/tmp/DataSourceVMwareGuestInfo.py'
 
 - name: Remove cloud-init-vmware.sh
   file:

@@ -12,6 +12,7 @@ artifacts/pip-packages.tar.gz:
 download-pip-packages:
 	$(MAKE) pip-artifacts-getter.check
 	$(MAKE) packages="awscli" download-pip-package
+	$(MAKE) packages="pip" download-pip-package
 
 .PHONY: pip-artifacts-getter.check
 pip-artifacts-getter.check:
