@@ -23,7 +23,7 @@
   pip:
     name: "awscli"
     executable: pip3
-    extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path + 'awscli' if offline_mode_enabled }}"
+    extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path if offline_mode_enabled }}"
   when:
     - ansible_distribution != "Amazon"
     - ansible_os_family != "Suse"

@@ -290,7 +290,8 @@ rhel79-ova: ## Build RHEL 7.9 image
 
 .PHONY: rhel79-ova-offline
 rhel79-ova-offline:
-#$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
+	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make rhel79-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 

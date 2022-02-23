@@ -11,8 +11,7 @@ artifacts/pip-packages.tar.gz:
 .PHONY: download-pip-packages
 download-pip-packages:
 	$(MAKE) pip-artifacts-getter.check
-	$(MAKE) packages="awscli" download-pip-package
-	$(MAKE) packages="pip" download-pip-package
+	$(MAKE) packages="awscli pip==20.3.4" download-pip-package
 
 .PHONY: pip-artifacts-getter.check
 pip-artifacts-getter.check:
@@ -30,5 +29,5 @@ $(pip_artifacts_dir):
 .PHONY: download-pip-package
 download-pip-package: $(pip_artifacts_dir)
 	docker run --rm -v "$(pip_artifacts_dir):/opt/dkp/pip/" -w /opt/dkp/pip $(PIP_PACKAGES_GETTER_IMAGE):latest \
-		/bin/sh -c 'mkdir -p $(packages) && pip3 download --destination-directory=/opt/dkp/pip/$(packages) $(packages)'
+		/bin/sh -c 'pip3 download --destination-directory=/opt/dkp/pip/ $(packages)'
 
