@@ -1,65 +1,63 @@
+# flake8: noqa
+# pylint: skip-file
 # Cloud-Init Datasource for VMware Guestinfo
 
-'''
+"""
 A cloud init datasource for VMware GuestInfo.
-'''
+"""
 
 import base64
 import collections
 import copy
-from distutils.spawn import find_executable
-from distutils.util import strtobool
 import ipaddress
 import json
 import os
 import socket
-import string
 import time
 import zlib
-
-from cloudinit import log as logging
-from cloudinit import sources
-from cloudinit import util
-from cloudinit import safeyaml
+from distutils.spawn import find_executable
+from distutils.util import strtobool
 
 import netifaces
+from cloudinit import log as logging
+from cloudinit import safeyaml, sources, util
 
 # from cloud-init >= 20.3 subp is in its own module
 try:
-    from cloudinit.subp import subp, ProcessExecutionError
+    from cloudinit.subp import ProcessExecutionError, subp
 except ImportError:
-    from cloudinit.util import subp, ProcessExecutionError
-
+    from cloudinit.util import ProcessExecutionError, subp
 
 LOG = logging.getLogger(__name__)
 NOVAL = "No value found"
 VMWARE_RPCTOOL = find_executable("vmware-rpctool")
 VMX_GUESTINFO = "VMX_GUESTINFO"
 GUESTINFO_EMPTY_YAML_VAL = "---"
-LOCAL_IPV4 = 'local-ipv4'
-LOCAL_IPV6 = 'local-ipv6'
-CLEANUP_GUESTINFO = 'cleanup-guestinfo'
-WAIT_ON_NETWORK = 'wait-on-network'
-WAIT_ON_NETWORK_IPV4 = 'ipv4'
-WAIT_ON_NETWORK_IPV6 = 'ipv6'
+LOCAL_IPV4 = "local-ipv4"
+LOCAL_IPV6 = "local-ipv6"
+CLEANUP_GUESTINFO = "cleanup-guestinfo"
+WAIT_ON_NETWORK = "wait-on-network"
+WAIT_ON_NETWORK_IPV4 = "ipv4"
+WAIT_ON_NETWORK_IPV6 = "ipv6"
 
 
 class NetworkConfigError(Exception):
-    '''
+    """
     NetworkConfigError is raised when there is an issue getting or
     applying network configuration.
-    '''
+    """
+
     pass
 
 
 class DataSourceVMwareGuestInfo(sources.DataSource):
-    '''
+    """
     This cloud-init datasource was designed for use with CentOS 7,
     which uses cloud-init 0.7.9. However, this datasource should
     work with any Linux distribution for which cloud-init is
     avaialble.
 
-    The documentation for cloud-init 0.7.9's datasource is
+    The documentation for cloud-init 0.7.9"s datasource is
     available at http://bit.ly/cloudinit-datasource-0-7-9. The
     current documentation for cloud-init is found at
     https://cloudinit.readthedocs.io/en/latest/.
@@ -75,23 +73,23 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
     Configuring the network:
         The network is configured by setting the metadata key "network"
         with a value consistent with Network Config Versions 1 or 2,
-        depending on the Linux distro's version of cloud-init:
+        depending on the Linux distro"s version of cloud-init:
 
             Network Config Version 1 - http://bit.ly/cloudinit-net-conf-v1
             Network Config Version 2 - http://bit.ly/cloudinit-net-conf-v2
 
-        For example, CentOS 7's official cloud-init package is version
+        For example, CentOS 7"s official cloud-init package is version
         0.7.9 and does not support Network Config Version 2. However,
         this datasource still supports supplying Network Config Version 2
-        data as long as the Linux distro's cloud-init package is new
+        data as long as the Linux distro"s cloud-init package is new
         enough to parse the data.
 
         The metadata key "network.encoding" may be used to indicate the
         format of the metadata key "network". Valid encodings are base64
         and gzip+base64.
-    '''
+    """
 
-    dsname = 'VMwareGuestInfo'
+    dsname = "VMwareGuestInfo"
 
     def __init__(self, sys_cfg, distro, paths, ud_proc=None):
         sources.DataSource.__init__(self, sys_cfg, distro, paths, ud_proc)
@@ -117,10 +115,10 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
         self.metadata = load_metadata()
 
         # Get the user data.
-        self.userdata_raw = guestinfo('userdata')
+        self.userdata_raw = guestinfo("userdata")
 
         # Get the vendor data.
-        self.vendordata_raw = guestinfo('vendordata')
+        self.vendordata_raw = guestinfo("vendordata")
 
         # Check to see if any of the guestinfo data should be removed.
         if data_access_method == VMWARE_RPCTOOL and CLEANUP_GUESTINFO in self.metadata:
@@ -136,8 +134,8 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
 
         This is called before user-data and vendor-data have been processed.
 
-        Unless the datasource has set mode to 'local', then networking
-        per 'fallback' or per 'network_config' will have been written and
+        Unless the datasource has set mode to "local", then networking
+        per "fallback" or per "network_config" will have been written and
         brought up the OS at this point.
         """
 
@@ -164,28 +162,28 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
 
     @property
     def network_config(self):
-        if 'network' in self.metadata:
+        if "network" in self.metadata:
             LOG.debug("using metadata network config")
         else:
             LOG.debug("using fallback network config")
-            self.metadata['network'] = {
-                'config': self.distro.generate_fallback_config(),
+            self.metadata["network"] = {
+                "config": self.distro.generate_fallback_config(),
             }
-        return self.metadata['network']['config']
+        return self.metadata["network"]["config"]
 
     def get_instance_id(self):
         # Pull the instance ID out of the metadata if present. Otherwise
         # read the file /sys/class/dmi/id/product_uuid for the instance ID.
-        if self.metadata and 'instance-id' in self.metadata:
-            return self.metadata['instance-id']
-        with open('/sys/class/dmi/id/product_uuid', 'r') as id_file:
-            self.metadata['instance-id'] = str(id_file.read()).rstrip().lower()
-            return self.metadata['instance-id']
+        if self.metadata and "instance-id" in self.metadata:
+            return self.metadata["instance-id"]
+        with open("/sys/class/dmi/id/product_uuid", "r") as id_file:
+            self.metadata["instance-id"] = str(id_file.read()).rstrip().lower()
+            return self.metadata["instance-id"]
 
     def get_public_ssh_keys(self):
         public_keys_data = ""
-        if 'public-keys-data' in self.metadata:
-            public_keys_data = self.metadata['public-keys-data'].splitlines()
+        if "public-keys-data" in self.metadata:
+            public_keys_data = self.metadata["public-keys-data"].splitlines()
 
         public_keys = []
         if not public_keys_data:
@@ -198,7 +196,7 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
 
 
 def decode(key, enc_type, data):
-    '''
+    """
     decode returns the decoded string value of data
     key is a string used to identify the data being decoded in log messages
     ----
@@ -220,7 +218,7 @@ def decode(key, enc_type, data):
     Given the above conditions the output from zlib.decompress and
     base64.b64decode would be bytes with newer python and str in older
     version. Thus we would covert the output to str before returning
-    '''
+    """
     LOG.debug("Getting encoded data for key=%s, enc=%s", key, enc_type)
 
     raw_data = None
@@ -235,21 +233,21 @@ def decode(key, enc_type, data):
         raw_data = data
 
     if isinstance(raw_data, bytes):
-        return raw_data.decode('utf-8')
+        return raw_data.decode("utf-8")
     return raw_data
 
 
 def get_none_if_empty_val(val):
-    '''
+    """
     get_none_if_empty_val returns None if the provided value, once stripped
     of its trailing whitespace, is empty or equal to GUESTINFO_EMPTY_YAML_VAL.
 
     The return value is always a string, regardless of whether the input is
     a bytes class or a string.
-    '''
+    """
 
     # If the provided value is a bytes class, convert it to a string to
-    # simplify the rest of this function's logic.
+    # simplify the rest of this function"s logic.
     if isinstance(val, bytes):
         val = val.decode()
 
@@ -260,11 +258,11 @@ def get_none_if_empty_val(val):
 
 
 def advertise_local_ip_addrs(host_info):
-    '''
+    """
     advertise_local_ip_addrs gets the local IP address information from
     the provided host_info map and sets the addresses in the guestinfo
     namespace
-    '''
+    """
     if not host_info:
         return
 
@@ -282,11 +280,11 @@ def advertise_local_ip_addrs(host_info):
 
 
 def handle_returned_guestinfo_val(key, val):
-    '''
+    """
     handle_returned_guestinfo_val returns the provided value if it is
     not empty or set to GUESTINFO_EMPTY_YAML_VAL, otherwise None is
     returned
-    '''
+    """
     val = get_none_if_empty_val(val)
     if val:
         return val
@@ -295,9 +293,9 @@ def handle_returned_guestinfo_val(key, val):
 
 
 def get_guestinfo_value(key):
-    '''
+    """
     Returns a guestinfo value for the specified key.
-    '''
+    """
     LOG.debug("Getting guestinfo value for key %s", key)
 
     data_access_method = get_data_access_method()
@@ -308,8 +306,7 @@ def get_guestinfo_value(key):
 
     if data_access_method == VMWARE_RPCTOOL:
         try:
-            (stdout, stderr) = subp(
-                [VMWARE_RPCTOOL, "info-get guestinfo." + key])
+            (stdout, stderr) = subp([VMWARE_RPCTOOL, "info-get guestinfo." + key])
             if stderr == NOVAL:
                 LOG.debug("No value found for key %s", key)
             elif not stdout:
@@ -321,19 +318,23 @@ def get_guestinfo_value(key):
                 LOG.debug("No value found for key %s", key)
             else:
                 util.logexc(
-                    LOG, "Failed to get guestinfo value for key %s: %s", key, error)
+                    LOG, "Failed to get guestinfo value for key %s: %s", key, error
+                )
         except Exception:
             util.logexc(
-                LOG, "Unexpected error while trying to get guestinfo value for key %s", key)
+                LOG,
+                "Unexpected error while trying to get guestinfo value for key %s",
+                key,
+            )
 
     return None
 
 
 def set_guestinfo_value(key, value):
-    '''
+    """
     Sets a guestinfo value for the specified key. Set value to an empty string
     to clear an existing guestinfo key.
-    '''
+    """
 
     # If value is an empty string then set it to a single space as it is not
     # possible to set a guestinfo key to an empty string. Setting a guestinfo
@@ -355,20 +356,25 @@ def set_guestinfo_value(key, value):
             return True
         except ProcessExecutionError as error:
             util.logexc(
-                LOG, "Failed to set guestinfo key=%s to value=%s: %s", key, value, error)
+                LOG, "Failed to set guestinfo key=%s to value=%s: %s", key, value, error
+            )
         except Exception:
             util.logexc(
-                LOG, "Unexpected error while trying to set guestinfo key=%s to value=%s", key, value)
+                LOG,
+                "Unexpected error while trying to set guestinfo key=%s to value=%s",
+                key,
+                value,
+            )
 
     return None
 
 
 def clear_guestinfo_keys(keys):
-    '''
+    """
     clear_guestinfo_keys clears guestinfo of all of the keys in the given list.
     each key will have its value set to "---". Since the value is valid YAML,
     cloud-init can still read it if it tries.
-    '''
+    """
     if not keys:
         return
     if not type(keys) in (list, tuple):
@@ -383,23 +389,23 @@ def clear_guestinfo_keys(keys):
 
 
 def guestinfo(key):
-    '''
+    """
     guestinfo returns the guestinfo value for the provided key, decoding
     the value when required
-    '''
+    """
     data = get_guestinfo_value(key)
     if not data:
         return None
-    enc_type = get_guestinfo_value(key + '.encoding')
-    return decode('guestinfo.' + key, enc_type, data)
+    enc_type = get_guestinfo_value(key + ".encoding")
+    return decode("guestinfo." + key, enc_type, data)
 
 
 def load(data):
-    '''
+    """
     load first attempts to unmarshal the provided data as JSON, and if
     that fails then attempts to unmarshal the data as YAML. If data is
     None then a new dictionary is returned.
-    '''
+    """
     if not data:
         return {}
     try:
@@ -409,63 +415,61 @@ def load(data):
 
 
 def load_metadata():
-    '''
+    """
     load_metadata loads the metadata from the guestinfo data, optionally
     decoding the network config when required
-    '''
-    data = load(guestinfo('metadata'))
-    LOG.debug('loaded metadata %s', data)
+    """
+    data = load(guestinfo("metadata"))
+    LOG.debug("loaded metadata %s", data)
 
     network = None
-    if 'network' in data:
-        network = data['network']
-        del data['network']
+    if "network" in data:
+        network = data["network"]
+        del data["network"]
 
     network_enc = None
-    if 'network.encoding' in data:
-        network_enc = data['network.encoding']
-        del data['network.encoding']
+    if "network.encoding" in data:
+        network_enc = data["network.encoding"]
+        del data["network.encoding"]
 
     if network:
-        LOG.debug('network data found')
+        LOG.debug("network data found")
         if isinstance(network, collections.Mapping):
             LOG.debug("network data copied to 'config' key")
-            network = {
-                'config': copy.deepcopy(network)
-            }
+            network = {"config": copy.deepcopy(network)}
         else:
             LOG.debug("network data to be decoded %s", network)
-            dec_net = decode('metadata.network', network_enc, network)
+            dec_net = decode("metadata.network", network_enc, network)
             network = {
-                'config': load(dec_net),
+                "config": load(dec_net),
             }
 
-        LOG.debug('network data %s', network)
-        data['network'] = network
+        LOG.debug("network data %s", network)
+        data["network"] = network
 
     return data
 
 
 def get_datasource_list(depends):
-    '''
+    """
     Return a list of data sources that match this set of dependencies
-    '''
+    """
     return [DataSourceVMwareGuestInfo]
 
 
 def get_default_ip_addrs():
-    '''
+    """
     Returns the default IPv4 and IPv6 addresses based on the device(s) used for
     the default route. Please note that None may be returned for either address
     family if that family has no default route or if there are multiple
     addresses associated with the device used by the default route for a given
     address.
-    '''
+    """
     gateways = netifaces.gateways()
-    if 'default' not in gateways:
+    if "default" not in gateways:
         return None, None
 
-    default_gw = gateways['default']
+    default_gw = gateways["default"]
     if netifaces.AF_INET not in default_gw and netifaces.AF_INET6 not in default_gw:
         return None, None
 
@@ -481,9 +485,10 @@ def get_default_ip_addrs():
             if af_inet4:
                 if len(af_inet4) > 1:
                     LOG.warn(
-                        "device %s has more than one ipv4 address: %s", dev4, af_inet4)
-                elif 'addr' in af_inet4[0]:
-                    ipv4 = af_inet4[0]['addr']
+                        "device %s has more than one ipv4 address: %s", dev4, af_inet4
+                    )
+                elif "addr" in af_inet4[0]:
+                    ipv4 = af_inet4[0]["addr"]
 
     # Try to get the default IPv6 address by first seeing if there is a default
     # IPv6 route.
@@ -496,9 +501,10 @@ def get_default_ip_addrs():
             if af_inet6:
                 if len(af_inet6) > 1:
                     LOG.warn(
-                        "device %s has more than one ipv6 address: %s", dev6, af_inet6)
-                elif 'addr' in af_inet6[0]:
-                    ipv6 = af_inet6[0]['addr']
+                        "device %s has more than one ipv6 address: %s", dev6, af_inet6
+                    )
+                elif "addr" in af_inet6[0]:
+                    ipv6 = af_inet6[0]["addr"]
 
     # If there is a default IPv4 address but not IPv6, then see if there is a
     # single IPv6 address associated with the same device associated with the
@@ -507,10 +513,9 @@ def get_default_ip_addrs():
         af_inet6 = addr4_fams.get(netifaces.AF_INET6)
         if af_inet6:
             if len(af_inet6) > 1:
-                LOG.warn(
-                    "device %s has more than one ipv6 address: %s", dev4, af_inet6)
-            elif 'addr' in af_inet6[0]:
-                ipv6 = af_inet6[0]['addr']
+                LOG.warn("device %s has more than one ipv6 address: %s", dev4, af_inet6)
+            elif "addr" in af_inet6[0]:
+                ipv6 = af_inet6[0]["addr"]
 
     # If there is a default IPv6 address but not IPv4, then see if there is a
     # single IPv4 address associated with the same device associated with the
@@ -519,26 +524,27 @@ def get_default_ip_addrs():
         af_inet4 = addr6_fams.get(netifaces.AF_INET)
         if af_inet4:
             if len(af_inet4) > 1:
-                LOG.warn(
-                    "device %s has more than one ipv4 address: %s", dev6, af_inet4)
-            elif 'addr' in af_inet4[0]:
-                ipv4 = af_inet4[0]['addr']
+                LOG.warn("device %s has more than one ipv4 address: %s", dev6, af_inet4)
+            elif "addr" in af_inet4[0]:
+                ipv4 = af_inet4[0]["addr"]
 
     return ipv4, ipv6
+
 
 # patched socket.getfqdn() - see https://bugs.python.org/issue5004
 
 
-def getfqdn(name=''):
+def getfqdn(name=""):
     """Get fully qualified domain name from name.
-     An empty argument is interpreted as meaning the local host.
+    An empty argument is interpreted as meaning the local host.
     """
     name = name.strip()
-    if not name or name == '0.0.0.0':
+    if not name or name == "0.0.0.0":
         name = socket.gethostname()
     try:
         addrs = socket.getaddrinfo(
-            name, None, 0, socket.SOCK_DGRAM, 0, socket.AI_CANONNAME)
+            name, None, 0, socket.SOCK_DGRAM, 0, socket.AI_CANONNAME
+        )
     except socket.error:
         pass
     else:
@@ -568,25 +574,25 @@ def is_valid_ip_addr(val):
 
 
 def get_host_info():
-    '''
+    """
     Returns host information such as the host name and network interfaces.
-    '''
+    """
 
     host_info = {
-        'network': {
-            'interfaces': {
-                'by-mac': collections.OrderedDict(),
-                'by-ipv4': collections.OrderedDict(),
-                'by-ipv6': collections.OrderedDict(),
+        "network": {
+            "interfaces": {
+                "by-mac": collections.OrderedDict(),
+                "by-ipv4": collections.OrderedDict(),
+                "by-ipv6": collections.OrderedDict(),
             },
         },
     }
 
     hostname = getfqdn(socket.gethostname())
     if hostname:
-        host_info['hostname'] = hostname
-        host_info['local-hostname'] = hostname
-        host_info['local_hostname'] = hostname
+        host_info["hostname"] = hostname
+        host_info["local-hostname"] = hostname
+        host_info["local_hostname"] = hostname
 
     default_ipv4, default_ipv6 = get_default_ip_addrs()
     if default_ipv4:
@@ -594,9 +600,9 @@ def get_host_info():
     if default_ipv6:
         host_info[LOCAL_IPV6] = default_ipv6
 
-    by_mac = host_info['network']['interfaces']['by-mac']
-    by_ipv4 = host_info['network']['interfaces']['by-ipv4']
-    by_ipv6 = host_info['network']['interfaces']['by-ipv6']
+    by_mac = host_info["network"]["interfaces"]["by-mac"]
+    by_ipv4 = host_info["network"]["interfaces"]["by-ipv4"]
+    by_ipv6 = host_info["network"]["interfaces"]["by-ipv6"]
 
     ifaces = netifaces.interfaces()
     for dev_name in ifaces:
@@ -606,8 +612,8 @@ def get_host_info():
         af_inet6 = addr_fams.get(netifaces.AF_INET6)
 
         mac = None
-        if af_link and 'addr' in af_link[0]:
-            mac = af_link[0]['addr']
+        if af_link and "addr" in af_link[0]:
+            mac = af_link[0]["addr"]
 
         # Do not bother recording localhost
         if mac == "00:00:00:00:00:00":
@@ -619,14 +625,14 @@ def get_host_info():
             if af_inet4:
                 af_inet4_vals = []
                 for ip_info in af_inet4:
-                    if not is_valid_ip_addr(ip_info['addr']):
+                    if not is_valid_ip_addr(ip_info["addr"]):
                         continue
                     af_inet4_vals.append(ip_info)
                 val["ipv4"] = af_inet4_vals
             if af_inet6:
                 af_inet6_vals = []
                 for ip_info in af_inet6:
-                    if not is_valid_ip_addr(ip_info['addr']):
+                    if not is_valid_ip_addr(ip_info["addr"]):
                         continue
                     af_inet6_vals.append(ip_info)
                 val["ipv6"] = af_inet6_vals
@@ -634,24 +640,24 @@ def get_host_info():
 
         if af_inet4:
             for ip_info in af_inet4:
-                key = ip_info['addr']
+                key = ip_info["addr"]
                 if not is_valid_ip_addr(key):
                     continue
                 val = copy.deepcopy(ip_info)
-                del val['addr']
+                del val["addr"]
                 if mac:
-                    val['mac'] = mac
+                    val["mac"] = mac
                 by_ipv4[key] = val
 
         if af_inet6:
             for ip_info in af_inet6:
-                key = ip_info['addr']
+                key = ip_info["addr"]
                 if not is_valid_ip_addr(key):
                     continue
                 val = copy.deepcopy(ip_info)
-                del val['addr']
+                del val["addr"]
                 if mac:
-                    val['mac'] = mac
+                    val["mac"] = mac
                 by_ipv6[key] = val
 
     return host_info
@@ -678,29 +684,29 @@ def wait_on_network(metadata):
 
     # Get information about the host.
     host_info = None
-    while host_info == None:
+    while host_info is None:
         host_info = get_host_info()
         if wait_on_ipv4:
             ipv4_ready = False
-            if 'network' in host_info:
-                if 'interfaces' in host_info['network']:
-                    if 'by-ipv4' in host_info['network']['interfaces']:
-                        if len(host_info['network']['interfaces']['by-ipv4']) > 0:
+            if "network" in host_info:
+                if "interfaces" in host_info["network"]:
+                    if "by-ipv4" in host_info["network"]["interfaces"]:
+                        if len(host_info["network"]["interfaces"]["by-ipv4"]) > 0:
                             ipv4_ready = True
             if not ipv4_ready:
                 LOG.info("ipv4 not ready")
                 host_info = None
         if wait_on_ipv6:
             ipv6_ready = False
-            if 'network' in host_info:
-                if 'interfaces' in host_info['network']:
-                    if 'by-ipv6' in host_info['network']['interfaces']:
-                        if len(host_info['network']['interfaces']['by-ipv6']) > 0:
+            if "network" in host_info:
+                if "interfaces" in host_info["network"]:
+                    if "by-ipv6" in host_info["network"]["interfaces"]:
+                        if len(host_info["network"]["interfaces"]["by-ipv6"]) > 0:
                             ipv6_ready = True
             if not ipv6_ready:
                 LOG.info("ipv6 not ready")
                 host_info = None
-        if host_info == None:
+        if host_info is None:
             LOG.info("waiting on network")
             time.sleep(1)
 
@@ -715,24 +721,25 @@ def get_data_access_method():
     return None
 
 
-_MERGE_STRATEGY_ENV_VAR = 'CLOUD_INIT_VMWARE_GUEST_INFO_MERGE_STRATEGY'
-_MERGE_STRATEGY_DEEPMERGE = 'deepmerge'
+_MERGE_STRATEGY_ENV_VAR = "CLOUD_INIT_VMWARE_GUEST_INFO_MERGE_STRATEGY"
+_MERGE_STRATEGY_DEEPMERGE = "deepmerge"
 
 
 def merge_dicts(a, b):
     merge_strategy = os.getenv(_MERGE_STRATEGY_ENV_VAR)
     if merge_strategy == _MERGE_STRATEGY_DEEPMERGE:
         try:
-            LOG.info('merging dictionaries with deepmerge strategy')
+            LOG.info("merging dictionaries with deepmerge strategy")
             return merge_dicts_with_deep_merge(a, b)
         except Exception as err:
             LOG.error("deep merge failed: %s" % err)
-    LOG.info('merging dictionaries with stdlib strategy')
+    LOG.info("merging dictionaries with stdlib strategy")
     return merge_dicts_with_stdlib(a, b)
 
 
 def merge_dicts_with_deep_merge(a, b):
     from deepmerge import always_merger
+
     return always_merger.merge(a, b)
 
 
@@ -747,15 +754,17 @@ def merge_dicts_with_stdlib(a, b):
 
 
 def main():
-    '''
+    """
     Executed when this file is used as a program.
-    '''
+    """
     try:
         logging.setupBasicLogging()
     except Exception:
         pass
-    metadata = {'wait-on-network': {'ipv4': True, 'ipv6': "false"},
-                'network': {'config': {'dhcp': True}}}
+    metadata = {
+        "wait-on-network": {"ipv4": True, "ipv6": "false"},
+        "network": {"config": {"dhcp": True}},
+    }
     host_info = wait_on_network(metadata)
     metadata = merge_dicts(metadata, host_info)
     print(util.json_dumps(metadata))
