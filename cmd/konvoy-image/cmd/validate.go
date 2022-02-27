@@ -26,8 +26,6 @@ var validateCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(validateCmd)
-
 	flagSet := validateCmd.Flags()
 	flagSet.StringVar(&validateFlags.Inventory, "inventory-file", "inventory.yaml", "an ansible inventory defining your infrastructure")
 	flagSet.StringVar(&validateFlags.ServiceSubnet, "service-subnet", "10.96.0.0/12", "ip addresses used"+

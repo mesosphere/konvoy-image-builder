@@ -249,58 +249,56 @@ func TestMergeAmazonUserArgs(t *testing.T) {
 
 	// NOTE(jkoelker) Test with `SourceAMI == ""` first so when set we can test that the filters
 	//                are removed.
-	userArgs := app.UserArgs{
-		AmazonArgs: app.AmazonArgs{
-			SourceAMI:        "",
-			AMIFilterName:    gofakeit.Word(),
-			AMIFilterOwner:   gofakeit.Word(),
-			AWSBuilderRegion: gofakeit.Word(),
-			AMIRegions: []string{
-				gofakeit.Word(),
-			},
-			AWSInstanceType: gofakeit.Word(),
-			AMIUsers: []string{
-				gofakeit.Word(),
-			},
-			AMIGroups: []string{
-				gofakeit.Word(),
-			},
+	amazonArgs := &app.AmazonArgs{
+		SourceAMI:        "",
+		AMIFilterName:    gofakeit.Word(),
+		AMIFilterOwner:   gofakeit.Word(),
+		AWSBuilderRegion: gofakeit.Word(),
+		AMIRegions: []string{
+			gofakeit.Word(),
+		},
+		AWSInstanceType: gofakeit.Word(),
+		AMIUsers: []string{
+			gofakeit.Word(),
+		},
+		AMIGroups: []string{
+			gofakeit.Word(),
 		},
 	}
 
-	err := app.MergeAmazonUserArgs(config, userArgs)
+	err := app.MergeAmazonUserArgs(config, amazonArgs)
 	assert.NoError(t, err)
 
 	value, err := config.GetWithError(app.PackerBuilderRegionPath)
 	assert.NoError(t, err)
-	assert.Equal(t, userArgs.AWSBuilderRegion, value)
+	assert.Equal(t, amazonArgs.AWSBuilderRegion, value)
 
 	_, err = config.GetWithError(app.PackerSourceAMIPath)
 	assert.Error(t, err)
 
 	value, err = config.GetWithError(app.PackerFilterNamePath)
 	assert.NoError(t, err)
-	assert.Equal(t, userArgs.AMIFilterName, value)
+	assert.Equal(t, amazonArgs.AMIFilterName, value)
 
 	value, err = config.GetWithError(app.PackerFilterOwnerPath)
 	assert.NoError(t, err)
-	assert.Equal(t, userArgs.AMIFilterOwner, value)
+	assert.Equal(t, amazonArgs.AMIFilterOwner, value)
 
 	value, err = config.GetWithError(app.PackerAMIRegionsPath)
 	assert.NoError(t, err)
-	assert.Equal(t, strings.Join(userArgs.AMIRegions, ","), value)
+	assert.Equal(t, strings.Join(amazonArgs.AMIRegions, ","), value)
 
 	value, err = config.GetWithError(app.PackerAMIUsersPath)
 	assert.NoError(t, err)
-	assert.Equal(t, strings.Join(userArgs.AMIUsers, ","), value)
+	assert.Equal(t, strings.Join(amazonArgs.AMIUsers, ","), value)
 
 	value, err = config.GetWithError(app.PackerAMIGroupsPath)
 	assert.NoError(t, err)
-	assert.Equal(t, strings.Join(userArgs.AMIGroups, ","), value)
+	assert.Equal(t, strings.Join(amazonArgs.AMIGroups, ","), value)
 
-	userArgs.AmazonArgs.SourceAMI = gofakeit.Word()
+	amazonArgs.SourceAMI = gofakeit.Word()
 
-	err = app.MergeAmazonUserArgs(config, userArgs)
+	err = app.MergeAmazonUserArgs(config, amazonArgs)
 	assert.NoError(t, err)
 
 	_, err = config.GetWithError(app.PackerFilterNamePath)
@@ -311,7 +309,7 @@ func TestMergeAmazonUserArgs(t *testing.T) {
 
 	value, err = config.GetWithError(app.PackerSourceAMIPath)
 	assert.NoError(t, err)
-	assert.Equal(t, userArgs.SourceAMI, value)
+	assert.Equal(t, amazonArgs.SourceAMI, value)
 }
 
 func TestConfigEnrichKubernetesFullVersion(t *testing.T) {

@@ -2,14 +2,12 @@
 
 build and provision images
 
+### Synopsis
+
+Build and Provision images. Specifying AWS arguments is deprecated and will be removed in a future version. Use the `aws` subcommand instead.
+
 ```
 konvoy-image build <image.yaml> [flags]
-```
-
-### Examples
-
-```
-build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml
 ```
 
 ### Options
@@ -46,4 +44,5 @@ build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml
 ### SEE ALSO
 
 * [konvoy-image](konvoy-image.md)	 - Create, provision, and customize images for running Konvoy
+* [konvoy-image build aws](konvoy-image_build_aws.md)	 - build and provision aws images
 
