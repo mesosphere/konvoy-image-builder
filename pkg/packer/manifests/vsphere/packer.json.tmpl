@@ -2,7 +2,7 @@
     "variables": {
         "ansible_extra_vars": "",
         "build_timestamp": "{{timestamp}}",
-        "build_version": "konvoy-ova-{{user `build_name`}}-{{user `kubernetes_full_version` }}-{{user `build_timestamp`}}",
+        "build_version": "konvoy-ova-{{user `build_name`}}{{user `build_name_extra`}}-{{user `kubernetes_full_version` }}-{{user `build_timestamp`}}",
         "cluster": "",
         "datastore": "",
         "folder": "",
@@ -28,7 +28,8 @@
         "distribution": "",
         "distribution_version": "",
         "shutdown_command": "shutdown -P now",
-        "kubernetes_full_version": ""
+        "kubernetes_full_version": "",
+        "build_name_extra": ""
     },
     "builders": [
       {

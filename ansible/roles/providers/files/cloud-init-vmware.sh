@@ -57,7 +57,9 @@ if [ -z "$(get_py_mod_dir netifaces)" ]; then
 fi
 
 # move the cloud init datasource into the cloud-init's "sources" directory.
-mv "${VMWARE_DS_PATH}" "${PY_MOD_CLOUD_INIT}/sources/DataSourceVMwareGuestInfo.py"
+if [ ! -f "${PY_MOD_CLOUD_INIT}/sources/DataSourceVMwareGuestInfo.py" ]; then
+  mv "${VMWARE_DS_PATH}" "${PY_MOD_CLOUD_INIT}/sources/DataSourceVMwareGuestInfo.py"
+fi
 
 # Make sure that the datasource can execute without error on this host.
 echo "validating datasource"
