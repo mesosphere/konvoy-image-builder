@@ -2,5 +2,4 @@
 dependencies:
   - repo
   - setup_versionlock
-  - kubeadm
   - containerd

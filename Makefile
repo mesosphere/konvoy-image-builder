@@ -242,14 +242,6 @@ rhel84: ## Build RHEL 8.4 image
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
-.PHONY: rhel84-ova
-rhel84-ova: build
-rhel84-ova: ## Build RHEL 8.4 image
-	./bin/konvoy-image build images/ova/rhel-84.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
 .PHONY: rhel84-fips
 rhel84-fips: ## Build RHEL 8.4 FIPS image
 	$(MAKE) rhel84 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
@@ -272,18 +264,38 @@ rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
 	--aws-instance-type p2.xlarge
 
-.PHONY: rhel79
-rhel79: build
-rhel79: ## Build RHEL 7.9 image
-	./bin/konvoy-image build images/ami/rhel-79.yaml \
+.PHONY: rhel84-ova
+rhel84-ova: build
+rhel84-ova: ## Build RHEL 8.4 image
+	./bin/konvoy-image build images/ova/rhel-84.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
-.PHONY: rhel79-ova
-rhel79-ova: build
-rhel79-ova: ## Build RHEL 7.9 image
-	./bin/konvoy-image build images/ova/rhel-79.yaml \
+.PHONY: rhel84-ova-offline
+rhel84-ova-offline:
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make rhel84-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+
+.PHONY: rhel84-ova-fips
+rhel84-ova-fips: ## Build RHEL 7.9 FIPS image
+	$(MAKE) rhel84-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
+
+.PHONY: rhel84-ova-fips-offline
+rhel84-ova-fips-offline:
+	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) devkit.run WHAT="make rhel84-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+
+.PHONY: rhel79
+rhel79: build
+rhel79: ## Build RHEL 7.9 image
+	./bin/konvoy-image build images/ami/rhel-79.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
@@ -309,6 +321,34 @@ rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
 	--overrides=overrides/nvidia.yaml \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 	--aws-instance-type p2.xlarge
+
+.PHONY: rhel79-ova
+rhel79-ova: build
+rhel79-ova: ## Build RHEL 7.9 image
+	./bin/konvoy-image build images/ova/rhel-79.yaml \
+	--dry-run=$(BUILD_DRY_RUN) \
+	-v ${VERBOSITY} \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+
+.PHONY: rhel79-ova-offline
+rhel79-ova-offline:
+	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) devkit.run WHAT="make rhel79-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+
+.PHONY: rhel79-ova-fips
+rhel79-ova-fips: ## Build RHEL 7.9 FIPS image
+	$(MAKE) rhel79-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
+
+.PHONY: rhel79-ova-fips-offline
+rhel79-ova-fips-offline:
+	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) devkit.run WHAT="make rhel79-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: sles15
 sles15: build
