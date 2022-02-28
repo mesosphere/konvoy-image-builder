@@ -5,7 +5,7 @@ ARG BASE=mesosphere/konvoy-image-builder:latest-devkit
 FROM ${BASE} as devkit
 
 # DO NOT BUMP TO 3.15.0 https://githubmemory.com/repo/atmoz/sftp/issues/296
-FROM alpine:3.14.2
+FROM alpine:3.15.0
 
 ARG ANSIBLE_VERSION=2.10.7
 ENV ANSIBLE_PATH=/usr
