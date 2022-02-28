@@ -45,6 +45,7 @@ func runGenerate(image string) {
 
 func init() {
 	initGenerateAws()
+	initGenerateAzure()
 
 	fs := generateCmd.Flags()
 
@@ -52,6 +53,7 @@ func init() {
 	initAmazonFlags(fs, &generateFlags)
 
 	generateCmd.AddCommand(awsGenerateCmd)
+	generateCmd.AddCommand(azureGenerateCmd)
 }
 
 func initGenerateFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
