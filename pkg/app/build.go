@@ -1,53 +1,26 @@
 package app
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/imdario/mergo"
-	"github.com/pkg/errors"
-	"gopkg.in/yaml.v2"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/ansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/packer"
 	"github.com/mesosphere/konvoy-image-builder/pkg/stringutil"
-	"github.com/mesosphere/konvoy-image-builder/pkg/version"
 )
 
 const (
-	CommonConfigDefaultPath = "./images/common.yaml"
-	OutputDir               = "./work"
-	defaultBuildName        = "provision_build"
-
-	kubernetesVersionKey       = "kubernetes_version"
-	kubernetesFullVersionKey   = "kubernetes_full_version"
-	kubernetesBuildMetadataKey = "kubernetes_build_metadata"
-	containerdVersionKey       = "containerd_version"
-	buildNameKey               = "build_name"
-	buildNameExtraKey          = "build_name_extra"
-	ansibleExtraVarsKey        = "ansible_extra_vars"
-	httpProxyKey               = "http_proxy"
-	httpsProxyKey              = "https_proxy"
-	manifestFileName           = "packer.json"
-	noProxyKey                 = "no_proxy"
-	packerBuilderTypeKey       = "packer_builder_type"
-	packerSourceAMIKey         = "source_ami"
-	packerFilterNameKey        = "ami_filter_name"
-	packerFilterOwnerKey       = "ami_filter_owners"
-	packerBuilderRegionKey     = "aws_region"
-	packerAMIRegionsKey        = "ami_regions"
-	packerInstanceType         = "aws_instance_type"
-	packerKIBVersionKey        = "konvoy_image_builder_version"
-
-	ansibleVarsFilename = "ansible_vars.yaml"
+	ansibleVarsFilename      = "ansible_vars.yaml"
+	manifestFileName         = "packer.json"
+	runDirectorySuffixLength = 5
 )
 
 type Builder struct{}
@@ -71,10 +44,7 @@ type BuildOptions struct {
 	DryRun             bool
 }
 
-type UserArgs struct {
-	ClusterArgs
-	// ExtraVars provided to ansible
-	ExtraVars []string
+type AmazonArgs struct {
 	// AMI options
 	SourceAMI        string   `json:"source_ami"`
 	AMIFilterName    string   `json:"ami_filter_name"`
@@ -92,6 +62,14 @@ type ClusterArgs struct {
 	ContainerdVersion string `json:"containerd_version" yaml:"containerd_version"`
 }
 
+type UserArgs struct {
+	AmazonArgs
+	ClusterArgs
+
+	// ExtraVars provided to ansible
+	ExtraVars []string
+}
+
 //nolint:gocyclo // this will be refactored
 func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	config, err := loadYAML(initOptions.CommonConfigPath)
@@ -105,31 +83,29 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 		return "", InitConfigError(op, err)
 	}
 
-	if err = mergeMapsOverwrite(config, imageConfig); err != nil {
+	if err = MergeMapsOverwrite(config, imageConfig); err != nil {
 		return "", fmt.Errorf("error merging image config: %w", err)
 	}
 
-	// TODO: move to function
-	overrides := make([]map[string]interface{}, 0, len(initOptions.Overrides))
-	for _, o := range initOptions.Overrides {
-		data, errIO := loadYAML(o)
-		if errIO != nil {
-			return "", fmt.Errorf("error loading override: %w", errIO)
-		}
-		overrides = append(overrides, data)
+	overrides, err := getOverrides(initOptions.Overrides)
+	if err != nil {
+		return "", fmt.Errorf("error getting overrides: %w", err)
 	}
 
-	if err = mergeMapsOverwrite(config, overrides...); err != nil {
+	if err = MergeMapsOverwrite(config, overrides...); err != nil {
 		return "", fmt.Errorf("error merging overrides: %w", err)
 	}
 
-	if err = enrichKubernetesFullVersion(config, initOptions.UserArgs.KubernetesVersion); err != nil {
+	if err = EnrichKubernetesFullVersion(config, initOptions.UserArgs.KubernetesVersion); err != nil {
 		//nolint:golint // error has context needed
 		return "", err
 	}
-	mergeUserArgs(config, initOptions)
 
-	buildName := buildName(config)
+	if err = MergeUserArgs(config, initOptions.UserArgs); err != nil {
+		return "", fmt.Errorf("error merging user args: %w", err)
+	}
+
+	buildName := BuildName(config)
 	if buildName == "" {
 		return "", InitConfigError("build name is not defined", nil)
 	}
@@ -157,7 +133,7 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 		}
 	}
 
-	if err = mergeMapsOverwrite(config, extraVarSet); err != nil {
+	if err = MergeMapsOverwrite(config, extraVarSet); err != nil {
 		return "", fmt.Errorf("error merging overrides: %w", err)
 	}
 
@@ -173,44 +149,23 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	return workDir, err
 }
 
-func initAnsibleConfig(path string, config map[string]interface{}) error {
-	ansibleData, err := yaml.Marshal(config)
-	if err != nil {
-		return fmt.Errorf("error marshelling ansible data: %w", err)
-	}
-	if err = ioutil.WriteFile(path, ansibleData, 0o600); err != nil {
-		return fmt.Errorf("error writing ansible vars: %w", err)
-	}
-	return nil
-}
-
-func initPackerConfig(workDir, extraVarsPath string, config map[string]interface{}) error {
-	packerData, err := genPackerVars(config, extraVarsPath)
-	if err != nil {
-		return fmt.Errorf("error rendering packer vars: %w", err)
-	}
-
-	log.Printf("writing new packer configuration to %s", workDir)
-	if err = ioutil.WriteFile(
-		filepath.Join(workDir, "packer_vars.json"), packerData, 0o600); err != nil {
-		return fmt.Errorf("error writing packer variables: %w", err)
-	}
-	return nil
-}
-
 func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
-	config, err := configFromWorkDir(workDir)
+	config, err := configFromWorkDir(workDir, ansibleVarsFilename)
 	if err != nil {
 		return err
+	}
+
+	builderType := config.Get(PackerBuilderTypePath)
+	if builderType == "" {
+		return BuildError(
+			fmt.Sprintf("%s is not defined in image manifest",
+				PackerBuilderTypePath),
+		)
 	}
 
 	var manifestPath string
 	if buildOptions.CustomManifestPath == "" {
 		// copy internal manifest to working directory
-		builderType := getString(config, packerBuilderTypeKey)
-		if builderType == "" {
-			return BuildError(fmt.Sprintf("%s is not defined in image manifest", packerBuilderTypeKey))
-		}
 		opts := packer.RenderOptions{
 			SourceAMIDefined: isSourceAMIProvided(config),
 			DryRun:           buildOptions.DryRun,
@@ -271,118 +226,14 @@ func (b *Builder) Provision(workDir string, flags ProvisionFlags) error {
 		})
 
 	if err := playbook.Run(NewRunOptions(flags.RootFlags)); err != nil {
-		return errors.Wrap(err, "error running playbook")
+		return fmt.Errorf("error running playbook: %w", err)
 	}
 
 	return nil
-}
-
-func configFromWorkDir(workDir string) (map[string]interface{}, error) {
-	bytes, err := ioutil.ReadFile(path.Join(workDir, ansibleVarsFilename))
-	if err != nil {
-		return nil, err
-	}
-	var config map[string]interface{}
-	if err := yaml.Unmarshal(bytes, &config); err != nil {
-		return nil, err
-	}
-	return config, nil
-}
-
-func buildName(config map[string]interface{}) string {
-	buildName := getString(config, buildNameKey)
-
-	buildNameExtra := getString(config, buildNameExtraKey)
-	if buildName == "" {
-		buildName = defaultBuildName
-	}
-	if buildNameExtra != "" {
-		return fmt.Sprintf("%s%s", buildName, buildNameExtra)
-	}
-	return buildName
-}
-
-func genPackerVars(config map[string]interface{}, extraVarsPath string) ([]byte, error) {
-	i, found := config["packer"]
-	p := make(map[string]string)
-	if found {
-		for k, v := range i.(map[interface{}]interface{}) {
-			switch v := v.(type) {
-			case string:
-				p[k.(string)] = v
-			case []byte:
-				p[k.(string)] = string(v)
-			case fmt.Stringer:
-				p[k.(string)] = v.String()
-			case nil:
-				p[k.(string)] = ""
-			default:
-				p[k.(string)] = fmt.Sprintf("%v", v)
-			}
-		}
-	}
-	// Common vars
-	// TODO: make this a map
-	p[kubernetesFullVersionKey] = getString(config, kubernetesFullVersionKey)
-	p[containerdVersionKey] = getString(config, containerdVersionKey)
-	p[buildNameKey] = buildName(config)
-	p[buildNameExtraKey] = getString(config, buildNameExtraKey)
-	p[ansibleExtraVarsKey] = fmt.Sprintf("@%s", extraVarsPath)
-	p[httpProxyKey] = getString(config, httpProxyKey)
-	p[httpsProxyKey] = getString(config, httpsProxyKey)
-	p[noProxyKey] = getString(config, noProxyKey)
-	p[packerKIBVersionKey] = version.Version()
-
-	data, err := json.Marshal(p)
-	if err != nil {
-		return nil, errors.Wrap(err, "error marshaling packer vars")
-	}
-
-	return data, nil
-}
-
-// enrichKubernetesFullVersion will enrich the kubernetes semver with build metadata added in via
-// overrides. A common example is the fips override, which adds +fips.buildnumber to the version.
-func enrichKubernetesFullVersion(config map[string]interface{}, userDefinedKubernetesVersion string) error {
-	var k8sVersion string
-	if k8sRaw, configHasK8s := config[kubernetesVersionKey]; configHasK8s {
-		if k8sFromConfig, isString := k8sRaw.(string); isString {
-			k8sVersion = k8sFromConfig
-		}
-	}
-	// If we have something from the user, use that
-	if userDefinedKubernetesVersion != "" {
-		k8sVersion = userDefinedKubernetesVersion
-	}
-
-	// if we couldn't find it in the config or the user didn't define it
-	if len(k8sVersion) == 0 {
-		return ErrKubernetesVersionMissing
-	}
-	metadata, ok := config[kubernetesBuildMetadataKey]
-	if !ok {
-		config[kubernetesFullVersionKey] = k8sVersion
-	} else {
-		config[kubernetesFullVersionKey] = fmt.Sprintf(
-			"%s+%s", k8sVersion, metadata)
-	}
-	return nil
-}
-
-func getString(config map[string]interface{}, key string) string {
-	i, ok := config[key]
-	if !ok {
-		return ""
-	}
-	s, ok := i.(string)
-	if !ok {
-		return ""
-	}
-	return s
 }
 
 // recursively merges maps into orig, orig is modified.
-func mergeMapsOverwrite(orig map[string]interface{}, maps ...map[string]interface{}) error {
+func MergeMapsOverwrite(orig map[string]interface{}, maps ...map[string]interface{}) error {
 	for _, m := range maps {
 		if err := mergo.Merge(&orig, m, mergo.WithOverride); err != nil {
 			return fmt.Errorf("error merging: %w", err)
@@ -392,22 +243,6 @@ func mergeMapsOverwrite(orig map[string]interface{}, maps ...map[string]interfac
 	return nil
 }
 
-func loadYAML(path string) (map[string]interface{}, error) {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("error opening %s: %w", path, err)
-	}
-
-	m := make(map[string]interface{})
-	if err := yaml.Unmarshal(data, m); err != nil {
-		return nil, fmt.Errorf("error parsing %s: %w", path, err)
-	}
-
-	return m, nil
-}
-
-const runDirectorySuffixLength = 5
-
 func createRunDirectory(buildName, dir string) (string, error) {
 	f := fmt.Sprintf("%s-%d-%s", buildName, time.Now().Unix(), stringutil.RandString(runDirectorySuffixLength))
 	s := filepath.Join(dir, f)
@@ -415,78 +250,4 @@ func createRunDirectory(buildName, dir string) (string, error) {
 		return "", fmt.Errorf("error creating work directory: %w", err)
 	}
 	return s, nil
-}
-
-func mergeUserArgs(config map[string]interface{}, initOptions InitOptions) {
-	// TODO: more platforms will cause this to grow, perhaps write a generator for it
-	if initOptions.UserArgs.KubernetesVersion != "" {
-		config[kubernetesVersionKey] = initOptions.UserArgs.KubernetesVersion
-	}
-
-	if initOptions.UserArgs.ContainerdVersion != "" {
-		config[containerdVersionKey] = initOptions.UserArgs.ContainerdVersion
-	}
-
-	p, ok := config["packer"]
-	if !ok {
-		return
-	}
-
-	packerMap, ok := p.(map[interface{}]interface{})
-	if !ok {
-		return
-	}
-
-	if initOptions.UserArgs.AWSBuilderRegion != "" {
-		packerMap[packerBuilderRegionKey] = initOptions.UserArgs.AWSBuilderRegion
-	}
-
-	if initOptions.UserArgs.AMIFilterName != "" {
-		packerMap[packerFilterNameKey] = initOptions.UserArgs.AMIFilterName
-	}
-
-	if initOptions.UserArgs.AMIFilterOwner != "" {
-		packerMap[packerFilterOwnerKey] = initOptions.UserArgs.AMIFilterOwner
-	}
-
-	if initOptions.UserArgs.AWSInstanceType != "" {
-		packerMap[packerInstanceType] = initOptions.UserArgs.AWSInstanceType
-	}
-
-	if len(initOptions.UserArgs.AMIRegions) > 0 {
-		packerMap[packerAMIRegionsKey] = strings.Join(initOptions.UserArgs.AMIRegions, ",")
-	}
-
-	if len(initOptions.UserArgs.AMIUsers) > 0 {
-		packerMap["ami_users"] = strings.Join(initOptions.UserArgs.AMIUsers, ",")
-	}
-
-	if len(initOptions.UserArgs.AMIGroups) > 0 {
-		packerMap["ami_groups"] = strings.Join(initOptions.UserArgs.AMIGroups, ",")
-	}
-
-	if initOptions.UserArgs.SourceAMI != "" {
-		packerMap[packerSourceAMIKey] = initOptions.UserArgs.SourceAMI
-		// using a specific AMI, clear filters
-		packerMap[packerFilterNameKey] = ""
-		packerMap[packerFilterOwnerKey] = ""
-	}
-}
-
-func isSourceAMIProvided(config map[string]interface{}) bool {
-	p, ok := config["packer"]
-	if !ok {
-		return false
-	}
-
-	packerMap, ok := p.(map[interface{}]interface{})
-	if !ok {
-		return false
-	}
-	d, ok := packerMap[packerSourceAMIKey]
-	if !ok {
-		return false
-	}
-
-	return d.(string) != ""
 }
