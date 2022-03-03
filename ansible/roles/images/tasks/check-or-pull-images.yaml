@@ -14,7 +14,7 @@
   changed_when: false
 
 - name: pull image  # noqa no-changed-when
-  command: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images pull {{ image_name }}
+  command: crictl pull {{ image_name }}
   when: image_name not in ctr_images_check.stdout
   register: ctr_images_pull
   failed_when: ctr_images_pull.rc != 0
