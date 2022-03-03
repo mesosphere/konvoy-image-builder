@@ -59,6 +59,10 @@
         "create_snapshot": "true",
         "convert_to_template": "true",
         ((- end ))
+        ((- if .UseBastion ))
+        "ssh_bastion_host": "(( .Bastion ))",
+        "ssh_bastion_password": "(( .BastionPassword ))",
+        ((- end ))
         "vm_name": "{{user `build_version`}}"
       }
     ],

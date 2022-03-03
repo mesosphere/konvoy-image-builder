@@ -13,6 +13,9 @@ import (
 type RenderOptions struct {
 	SourceAMIDefined bool
 	DryRun           bool
+	Bastion         string
+	UseBastion      bool
+	BastionPassword string
 }
 
 var packerManifests = map[string][]byte{

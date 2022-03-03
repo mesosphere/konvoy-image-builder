@@ -170,7 +170,11 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 			SourceAMIDefined: isSourceAMIProvided(config),
 			DryRun:           buildOptions.DryRun,
 		}
-
+		if buildOptions.PackerBuildFlags.Bastion != "" {
+			opts.UseBastion = true
+			opts.Bastion = buildOptions.PackerBuildFlags.Bastion
+			opts.BastionPassword = buildOptions.PackerBuildFlags.BastionPassword
+		}
 		var data []byte
 		data, err = packer.GetManifest(builderType, &opts)
 		if err != nil {
