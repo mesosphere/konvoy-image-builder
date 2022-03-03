@@ -4,7 +4,7 @@
   zypper_repository:
     name: kubernetes
     description: Konvoy Kubernetes package repository
-    repo: "{{ kubernetes_rpm_suse_repository_url }}"
+    repo: "{{ kubernetes_rpm_repository_url }}"
     disable_gpg_check: true
     autorefresh: true
   register: konvoy_repo_installation_rpm
@@ -15,7 +15,7 @@
 - name: import Konvoy Kubernetes rpm repository key
   rpm_key:
     state: present
-    key: "{{ kubernetes_rpm_suse_gpg_key_url }}"
+    key: "{{ kubernetes_rpm_gpg_key_url }}"
 
 - name: add Konvoy Containerd rpm repository
   zypper_repository:

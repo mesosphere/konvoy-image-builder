@@ -3,11 +3,8 @@ alma_linux_extra_repo_base_url: https://repo.almalinux.org/almalinux/$releasever
 alma_linux_extra_repo_mirror_list_url: https://mirrors.almalinux.org/mirrorlist/$releasever/extras
 alma_linux_gpg_key_url: https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
 # TODO: use overrides to set these
-kubernetes_rpm_repository_url: "https://packages.d2iq.com/konvoy/rpm/stable/centos/7/x86_64"
-kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
-
-kubernetes_rpm_suse_repository_url: "https://packages.d2iq.com/konvoy/rpm/stable/suse/{{ ansible_distribution_major_version|int }}/x86_64"
-kubernetes_rpm_suse_gpg_key_url: "https://packages.d2iq.com/konvoy/rpm-gpg-pub-key"
+kubernetes_rpm_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v{{ kubernetes_version }}-nokmem/x86_64"
+kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/stable/linux/repos/d2iq-sign-authority-gpg-public-key"
 
 ## Debian
 kubernetes_deb_repository_url: "https://packages.cloud.google.com/apt/"
