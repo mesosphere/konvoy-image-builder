@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v3
 
       - name: Environment Variables from Dotenv
         uses: c-py/action-dotenv-to-setenv@v3
