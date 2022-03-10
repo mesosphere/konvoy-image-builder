@@ -8,7 +8,6 @@ kubernetes_version: "1.21.6"
 containerd_version: "1.4.11"
 kubernetes_cni_version: "0.9.1"
 crictl_version: "1.22.0"
-kfips_version: "0.1.0"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 # Adding kubernetes_full_version for mitogen runs. This variable is always overridden
@@ -27,8 +26,7 @@ package_versions:
 # variable used for seeding images
 k8s_image_registry: "k8s.gcr.io"
 coredns_image_registry_repository: "k8s.gcr.io/coredns/coredns"
-control_plane_images:
-  - "docker.io/mesosphere/kfips:v{{ kfips_version }}"
+control_plane_images: []
 
 aws_images: []
 
