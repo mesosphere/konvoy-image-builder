@@ -3,7 +3,7 @@ module github.com/mesosphere/konvoy-image-builder
 go 1.16
 
 require (
-	github.com/brianvoe/gofakeit/v6 v6.14.5
+	github.com/brianvoe/gofakeit/v6 v6.15.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/imdario/mergo v0.3.12
 	github.com/mitchellh/go-homedir v1.1.0
