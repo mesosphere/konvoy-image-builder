@@ -62,6 +62,7 @@
         ((- if .UseBastion ))
         "ssh_bastion_host": "(( .Bastion ))",
         "ssh_bastion_password": "(( .BastionPassword ))",
+        "ssh_bastion_username": "(( .BastionUser ))",
         ((- end ))
         "vm_name": "{{user `build_version`}}"
       }

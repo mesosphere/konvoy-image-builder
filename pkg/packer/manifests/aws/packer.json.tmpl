@@ -76,6 +76,7 @@
       ((- if .UseBastion ))
       "ssh_bastion_host": "(( .Bastion ))",
       "ssh_bastion_password": "(( .BastionPassword ))",
+      "ssh_bastion_username": "(( .BastionUser ))",
       ((- end ))
       "vpc_id": "{{ user `vpc_id` }}",
       "subnet_id": "{{ user `subnet_id` }}",

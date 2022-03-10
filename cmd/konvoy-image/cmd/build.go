@@ -16,6 +16,7 @@ type buildCLIFlags struct {
 	packerBuildOnError    string
 	packerBastion         string
 	packerBastionPassword string
+	packerBastionUser     string
 	workDir               string
 	dryRun                bool
 
@@ -63,6 +64,7 @@ func NewBuildOptions() app.BuildOptions {
 			OnError:         buildFlags.packerBuildOnError,
 			Bastion:         buildFlags.packerBastion,
 			BastionPassword: buildFlags.packerBastionPassword,
+			BastionUser:     buildFlags.packerBastionUser,
 		},
 		CustomManifestPath: buildFlags.packerManifestPath,
 		DryRun:             buildFlags.dryRun,
@@ -80,4 +82,5 @@ func init() {
 	fs.BoolVar(&buildFlags.dryRun, "dry-run", false, "do not create artifacts, or delete them after creating. Recommended for tests.")
 	fs.StringVar(&buildFlags.packerBastion, "packer-build-bastion", "", "a bastion through the packer build will run ssh connections from")
 	fs.StringVar(&buildFlags.packerBastionPassword, "packer-build-bastion-password", "", "password for packer-build-bastion")
+	fs.StringVar(&buildFlags.packerBastionUser, "packer-build-bastion-user", "", "username for packer-build-bastion")
 }
