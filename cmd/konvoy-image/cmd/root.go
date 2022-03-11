@@ -108,7 +108,7 @@ func init() {
 			int(logging.TraceLevel),
 		),
 	)
-	fs.BoolVar(&rootCmdFlags.Color, "color", true, "enable color output")
+	fs.BoolVar(&rootCmdFlags.RootFlagsCommon.Color, "color", true, "enable color output")
 }
 
 var errVerboseCombo = errors.New(
