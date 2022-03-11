@@ -2,7 +2,7 @@
 
 Molecule Test: ![Teamcity Status](https://teamcity.mesosphere.io/app/rest/builds/buildType:%28id:ClosedSource_KonvoyImageBuilder_MoleculeTest%29/statusIcon.svg)
 
-The goal of Konvoy Image Builder (KIB) is to produce a common operating surface to run konvoy across heterogeneous infrastructure. KIB relies on ansible to install software, configure, and sanitize systems for running konvoy. Packer is used to build images for cloud environments. Goss is used to validate system’s are capable of running Konvoy.
+The goal of Konvoy Image Builder (KIB) is to produce a common operating surface to run Konvoy across heterogeneous infrastructure. KIB relies on ansible to install software, configure, and sanitize systems for running Konvoy. Packer is used to build images for cloud environments. Goss is used to validate system’s are capable of running Konvoy.
 
 ## Supported OS Families
 
@@ -17,7 +17,7 @@ Presently, KIB supports four OS families:
 
 - `ansible`: contains the ansible playbooks, roles, and default variables
 - `images`: contains image definitions for supported platforms. Presently, we provide AMI image definitions and generic image definitions. Generic image definitions are useful for preprovisioned infrastructure
-- `overrides`: contains variable overrides for nvidia and fips. Unless adding an overlay feature, these files can safely be ignored.
+- `overrides`: contains variable overrides for Nvidia and FIPS. Unless adding an overlay feature, these files can safely be ignored.
 
 ## Quickstart
 
@@ -50,7 +50,7 @@ launch the devkit run:
 make devkit.run
 ```
 
-By default the `devkit.run` target will run a shell, to specify another
+By default, the `devkit.run` target will run a shell, to specify another
 command, set the `WHAT` variable. For example to run `make build` in the
 devkit run:
 
@@ -82,7 +82,7 @@ will fail under `super-linter`, and is skipped for
 
 ### Testing
 
-To run an specific end-to-end test, use a subset of the commands used to run the complete set of end-to-end tests in CI.
+To run a specific end-to-end test, use a subset of the commands used to run the complete set of end-to-end tests in CI.
 
 In this example, we run the end-to-end test against the latest version of Flatcar Linux:
 

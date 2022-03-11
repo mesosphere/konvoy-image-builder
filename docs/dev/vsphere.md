@@ -1,34 +1,39 @@
-# Create OS images for vsphere
+# Create OS images for vSphere
 
-Creating vsphere images is a two step process
+Creating vSphere images is a two step process
 - Create base OS image
 - Create OS image for CAPI using the base OS image
 
 ## Create base OS image
 ----
-Creating base OS image form DVD ISO files is a one time process. A base vsphere template will be created as result of building base image.
+Creating base OS image form DVD ISO files is a one time process. A base vSphere template will be created as a result of building a base image.
 This base image template can be used to create more customized images.
 
-[TODO: Add steps and screenshots]
+<!-- [TODO: Add steps and screenshots] -->
 
 ## Create vSphere template image for CAPI
 ----
-The process to create base OS image will create a vSphere template in Vsphere. This template is a linked clone of the VM so any VM created from template will be provisioned quickly.
+The process to create a base OS image will create a vSphere template in vSphere. This template is a linked clone of the VM so any VM created from template will be provisioned quickly.
 
-**Environment Variables for vsphere:**
-NOTE: use vsphere server URL without `http://` or `https://`
+**Environment Variables for vSphere:**
+*NOTE:* use vSphere server URL without `http://` or `https://`
+
 ```bash
 VSPHERE_SERVER=example.vsphere.url
 VSPHERE_USERNAME=user@example.vsphere.url
 VSPHERE_PASSWORD=example_password
 ```
+
 **Environment Variables for RedHat subscription:**
+
 ```bash
 RHSM_USER=example_user
 RHSM_PASS=example_password
 ```
-**Packer variables for vsphere:**
-Following variables needed for the vsphere. Add this configuration in the `image.yaml`
+
+**Packer variables for vSphere:**
+Following variables are needed for the vSphere. Add this configuration in the `image.yaml`
+
 ```yaml
 packer:
   cluster: "example_zone"
@@ -46,8 +51,10 @@ packer:
   distribution_version: "example_7.9"
 ```
 
-## Create template image on vsphere
+## Create template image on vSphere
+
 ```bash
 konvoy-image build path/to/image.yaml
 ```
-checkout example image configuration at: `<project_root>/images/ova/` directory
+
+Checkout example image configuration at: [`<project_root>/images/ova/`](../../images/ova) directory.
