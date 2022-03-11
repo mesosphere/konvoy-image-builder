@@ -63,8 +63,9 @@ type ClusterArgs struct {
 }
 
 type UserArgs struct {
-	AmazonArgs
 	ClusterArgs
+
+	Amazon *AmazonArgs
 
 	// ExtraVars provided to ansible
 	ExtraVars []string

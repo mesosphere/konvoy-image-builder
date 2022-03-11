@@ -262,19 +262,18 @@ func loadYAML(path string) (Config, error) {
 }
 
 func MergeUserArgs(config Config, userArgs UserArgs) error {
-	err := config.Set(KubernetesVersionKey, userArgs.KubernetesVersion)
-	if err != nil {
+	if err := config.Set(KubernetesVersionKey, userArgs.KubernetesVersion); err != nil {
 		return fmt.Errorf("failed to set %s: %w", KubernetesVersionKey, err)
 	}
 
-	err = config.Set(ContainerdVersionKey, userArgs.ContainerdVersion)
-	if err != nil {
+	if err := config.Set(ContainerdVersionKey, userArgs.ContainerdVersion); err != nil {
 		return fmt.Errorf("failed to set %s: %w", ContainerdVersionKey, err)
 	}
 
-	err = MergeAmazonUserArgs(config, userArgs)
-	if err != nil {
-		return fmt.Errorf("failed to set amazon args: %w", err)
+	if userArgs.Amazon != nil {
+		if err := MergeAmazonUserArgs(config, userArgs.Amazon); err != nil {
+			return fmt.Errorf("failed to set amazon args: %w", err)
+		}
 	}
 
 	return nil
@@ -296,45 +295,45 @@ func setSourceAMI(config Config, sourceAMI string) error {
 	return nil
 }
 
-func MergeAmazonUserArgs(config Config, userArgs UserArgs) error {
-	if err := config.Set(PackerBuilderRegionPath, userArgs.AWSBuilderRegion); err != nil {
+func MergeAmazonUserArgs(config Config, amazonArgs *AmazonArgs) error {
+	if err := config.Set(PackerBuilderRegionPath, amazonArgs.AWSBuilderRegion); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerBuilderRegionPath, err)
 	}
 
-	if userArgs.SourceAMI != "" {
-		if err := setSourceAMI(config, userArgs.SourceAMI); err != nil {
+	if amazonArgs.SourceAMI != "" {
+		if err := setSourceAMI(config, amazonArgs.SourceAMI); err != nil {
 			return fmt.Errorf("failed to source ami: %w", err)
 		}
 	} else {
-		if err := config.Set(PackerFilterNamePath, userArgs.AMIFilterName); err != nil {
+		if err := config.Set(PackerFilterNamePath, amazonArgs.AMIFilterName); err != nil {
 			return fmt.Errorf("failed to set %s: %w", PackerFilterNamePath, err)
 		}
 
-		if err := config.Set(PackerFilterOwnerPath, userArgs.AMIFilterOwner); err != nil {
+		if err := config.Set(PackerFilterOwnerPath, amazonArgs.AMIFilterOwner); err != nil {
 			return fmt.Errorf("failed to set %s: %w", PackerFilterOwnerPath, err)
 		}
 	}
 
-	if err := config.Set(PackerInstanceTypePath, userArgs.AWSInstanceType); err != nil {
+	if err := config.Set(PackerInstanceTypePath, amazonArgs.AWSInstanceType); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerInstanceTypePath, err)
 	}
 
-	if len(userArgs.AMIRegions) > 0 {
-		value := strings.Join(userArgs.AMIRegions, ",")
+	if len(amazonArgs.AMIRegions) > 0 {
+		value := strings.Join(amazonArgs.AMIRegions, ",")
 		if err := config.Set(PackerAMIRegionsPath, value); err != nil {
 			return fmt.Errorf("failed to set %s: %w", PackerAMIRegionsPath, err)
 		}
 	}
 
-	if len(userArgs.AMIUsers) > 0 {
-		value := strings.Join(userArgs.AMIUsers, ",")
+	if len(amazonArgs.AMIUsers) > 0 {
+		value := strings.Join(amazonArgs.AMIUsers, ",")
 		if err := config.Set(PackerAMIUsersPath, value); err != nil {
 			return fmt.Errorf("failed to set %s: %w", PackerAMIUsersPath, err)
 		}
 	}
 
-	if len(userArgs.AMIGroups) > 0 {
-		value := strings.Join(userArgs.AMIGroups, ",")
+	if len(amazonArgs.AMIGroups) > 0 {
+		value := strings.Join(amazonArgs.AMIGroups, ",")
 		if err := config.Set(PackerAMIGroupsPath, value); err != nil {
 			return fmt.Errorf("failed to set %s: %w", PackerAMIGroupsPath, err)
 		}

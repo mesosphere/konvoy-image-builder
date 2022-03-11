@@ -1,13 +1,15 @@
-## konvoy-image generate
+## konvoy-image generate aws
 
-generate files relating to building images
-
-### Synopsis
-
-Generate files relating to building images. Specifying AWS arguments is deprecated and will be removed in a future version. Use the `aws` subcommand instead.
+generate files relating to building aws images
 
 ```
-konvoy-image generate <image.yaml> [flags]
+konvoy-image generate aws <image.yaml> [flags]
+```
+
+### Examples
+
+```
+aws --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml
 ```
 
 ### Options
@@ -19,7 +21,7 @@ konvoy-image generate <image.yaml> [flags]
       --aws-instance-type string         instance type used to build the AMI; the type must be present in the region in which the AMI is built
       --containerd-version string        the version of containerd to install
       --extra-vars strings               flag passed Ansible's extra-vars
-  -h, --help                             help for generate
+  -h, --help                             help for aws
       --kubernetes-version string        The version of kubernetes to install. Example: 1.21.6
       --overrides strings                a comma separated list of override YAML files
       --region string                    the region in which to build the AMI
@@ -38,6 +40,5 @@ konvoy-image generate <image.yaml> [flags]
 
 ### SEE ALSO
 
-* [konvoy-image](konvoy-image.md)	 - Create, provision, and customize images for running Konvoy
-* [konvoy-image generate aws](konvoy-image_generate_aws.md)	 - generate files relating to building aws images
+* [konvoy-image generate](konvoy-image_generate.md)	 - generate files relating to building images
 

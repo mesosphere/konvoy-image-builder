@@ -16,16 +16,13 @@ type generateCLIFlags struct {
 var generateFlags generateCLIFlags
 
 var generateCmd = &cobra.Command{
-	Use:     "generate <image.yaml>",
-	Short:   "generate files relating to building images",
-	Example: "generate --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml",
-	Args:    cobra.ExactArgs(1),
+	Use:   "generate <image.yaml>",
+	Short: "generate files relating to building images",
+	Long: "Generate files relating to building images. Specifying AWS arguments is deprecated " +
+		"and will be removed in a future version. Use the `aws` subcommand instead.",
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		builder := newBuilder()
-		_, err := builder.InitConfig(newInitOptions(args[0], generateFlags))
-		if err != nil {
-			bail("error rendering builder configuration", err, 2)
-		}
+		runGenerate(args[0])
 	},
 }
 
@@ -38,8 +35,23 @@ func newInitOptions(image string, flags generateCLIFlags) app.InitOptions {
 	}
 }
 
+func runGenerate(image string) {
+	builder := newBuilder()
+	_, err := builder.InitConfig(newInitOptions(image, generateFlags))
+	if err != nil {
+		bail("error rendering builder configuration", err, 2)
+	}
+}
+
 func init() {
-	initGenerateFlags(generateCmd.Flags(), &generateFlags)
+	initGenerateAws()
+
+	fs := generateCmd.Flags()
+
+	initGenerateFlags(fs, &generateFlags)
+	initAmazonFlags(fs, &generateFlags)
+
+	generateCmd.AddCommand(awsGenerateCmd)
 }
 
 func initGenerateFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
@@ -49,6 +61,6 @@ func initGenerateFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
 		&gFlags.userArgs.ClusterArgs.KubernetesVersion,
 		&gFlags.userArgs.ClusterArgs.ContainerdVersion,
 	)
-	addAWSUserArgs(fs, &gFlags.userArgs)
+
 	addExtraVarsArg(fs, &gFlags.userArgs.ExtraVars)
 }
