@@ -38,4 +38,4 @@ jobs:
           VALIDATE_TERRAGRUNT: false
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v2.5.2
+        uses: golangci/golangci-lint-action@v3.1.0
