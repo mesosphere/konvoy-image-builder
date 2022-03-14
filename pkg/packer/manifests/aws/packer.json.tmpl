@@ -32,7 +32,7 @@
     "ssh_bastion_host": "{{ user `ssh_bastion_host`}}",
     "ssh_bastion_username": "{{ user `ssh_bastion_username`}}",
     "ssh_bastion_password": "{{ user `ssh_bastion_password`}}",
-    "ssh_bastion_private_key": "{{ user `ssh_bastion_private_key` }}",
+    "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
     "build_name_extra": ""
   },
   "builders": [
@@ -81,7 +81,7 @@
       "ssh_bastion_host": "{{ user `ssh_bastion_host` }}",
       "ssh_bastion_username": "{{ user  `ssh_bastion_username` }}",
       "ssh_bastion_password": "{{ user `ssh_bastion_password` }}",
-      "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key` }}",
+      "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
       "subnet_id": "{{ user `subnet_id` }}",
       "security_group_id": "{{ user `security_group_id` }}",
       "tags": {
