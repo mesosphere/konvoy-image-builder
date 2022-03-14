@@ -109,23 +109,4 @@ resource "vsphere_virtual_machine" "konvoy-e2e-bastion" {
     datastore_id     = data.vsphere_datastore.datastore.id
     size = 80
   }
-
-  //provisioner "remote-exec" {
-  //  inline = [
-  //    "echo ok",
-  //    "mkdir /home/${var.root_user}/.ssh",
-  //    "touch /home/${var.root_user}/.ssh/authorized_keys",
-  //    "echo '${var.ssh_public_key_data}' >> /home/${var.root_user}/.ssh/authorized_keys",
-  //    "chown ${var.root_user}:${var.root_user} -R /home/${var.root_user}/.ssh",
-  //    "chmod 700 /home/${var.root_user}/.ssh",
-  //    "chmod 600 /home/${var.root_user}/.ssh/authorized_keys",
-  //  ]
-  //}
-  //connection {
-  //  host     = self.default_ip_address
-  //  type     = "ssh"
-  //  user     = var.root_user
-  //  password = var.root_password
-  //}
 }
-

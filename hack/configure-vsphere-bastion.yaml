@@ -1,0 +1,36 @@
+---
+- hosts: bastion
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  tasks:
+    - name: Set authorized key for builder user
+      authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ lookup('file', '{{ item.key }}') }}"
+      with_items: "{{ ssh_users }}"
+
+    - name: Disable Password Authentication
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: "PasswordAuthentication no"
+        state: present
+        backup: yes
+
+    - name: Disable Root Login
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: "PermitRootLogin no"
+        state: present
+        backup: yes
+      notify:
+          - restart ssh
+
+  handlers:
+   - name: restart ssh
+     service:
+       name: sshd
+       state: restarted
