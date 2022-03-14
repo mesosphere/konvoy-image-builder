@@ -12,7 +12,6 @@ packer:
   folder: "cluster-api"
   insecure_connection: "false"
   network: "Airgapped"
-  username: "flQjDyUbVtBm"
   resource_pool: "Users"
   template: "base-rhel-7"
   vsphere_guest_os_type: "rhel7_64Guest"

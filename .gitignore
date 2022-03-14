@@ -7,6 +7,7 @@
 *.dll
 *.so
 *.dylib
+*.swp
 
 # Test binary, built with `go test -c`
 *.test
@@ -65,3 +66,4 @@ flatcar-version.yaml
 /cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 packer-custom-vpc-override.yaml
 .env
+packer-vsphere-airgap.yaml

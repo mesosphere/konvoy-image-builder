@@ -11,7 +11,6 @@ packer:
   datastore: "ovh-nfs"
   folder: "cluster-api"
   insecure_connection: "false"
-  username: "flQjDyUbVtBm"
   network: "Airgapped"
   resource_pool: "Users"
   template: "base-rhel-8"
