@@ -37,5 +37,8 @@ jobs:
           # This can be removed when a release > 4.2.2 exists.
           VALIDATE_TERRAGRUNT: false
 
+      - name: Setup Go
+        uses: actions/setup-go@v2
+
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3.1.0
