@@ -1,8 +1,14 @@
+terraform {
+  required_providers {
+    vsphere =  {
+      version = "1.15.0"
+    }
+  }
+}
 provider "vsphere" {
   allow_unverified_ssl = false
-  version = "1.15.0"
-}
 
+}
 variable "datacenter_name" {
   description = "The datacenter name"
   default     = "dc1"
@@ -39,14 +45,6 @@ variable "root_user" {
   default     = "builder"
 }
 
-variable "root_password" {
-  description = "The root password"
-}
-
-variable "ssh_public_key_data" {
-  description = "The data of the public SSH key to use for the public instance"
-}
-
 data "vsphere_datacenter" "dc" {
   name = var.datacenter_name
 }
@@ -74,10 +72,6 @@ data "vsphere_network" "network_airgapped" {
 data "vsphere_virtual_machine" "bastion_template" {
   name          = var.bastion_vm_template
   datacenter_id = data.vsphere_datacenter.dc.id
-}
-
-resource "tls_private_key" "cluster-ssh-key" {
-  algorithm   = "RSA"
 }
 
 resource "vsphere_virtual_machine" "konvoy-e2e-bastion" {
@@ -109,4 +103,8 @@ resource "vsphere_virtual_machine" "konvoy-e2e-bastion" {
     datastore_id     = data.vsphere_datastore.datastore.id
     size = 80
   }
+}
+
+output "bastion_ip" {
+  value = vsphere_virtual_machine.konvoy-e2e-bastion.guest_ip_addresses
 }

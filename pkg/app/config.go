@@ -22,8 +22,9 @@ const (
 	packerKIBVersionKey           = "konvoy_image_builder_version"
 	packerSSHBastionHostKey       = "ssh_bastion_host"
 	packerSSHBastionUsernameKey   = "ssh_bastion_username"
-	packerSSHBastionPasswordKey   = "ssh_bastion_password"
-	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file"
+	packerSSHBastionPasswordKey   = "ssh_bastion_password"         //nolint:gosec // just a key
+	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file" //nolint:gosec // just a key
+
 )
 
 type Config map[string]interface{}
