@@ -29,6 +29,9 @@
     "distribution": "",
     "distribution_version": "",
     "kubernetes_full_version": "",
+    "bastion_host": "{{ user `bastion_host`}}",
+    "bastion_username": "{{ user `bastion_username`}}",
+    "bastion_password": "{{ user `bastion_password`}}",
     "build_name_extra": ""
   },
   "builders": [
@@ -73,12 +76,10 @@
       "iam_instance_profile": "{{user `iam_instance_profile`}}",
       "skip_profile_validation": "{{user `skip_profile_validation`}}",
       "ssh_username": "{{user `ssh_username`}}",
-      ((- if .UseBastion ))
-      "ssh_bastion_host": "(( .Bastion ))",
-      "ssh_bastion_password": "(( .BastionPassword ))",
-      "ssh_bastion_username": "(( .BastionUser ))",
-      ((- end ))
       "vpc_id": "{{ user `vpc_id` }}",
+      "ssh_bastion_host": "{{ user `bastion_host` }}",
+      "ssh_bastion_password": "{{ user `bastion_password` }}",
+      "ssh_bastion_username": "{{ user  `bastion_username` }}",
       "subnet_id": "{{ user `subnet_id` }}",
       "security_group_id": "{{ user `security_group_id` }}",
       "tags": {

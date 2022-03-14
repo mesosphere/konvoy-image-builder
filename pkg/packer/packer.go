@@ -24,15 +24,12 @@ type CLIRunner struct {
 }
 
 type BuildFlags struct {
-	Force           bool
-	Debug           bool
-	Color           bool
-	OnError         string
-	VarFiles        []string
-	Vars            map[string]string
-	Bastion         string
-	BastionPassword string
-	BastionUser     string
+	Force    bool
+	Debug    bool
+	Color    bool
+	OnError  string
+	VarFiles []string
+	Vars     map[string]string
 }
 
 var ErrCLI = errors.New("error running packer")

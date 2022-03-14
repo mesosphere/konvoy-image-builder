@@ -29,6 +29,9 @@
         "distribution_version": "",
         "shutdown_command": "shutdown -P now",
         "kubernetes_full_version": "",
+        "bastion_host": "{{ user `bastion_host`}}",
+        "bastion_username": "{{ user `bastion_username`}}",
+        "bastion_password": "{{ user `bastion_password`}}",
         "build_name_extra": ""
     },
     "builders": [
@@ -59,11 +62,9 @@
         "create_snapshot": "true",
         "convert_to_template": "true",
         ((- end ))
-        ((- if .UseBastion ))
-        "ssh_bastion_host": "(( .Bastion ))",
-        "ssh_bastion_password": "(( .BastionPassword ))",
-        "ssh_bastion_username": "(( .BastionUser ))",
-        ((- end ))
+        "ssh_bastion_host": "{{ user `bastion_host` }}",
+        "ssh_bastion_password": "{{ user `bastion_password` }}",
+        "ssh_bastion_username": "{{ user  `bastion_username` }}",
         "vm_name": "{{user `build_version`}}"
       }
     ],

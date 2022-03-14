@@ -8,10 +8,11 @@ guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasour
 packer:
   cluster: "zone1"
   datacenter: "dc1"
-  datastore: "datastore1"
+  datastore: "ovh-nfs"
   folder: "cluster-api"
   insecure_connection: "false"
-  network: "Public"
+  username: "flQjDyUbVtBm"
+  network: "Airgapped"
   resource_pool: "Users"
   template: "base-rhel-8"
   vsphere_guest_os_type: "rhel8_64Guest"
