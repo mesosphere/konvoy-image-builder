@@ -16,10 +16,14 @@ import (
 )
 
 const (
-	httpProxyKey        = "http_proxy"
-	httpsProxyKey       = "https_proxy"
-	noProxyKey          = "no_proxy"
-	packerKIBVersionKey = "konvoy_image_builder_version"
+	httpProxyKey                  = "http_proxy"
+	httpsProxyKey                 = "https_proxy"
+	noProxyKey                    = "no_proxy"
+	packerKIBVersionKey           = "konvoy_image_builder_version"
+	packerSSHBastionHostKey       = "ssh_bastion_host"
+	packerSSHBastionUsernameKey   = "ssh_bastion_username"
+	packerSSHBastionPasswordKey   = "ssh_bastion_password"
+	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file"
 )
 
 type Config map[string]interface{}
@@ -194,6 +198,15 @@ func GenPackerVars(config Config, extraVarsPath string) ([]byte, error) {
 	p[httpsProxyKey] = config.Get(httpsProxyKey)
 	p[noProxyKey] = config.Get(noProxyKey)
 	p[packerKIBVersionKey] = version.Version()
+
+	// if there's no Bastion default to empty values
+	// to satisfy packer
+	if _, ok := p[packerSSHBastionHostKey]; !ok {
+		p[packerSSHBastionUsernameKey] = ""
+		p[packerSSHBastionHostKey] = ""
+		p[packerSSHBastionPasswordKey] = ""
+		p[packerSSHBastionPrivateKeyKey] = ""
+	}
 
 	data, err := json.Marshal(p)
 	if err != nil {
