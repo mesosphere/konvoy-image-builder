@@ -131,6 +131,7 @@ endif
 
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
+include test/infra/vsphere/Makefile
 
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 	docker build \
@@ -165,7 +166,6 @@ export CONTAINERD_VERSION ?= $(shell grep -E -e "containerd_version:" ansible/gr
 export SAVE_IMAGE_LIST_FILE ?= images.out
 export SAVE_IMAGE_EXTRA_LIST_FILE ?= ""
 export SAVE_IMAGE_TAR_FILE_NAME ?= kubernetes_image_bundle_${DEFAULT_KUBERNETES_VERSION}_linux_amd64.tar.gz
-
 
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
@@ -273,12 +273,12 @@ rhel84-ova: ## Build RHEL 8.4 image
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel84-ova-offline
-rhel84-ova-offline:
+rhel84-ova-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make rhel84-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel84-ova-fips
 rhel84-ova-fips: ## Build RHEL 7.9 FIPS image
@@ -331,12 +331,12 @@ rhel79-ova: ## Build RHEL 7.9 image
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel79-ova-offline
-rhel79-ova-offline:
+rhel79-ova-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) devkit.run WHAT="make save-images"
 	$(MAKE) devkit.run WHAT="make rhel79-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel79-ova-fips
 rhel79-ova-fips: ## Build RHEL 7.9 FIPS image

@@ -27,8 +27,11 @@
         "manifest_output": "manifest.json",
         "distribution": "",
         "distribution_version": "",
-        "shutdown_command": "shutdown -P now",
         "kubernetes_full_version": "",
+        "ssh_bastion_host": "{{ user `ssh_bastion_host`}}",
+        "ssh_bastion_username": "{{ user `ssh_bastion_username`}}",
+        "ssh_bastion_password": "{{ user `ssh_bastion_password`}}",
+        "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
         "build_name_extra": ""
     },
     "builders": [
@@ -54,11 +57,14 @@
         "template": "{{user `template`}}",
         "username": "{{user `username`}}",
         "vcenter_server": "{{user `vcenter_server`}}",
-        "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c '{{user `shutdown_command`}}'",
         ((- if not .DryRun ))
         "create_snapshot": "true",
         "convert_to_template": "true",
         ((- end ))
+        "ssh_bastion_host": "{{ user `ssh_bastion_host` }}",
+        "ssh_bastion_username": "{{ user  `ssh_bastion_username` }}",
+        "ssh_bastion_password": "{{ user `ssh_bastion_password` }}",
+        "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
         "vm_name": "{{user `build_version`}}"
       }
     ],
