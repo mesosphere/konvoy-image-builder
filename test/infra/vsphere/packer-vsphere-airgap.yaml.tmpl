@@ -1,3 +1,8 @@
+# SSH_BASTION_USERNAME and SSH_BASTION_HOST are set as environment variables
+# by the user and updated on Teamcity as needed.
+# The ssh_bastion_private_key_file is hardcoded to use the devkit container path
+# as thats where these run in CI. If a user wants to run locally, they must update
+# the appropirate ova make goals and change this path.
 packer:
   ssh_bastion_username: "${SSH_BASTION_USERNAME}"
   ssh_bastion_host: "${SSH_BASTION_HOST}"
