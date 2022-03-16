@@ -163,9 +163,6 @@ export DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell grep -E -e "kubernetes_versi
 export DEFAULT_KUBERNETES_VERSION ?= v${DEFAULT_KUBERNETES_VERSION_SEMVER}
 export CONTAINERD_VERSION ?= $(shell grep -E -e "containerd_version:" ansible/group_vars/all/defaults.yaml | cut -d\" -f2)
 
-export SAVE_IMAGE_LIST_FILE ?= images.out
-export SAVE_IMAGE_EXTRA_LIST_FILE ?= ""
-export SAVE_IMAGE_TAR_FILE_NAME ?= kubernetes_image_bundle_${DEFAULT_KUBERNETES_VERSION}_linux_amd64.tar.gz
 
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
@@ -188,7 +185,7 @@ centos7: ## Build Centos 7 image
 centos7-offline: ## Build Centos 7 image
 	$(MAKE) os_distribution=centos os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) bundle_suffix= download-images-bundle
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make centos7 BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
@@ -229,7 +226,7 @@ rhel82-fips: ## Build RHEL 8.2 FIPS image
 rhel82-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make rhel82-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
@@ -250,7 +247,7 @@ rhel84-fips: ## Build RHEL 8.4 FIPS image
 rhel84-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make rhel84-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
@@ -276,7 +273,7 @@ rhel84-ova: ## Build RHEL 8.4 image
 rhel84-ova-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) bundle_suffix= download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel84-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -288,7 +285,7 @@ rhel84-ova-fips: ## Build RHEL 7.9 FIPS image
 rhel84-ova-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel84-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -308,7 +305,7 @@ rhel79-fips: ## Build RHEL 7.9 FIPS image
 rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
 	$(MAKE) devkit.run WHAT="make rhel79-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
@@ -334,7 +331,7 @@ rhel79-ova: ## Build RHEL 7.9 image
 rhel79-ova-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images"
+	$(MAKE) bundle_suffix= download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel79-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -346,7 +343,7 @@ rhel79-ova-fips: ## Build RHEL 7.9 FIPS image
 rhel79-ova-fips-offline:
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) devkit.run WHAT="make save-images EXTRA_VARS='@./overrides/fips.yaml'"
+	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel79-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
@@ -704,25 +701,14 @@ release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 	$(MAKE) GOOS=windows release-bundle-GOOS
 	$(MAKE) GOOS=darwin release-bundle-GOOS
 
-.PHONY: create-image-list
-create-image-list:
-	@rm -f images.out
-	@ansible-playbook ./ansible/list-images.yaml -e="@./images/common.yaml" $(if $(EXTRA_VARS),-e="${EXTRA_VARS}")
-	@cat images.out
+AIRGAPPED_BUNDLE_URL = konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
 
-artifacts/images:
-	mkdir -p artifacts/images
-
-.PHONY: save-images
-save-images: artifacts/images
-save-images:
-	$(MAKE) create-image-list $(if $(EXTRA_VARS),EXTRA_VARS=${EXTRA_VARS})
-	@rm -f $(SAVE_IMAGE_TAR_FILE_NAME)
-	@./hack/save-images.sh $(SAVE_IMAGE_LIST_FILE) $(SAVE_IMAGE_EXTRA_LIST_FILE) artifacts/images/$(SAVE_IMAGE_TAR_FILE_NAME)
-
-OS_PACKAGES_BUNDLE_URL = konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
+.PHONY: download-images-bundle
+download-images-bundle:
+	mkdir -p artifacts/images/
+	curl -o artifacts/images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/kubernetes-images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz
 
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle:
 	mkdir -p artifacts/
-	curl -o artifacts/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(OS_PACKAGES_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
+	curl -o artifacts/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
