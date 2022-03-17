@@ -181,6 +181,10 @@ centos7: ## Build Centos 7 image
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
+.PHONY: centos7-fips
+centos7-fips: ## Build CENTOS 7.9 FIPS image
+	$(MAKE) centos7 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
+		
 .PHONY: centos7-offline
 centos7-offline: ## Build Centos 7 image
 	$(MAKE) os_distribution=centos os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
