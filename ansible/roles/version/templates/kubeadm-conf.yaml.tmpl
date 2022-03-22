@@ -1,0 +1,11 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+dns:
+  imageRepository: k8s.gcr.io
+etcd:
+  local:
+    imageRepository: {{ k8s_image_registry }}
+    imageTag: {{ hardcoded_etcd_fips_version }}
+imageRepository: {{ k8s_image_registry }}
+kubernetesVersion: {{ kubeadm_version }}
