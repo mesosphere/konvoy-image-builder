@@ -17,6 +17,7 @@ import (
 	terminal "golang.org/x/term"
 
 	"github.com/mesosphere/konvoy-image-builder/cmd/konvoy-image-wrapper/image"
+	"github.com/mesosphere/konvoy-image-builder/pkg/app"
 )
 
 const (
@@ -36,6 +37,8 @@ const (
 	envAWSSTSRegionalEndpoints = "AWS_STS_REGIONAL_ENDPOINTS"
 	envAWSSDKLoadConfig        = "AWS_SDK_LOAD_CONFIG"
 	envAWSCABundle             = "AWS_CA_BUNDLE"
+
+	envAzureLocation = "AZURE_LOCATION"
 
 	envHTTPSProxy = "HTTPS_PROXY"
 	envHTTPProxy  = "HTTP_PROXY"
@@ -164,6 +167,23 @@ func (r *Runner) setAWSEnv() error {
 	}
 
 	return nil
+}
+
+func (r *Runner) setAzureEnv() {
+	azureEnvVars := []string{
+		envAzureLocation,
+		app.AzureClientIDEnvVariable,
+		app.AzureClientSecretEnvVariable,
+		app.AzureSubscriptionIDEnvVariable,
+		app.AzureTenantIDEnvVariable,
+	}
+
+	for _, env := range azureEnvVars {
+		value, found := os.LookupEnv(env)
+		if found {
+			r.env[env] = value
+		}
+	}
 }
 
 // awsCABundle will return the path to a custom AWS CA bundle from AWS_CA_BUNDLE env var.
@@ -417,6 +437,8 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return err
 	}
+
+	r.setAzureEnv()
 
 	err = r.setHTTPProxyEnv()
 	if err != nil {

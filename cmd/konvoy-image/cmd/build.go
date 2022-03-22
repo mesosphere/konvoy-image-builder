@@ -76,6 +76,7 @@ func NewBuildOptions() app.BuildOptions {
 
 func init() {
 	initBuildAws()
+	initBuildAzure()
 
 	fs := buildCmd.Flags()
 
@@ -85,6 +86,7 @@ func init() {
 	addBuildArgs(fs, &buildFlags)
 
 	buildCmd.AddCommand(awsBuildCmd)
+	buildCmd.AddCommand(azureBuildCmd)
 }
 
 func addBuildArgs(fs *flag.FlagSet, buildArgs *buildCLIFlags) {

@@ -91,6 +91,7 @@ RUN apt-get update \
     && pip3 install --no-cache-dir \
         ansible=="${ANSIBLE_VERSION}" \
         awscli \
+        azure-cli \
         docker=="${DOCKER_PY_VERSION}" \
         netaddr \
     && rm -rf \

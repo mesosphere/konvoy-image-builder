@@ -7,9 +7,9 @@ import _ "embed"
 //PackerAmazon storage for AWS packer template.
 var PackerAmazon []byte
 
-// add more embedded files here
-// packer/azure/packer.json.tmpl for example
-// var PackerAzure []byte
+//go:embed azure/packer.json.tmpl
+//PackerAzure storage for Azurepacker template.
+var PackerAzure []byte
 
 //go:embed vsphere/packer.json.tmpl
 //PackerVsphere storage for vSphere packer base template.

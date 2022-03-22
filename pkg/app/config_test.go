@@ -69,11 +69,21 @@ func TestConfigGetSlicetWithError(t *testing.T) {
 			"one",
 			"two",
 		},
+
+		"interface": []interface{}{
+			"three",
+			"four",
+		},
 	}
 
 	value, err := config.GetSliceWithError("slice")
 	if assert.NoError(t, err) {
 		assert.Equal(t, []string{"one", "two"}, value)
+	}
+
+	value, err = config.GetSliceWithError("interface")
+	if assert.NoError(t, err) {
+		assert.Equal(t, []string{"three", "four"}, value)
 	}
 
 	_, err = config.GetSliceWithError("slice1")
@@ -310,6 +320,78 @@ func TestMergeAmazonUserArgs(t *testing.T) {
 	value, err = config.GetWithError(app.PackerSourceAMIPath)
 	assert.NoError(t, err)
 	assert.Equal(t, amazonArgs.SourceAMI, value)
+}
+
+func TestMergeAzureUserArgs(t *testing.T) {
+	config := app.Config{
+		"packer": map[interface{}]interface{}{},
+	}
+
+	azureArgs := &app.AzureArgs{
+		Location: gofakeit.Word(),
+	}
+
+	if err := app.MergeAzureUserArgs(config, azureArgs); assert.NoError(t, err) {
+		if value, err := config.GetSliceWithError(
+			app.PackerAzureGalleryLocations,
+		); assert.NoError(t, err) {
+			assert.Equal(t, []string{azureArgs.Location}, value)
+		}
+	}
+
+	azureArgs.GalleryImageLocations = []string{
+		gofakeit.Word(),
+		gofakeit.Word(),
+		gofakeit.Word(),
+	}
+
+	azureArgs.GalleryImageName = gofakeit.Word()
+	azureArgs.GalleryImageOffer = gofakeit.Word()
+	azureArgs.GalleryImagePublisher = gofakeit.Word()
+	azureArgs.GalleryImageSKU = gofakeit.Word()
+	azureArgs.GalleryName = gofakeit.Word()
+	azureArgs.ResourceGroupName = gofakeit.Word()
+	azureArgs.SubscriptionID = gofakeit.Word()
+
+	if err := app.MergeAzureUserArgs(config, azureArgs); assert.NoError(t, err) {
+		if value, err := config.GetSliceWithError(
+			app.PackerAzureGalleryLocations,
+		); assert.NoError(t, err) {
+			assert.Equal(t, azureArgs.GalleryImageLocations, value)
+		}
+
+		value, err := config.GetWithError(app.PackerAzureGalleryImageNamePath)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.GalleryImageName, value)
+
+		value, err = config.GetWithError(app.PackerAzureGalleryImageOfferPath)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.GalleryImageOffer, value)
+
+		value, err = config.GetWithError(app.PackerAzureGalleryImagePublisherPath)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.GalleryImagePublisher, value)
+
+		value, err = config.GetWithError(app.PackerAzureGalleryImageSKU)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.GalleryImageSKU, value)
+
+		value, err = config.GetWithError(app.PackerAzureLocation)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.Location, value)
+
+		value, err = config.GetWithError(app.PackerAzureGalleryNamePath)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.GalleryName, value)
+
+		value, err = config.GetWithError(app.PackerAzureResourceGroupNamePath)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.ResourceGroupName, value)
+
+		value, err = config.GetWithError(app.PackerAzureSubscriptionIDPath)
+		assert.NoError(t, err)
+		assert.Equal(t, azureArgs.SubscriptionID, value)
+	}
 }
 
 func TestConfigEnrichKubernetesFullVersion(t *testing.T) {
