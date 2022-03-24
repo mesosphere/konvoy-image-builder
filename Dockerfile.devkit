@@ -4,7 +4,7 @@ FROM golangci/golangci-lint:v1.44.2-alpine as golangci-lint
 FROM goreleaser/goreleaser:v1.7.0 as goreleaser
 FROM docker:20.10 as docker
 
-FROM golang:1.17.8 as builder
+FROM golang:1.17.8-alpine3.15 as builder
 
 # NOTE(jkoelker) since this is a multistage build we
 #                can have an explosion at the layer
@@ -12,11 +12,10 @@ FROM golang:1.17.8 as builder
 
 RUN mkdir -p /tools
 
-# NOTE(jkoelker) Ignore "Pin versions in apt get install.
-# hadolint ignore=DL3008
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-        p7zip-full
+# NOTE(jkoelker) Ignore "Multiple consecutive `RUN` | Pin versions in apk add."
+# hadolint ignore=DL3059,DL3018
+RUN apk add --no-cache \
+        p7zip
 
 ARG PACKER_GOSS_VERSION=3.0.3
 ARG PACKER_GOSS_SHA265=1994069f78d44a76d463b76fef42c7e4ab412df14703a51643642ecdefa2c029
@@ -56,11 +55,11 @@ RUN wget \
     && chmod +x /tools/gocover-cobertura
 
 # NOTE(jkoelker) From here we care about layers
-FROM golang:1.17.8
+FROM golang:1.17.8-alpine3.15
 
 ARG ANSIBLE_VERSION=2.10.7
 ARG DOCKER_PY_VERSION=5.0.3
-ENV ANSIBLE_PATH=/usr/local
+ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
 
 ARG USER_NAME=root
@@ -70,24 +69,28 @@ ARG GROUP_ID=0
 ARG DOCKER_GID=0
 
 # NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
-# hadolint ignore=DL3013,DL3008
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-        libc-dev \
+# hadolint ignore=DL3013,DL3018
+RUN apk add --no-cache \
+        bash \
+        curl \
         git \
         gcc \
         jq \
+        libc6-compat \
+        musl-dev \
         make \
-        bash \
         openssl \
         openssh-client \
         python3 \
-        unzip \
-        gettext-base \
-        python3-cryptography \
-        python3-pip \
-        python3-setuptools \
-        python3-wheel \
+        python3-dev \
+        gettext \
+        py3-cffi \
+        py3-cryptography \
+        py3-pynacl \
+        py3-pip\
+        py3-psutil \
+        py3-setuptools \
+        py3-wheel \
     && pip3 install --no-cache-dir \
         ansible=="${ANSIBLE_VERSION}" \
         awscli \
@@ -95,11 +98,11 @@ RUN apt-get update \
         docker=="${DOCKER_PY_VERSION}" \
         netaddr \
     && rm -rf \
-        /root/.cache \
-        /var/lib/apt/lists/*
+        /root/.cache
 
-# hadolint ignore=DL3059,DL4006
-RUN  curl -fsSL https://goss.rocks/install | GOSS_VER=v0.3.16 GOSS_DST=/usr/local/bin sh
+RUN  curl -fsSL --output /tmp/goss.install  https://goss.rocks/install \
+    && GOSS_VER=v0.3.16 GOSS_DST=/usr/local/bin bash /tmp/goss.install \
+    && rm /tmp/goss.install
 COPY --from=packer /bin/packer /usr/local/bin/
 COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
 COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
@@ -107,20 +110,19 @@ COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 COPY --from=builder /tools /usr/local/bin
 
 RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
-    || addgroup --system --gid "${GROUP_ID}" "${GROUP_NAME}"
+    || addgroup -S -g "${GROUP_ID}" "${GROUP_NAME}"
 
 # NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
 # hadolint ignore=DL3059
 RUN getent passwd "${USER_ID}" > /dev/null 2>&1 \
-    || adduser --system --disabled-password \
-        --uid "${USER_ID}" --gid "${GROUP_ID}" "${USER_NAME}"
+    || adduser -D -u "${USER_ID}" -G "${GROUP_NAME}" "${USER_NAME}"
 
 # NOTE(jkoelker) Ignore "A && B || C is not if-then-else"
 # NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
 # hadolint ignore=SC2015,DL3059
 RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
         getent group "${DOCKER_GID}" > /dev/null 2>&1 \
-            || addgroup --system --gid "${DOCKER_GID}" "docker"; \
+            || addgroup -S -g "${DOCKER_GID}" "docker"; \
         getent group ${DOCKER_GID} >> /tmp/docker.group \
             && cut -d: -f1 /tmp/docker.group >> /tmp/docker.group_name \
             && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
