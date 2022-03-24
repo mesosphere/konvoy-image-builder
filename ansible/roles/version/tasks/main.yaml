@@ -1,26 +1,25 @@
 ---
 # NOTE(jkoelker) Grab the build tag (eg. `fips.0` from `v1.21.6+fips.0`)
 - name: detect build
-  shell: kubeadm version -o short | cut -d+ -f2 -s
-  register: kubeadm_build_tag
+  shell: kubeadm version -o short
+  register: kubeadm_version_out
 
-- name: set kubernetes build tag
+- name: set kubeadm version
   set_fact:
-    kubernetes_build_tag: "{{ kubeadm_build_tag.stdout | trim }}"
+    kubeadm_version: "{{ kubeadm_version_out.stdout | trim }}"
 
-# NOTE(jkoelker) If `kubeadm` has a build tag, append that to the images.
-#                Since kubernets uses a build tag on their `etcd` images (e.g
-#                `-0` from `k8s.gcr.io/etcd:3.4.13-0`), strip it prior to
-#                appending the build tag from `kubeadm`. Since the `pause`
-#                image does not need a fips version, it is not tagged with
-#                the build tag.
+# TODO(dkoshkin) remove this hardcoded version when additional images are built for FIPS
+- name: set hardcoded etcd image
+  set_fact:
+    hardcoded_etcd_fips_version:  "{{ 'v3.4.13_fips.0' if 'fips' in kubeadm_version else '' }}"
+
+- name: copy kubeadm config
+  template:
+    src: "kubeadm-conf.yaml.tmpl"
+    dest: "kubeadm-conf.yaml"
+
 - name: determine kubernetes images
-  shell: |
-    kubeadm config images list --kubernetes-version='{{ kubernetes_semver }}' --image-repository '{{ k8s_image_registry }}' |
-    sed 's/^\(.\+etcd:\)\(.\+\)-\([0-9]\+\)$/\1{{ "\2-\3" if not kubernetes_build_tag else "v\2"}}/' |
-    sed 's/$/{{ '_' + kubernetes_build_tag if kubernetes_build_tag }}/' |
-    sed 's/^\(.\+pause:.\+\)_{{ kubernetes_build_tag }}$/\1/' |
-    sed 's#^\(.\+coredns:\)\(.\+\)_{{ kubernetes_build_tag }}#{{ coredns_image_registry_repository }}:\2#'
+  shell: kubeadm config images list --config kubeadm-conf.yaml
   register: kubernetes_kubeadm_images
 
 - name: set kubernetes images

@@ -7,14 +7,7 @@ fips:
 build_name_extra: -fips
 kubernetes_build_metadata: fips.0
 default_image_repo: hub.docker.io/mesosphere
-kubernetes_rpm_repository_url: "\
-  https://kubernetes-fips.s3.us-east-2.amazonaws.com\
-  /{{ ansible_distribution_major_version|int }}\
-  /x86_64"
-kubernetes_rpm_gpg_key_url: "\
-  https://kubernetes-fips.s3.us-east-2.amazonaws.com\
-  /{{ ansible_distribution_major_version|int }}\
-  /rpm-gpg-pub-key"
+kubernetes_rpm_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v{{ kubernetes_version }}-fips/x86_64"
 docker_rpm_repository_url: "\
   https://containerd-fips.s3.us-east-2.amazonaws.com\
   /{{ ansible_distribution_major_version|int }}\
