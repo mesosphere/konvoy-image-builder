@@ -54,6 +54,14 @@
         "ssh_password": "{{user `ssh_password`}}",
         "ssh_timeout": "4h",
         "ssh_username": "{{user `ssh_username`}}",
+        "ssh_key_exchange_algorithms": [
+          "curve25519-sha256@libssh.org"
+          "ecdh-sha2-nistp256",
+          "ecdh-sha2-nistp384",
+          "ecdh-sha2-nistp521",
+          "diffie-hellman-group14-sha1",
+          "diffie-hellman-group1-sha1",
+        ],
         "template": "{{user `template`}}",
         "username": "{{user `username`}}",
         "vcenter_server": "{{user `vcenter_server`}}",
@@ -103,7 +111,7 @@
         "playbook_file": "./ansible/provision.yaml",
         "user": "{{user `ssh_username`}}",
         "ansible_env_vars": [
-          "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
+          "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'",
           "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
         ],
         "extra_arguments": [
