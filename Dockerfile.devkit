@@ -3,6 +3,7 @@ FROM hashicorp/packer:1.8.0 as packer
 FROM golangci/golangci-lint:v1.44.2-alpine as golangci-lint
 FROM goreleaser/goreleaser:v1.7.0 as goreleaser
 FROM docker:20.10 as docker
+FROM vmware/govc:v0.27.4 as govc
 
 FROM golang:1.17.8-alpine3.15 as builder
 
@@ -53,22 +54,6 @@ RUN wget \
     && sha256sum -c "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
     && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
     && chmod +x /tools/gocover-cobertura
-
-ARG GOVC_VERSION=v0.27.4
-ARG GOVC_FILE="govc_Linux_x86_64.tar.gz"
-ARG GOVC_SHA256=529d357cc504df17199971fa0586af5e381f1c15482dc0eda60ff5c9b17d8d5e
-ARG GOVC_URL=https://github.com/vmware/govmomi/releases/download/${GOVC_VERSION}/${GOVC_FILE}
-RUN wget \
-        --no-verbose \
-        --output-document="/tmp/${GOVC_FILE}" \
-        "${GOVC_URL}" \
-    && echo "${GOVC_SHA256}  /tmp/${GOVC_FILE}" \
-        > "/tmp/${GOVC_FILE}.sha256" \
-    && sha256sum -c "/tmp/${GOVC_FILE}.sha256" \
-    && tar --extract \
-        --file "/tmp/${GOVC_FILE}" \
-        --directory /tools
-
 
 # NOTE(jkoelker) From here we care about layers
 FROM golang:1.17.8-alpine3.15
@@ -123,7 +108,9 @@ COPY --from=packer /bin/packer /usr/local/bin/
 COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
 COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/
+COPY --from=govc /govc /usr/local/bin/
 COPY --from=builder /tools /usr/local/bin
+
 
 RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
     || addgroup -S -g "${GROUP_ID}" "${GROUP_NAME}"
