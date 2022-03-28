@@ -54,6 +54,22 @@ RUN wget \
     && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
     && chmod +x /tools/gocover-cobertura
 
+ARG GOVC_VERSION=v0.27.4
+ARG GOVC_FILE="govc_Linux_x86_64.tar.gz"
+ARG GOVC_SHA256=529d357cc504df17199971fa0586af5e381f1c15482dc0eda60ff5c9b17d8d5e
+ARG GOVC_URL=https://github.com/vmware/govmomi/releases/download/${GOVC_VERSION}/${GOVC_FILE}
+RUN wget \
+        --no-verbose \
+        --output-document="/tmp/${GOVC_FILE}" \
+        "${GOVC_URL}" \
+    && echo "${GOVC_SHA256}  /tmp/${GOVC_FILE}" \
+        > "/tmp/${GOVC_FILE}.sha256" \
+    && sha256sum -c "/tmp/${GOVC_FILE}.sha256" \
+    && tar --extract \
+        --file "/tmp/${GOVC_FILE}" \
+        --directory /tools
+
+
 # NOTE(jkoelker) From here we care about layers
 FROM golang:1.17.8-alpine3.15
 
