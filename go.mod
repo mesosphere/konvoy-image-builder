@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v0.21.1
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v0.13.1
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v0.13.2
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute v0.3.1
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v0.3.1
 	github.com/brianvoe/gofakeit/v6 v6.15.0
