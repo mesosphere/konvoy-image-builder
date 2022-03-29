@@ -2,7 +2,7 @@
     "variables": {
         "ansible_extra_vars": "",
         "build_timestamp": "{{timestamp}}",
-        "build_version": "konvoy-ova-{{user `build_name`}}{{user `build_name_extra`}}-{{user `kubernetes_full_version` }}-{{user `build_timestamp`}}",
+        "vm_name": "konvoy-ova-{{user `build_name`}}{{user `build_name_extra`}}-{{user `kubernetes_full_version` }}-{{user `build_timestamp`}}",
         "cluster": "",
         "datastore": "",
         "folder": "",
@@ -18,8 +18,8 @@
         "export_manifest": "none",
         "guest_os_type": null,
         "ib_version": "{{env `IB_VERSION`}}",
-        "username": "{{env `VSPHERE_USERNAME`}}",
-        "password": "{{env `VSPHERE_PASSWORD`}}",
+        "vsphere_username": "{{env `VSPHERE_USERNAME`}}",
+        "vsphere_password": "{{env `VSPHERE_PASSWORD`}}",
         "vcenter_server": "{{env `VSPHERE_SERVER`}}",
         "vsphere_guest_os_type": null,
         "insecure_connection": "false",
@@ -50,7 +50,7 @@
         "insecure_connection": "{{user `insecure_connection`}}",
         "linked_clone": "{{user `linked_clone`}}",
         "network": "{{user `network`}}",
-        "password": "{{user `password`}}",
+        "password": "{{user `vsphere_password`}}",
         "ssh_password": "{{user `ssh_password`}}",
         "ssh_timeout": "4h",
         "ssh_username": "{{user `ssh_username`}}",
@@ -63,7 +63,7 @@
           "diffie-hellman-group1-sha1"
         ],
         "template": "{{user `template`}}",
-        "username": "{{user `username`}}",
+        "username": "{{user `vsphere_username`}}",
         "vcenter_server": "{{user `vcenter_server`}}",
         ((- if not .DryRun ))
         "create_snapshot": "true",
@@ -73,7 +73,7 @@
         "ssh_bastion_username": "{{ user  `ssh_bastion_username` }}",
         "ssh_bastion_password": "{{ user `ssh_bastion_password` }}",
         "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
-        "vm_name": "{{user `build_version`}}"
+        "vm_name": "{{user `vm_name`}}"
       }
     ],
     "post-processors": [
@@ -104,9 +104,22 @@
         "output": "{{user `manifest_output`}}",
         "strip_path": true
       }
+      ((- if .DryRun ))
+      ,{
+        "type": "shell-local",
+        "environment_vars":[
+          "GOVC_URL={{user `vcenter_server`}}",
+          "GOVC_USERNAME={{user `vsphere_username`}}",
+          "GOVC_PASSWORD={{user `vsphere_password`}}"
+        ],
+        "inline": [
+          "echo 'destroying VM {{user `vm_name`}}' && govc vm.destroy {{user `vm_name`}}"
+        ]
+      }
+      ((- end ))
     ],
     "provisioners":[
-      {
+    {
         "type": "ansible",
         "playbook_file": "./ansible/provision.yaml",
         "user": "{{user `ssh_username`}}",
@@ -169,4 +182,4 @@
         ]
       }
     ]
-  }
+}
