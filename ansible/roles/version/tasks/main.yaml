@@ -9,9 +9,10 @@
     kubeadm_version: "{{ kubeadm_version_out.stdout | trim }}"
 
 # TODO(dkoshkin) remove this hardcoded version when additional images are built for FIPS
+# TODO(dkoshkin) remove this hardcoded version when etcd v3.5.x is stable https://github.com/kubernetes/kubeadm/issues/2676 
 - name: set hardcoded etcd image
   set_fact:
-    hardcoded_etcd_fips_version:  "{{ 'v3.4.13_fips.0' if 'fips' in kubeadm_version else '' }}"
+    hardcoded_etcd_fips_version:  "{{ 'v3.4.13_fips.0' if 'fips' in kubeadm_version else '3.4.13-0' }}"
 
 - name: copy kubeadm config
   template:
