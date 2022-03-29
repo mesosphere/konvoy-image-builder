@@ -209,8 +209,9 @@ centos7-nvidia: ## Build Centos 7 image with GPU support
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
+	--aws-instance-type p2.xlarge \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	
 
 .PHONY: rhel82
 rhel82: build
@@ -227,8 +228,9 @@ rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
+	--aws-instance-type p2.xlarge \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	
 
 .PHONY: rhel82-fips
 rhel82-fips: ## Build RHEL 8.2 FIPS image
@@ -270,8 +272,9 @@ rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
 	./bin/konvoy-image build images/ami/rhel-84.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
 	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
+	--aws-instance-type p2.xlarge \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	
 
 .PHONY: rhel84-ova
 rhel84-ova: build
@@ -328,8 +331,9 @@ rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
 	./bin/konvoy-image build images/ami/rhel-79.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
 	--overrides=overrides/nvidia.yaml \
+	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-	--aws-instance-type p2.xlarge
+	
 
 .PHONY: rhel79-ova
 rhel79-ova: build
@@ -374,8 +378,9 @@ sles15-nvidia: ## Build SLES 15 image with GPU support
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
+	--aws-instance-type p2.xlarge \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	
 
 flatcar-version.yaml:
 	./hack/fetch-flatcar-ami.sh
@@ -396,8 +401,9 @@ flatcar-nvidia: ## Build flatcar image with GPU support
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
+	--aws-instance-type p2.xlarge \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	
 
 .PHONY: ubuntu18
 ubuntu18: build
@@ -422,8 +428,9 @@ ubuntu20-nvidia: ## Build Ubuntu 20 image with GPU support
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	--overrides=overrides/nvidia.yaml \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES}) \
-	--aws-instance-type p2.xlarge
+	--aws-instance-type p2.xlarge \
+	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
+	
 
 .PHONY: oracle7
 oracle7: build
