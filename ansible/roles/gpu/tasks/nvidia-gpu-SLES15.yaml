@@ -14,20 +14,22 @@
   retries: 15
   delay: 60
 
+# sles15 link is broken so using
+# opensuse15 instead
 - name: Import CUDA rpm repository key
   rpm_key:
     state: present
-    key: "{{ nvidia_repo_gpgkey }}"
+    key: "{{ nvidia_repo_base }}/opensuse15/{{ ansible_architecture }}/7fa2af80.pub"
 
 - name: Import Nvidia repository key
   rpm_key:
     state: present
-    key: "{{ nvidia_repo_gpgkey }}"
+    key: "{{ nvidia_repo_base }}/opensuse15/{{ ansible_architecture }}/7fa2af80.pub"
 
 - name: Add Nvidia repo
   zypper_repository:
     name: cuda
-    repo: "{{ nvidia_repo_baseurl }}"
+    repo: "{{ nvidia_repo_base }}/opensuse15/{{ ansible_architecture }}"
     disable_gpg_check: false
     autorefresh: true
   register: cuda_repo_installation_rpm

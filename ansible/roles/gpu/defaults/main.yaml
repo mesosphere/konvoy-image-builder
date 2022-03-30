@@ -16,9 +16,10 @@ nvidia_repo_distributionmap:
   RedHat: "rhel"
 
 nvidia_repo_distro: "{{ nvidia_repo_distributionmap[ansible_distribution] | default(ansible_distribution) }}"
+nvidia_repo_base: https://developer.download.nvidia.com/compute/cuda/repos
 nvidia_repo_baseurl: https://developer.download.nvidia.com/compute/cuda/repos/{{ nvidia_repo_distro | lower }}{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
 # nvidia_repo_gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/7fa2af80.pub
-nvidia_repo_gpgkey: "{{ nvidia_repo_baseurl }}/7fa2af80.pub"
+nvidia_repo_gpgkey: "{{ nvidia_repo_baseurl }}/{{ nvidia_repo_distro | lower }}{{ ansible_distribution_major_version }}/{{ ansible_architecture }}/7fa2af80.pub"
 
 libnvidia_container_repo: "https://nvidia.github.io/libnvidia-container/stable"
 libnvidia_container_repo_centos: "{{ libnvidia_container_repo }}/{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}/$basearch"
