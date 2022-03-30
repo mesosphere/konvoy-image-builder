@@ -32,9 +32,9 @@
   register: command_result
   changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'
   when:
-    - versionlocklist is defined and versionlocklist.stdout is defined
-    - item in versionlocklist.stdout
-    - "not 'Keep installed : ' + item + '-' + package_versions.kubernetes_rpm in versionlocklist.stdout"
+    - exportedversionlocklist is defined and exportedversionlocklist.stdout is defined
+    - item in exportedversionlocklist.stdout
+    - "not 'Keep installed : ' + item + '-' + package_versions.kubernetes_rpm in exportedversionlocklist.stdout"
 
 - name: install kubectl package
   zypper:

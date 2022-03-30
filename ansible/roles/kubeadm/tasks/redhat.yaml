@@ -10,8 +10,8 @@
   when:
     - versionlock_plugin_enabled
     - "(
-      'kubeadm' in versionlocklist.stdout and
-      not 'kubeadm-' + package_versions.kubernetes_rpm in versionlocklist.stdout
+      'kubeadm' in exportedversionlocklist.stdout and
+      not 'kubeadm-' + package_versions.kubernetes_rpm in exportedversionlocklist.stdout
       )"
 
 - name: install kubeadm rpm package

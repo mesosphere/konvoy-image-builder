@@ -6,3 +6,7 @@
     warn: false
   ignore_errors: true
   changed_when: false
+
+- name: Export versionlocklist
+  set_fact:
+    exportedversionlocklist: "{{ versionlocklist }}"

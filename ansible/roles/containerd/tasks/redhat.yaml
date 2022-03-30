@@ -10,8 +10,8 @@
   when:
     - versionlock_plugin_enabled
     - "(
-      'containerd.io' in versionlocklist.stdout and
-      not 'containerd.io-' + containerd_version in versionlocklist.stdout
+      'containerd.io' in exportedversionlocklist.stdout and
+      not 'containerd.io-' + containerd_version in exportedversionlocklist.stdout
       )"
 
 # only required for RHEL when not installing from a local file
