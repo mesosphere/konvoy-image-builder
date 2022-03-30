@@ -13,10 +13,10 @@
   changed_when: |
     'command_result.stdout is regex(".*lock has been successfully removed.")'
   when:
-    - versionlocklist is defined and versionlocklist.stdout is defined
+    - exportedversionlocklist is defined and exportedversionlocklist.stdout is defined
     - "(
-      'containerd.io' in versionlocklist.stdout and
-      not 'Keep installed : containerd.io-' + containerd_version in versionlocklist.stdout
+      'containerd.io' in exportedversionlocklist.stdout and
+      not 'Keep installed : containerd.io-' + containerd_version in exportedversionlocklist.stdout
       )"
 
 - name: install containerd.io package

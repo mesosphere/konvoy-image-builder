@@ -52,8 +52,7 @@
   changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
     - versionlock_plugin_enabled
-    - item in versionlocklist.stdout
-    - not package_versions.kubernetes_rpm in versionlocklist.stdout
+    - item in exportedversionlocklist.stdout
 
 - name: install kubectl rpm package
   yum:
