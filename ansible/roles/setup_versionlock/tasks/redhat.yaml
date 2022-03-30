@@ -35,6 +35,6 @@
   ignore_errors: true
   changed_when: false
 
-- name: Export versionlocklist
+- name: export versionlocklist
   set_fact:
     exportedversionlocklist: "{{ versionlocklist }}"
