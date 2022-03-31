@@ -1,3 +1,12 @@
+# yamllint disable-file
 ---
+{{ $distro := .Vars.OS -}}
+{{ if contains "ubuntu" $distro -}}
+  {{ $distro = "ubuntu" -}}
+{{ end -}}
 gossfile:
-  "{{ .Vars.OS }}/*.yaml": {}
+  "{{ $distro }}/*.yaml": {}
+
+{{- /*
+vim: set ft=gotexttmpl ts=2 sts=2 sw=2 expandtab:
+*/ -}}

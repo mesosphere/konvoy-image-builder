@@ -1,81 +1,68 @@
 ---
-  - name: install apt-transport-https remote deb package
-    apt:
-      name: apt-transport-https
-      state: latest
-      update_cache: yes
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
+- name: install apt-transport-https remote deb package
+  apt:
+    name: apt-transport-https
+    state: latest
+    update_cache: true
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
 
 
-  - name: apt update package management cache
-    apt:
-      update_cache: yes
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
+- name: apt update package management cache
+  apt:
+    update_cache: true
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
 
-  - name: install chrony remote deb package
-    apt:
-      name: chrony
-      state: present
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
+- name: install common debs
+  apt:
+    name:
+      - chrony
+      - libseccomp2
+      - nfs-common
+      - python3-cryptography
+      - python3-pip
+    state: present
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
 
-  - name: install libseccomp2 remote deb package
-    apt:
-      name: "libseccomp2"
-      state: present
-    register: libseccomp2_installation_deb
-    until: libseccomp2_installation_deb is success
-    retries: 3
-    delay: 3
-
-  - name: remove version hold for kubelet and kubectl packages
-    command: apt-mark unhold {{ item }}
-    with_items:
-      - kubelet
-      - kubectl
-
-  - name: install nfs-common remote deb package
-    apt:
-      name: nfs-common
-      state: present
-    register: nfs_common_installation_deb
-    until: nfs_common_installation_deb is success
-    retries: 3
-    delay: 3
+- name: remove version hold for kubelet and kubectl packages
+  command: apt-mark unhold {{ item }}
+  with_items:
+    - kubelet
+    - kubectl
 
 
-  - name: install kubelet remote deb package
-    apt:
-      name: kubelet={{ package_versions.kubernetes_deb }}
-      state: present
-      default_release: "{{ kubernetes_deb_release_name }}"
-      force: true
-    register: kubelet_installation_deb
-    until: kubelet_installation_deb is success
-    retries: 3
-    delay: 3
+- name: install kubelet remote deb package
+  apt:
+    name: kubelet={{ package_versions.kubernetes_deb }}
+    state: present
+    default_release: "{{ kubernetes_deb_release_name }}"
+    force: true
+  register: kubelet_installation_deb
+  until: kubelet_installation_deb is success
+  retries: 3
+  delay: 3
 
-  - name: install kubectl remote deb package
-    apt:
-      name: kubectl={{ package_versions.kubernetes_deb }}
-      state: present
-      default_release: "{{ kubernetes_deb_release_name }}"
-      force: true
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
+- name: install kubectl remote deb package
+  apt:
+    name: kubectl={{ package_versions.kubernetes_deb }}
+    state: present
+    default_release: "{{ kubernetes_deb_release_name }}"
+    force: true
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
 
-  - name: add version hold for kubelet and kubectl packages
-    command: apt-mark hold {{ item }}
-    with_items:
-      - kubelet
-      - kubectl
+- name: add version hold for kubelet and kubectl packages
+  command: apt-mark hold {{ item }}
+  with_items:
+    - kubelet
+    - kubectl
