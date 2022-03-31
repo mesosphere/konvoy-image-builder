@@ -1,0 +1,13 @@
+---
+download_images: true
+
+packer:
+  distribution: "UbuntuServer"            # Offer
+  distribution_version: "18_04-lts-gen2"  # SKU
+  image_publisher: "Canonical"
+  image_version: "latest"
+  ssh_username: "ubuntu"
+
+build_name: "ubuntu-1804"
+packer_builder_type: "azure"
+python_path: ""
