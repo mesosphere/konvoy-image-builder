@@ -4,6 +4,9 @@
 {{ if contains "ubuntu" $distro -}}
   {{ $distro = "ubuntu" -}}
 {{ end -}}
+{{ if contains "oracle" $distro -}}
+  {{ $distro = "oracle" -}}
+{{ end -}}
 gossfile:
   "{{ $distro }}/*.yaml": {}
 
