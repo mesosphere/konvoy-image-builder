@@ -10,6 +10,9 @@
 {{ if contains "sles" $distro -}}
   {{ $distro = "sles" -}}
 {{ end -}}
+{{ if contains "flatcar" $distro -}}
+  {{ $distro = "flatcar" -}}
+{{ end -}}
 gossfile:
   "{{ $distro }}/*.yaml": {}
 
