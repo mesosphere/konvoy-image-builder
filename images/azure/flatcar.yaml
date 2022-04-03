@@ -1,0 +1,21 @@
+---
+download_images: true
+
+# yamllint disable rule:line-length
+# NOTE(jkoelker) Flatcar/Kinvolk requires accepting the terms and conditions
+# az vm image terms show --publish kinvolk --offer flatcar-container-linux-free --plan stable-gen2
+# az vm image terms accept --publish kinvolk --offer flatcar-container-linux-free --plan stable-gen2
+# yamllint enable rule:line-length
+packer:
+  distribution: "flatcar-container-linux-free"  # Offer
+  distribution_version: "stable-gen2"           # SKU
+  image_publisher: "kinvolk"
+  image_version: "latest"
+  ssh_username: "core"
+  plan_image_offer: "flatcar-container-linux-free"
+  plan_image_publisher: "kinvolk"
+  plan_image_sku: "stable-gen2"
+
+build_name: "flatcar"
+packer_builder_type: "azure"
+python_path: ""

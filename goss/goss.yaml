@@ -4,6 +4,15 @@
 {{ if contains "ubuntu" $distro -}}
   {{ $distro = "ubuntu" -}}
 {{ end -}}
+{{ if contains "oracle" $distro -}}
+  {{ $distro = "oracle" -}}
+{{ end -}}
+{{ if contains "sles" $distro -}}
+  {{ $distro = "sles" -}}
+{{ end -}}
+{{ if contains "flatcar" $distro -}}
+  {{ $distro = "flatcar" -}}
+{{ end -}}
 gossfile:
   "{{ $distro }}/*.yaml": {}
 
