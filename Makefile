@@ -5,12 +5,6 @@ OS := $(shell uname -s)
 
 INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
-# BUILD_DRY_RUN determines the value of the --dry-run flag of the build command. Should be 'true' or 'false'.
-BUILD_DRY_RUN ?= true
-ifeq ($(BUILD_DRY_RUN),true)
-$(warning Warning: BUILD_DRY_RUN is true)
-endif
-
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
 export REPO_REV := $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
@@ -75,6 +69,11 @@ export DOCKER_DEVKIT_VSPHERE_ARGS ?= \
 	--env RHSM_USER \
 	--env RHSM_PASS
 
+export DOCKER_DEVKIT_BASTION_ARGS ?= \
+	--env SSH_BASTION_USERNAME \
+	--env SSH_BASTION_HOST \
+	--env SSH_BASTION_KEY_CONTENTS
+
 ifneq ($(wildcard $(DOCKER_SOCKET)),)
 	export DOCKER_SOCKET_ARGS ?= \
 		--volume "$(DOCKER_SOCKET)":/var/run/docker.sock
@@ -113,11 +112,11 @@ export DOCKER_DEVKIT_ARGS ?= \
 	$(DOCKER_SOCKET_ARGS) \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
 	$(DOCKER_DEVKIT_AZURE_ARGS) \
+	$(DOCKER_DEVKIT_BASTION_ARGS) \
 	$(DOCKER_DEVKIT_VSPHERE_ARGS) \
 	$(DOCKER_DEVKIT_PUSH_ARGS) \
 	$(DOCKER_DEVKIT_ENV_ARGS) \
 	$(DOCKER_DEVKIT_SSH_ARGS)
-
 
 export DOCKER_DEVKIT_DEFAULT_ARGS ?= \
 	--rm \
@@ -141,6 +140,7 @@ ifneq ($(shell command -v docker),)
 	endif
 endif
 
+include make/images.mk
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
@@ -171,11 +171,6 @@ devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 
 WHAT ?= bash
 
-export DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell grep -E -e "kubernetes_version:" ansible/group_vars/all/defaults.yaml | cut -d\" -f2)
-export DEFAULT_KUBERNETES_VERSION ?= v${DEFAULT_KUBERNETES_VERSION_SEMVER}
-export CONTAINERD_VERSION ?= $(shell grep -E -e "containerd_version:" ansible/group_vars/all/defaults.yaml | cut -d\" -f2)
-
-
 .PHONY: devkit.run
 devkit.run: ## run $(WHAT) in devkit
 devkit.run: devkit
@@ -184,268 +179,6 @@ devkit.run: devkit
 		$(DOCKER_DEVKIT_ARGS) \
 		"$(DOCKER_DEVKIT_IMG)" \
 		$(WHAT)
-
-.PHONY: centos7
-centos7: build
-centos7: ## Build Centos 7 image
-	./bin/konvoy-image build images/ami/centos-7.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: centos7-fips
-centos7-fips: ## Build CENTOS 7.9 FIPS image
-	$(MAKE) centos7 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
-
-.PHONY: centos7-offline
-centos7-offline: ## Build Centos 7 image
-	$(MAKE) os_distribution=centos os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix= download-images-bundle
-	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make centos7 BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: centos7-nvidia
-centos7-nvidia: build
-centos7-nvidia: ## Build Centos 7 image with GPU support
-	./bin/konvoy-image build images/ami/centos-7.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	--overrides=overrides/nvidia.yaml \
-	--aws-instance-type p2.xlarge \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-
-.PHONY: rhel82
-rhel82: build
-rhel82: ## Build RHEL 8.2 image
-	./bin/konvoy-image build images/ami/rhel-82.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel82-nvidia
-rhel82-nvidia: build
-rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-82.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	--overrides=overrides/nvidia.yaml \
-	--aws-instance-type p2.xlarge \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-
-.PHONY: rhel82-fips
-rhel82-fips: ## Build RHEL 8.2 FIPS image
-	$(MAKE) rhel82 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel82-fips-offline
-rhel82-fips-offline:
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix=_fips download-images-bundle
-	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make rhel82-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: rhel84
-rhel84: build
-rhel84: ## Build RHEL 8.4 image
-	./bin/konvoy-image build images/ami/rhel-84.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel84-fips
-rhel84-fips: ## Build RHEL 8.4 FIPS image
-	$(MAKE) rhel84 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel84-fips-offline
-rhel84-fips-offline:
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix=_fips download-images-bundle
-	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make rhel84-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: rhel84-nvidia
-rhel84-nvidia: build
-rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-84.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	--overrides=overrides/nvidia.yaml \
-	--aws-instance-type p2.xlarge \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-
-.PHONY: rhel84-ova
-rhel84-ova: build
-rhel84-ova: ## Build RHEL 8.4 image
-	./bin/konvoy-image build images/ova/rhel-84.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel84-ova-offline
-rhel84-ova-offline: packer-vsphere-airgap.yaml
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix= download-images-bundle
-	$(MAKE) devkit.run WHAT="make rhel84-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: rhel84-ova-fips
-rhel84-ova-fips: ## Build RHEL 7.9 FIPS image
-	$(MAKE) rhel84-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel84-ova-fips-offline
-rhel84-ova-fips-offline: packer-vsphere-airgap.yaml
-	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix=_fips download-images-bundle
-	$(MAKE) devkit.run WHAT="make rhel84-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: rhel79
-rhel79: build
-rhel79: ## Build RHEL 7.9 image
-	./bin/konvoy-image build images/ami/rhel-79.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel79-fips
-rhel79-fips: ## Build RHEL 7.9 FIPS image
-	$(MAKE) rhel79 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel79-fips-offline
-rhel79-fips-offline: ## Build RHEL 7.9 FIPS image
-	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix=_fips download-images-bundle
-	$(MAKE) devkit.run WHAT="make packer-custom-vpc-override.yaml"
-	$(MAKE) devkit.run WHAT="make rhel79-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-custom-vpc-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: rhel79-nvidia
-rhel79-nvidia: build
-rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
-	./bin/konvoy-image build images/ami/rhel-79.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	--overrides=overrides/nvidia.yaml \
-	--aws-instance-type p2.xlarge \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-
-.PHONY: rhel79-ova
-rhel79-ova: build
-rhel79-ova: ## Build RHEL 7.9 image
-	./bin/konvoy-image build images/ova/rhel-79.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel79-ova-offline
-rhel79-ova-offline: packer-vsphere-airgap.yaml
-	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix= download-images-bundle
-	$(MAKE) devkit.run WHAT="make rhel79-ova BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: rhel79-ova-fips
-rhel79-ova-fips: ## Build RHEL 7.9 FIPS image
-	$(MAKE) rhel79-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
-
-.PHONY: rhel79-ova-fips-offline
-rhel79-ova-fips-offline: packer-vsphere-airgap.yaml
-	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
-	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix=_fips download-images-bundle
-	$(MAKE) devkit.run WHAT="make rhel79-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
-
-.PHONY: sles15
-sles15: build
-sles15: ## Build SLES 15 image
-	./bin/konvoy-image build images/ami/sles-15.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: sles15-nvidia
-sles15-nvidia: build
-sles15-nvidia: ## Build SLES 15 image with GPU support
-	./bin/konvoy-image build images/ami/sles-15.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	--overrides=overrides/nvidia.yaml \
-	--aws-instance-type p2.xlarge \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: flatcar
-flatcar: build
-flatcar: ## Build flatcar image
-	./bin/konvoy-image build images/ami/flatcar.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: flatcar-nvidia
-flatcar-nvidia: build
-flatcar-nvidia: ## Build flatcar image with GPU support
-	./bin/konvoy-image build images/ami/flatcar.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	--overrides=overrides/nvidia.yaml \
-	--aws-instance-type p2.xlarge \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-
-.PHONY: ubuntu18
-ubuntu18: build
-ubuntu18: ## Build Ubuntu 20 image
-	./bin/konvoy-image build images/ami/ubuntu-18.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: ubuntu20
-ubuntu20: build
-ubuntu20: ## Build Ubuntu 20 image
-	./bin/konvoy-image build images/ami/ubuntu-20.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: ubuntu20-nvidia
-ubuntu20-nvidia: build
-ubuntu20-nvidia: ## Build Ubuntu 20 image with GPU support
-	./bin/konvoy-image build images/ami/ubuntu-20.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	--overrides=overrides/nvidia.yaml \
-	--aws-instance-type p2.xlarge \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-
-.PHONY: oracle7
-oracle7: build
-oracle7: ## Build Oracle Linux 7 image
-	./bin/konvoy-image build images/ami/oracle-7.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-
-.PHONY: oracle8
-oracle8: build
-oracle8: ## Build Oracle Linux 8 image
-	./bin/konvoy-image build images/ami/oracle-8.yaml \
-	--dry-run=$(BUILD_DRY_RUN) \
-	-v ${VERBOSITY} \
-	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
 .PHONY: provision
 provision: build
@@ -718,15 +451,3 @@ release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 	$(MAKE) GOOS=linux release-bundle-GOOS
 	$(MAKE) GOOS=windows release-bundle-GOOS
 	$(MAKE) GOOS=darwin release-bundle-GOOS
-
-AIRGAPPED_BUNDLE_URL = konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
-
-.PHONY: download-images-bundle
-download-images-bundle:
-	mkdir -p artifacts/images/
-	curl -o artifacts/images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/kubernetes-images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz
-
-.PHONY: download-os-packages-bundle
-download-os-packages-bundle:
-	mkdir -p artifacts/
-	curl -o artifacts/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
