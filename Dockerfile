@@ -1,10 +1,12 @@
-#
+# syntax=docker/dockerfile:1.4
+
 ARG BASE=mesosphere/konvoy-image-builder:latest-devkit
 # NOTE(jkoelker) Ignore "Always tag the version of an image explicitly"
 # hadolint ignore=DL3006
 FROM ${BASE} as devkit
 
-FROM alpine:3.15.4
+ARG TARGETPLATFORM
+FROM --platform=${TARGETPLATFORM} alpine:3.15.4
 
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
@@ -24,13 +26,11 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
-COPY --from=devkit /usr/local/bin/goss /usr/local/bin/
-COPY --from=devkit /usr/local/bin/mindthegap /usr/local/bin/
-COPY --from=devkit /usr/local/bin/packer /usr/local/bin/
-COPY --from=devkit /usr/local/bin/packer-provisioner-goss /usr/local/bin/
-COPY --from=devkit /usr/local/bin/govc /usr/local/bin/
-COPY --from=devkit /root/.config/packer/plugins/ ${PACKER_PLUGIN_PATH}
-COPY bin/konvoy-image /usr/local/bin
+ARG BUILDARCH
+COPY --from=devkit /usr/local/bin/goss /usr/local/bin/goss
+COPY --from=devkit /usr/local/bin/packer-${BUILDARCH} /usr/local/bin/packer
+COPY --from=devkit /usr/local/bin/packer-provisioner-goss-${BUILDARCH} /usr/local/bin/packer-provisioner-goss
+COPY konvoy-image /usr/local/bin
 COPY images /root/images
 COPY ansible /root/ansible
 COPY packer /root/packer
