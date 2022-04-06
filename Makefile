@@ -65,6 +65,7 @@ export DOCKER_DEVKIT_AZURE_ARGS ?= \
 	--env AZURE_CLIENT_ID \
 	--env AZURE_CLIENT_SECRET \
 	--env AZURE_SUBSCRIPTION_ID \
+	--env AZURE_TENANT_ID \
 	--volume "$(HOME)/.azure":"/home/$(USER_NAME)/.azure"
 
 export DOCKER_DEVKIT_VSPHERE_ARGS ?= \
