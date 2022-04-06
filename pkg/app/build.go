@@ -206,10 +206,8 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 
 	switch builderType {
 	case BuildTypeAzure:
-		if !buildOptions.DryRun {
-			if err = ensureAzure(config); err != nil {
-				return fmt.Errorf("error ensuring azure config: %w", err)
-			}
+		if err = ensureAzure(config); err != nil {
+			return fmt.Errorf("error ensuring azure config: %w", err)
 		}
 	}
 
