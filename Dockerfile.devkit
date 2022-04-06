@@ -1,5 +1,7 @@
-#
-FROM hashicorp/packer:1.8.2 as packer
+# syntax=docker/dockerfile:1.4
+
+FROM --platform=linux/amd64 hashicorp/packer:1.8.2 as packer-amd64
+FROM --platform=linux/arm64 hashicorp/packer:1.8.2 as packer-arm64
 FROM golangci/golangci-lint:v1.46.2-alpine as golangci-lint
 FROM goreleaser/goreleaser:v1.10.2 as goreleaser
 FROM docker:20.10 as docker
@@ -16,23 +18,32 @@ RUN mkdir -p /tools
 # NOTE(jkoelker) Ignore "Multiple consecutive `RUN` | Pin versions in apk add."
 # hadolint ignore=DL3059,DL3018
 RUN apk add --no-cache \
+        curl \
         p7zip
 
-ARG PACKER_GOSS_VERSION=3.0.3
-ARG PACKER_GOSS_SHA265=1994069f78d44a76d463b76fef42c7e4ab412df14703a51643642ecdefa2c029
-ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
-ARG PACKER_GOSS_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
-ARG PACKER_GOSS_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_FILE}"
-RUN wget \
-        --no-verbose \
-        --output-document="/tmp/${PACKER_GOSS_FILE}" \
-        "${PACKER_GOSS_URL}" \
-    && echo "${PACKER_GOSS_SHA265}  /tmp/${PACKER_GOSS_FILE}" \
-        > "/tmp/${PACKER_GOSS_FILE}.sha256" \
-    && sha256sum -c "/tmp/${PACKER_GOSS_FILE}.sha256" \
-    && tar --extract \
-        --file "/tmp/${PACKER_GOSS_FILE}" \
+ARG PACKER_GOSS_VERSION=3.1.3
+ARG PACKER_GOSS_AMD64_SHA256=ab849a89d379da03ebaf11ca643ba61c01d40aa64fa4ea0786f4987863c37818
+ARG PACKER_GOSS_ARM64_SHA256=112a7d694bc8f86c09e4cf1bdfea8c79c1801991a86feb0aeb4972620d950476
+ARG PACKER_GOSS_REPO="https://github.com/jimmidyson/packer-provisioner-goss"
+ARG PACKER_GOSS_AMD64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
+ARG PACKER_GOSS_ARM64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-arm64.tar.gz"
+ARG PACKER_GOSS_AMD64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_AMD64_FILE}"
+ARG PACKER_GOSS_ARM64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_ARM64_FILE}"
+RUN printf "%s  %s\n%s  %s\n" "${PACKER_GOSS_AMD64_SHA256}" /tmp/"${PACKER_GOSS_AMD64_FILE}" \
+                            "${PACKER_GOSS_ARM64_SHA256}" /tmp/"${PACKER_GOSS_ARM64_FILE}" > "/tmp/packer-goss.sha256"
+RUN curl -fsSLo "/tmp/${PACKER_GOSS_AMD64_FILE}" "${PACKER_GOSS_AMD64_URL}"
+RUN curl -fsSLo "/tmp/${PACKER_GOSS_ARM64_FILE}" "${PACKER_GOSS_ARM64_URL}"
+RUN sha256sum -c "/tmp/packer-goss.sha256"
+RUN tar --extract \
+        --file "/tmp/${PACKER_GOSS_AMD64_FILE}" \
         --directory /tools
+RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-amd64
+RUN tar --extract \
+        --file "/tmp/${PACKER_GOSS_ARM64_FILE}" \
+        --directory /tools
+RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-arm64
+ARG BUILDARCH
+RUN ln -s /tools/packer-provisioner-goss-${BUILDARCH} /tools/packer-provisioner-goss
 
 ARG GO_ACC_VERSION=0.2.6
 # TODO(jkoelker) migrate to binary release for next release:
@@ -97,10 +108,15 @@ RUN apk add --no-cache \
     && rm -rf \
         /root/.cache
 
-RUN  curl -fsSL --output /tmp/goss.install  https://goss.rocks/install \
-    && GOSS_VER=v0.3.16 GOSS_DST=/usr/local/bin bash /tmp/goss.install \
-    && rm /tmp/goss.install
-COPY --from=packer /bin/packer /usr/local/bin/
+ARG GOSS_VERSION=v0.3.16
+RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
+RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${VERSION}/goss-linux-arm64" -o /usr/local/bin/goss-arm64
+RUN chmod +rx /usr/local/bin/goss-amd64 /usr/local/bin/goss-arm64
+ARG BUILDARCH
+RUN ln -s /usr/local/bin/goss-${BUILDARCH}} /usr/local/bin/goss
+COPY --from=packer-amd64 /bin/packer /usr/local/bin/packer-amd64
+COPY --from=packer-arm64 /bin/packer /usr/local/bin/packer-arm64
+RUN ln -s /usr/local/bin/packer-${BUILDARCH}} /usr/local/bin/packer
 COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
 COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/

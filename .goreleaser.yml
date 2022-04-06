@@ -32,6 +32,7 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
 
   - main: ./cmd/konvoy-image-wrapper/main.go
     id: konvoy-image-wrapper
@@ -82,7 +83,7 @@ dockers:
 
   - dockerfile: Dockerfile
     image_templates:
-      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}'
+      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-amd64'
     ids:
       - konvoy-image
     # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
@@ -102,6 +103,28 @@ dockers:
       - ansible
       - packer
       - requirements.txt
+
+  - dockerfile: Dockerfile
+    image_templates:
+      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-arm64'
+    ids:
+      - konvoy-image
+    # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
+    #                was just build and is local, it will not be found.
+    build_flag_templates:
+      - '--build-arg=BASE=mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--platform=linux/arm64"
+    skip_push: false
+    extra_files:
+      - bin
+      - images
+      - ansible
+      - packer
 
 archives:
   - id: konvoy-image-bundle
