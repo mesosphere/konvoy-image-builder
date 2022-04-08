@@ -29,13 +29,10 @@
     mode: 0644
   when: http_proxy is defined or https_proxy is defined
 
-- name: add torcx/unpack/docker/bin/ to path
-  ansible.builtin.lineinfile:
-    dest: /etc/environment
-    state: present
-    backrefs: yes
-    regexp: 'PATH=(["]*)((?!.*?/run/torcx/unpack/docker/bin/).*?)(["]*)$'
-    line: 'PATH=\1\2:/run/torcx/unpack/docker/bin/\3'
+- name: add to PATH unpack docker to path
+  copy:
+    content: "export PATH=$PATH:/run/torcx/unpack/docker/bin/"
+    dest: "/etc/profile.d/my_path.sh"
 
 - name: ensure cgroups v2 are disabled
   command: grep -q systemd.unified_cgroup_hierarchy=0 /usr/share/oem/grub.cfg
