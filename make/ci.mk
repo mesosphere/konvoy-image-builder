@@ -34,6 +34,7 @@ ci.e2e.build.all: ci.e2e.build.rhel-7.9-ova
 ci.e2e.build.%:
 	make devkit.run WHAT="make e2e.build.$*"
 
+# AWS
 e2e.build.centos-7: centos7
 
 e2e.build.centos-7-offline: centos7-offline infra.aws.destroy
@@ -56,15 +57,35 @@ e2e.build.oracle-8: oracle8
 
 e2e.build.flatcar: flatcar
 
-e2e.build.rhel-8-fips: rhel82-fips
-
-e2e.build.rhel-8.4-ova: rhel84-ova
-
-e2e.build.rhel-7.9-ova: rhel79-ova
-
 e2e.build.centos-7-nvidia: centos7-nvidia
 
 e2e.build.sles-15-nvidia: sles15-nvidia
+
+e2e.build.rhel-8-fips: rhel82-fips
+
+# Azure
+e2e.build.centos-7-azure: centos7-azure
+
+e2e.build.flatcar-azure: flatcar-azure
+
+e2e.build.oracle-7-azure: oracle7-azure
+
+e2e.build.oracle-8-azure: oracle8-azure
+
+e2e.build.sles-15-azure: sles15-azure
+
+e2e.build.rhel-7-fips-azure: rhel7-fips-azure
+
+e2e.build.rhel-8-fips-azure: rhel8-fips-azure
+
+e2e.build.ubuntu-18-azure: ubuntu18-azure
+
+e2e.build.ubuntu-20-azure: ubuntu20-azure
+
+# vSphere
+e2e.build.rhel-8.4-ova: rhel84-ova
+
+e2e.build.rhel-7.9-ova: rhel79-ova
 
 # use sibling containers to handle dependencies and avoid DinD
 ci.e2e.ansible:
