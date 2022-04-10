@@ -157,11 +157,11 @@ centos7-nvidia:
 
 .PHONY: flatcar
 flatcar:
-	$(MAKE) build-aws-flatcar ADDITIONAL_OVERRIDES=flatcar-version.yaml
+	$(MAKE) build-aws-flatcar
 
 .PHONY: flatcar-nvidia
 flatcar-nvidia:
-	$(MAKE) aws-flatcar_nvidia ADDITIONAL_OVERRIDES=flatcar-version.yaml
+	$(MAKE) aws-flatcar_nvidia
 
 # Oracle 7
 .PHONY: oracle7
@@ -188,7 +188,7 @@ rhel79-fips:
 
 .PHONY: rhel79-fips-offline
 rhel79-fips-offline:
-	$(MAKE) aws-rhel7.9_offline-fips
+	$(MAKE) aws-rhel-7.9_offline-fips
 
 .PHONY: rhel79-ova
 rhel79-ova:
