@@ -42,6 +42,11 @@ image_dir = $(subst aws,ami,$(call provider, $(1)))
 #                and squashes major and minor, e.g 7.9 -> 79, 8.2 -> 82
 image_file = $(subst .,,$(subst $(SPACE),-,$(wordlist 2, 3, $(subst -,$(SPACE),$(1)))))
 
+azure_vm_size = --instance-type Standard_B2ms
+# NOTE(jkoelker) Set the VM Size argument for the provider if not already
+#                in the ADDITIONAL_ARGS.
+vm_size = $(if $(findstring --instance-type,$(2)),,$($(1)_vm_size))
+
 $(ARTIFACTS_DIR):
 	mkdir -p $(ARTIFACTS_DIR)
 
@@ -64,6 +69,10 @@ aws-build-image-cleanup: ;
 .PHONY: ova-build-image-cleanup
 ova-build-image-cleanup: ;
 
+.PHONY: azure-build-image-cleanup
+azure-build-image-cleanup:
+	bash -x test/e2e/scripts/clean-last-azure-image.sh
+
 # NOTE(jkoelker) The common build target every other target ends up calling.
 .PHONY: build-image
 build-image: build
@@ -73,6 +82,7 @@ build-image: ## Build an image on a provider
 	--dry-run=$(BUILD_DRY_RUN) \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=$(ADDITIONAL_OVERRIDES)) \
+	$(call vm_size,$(PROVIDER),$(ADDITIONAL_ARGS)) \
 	$(ADDITIONAL_ARGS)
 	$(MAKE) $(PROVIDER)-build-image-cleanup
 
@@ -138,7 +148,7 @@ build-%:
 		VERBOSITY=$(VERBOSITY) \
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN)
 
-# Centos 7
+# Centos 7 AWS
 .PHONY: centos7
 centos7:
 	$(MAKE) build-aws-centos-7
@@ -155,6 +165,23 @@ centos7-offline:
 centos7-nvidia:
 	$(MAKE) aws-centos-7_nvidia
 
+# Centos 7 Azure
+.PHONY: centos7-azure
+centos7-azure:
+	$(MAKE) build-azure-centos-7
+
+.PHONY: centos7-fips-azure
+centos7-fips-azure:
+	$(MAKE) azure-centos-7_fips
+
+.PHONY: centos7-offline-azure
+centos7-offline-azure:
+	$(MAKE) azure-centos-7_offline
+
+.PHONY: centos7-nvidia-azure
+centos7-nvidia-azure:
+	$(MAKE) azure-centos-7_nvidia
+
 .PHONY: flatcar
 flatcar:
 	$(MAKE) build-aws-flatcar
@@ -163,17 +190,36 @@ flatcar:
 flatcar-nvidia:
 	$(MAKE) aws-flatcar_nvidia
 
-# Oracle 7
+# Flatcar Azure
+.PHONY: flatcar-azure
+flatcar-azure:
+	$(MAKE) build-azure-flatcar
+
+.PHONY: flatcar-nvidia-azure
+flatcar-nvidia-azure:
+	$(MAKE) azure-flatcar_nvidia
+
+# Oracle 7 AWS
 .PHONY: oracle7
 oracle7:
 	$(MAKE) build-aws-oracle-7
 
-# Oracle 8
+# Oracle 7 Azure
+.PHONY: oracle7-azure
+oracle7-azure:
+	$(MAKE) build-azure-oracle-7
+
+# Oracle 8 AWS
 .PHONY: oracle8
 oracle8:
 	$(MAKE) build-aws-oracle-8
 
-# RHEL 7.9
+# Oracle 8 Azure
+.PHONY: oracle8-azure
+oracle8-azure:
+	$(MAKE) build-azure-oracle-8
+
+# RHEL 7.9 AWS
 .PHONY: rhel79
 rhel79:
 	$(MAKE) build-aws-rhel-7.9
@@ -190,6 +236,24 @@ rhel79-fips:
 rhel79-fips-offline:
 	$(MAKE) aws-rhel-7.9_offline-fips
 
+# RHEL 7.9 Azure
+.PHONY: rhel7-azure
+rhel7-azure:
+	$(MAKE) build-azure-rhel-7
+
+.PHONY: rhel7-nvidia-azure
+rhel7-nvidia-azure:
+	$(MAKE) azure-rhel-7_nvidia
+
+.PHONY: rhel7-fips-azure
+rhel7-fips-azure:
+	$(MAKE) azure-rhel-7_fips
+
+.PHONY: rhel7-fips-offline-azure
+rhel7-fips-offline-azure:
+	$(MAKE) azure-rhel7_offline-fips
+
+# RHEL 7.9 vSphere
 .PHONY: rhel79-ova
 rhel79-ova:
 	$(MAKE) build-ova-rhel-7.9
@@ -206,7 +270,7 @@ rhel79-ova-fips:
 rhel79-ova-fips-offline:
 	$(MAKE) ova-rhel-7.9_offline-fips
 
-# RHEL 8.2
+# RHEL 8.2 AWS
 .PHONY: rhel82
 rhel82:
 	$(MAKE) build-aws-rhel-8.2
@@ -223,7 +287,7 @@ rhel82-fips:
 rhel82-fips-offline:
 	$(MAKE) aws-rhel-8.2_offline-fips
 
-# RHEL 8.4
+# RHEL 8.4 AWS
 .PHONY: rhel84
 rhel84:
 	$(MAKE) build-aws-rhel-8.4
@@ -240,6 +304,24 @@ rhel84-fips:
 rhel84-fips-offline:
 	$(MAKE) aws-rhel-8.4_offline-fips
 
+# RHEL 8 Azure
+.PHONY: rhel8-azure
+rhel8-azure:
+	$(MAKE) build-azure-rhel-8
+
+.PHONY: rhel8-nvidia-azure
+rhel8-nvidia-azure:
+	$(MAKE) azure-rhel-8_nvidia
+
+.PHONY: rhel8-fips-azure
+rhel8-fips-azure:
+	$(MAKE) azure-rhel-8_fips
+
+.PHONY: rhel8-fips-offline-azure
+rhel8-fips-offline-azure:
+	$(MAKE) azure-rhel-8_offline-fips
+
+# RHEL 8.4 vSphere
 .PHONY: rhel84-ova
 rhel84-ova:
 	$(MAKE) build-ova-rhel-8.4
@@ -256,7 +338,7 @@ rhel84-ova-fips:
 rhel84-ova-fips-offline:
 	$(MAKE) ova-rhel-8.4_offline-fips
 
-# SLES 15
+# SLES 15 AWS
 .PHONY: sles15
 sles15:
 	$(MAKE) build-aws-sles-15
@@ -265,12 +347,26 @@ sles15:
 sles15-nvidia:
 	$(MAKE) aws-sles-15_nvidia
 
-# Ubuntu 18(04)
+# SLES 15 Azure
+.PHONY: sles15-azure
+sles15-azure:
+	$(MAKE) build-azure-sles-15
+
+.PHONY: sles15-nvidia-azure
+sles15-nvidia-azure:
+	$(MAKE) azure-sles-15_nvidia
+
+# Ubuntu 18(04) AWS
 .PHONY: ubuntu18
 ubuntu18:
 	$(MAKE) build-aws-ubuntu-18
 
-# Ubuntu 20(04)
+# Ubuntu 18(04) Azure
+.PHONY: ubuntu18-azure
+ubuntu18-azure:
+	$(MAKE) build-azure-ubuntu-18
+
+# Ubuntu 20(04) AWS
 .PHONY: ubuntu20
 ubuntu20:
 	$(MAKE) build-aws-ubuntu-20
@@ -278,3 +374,12 @@ ubuntu20:
 .PHONY: ubuntu20-nvidia
 ubuntu20-nvidia:
 	$(MAKE) aws-ubuntu-20_nvidia
+
+# Ubuntu 20(04) Azure
+.PHONY: ubuntu20-azure
+ubuntu20-azure:
+	$(MAKE) build-azure-ubuntu-20
+
+.PHONY: ubuntu20-nvidia-azure
+ubuntu20-nvidia-azure:
+	$(MAKE) azure-ubuntu-20_nvidia
