@@ -380,10 +380,10 @@ sles15-nvidia: ## Build SLES 15 image with GPU support
 	--overrides=overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-	
+
 
 .PHONY: flatcar
-flatcar: build flatcar-version.yaml
+flatcar: build
 flatcar: ## Build flatcar image
 	./bin/konvoy-image build images/ami/flatcar.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
@@ -391,7 +391,7 @@ flatcar: ## Build flatcar image
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
 .PHONY: flatcar-nvidia
-flatcar-nvidia: build flatcar-version.yaml
+flatcar-nvidia: build 
 flatcar-nvidia: ## Build flatcar image with GPU support
 	./bin/konvoy-image build images/ami/flatcar.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
