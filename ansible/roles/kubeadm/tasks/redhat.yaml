@@ -9,6 +9,7 @@
     'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
     - versionlock_plugin_enabled
+    - exportedversionlocklist is defined and exportedversionlocklist.stdout is defined
     - "(
       'kubeadm' in exportedversionlocklist.stdout and
       not 'kubeadm-' + package_versions.kubernetes_rpm in exportedversionlocklist.stdout
