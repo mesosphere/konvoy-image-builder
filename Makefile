@@ -300,12 +300,12 @@ rhel84-ova-fips: ## Build RHEL 7.9 FIPS image
 	$(MAKE) rhel84-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel84-ova-fips-offline
-rhel84-ova-fips-offline:
+rhel84-ova-fips-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel84-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel79
 rhel79: build
@@ -359,12 +359,12 @@ rhel79-ova-fips: ## Build RHEL 7.9 FIPS image
 	$(MAKE) rhel79-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel79-ova-fips-offline
-rhel79-ova-fips-offline:
+rhel79-ova-fips-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel79-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: sles15
 sles15: build
