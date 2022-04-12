@@ -1,4 +1,5 @@
 ---
+
 - name: RHEL subscription
   redhat_subscription:
     state: present
