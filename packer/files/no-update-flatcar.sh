@@ -30,5 +30,7 @@ systemctl stop update-engine
 # Disable automated reboots.  With `locksmithd` disabled, no reboot strategy is
 # required. However, setting this ensures that we are conservative if
 # `locksmithd` is re-enabled.
-sed -i '/^REBOOT_STRATEGY=.*/d' /etc/flatcar/update.conf
+if [ -f /etc/flatcar/update.conf ]; then
+    sed -i '/^REBOOT_STRATEGY=.*/d' /etc/flatcar/update.conf
+fi
 echo 'REBOOT_STRATEGY=off' >> /etc/flatcar/update.conf
