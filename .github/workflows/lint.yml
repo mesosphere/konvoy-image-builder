@@ -16,6 +16,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 'v1.17'
+          check-latest: true
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -36,6 +41,3 @@ jobs:
           #                https://github.com/github/super-linter/pull/1707
           # This can be removed when a release > 4.2.2 exists.
           VALIDATE_TERRAGRUNT: false
-
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v2.5.2
