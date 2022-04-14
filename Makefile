@@ -7,6 +7,9 @@ INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
 # BUILD_DRY_RUN determines the value of the --dry-run flag of the build command. Should be 'true' or 'false'.
 BUILD_DRY_RUN ?= true
+ifeq ($(BUILD_DRY_RUN),true)
+$(warning Warning: BUILD_DRY_RUN is true)
+endif
 
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
@@ -192,7 +195,7 @@ centos7: ## Build Centos 7 image
 .PHONY: centos7-fips
 centos7-fips: ## Build CENTOS 7.9 FIPS image
 	$(MAKE) centos7 ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
-		
+
 .PHONY: centos7-offline
 centos7-offline: ## Build Centos 7 image
 	$(MAKE) os_distribution=centos os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix= download-os-packages-bundle
@@ -211,7 +214,7 @@ centos7-nvidia: ## Build Centos 7 image with GPU support
 	--overrides=overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-	
+
 
 .PHONY: rhel82
 rhel82: build
@@ -230,7 +233,7 @@ rhel82-nvidia: ## Build RHEL 8.2 image with GPU support
 	--overrides=overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-	
+
 
 .PHONY: rhel82-fips
 rhel82-fips: ## Build RHEL 8.2 FIPS image
@@ -274,7 +277,7 @@ rhel84-nvidia: ## Build RHEL 8.4 image with GPU support
 	--overrides=overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-	
+
 
 .PHONY: rhel84-ova
 rhel84-ova: build
@@ -297,12 +300,12 @@ rhel84-ova-fips: ## Build RHEL 7.9 FIPS image
 	$(MAKE) rhel84-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel84-ova-fips-offline
-rhel84-ova-fips-offline:
+rhel84-ova-fips-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=8 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel84-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: rhel79
 rhel79: build
@@ -333,7 +336,7 @@ rhel79-nvidia: ## Build RHEL 7.9 image with GPU support
 	--overrides=overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-	
+
 
 .PHONY: rhel79-ova
 rhel79-ova: build
@@ -356,12 +359,12 @@ rhel79-ova-fips: ## Build RHEL 7.9 FIPS image
 	$(MAKE) rhel79-ova ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: rhel79-ova-fips-offline
-rhel79-ova-fips-offline:
+rhel79-ova-fips-offline: packer-vsphere-airgap.yaml
 	$(MAKE) os_distribution=redhat os_distribution_major_version=7 os_distribution_arch=x86_64 bundle_suffix=_fips download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix=_fips download-images-bundle
 	$(MAKE) devkit.run WHAT="make rhel79-ova-fips BUILD_DRY_RUN=${BUILD_DRY_RUN} \
-	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+	ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-vsphere-airgap.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: sles15
 sles15: build
@@ -381,7 +384,6 @@ sles15-nvidia: ## Build SLES 15 image with GPU support
 	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
-
 .PHONY: flatcar
 flatcar: build
 flatcar: ## Build flatcar image
@@ -391,7 +393,7 @@ flatcar: ## Build flatcar image
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
 
 .PHONY: flatcar-nvidia
-flatcar-nvidia: build 
+flatcar-nvidia: build
 flatcar-nvidia: ## Build flatcar image with GPU support
 	./bin/konvoy-image build images/ami/flatcar.yaml \
 	--dry-run=$(BUILD_DRY_RUN) \
@@ -426,7 +428,7 @@ ubuntu20-nvidia: ## Build Ubuntu 20 image with GPU support
 	--overrides=overrides/nvidia.yaml \
 	--aws-instance-type p2.xlarge \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=${ADDITIONAL_OVERRIDES})
-	
+
 
 .PHONY: oracle7
 oracle7: build
