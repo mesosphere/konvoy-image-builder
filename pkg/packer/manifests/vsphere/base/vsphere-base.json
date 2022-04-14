@@ -3,14 +3,10 @@
     "convert_to_template": "true",
     "create_snapshot": "true",
     "datacenter": "dc1",
-    "datastore": "datastore1",
+    "datastore": "ovh-nfs",
     "folder": "cluster-api",
     "insecure_connection": "false",
     "linked_clone": "true",
     "network": "Public",
-    "password": "",
-    "resource_pool": "Users",
-    "template": "",
-    "username": "",
-    "vcenter_server": ""
+    "resource_pool": "cluster-api"
 }

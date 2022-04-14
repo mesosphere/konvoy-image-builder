@@ -11,9 +11,11 @@
         "guest_os_type": null,
         "ib_version": "{{env `IB_VERSION`}}",
         "username": "{{env `VSPHERE_USERNAME`}}",
-        "password": "{{env `VSPHERE_PASSWORD}}",
-        "vcenter_server": "{{env `VCENTER_SERVER`}}",
-        "vsphere_guest_os_type": null
+        "password": "{{env `VSPHERE_PASSWORD`}}",
+        "vcenter_server": "{{env `VSPHERE_SERVER`}}",
+        "vsphere_guest_os_type": null,
+        "ssh_username": "",
+        "ssh_password": ""
     },
     "builders": [
       {
