@@ -16,10 +16,10 @@ konvoy-image generate <image.yaml> [flags]
       --ami-groups stringArray           a list of AWS groups which are allowed use the image, using 'all' result in a public image
       --ami-regions stringArray          a list of regions to publish amis
       --ami-users stringArray            a list AWS user accounts which are allowed use the image
-      --aws-instance-type string         instance type used to build the AMI; the type must be present in the region in which the AMI is built
       --containerd-version string        the version of containerd to install
       --extra-vars strings               flag passed Ansible's extra-vars
   -h, --help                             help for generate
+      --instance-type string             instance type used to build the AMI; the type must be present in the region in which the AMI is built
       --kubernetes-version string        The version of kubernetes to install. Example: 1.21.6
       --overrides strings                a comma separated list of override YAML files
       --region string                    the region in which to build the AMI

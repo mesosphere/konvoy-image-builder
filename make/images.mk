@@ -133,7 +133,7 @@ build-%:
 .PHONY: %_nvidia
 %_nvidia:
 	$(MAKE) build-$* \
-		ADDITIONAL_ARGS="--aws-instance-type p2.xlarge$(if $(ADDITIONAL_ARGS), $(SPACE)$(ADDITIONAL_ARGS))" \
+		ADDITIONAL_ARGS="--instance-type p2.xlarge$(if $(ADDITIONAL_ARGS),$(SPACE)$(ADDITIONAL_ARGS))" \
 		ADDITIONAL_OVERRIDES=overrides/nvidia.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)$(ADDITIONAL_OVERRIDES))
 		VERBOSITY=$(VERBOSITY) \
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN)
