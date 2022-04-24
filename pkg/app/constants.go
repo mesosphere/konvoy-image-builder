@@ -30,6 +30,7 @@ const (
 
 	PackerAzureClientIDPath              = "/packer/client_id"
 	PackerAzureDistributionVersionPath   = "/packer/distribution_version"
+	PackerAzureInstanceType              = "/packer/vm_size"
 	PackerAzureGalleryLocations          = "/packer/gallery_image_locations"
 	PackerAzureGalleryImageNamePath      = "/packer/gallery_image_name"
 	PackerAzureGalleryImageOfferPath     = "/packer/gallery_image_offer"

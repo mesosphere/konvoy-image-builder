@@ -132,4 +132,11 @@ func addAzureArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
 		"",
 		"the tenant id to use for the build",
 	)
+
+	fs.StringVar(
+		&azure.InstanceType,
+		"instance-type",
+		"Standard_D2ds_v5",
+		"the Instance Type to use for the build",
+	)
 }

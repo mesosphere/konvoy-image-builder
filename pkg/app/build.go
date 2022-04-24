@@ -62,6 +62,8 @@ type AmazonArgs struct {
 type AzureArgs struct {
 	ClientID string
 
+	InstanceType string
+
 	GalleryImageLocations []string
 	GalleryImageName      string
 	GalleryImageOffer     string

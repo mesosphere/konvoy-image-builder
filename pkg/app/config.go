@@ -438,6 +438,10 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureTenantIDPath, err)
 	}
 
+	if err := config.Set(PackerAzureInstanceType, azureArgs.InstanceType); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureInstanceType, err)
+	}
+
 	galleryImageLocations := azureArgs.GalleryImageLocations
 	if len(galleryImageLocations) == 0 {
 		galleryImageLocations = []string{azureArgs.Location}
