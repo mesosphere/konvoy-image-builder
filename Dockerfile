@@ -6,10 +6,10 @@ FROM ${BASE} as devkit
 
 FROM alpine:3.15.2
 
-ARG ANSIBLE_VERSION=2.10.7
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
 
+COPY requirements.txt /tmp/
 # NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
 # hadolint ignore=DL3013,DL3018
 RUN apk add --no-cache \
@@ -20,9 +20,7 @@ RUN apk add --no-cache \
         py3-cryptography \
         py3-pip \
         py3-wheel \
-    && pip3 install --no-cache-dir \
-        ansible=="${ANSIBLE_VERSION}" \
-        netaddr \
+    && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
 COPY --from=devkit /usr/local/bin/goss /usr/local/bin/
