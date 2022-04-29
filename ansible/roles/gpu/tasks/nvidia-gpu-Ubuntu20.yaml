@@ -26,7 +26,7 @@
 # sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/7fa2af80.pub
 - name: install Nvidia CUDA repository public GPG key
   apt_key:
-    url: https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution }}/x86_64/7fa2af80.pub
+    url: https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution }}/x86_64/3bf863cc.pub
     state: present
   retries: 3
   delay: 3
