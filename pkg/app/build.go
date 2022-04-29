@@ -330,6 +330,10 @@ func azureImageDescription(config Config) (*azure.ImageDescription, error) {
 		}
 	}
 
+	// NOTE(jkoelker) Append the build extra to the sku to prevent conflicts between
+	//                base images and their special flavors (e.g. centos7 and centos7-nvidia)
+	sku = config.AddBuildNameExtra(sku)
+
 	description, err := azure.NewImageDescription(
 		galleryName,
 		galleryImageName,
