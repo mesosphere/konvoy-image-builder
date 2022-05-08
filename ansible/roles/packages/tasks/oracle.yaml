@@ -1,0 +1,76 @@
+---
+
+- name: RHCK kernel
+  when:
+    - oracle_kernel == "RHCK"
+  block:
+    - name: install RHCK kernel
+      yum:
+        name: kernel
+        state: present
+        update_cache: true
+        enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+        disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+      register: rhck_installation_rpm
+      until: rhck_installation_rpm is success
+      retries: 3
+      delay: 3
+
+    - name: configure grub for oracle 7
+      block:
+        - name: generate grub
+          command: grub2-mkconfig -o /boot/grub2/grub.cfg
+
+        - name: read grub.cfg
+          command: cat /boot/grub2/grub.cfg
+          register: grub_cfg
+
+        - name: read RHCK kernel
+          set_fact:
+            rhck_kernel: "{{
+              grub_cfg.stdout_lines |
+              reject('match', '^.*Unbreakable Enterprise Kernel.*$') |
+              select('match', '^menuentry') |
+              map('regex_replace', \"^menuentry '(.*?)' .*$\", '\\1') |
+              sort |
+              last
+            }}"
+
+        - name: set default kernel
+          command: grub2-set-default "{{ rhck_kernel }}"
+
+      when:
+        - ansible_distribution_major_version == '7'
+
+    - name: configure grub for oracle 8
+      block:
+        - name: install grubby
+          yum:
+            name: grubby
+            state: present
+            update_cache: true
+            enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+            disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+          register: grubby_installation_rpm
+          until: grubby_installation_rpm is success
+          retries: 3
+          delay: 3
+
+        - name: list kernels
+          shell: ls -1 /boot/vmlinuz*
+          register: boot_vmlinuz
+
+        - name: read RHCK kernel
+          set_fact:
+            rhck_kernel: "{{
+              boot_vmlinuz.stdout_lines |
+              reject('match', '^.*uek.*$') |
+              sort |
+              last
+            }}"
+
+        - name: set default kernel
+          command: grubby --set-default "{{ rhck_kernel }}"
+
+      when:
+        - ansible_distribution_major_version == '8'
