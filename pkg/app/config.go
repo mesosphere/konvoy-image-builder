@@ -95,6 +95,10 @@ func (config Config) get(path string) (interface{}, error) {
 	return value, nil
 }
 
+func (config Config) AddBuildNameExtra(base string) string {
+	return fmt.Sprintf("%s%s", base, config.Get(BuildNameExtraKey))
+}
+
 func (config Config) GetSliceWithError(path string) ([]string, error) {
 	value, err := config.get(path)
 	if err != nil {
@@ -184,16 +188,11 @@ func (config Config) Delete(path string) error {
 func BuildName(config Config) string {
 	buildName := config.Get(BuildNameKey)
 
-	buildNameExtra := config.Get(BuildNameExtraKey)
 	if buildName == "" {
 		buildName = DefaultBuildName
 	}
 
-	if buildNameExtra != "" {
-		return fmt.Sprintf("%s%s", buildName, buildNameExtra)
-	}
-
-	return buildName
+	return config.AddBuildNameExtra(buildName)
 }
 
 func configFromWorkDir(workDir string, ansibleVarsFilename string) (Config, error) {
