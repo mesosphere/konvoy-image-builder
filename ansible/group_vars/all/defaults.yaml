@@ -5,7 +5,7 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 kubernetes_version: "1.22.8"
 
-containerd_version: "1.4.11"
+containerd_version: "1.4.13"
 kubernetes_cni_version: "0.9.1"
 crictl_version: "1.22.0"
 kubernetes_semver: "v{{ kubernetes_version }}"
@@ -20,8 +20,6 @@ package_versions:
   kubernetes_rpm: "{{ kubernetes_version }}-0"
   kubernetes_deb: "{{ kubernetes_version }}-00"
   kubenode: "{{ kubernetes_version }}"
-  containerd_deb: "{{ containerd_version }}-1"
-  containerd_minor_version: "{{ containerd_version[:3] }}"
 
 # variable used for seeding images
 k8s_image_registry: "k8s.gcr.io"
@@ -32,9 +30,9 @@ aws_images: []
 
 extra_images: []
 
-# https://github.com/containerd/containerd/releases/download/v1.4.11/cri-containerd-cni-1.4.11-linux-amd64.tar.gz
-containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/cri-containerd-cni-{{ containerd_version }}-linux-amd64.tar.gz
-containerd_sha256: 80c47ec5ce2cd91a15204b5f5b534892ca653e75f3fba0c451ca326bca45fb00
+# FIXME (dkoshkin) use an OS specific and FIPS tar
+containerd_tar_file: cri-containerd-cni-{{ containerd_version }}-linux-amd64.tar.gz
+containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/{{ containerd_tar_file }}
 kubernetes_http_source: https://storage.googleapis.com/kubernetes-release/release
 kubernetes_cni_semver: v{{ kubernetes_cni_version }}
 kubernetes_cni_http_checksum: sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
@@ -67,6 +65,9 @@ images_cache: /opt/dkp/images
 
 os_packages_local_bundle_file: ""
 os_packages_remote_bundle_path: "/opt/dkp/packages/"
+
+containerd_local_bundle_file: ""
+containerd_remote_bundle_path: "/opt/dkp/containerd/"
 
 pip_packages_local_bundle_file: ""
 pip_packages_remote_bundle_path: "/opt/dkp/pip-packages/"

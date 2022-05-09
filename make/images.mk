@@ -20,6 +20,11 @@ DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell \
 	cut -d\" -f2 \
 )
 
+DEFAULT_CONTAINERD_VERSION ?= $(shell \
+	grep -E -e "containerd_version:" ansible/group_vars/all/defaults.yaml | \
+	cut -d\" -f2 \
+)
+
 # NOTE(jkoelker) Extract the provider as the first part (same as `cut -d- -f1`)
 provider = $(firstword $(subst -,$(SPACE),$(1)))
 
@@ -61,6 +66,7 @@ download-images-bundle: $(ARTIFACTS_DIR)/images
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
 	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
+	curl -o $(ARTIFACTS_DIR)/cri-containerd-cni-$(DEFAULT_CONTAINERD_VERSION)-linux-amd64.tar.gz -fsSL https://github.com/containerd/containerd/releases/download/v$(DEFAULT_CONTAINERD_VERSION)/cri-containerd-cni-$(DEFAULT_CONTAINERD_VERSION)-linux-amd64.tar.gz
 
 # NOTE(jkoelker) set no-op cleanup targets for providers that support `DryRun`.
 .PHONY: aws-build-image-cleanup

@@ -10,6 +10,7 @@ konvoy-image upload artifacts [flags]
 
 ```
       --container-images-dir string   path to container images for install on remote hosts.
+      --containerd-bundle string      path to Containerd tar file for install on remote hosts.
   -h, --help                          help for artifacts
       --inventory-file string         an ansible inventory defining your infrastructure (default "inventory.yaml")
       --os-packages-bundle string     path to os-packages tar file for install on remote hosts.

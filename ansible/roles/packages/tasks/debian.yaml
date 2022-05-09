@@ -22,7 +22,6 @@
   apt:
     name:
       - chrony
-      - libseccomp2
       - nfs-common
       - python3-cryptography
       - python3-pip

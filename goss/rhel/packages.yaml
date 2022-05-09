@@ -7,7 +7,7 @@ package:
     installed: true
 
   containerd.io:
-    installed: true
+    installed: false
 
   kubeadm:
     installed: true

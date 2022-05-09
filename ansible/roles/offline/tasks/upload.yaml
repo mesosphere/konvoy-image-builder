@@ -89,3 +89,15 @@
         dest: "{{ pip_packages_remote_filesystem_repo_path }}"
         remote_src: yes
   when: pip_packages_local_bundle_file != ""
+
+- block:
+    - name: create offline containerd bundle directory
+      file:
+        path: "{{ containerd_remote_bundle_path }}"
+        state: directory
+
+    - name: upload containerd bundle to remote
+      copy:
+        src: "{{ containerd_local_bundle_file }}"
+        dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
+  when: containerd_local_bundle_file != ""

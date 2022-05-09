@@ -10,6 +10,7 @@ import (
 
 type ArtifactsCmdFlags struct {
 	OSPackagesBundleFile     string
+	ContainerdBundleFile     string
 	PIPPackagesBundleFile    string
 	ContainerImagesBundleDir string
 	Inventory                string
@@ -30,6 +31,10 @@ func playbookOptionsFromFlag(artifactFlags ArtifactsCmdFlags) (*ansible.Playbook
 	if err != nil {
 		return nil, fmt.Errorf("failed to find absolute path for --os-packages-bundle %w", err)
 	}
+	containerdBundleFile, err := filepath.Abs(artifactFlags.ContainerdBundleFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find absolute path for --containerd-bundle %w", err)
+	}
 	pipPackagesBundleFile, err := filepath.Abs(artifactFlags.PIPPackagesBundleFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find absolute path for --pip-packages-bundle %w", err)
@@ -41,6 +46,7 @@ func playbookOptionsFromFlag(artifactFlags ArtifactsCmdFlags) (*ansible.Playbook
 	playbookOptions := &ansible.PlaybookOptions{
 		ExtraVars: []string{
 			fmt.Sprintf(extraVarsTemplate, "os_packages_local_bundle_file", osPackagesBundleFile),
+			fmt.Sprintf(extraVarsTemplate, "containerd_local_bundle_file", containerdBundleFile),
 			fmt.Sprintf(extraVarsTemplate, "pip_packages_local_bundle_file", pipPackagesBundleFile),
 			fmt.Sprintf(extraVarsTemplate, "images_local_bundle_dir", containerImagesDir),
 		},

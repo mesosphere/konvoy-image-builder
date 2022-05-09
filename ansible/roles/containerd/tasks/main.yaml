@@ -5,11 +5,14 @@
 - include: suse.yaml
   when: ansible_os_family == "Suse"
 
-- include: flatcar.yaml
-  when: ansible_os_family == "Flatcar"
-
 - include: debian.yaml
   when: ansible_os_family == "Debian"
+
+- include: install.yaml
+  when: ansible_os_family != "Flatcar"
+
+- include: install-flatcar.yaml
+  when: ansible_os_family == "Flatcar"
 
 - name: create containerd systemd directory
   file:
