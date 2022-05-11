@@ -332,7 +332,7 @@ build.snapshot:
 	#                copying the dist folder into the temporary folder
 	#                that it uses as its docker build context ;(.
 	mkdir -p bin
-	cp dist/konvoy-image_linux_amd64/konvoy-image bin/konvoy-image
+	cp dist/konvoy-image_linux_amd64_v1/konvoy-image bin/konvoy-image
 	goreleaser --parallelism=1 --skip-publish --snapshot --rm-dist
 
 .PHONY: diff
