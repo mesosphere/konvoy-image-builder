@@ -76,6 +76,9 @@ dockers:
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
     skip_push: true
+    extra_files:
+      - requirements.txt
+      - requirements-devkit.txt
 
   - dockerfile: Dockerfile
     image_templates:
@@ -98,6 +101,7 @@ dockers:
       - images
       - ansible
       - packer
+      - requirements.txt
 
 archives:
   - id: konvoy-image-bundle
