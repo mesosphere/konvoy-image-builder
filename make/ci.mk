@@ -29,6 +29,7 @@ ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8.4-ova
 ci.e2e.build.all: ci.e2e.build.rhel-7.9-ova
+ci.e2e.build.all: ci.e2e.build.centos-7.9-ova
 
 # Run an E2E test in its own devkit container.
 ci.e2e.build.%:
@@ -86,6 +87,8 @@ e2e.build.ubuntu-20-azure: ubuntu20-azure
 e2e.build.rhel-8.4-ova: rhel84-ova
 
 e2e.build.rhel-7.9-ova: rhel79-ova
+
+e2e.build.centos-7.9-ova: centos79-ova
 
 # use sibling containers to handle dependencies and avoid DinD
 ci.e2e.ansible:

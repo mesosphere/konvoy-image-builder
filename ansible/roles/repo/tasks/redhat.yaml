@@ -8,6 +8,7 @@
     auto_attach: true
   when:
     - packer_builder_type is defined   #save-image playbook resuse this role. save-image playbook is independent of platform
+    - ansible_distribution == 'RedHat'
     - packer_builder_type.startswith('vsphere') or packer_builder_type.startswith('vmware')
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.

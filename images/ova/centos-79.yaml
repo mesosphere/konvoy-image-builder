@@ -1,0 +1,21 @@
+---
+download_images: true
+build_name: "vsphere-centos-79"
+packer_builder_type: "vsphere"
+guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
+guestinfo_datasource_ref: "v1.4.0"
+guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasource_ref}}/install.sh"
+packer:
+  cluster: "zone1"
+  datacenter: "dc1"
+  datastore: "ovh-nfs"
+  folder: "cluster-api"
+  insecure_connection: "false"
+  network: "Airgapped"
+  resource_pool: "Users"
+  template: "base-centos-7"
+  vsphere_guest_os_type: "centos7-64"
+  guest_os_type: "centos7-64"
+  #goss params
+  distribution: "centos"
+  distribution_version: "7.9"

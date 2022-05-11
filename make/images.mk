@@ -270,6 +270,16 @@ rhel79-ova-fips:
 rhel79-ova-fips-offline:
 	$(MAKE) ova-rhel-7.9_offline-fips
 
+# Centos 7.9 vSphere
+.PHONY: centos79-ova
+centos79-ova:
+	$(MAKE) build-ova-centos-7.9
+
+.PHONY: centos79-ova-offline
+centos79-ova-offline:
+	$(MAKE) ova-centos-7.9_offline
+
+
 # RHEL 8.2 AWS
 .PHONY: rhel82
 rhel82:
