@@ -32,7 +32,8 @@
         "ssh_bastion_username": "{{ user `ssh_bastion_username`}}",
         "ssh_bastion_password": "{{ user `ssh_bastion_password`}}",
         "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
-        "build_name_extra": ""
+        "build_name_extra": "",
+        "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'"
     },
     "builders": [
       {
@@ -73,7 +74,8 @@
         "ssh_bastion_username": "{{ user  `ssh_bastion_username` }}",
         "ssh_bastion_password": "{{ user `ssh_bastion_password` }}",
         "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
-        "vm_name": "{{user `vm_name`}}"
+        "vm_name": "{{user `vm_name`}}",
+        "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c '{{user `shutdown_command`}}'"
       }
     ],
     "post-processors": [
