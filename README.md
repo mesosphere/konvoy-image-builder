@@ -1,7 +1,5 @@
 # Konvoy Image Builder
 
-Molecule Test: ![Teamcity Status](https://teamcity.mesosphere.io/app/rest/builds/buildType:%28id:ClosedSource_KonvoyImageBuilder_MoleculeTest%29/statusIcon.svg)
-
 The goal of Konvoy Image Builder (KIB) is to produce a common operating surface to run Konvoy across heterogeneous infrastructure. KIB relies on ansible to install software, configure, and sanitize systems for running Konvoy. Packer is used to build images for cloud environments. Goss is used to validate system’s are capable of running Konvoy.
 
 ## Supported OS Families
