@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.13.3](https://github.com/mesosphere/konvoy-image-builder/compare/v1.13.2...v1.13.3) (2022-05-12)
+
+
+### Bug Fixes
+
+* remove extra "release"  keyword from vsphere template name ([#336](https://github.com/mesosphere/konvoy-image-builder/issues/336)) ([a14f6ef](https://github.com/mesosphere/konvoy-image-builder/commit/a14f6ef6e4e1f2f9306f9138f947c281979b27ab))
+
 ### [1.13.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.13.1...v1.13.2) (2022-05-11)
 
 
