@@ -1,6 +1,6 @@
 ---
 download_images: true
-build_name: "vsphere-rhel-79"
+build_name: "rhel-79"
 packer_builder_type: "vsphere"
 guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
 guestinfo_datasource_ref: "v1.4.0"

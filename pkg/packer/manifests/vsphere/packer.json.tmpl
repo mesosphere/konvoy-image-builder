@@ -2,7 +2,7 @@
     "variables": {
         "ansible_extra_vars": "",
         "build_timestamp": "{{timestamp}}",
-        "vm_name": "konvoy-ova-{{user `build_name`}}{{user `build_name_extra`}}-{{user `kubernetes_full_version` }}-{{user `build_timestamp`}}",
+        "vm_name": "konvoy-{{user `build_name`}}-{{user `kubernetes_full_version` }}-{{user `build_timestamp`}}",
         "cluster": "",
         "datastore": "",
         "folder": "",
