@@ -14,6 +14,9 @@ const (
 
 	DefaultBuildName = "provision_build"
 
+	GPUTypesKey      = "/gpu/types"
+	GPUNvidiaVersion = "/nvidia_cuda_version"
+
 	KubernetesVersionKey       = "kubernetes_version"
 	KubernetesFullVersionKey   = "kubernetes_full_version"
 	KubernetesBuildMetadataKey = "kubernetes_build_metadata"
@@ -41,6 +44,10 @@ const (
 	PackerAzureResourceGroupNamePath     = "/packer/resource_group_name"
 	PackerAzureSubscriptionIDPath        = "/packer/subscription_id"
 	PackerAzureTenantIDPath              = "/packer/tenant_id"
+
+	PackerGPUPath          = "/packer/gpu"
+	PackerGPUTypes         = "/packer/gpu_types"
+	PackerGPUNvidiaVersion = "/packer/gpu_nvidia_version"
 
 	AzureClientIDEnvVariable = "AZURE_CLIENT_ID"
 	//nolint:gosec // environment var set by user

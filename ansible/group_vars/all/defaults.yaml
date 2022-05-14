@@ -10,6 +10,10 @@ kubernetes_cni_version: "0.9.1"
 crictl_version: "1.22.0"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
+# NOTE(jkoelker) `nvidia_cuda_version` is set via an override, it is listed
+#                empty here for documentation.
+nvidia_cuda_version: ""
+
 # Adding kubernetes_full_version for mitogen runs. This variable is always overridden
 # in go code.
 kubernetes_full_version: "{{ kubernetes_version }}+{{ kubernetes_build_metadata }}"

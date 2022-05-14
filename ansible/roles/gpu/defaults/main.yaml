@@ -1,6 +1,5 @@
 ---
 # see man lspci (-d)
-nvidia_cuda_version: "470"
 nvidia_device_query:
   - vendor: "10de"
     class: "0302"
