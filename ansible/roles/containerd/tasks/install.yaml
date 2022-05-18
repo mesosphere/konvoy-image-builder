@@ -42,7 +42,10 @@
     path: /etc/cni
     state: absent
 
-- name: symlink cri-tools
+# We run ctr. When we do, it must be in the PATH of the ansible process. On some distributions, /usr/local/bin is not in
+# the PATH. The symlink makes ctr available in /usr/bin, which is in the PATH across all distributions where we install
+# ctr. We do not install ctr on flatcar, but there it is already in the PATH.
+- name: symlink ctr to /usr/local/bin
   file:
     src: "/usr/local/bin/{{ item }}"
     dest: "/usr/bin/{{ item }}"
@@ -51,5 +54,3 @@
     force: yes
   loop:
     - ctr
-    - crictl
-    - critest
