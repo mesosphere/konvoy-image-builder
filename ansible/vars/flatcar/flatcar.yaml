@@ -5,11 +5,6 @@ sysusr_prefix: /opt
 sysusrlocal_prefix: /opt
 systemd_prefix: /etc/systemd
 
-containerd_flatcar_bins:
-  - ctr
-  - containerd
-  - containerd-shim
-
 nvidia_driver_version: "470.82.01"
 nvidia_container_runtime_version: "3.5.0"
 nvidia_container_toolkit_version: "1.5.1"
