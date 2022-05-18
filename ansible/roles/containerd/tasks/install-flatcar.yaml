@@ -1,9 +1,4 @@
 ---
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
 - name: Create systemd unit file for containerd
   template:
     dest: /etc/systemd/system/containerd.service
