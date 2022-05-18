@@ -54,6 +54,10 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--env AWS_DEFAULT_REGION \
 	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
 
+export DOCKER_DEVKIT_GCP_ARGS ?= \
+	--env GOOGLE_APPLICATION_CREDENTIALS \
+	--volume "$(HOME)/.gcp":"/home/$(USER_NAME)/.gcp"
+
 export DOCKER_DEVKIT_AZURE_ARGS ?= \
 	--env AZURE_LOCATION \
 	--env AZURE_CLIENT_ID \
@@ -111,6 +115,7 @@ export DOCKER_DEVKIT_ARGS ?= \
 	--workdir /kib \
 	$(DOCKER_SOCKET_ARGS) \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
+	$(DOCKER_DEVKIT_GCP_ARGS) \
 	$(DOCKER_DEVKIT_AZURE_ARGS) \
 	$(DOCKER_DEVKIT_BASTION_ARGS) \
 	$(DOCKER_DEVKIT_VSPHERE_ARGS) \

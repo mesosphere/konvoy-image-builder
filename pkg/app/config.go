@@ -406,6 +406,12 @@ func MergeUserArgs(config Config, userArgs UserArgs) error {
 		}
 	}
 
+	if userArgs.GCP != nil {
+		if err := MergeGCPUserArgs(config, userArgs.GCP); err != nil {
+			return fmt.Errorf("failed to set gcp args: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -538,6 +544,22 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 
 	if err := config.Set(PackerAzureTenantIDPath, azureArgs.TenantID); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureTenantIDPath, err)
+	}
+
+	return nil
+}
+
+func MergeGCPUserArgs(config Config, gcpArgs *GCPArgs) error {
+	if err := config.Set(PackerGCPProjectIDPath, gcpArgs.ProjectID); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerGCPProjectIDPath, err)
+	}
+
+	if err := config.Set(PackerGCPNetworkPath, gcpArgs.Network); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerGCPNetworkPath, err)
+	}
+
+	if err := config.Set(PackerGCPZonePath, gcpArgs.Zone); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerGCPZonePath, err)
 	}
 
 	return nil

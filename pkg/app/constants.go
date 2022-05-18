@@ -8,6 +8,7 @@ const (
 
 	BuildTypeAmazon = "amazon"
 	BuildTypeAzure  = "azure"
+	BuildTypeGCP    = "gcp"
 
 	CommonConfigDefaultPath = "./images/common.yaml"
 	ContainerdVersionKey    = "containerd_version"
@@ -45,6 +46,10 @@ const (
 	PackerAzureSubscriptionIDPath        = "/packer/subscription_id"
 	PackerAzureTenantIDPath              = "/packer/tenant_id"
 
+	PackerGCPProjectIDPath = "/packer/project_id"
+	PackerGCPNetworkPath   = "/packer/network"
+	PackerGCPZonePath      = "/packer/zone"
+
 	PackerGPUPath          = "/packer/gpu"
 	PackerGPUTypes         = "/packer/gpu_types"
 	PackerGPUNvidiaVersion = "/packer/gpu_nvidia_version"
@@ -54,6 +59,9 @@ const (
 	AzureClientSecretEnvVariable   = "AZURE_CLIENT_SECRET"
 	AzureSubscriptionIDEnvVariable = "AZURE_SUBSCRIPTION_ID"
 	AzureTenantIDEnvVariable       = "AZURE_TENANT_ID"
+
+	//nolint:gosec // environment var set by user
+	GCPCredentialEnvVariable = "GOOGLE_APPLICATION_CREDENTIALS"
 
 	OutputDir = "./work"
 )

@@ -44,19 +44,6 @@ type BuildOptions struct {
 	DryRun             bool
 }
 
-type AmazonArgs struct {
-	// AMI options
-	SourceAMI        string   `json:"source_ami"`
-	AMIFilterName    string   `json:"ami_filter_name"`
-	AMIFilterOwner   string   `json:"ami_filter_owner"`
-	AWSBuilderRegion string   `json:"aws_region"`
-	AMIRegions       []string `json:"ami_regions"`
-	AWSInstanceType  string   `json:"aws_instance_type"`
-
-	AMIUsers  []string `json:"ami_users"`
-	AMIGroups []string `json:"ami_groups"`
-}
-
 type ClusterArgs struct {
 	KubernetesVersion string `json:"kubernetes_version" yaml:"kubernetes_version"`
 	ContainerdVersion string `json:"containerd_version" yaml:"containerd_version"`
@@ -67,6 +54,7 @@ type UserArgs struct {
 
 	Amazon *AmazonArgs
 	Azure  *AzureArgs
+	GCP    *GCPArgs
 
 	// ExtraVars provided to ansible
 	ExtraVars []string
@@ -189,6 +177,10 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 	case BuildTypeAzure:
 		if err = ensureAzure(config); err != nil {
 			return fmt.Errorf("error ensuring azure config: %w", err)
+		}
+	case BuildTypeGCP:
+		if err = ensureGCP(); err != nil {
+			return fmt.Errorf("error ensuring gcp: %w", err)
 		}
 	}
 

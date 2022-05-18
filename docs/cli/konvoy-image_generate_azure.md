@@ -9,7 +9,7 @@ konvoy-image generate azure <image.yaml> [flags]
 ### Examples
 
 ```
-azure --location westus2 --subscription-id <sub_id> images/azure/centos-7.yaml
+azure --location westus2 --subscription-id <sub_id> images/azure/centos-79.yaml
 ```
 
 ### Options

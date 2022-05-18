@@ -86,6 +86,7 @@
     name: chronyd
   when: (packer_builder_type.startswith('amazon') or
     packer_builder_type.startswith('azure') or
+    packer_builder_type.startswith('googlecompute') or
     packer_builder_type is search('vmware') or
     packer_builder_type is search('vsphere')) and
     ansible_os_family != "Flatcar"

@@ -16,9 +16,10 @@ type RenderOptions struct {
 }
 
 var packerManifests = map[string][]byte{
-	"amazon":  manifests.PackerAmazon,
-	"azure":   manifests.PackerAzure,
-	"vsphere": manifests.PackerVsphere,
+	"amazon":        manifests.PackerAmazon,
+	"azure":         manifests.PackerAzure,
+	"vsphere":       manifests.PackerVsphere,
+	"googlecompute": manifests.PackerGCP,
 }
 
 var ErrManifestNotSupported = errors.New("manifest not support")

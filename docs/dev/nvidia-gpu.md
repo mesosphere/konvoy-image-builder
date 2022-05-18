@@ -17,7 +17,7 @@ enable installing Nvidia host components to the built image.
 Example:
 
 ```sh
-build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml \
+build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-79.yaml \
     --overrides overrides/nvidia.yaml
 ```
 

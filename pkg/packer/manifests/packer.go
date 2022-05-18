@@ -11,6 +11,10 @@ var PackerAmazon []byte
 //PackerAzure storage for Azurepacker template.
 var PackerAzure []byte
 
+//go:embed gcp/packer.json.tmpl
+//PackerGCP storage for GCP packer base template.
+var PackerGCP []byte
+
 //go:embed vsphere/packer.json.tmpl
 //PackerVsphere storage for vSphere packer base template.
 var PackerVsphere []byte
