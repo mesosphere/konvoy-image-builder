@@ -196,6 +196,10 @@ func TestGenPackerVars(t *testing.T) {
 			"default":  packerDefault,
 		},
 		app.KubernetesFullVersionKey: k8sFullVersion,
+		"gpu": map[interface{}]interface{}{
+			"types": []string{"nvidia"},
+		},
+		"nvidia_cuda_version": "1234",
 	}
 
 	jsonVars, err := app.GenPackerVars(config, extraVarsPath)
@@ -226,6 +230,18 @@ func TestGenPackerVars(t *testing.T) {
 
 	if assert.Contains(t, packer, app.KubernetesFullVersionKey) {
 		assert.Equal(t, k8sFullVersion, packer[app.KubernetesFullVersionKey])
+	}
+
+	if assert.Contains(t, packer, "gpu") {
+		assert.Equal(t, "true", packer["gpu"])
+	}
+
+	if assert.Contains(t, packer, "gpu_types") {
+		assert.Contains(t, "nvidia", packer["gpu_types"])
+	}
+
+	if assert.Contains(t, packer, "gpu_nvidia_version") {
+		assert.Equal(t, "1234", packer["gpu_nvidia_version"])
 	}
 
 	if assert.Contains(t, packer, app.AnsibleExtraVarsKey) {

@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -26,7 +27,6 @@ const (
 	packerSSHBastionUsernameKey   = "ssh_bastion_username"
 	packerSSHBastionPasswordKey   = "ssh_bastion_password"         //nolint:gosec // just a key
 	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file" //nolint:gosec // just a key
-
 )
 
 // NOTE(jkoelker) `strval` and `strslice` are taken from https://github.com/Masterminds/sprig.
@@ -155,6 +155,10 @@ func (config Config) Set(path string, value interface{}) error {
 		return nil
 	}
 
+	return config.SetAllowEmpty(path, value)
+}
+
+func (config Config) SetAllowEmpty(path string, value interface{}) error {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}
@@ -235,7 +239,43 @@ func EnrichKubernetesFullVersion(config Config, userDefinedKubernetesVersion str
 	return nil
 }
 
+func genPackerGPUVars(config Config) error {
+	gpuEnabled := false
+	gpuTypes := ""
+	gpuNvidiaVersion := ""
+	// NOTE(jkoelker) Copy GPU configuration from top level into packer.
+	//                If it is not found, that is OK, GPU is just not enabled.
+	types, err := config.GetSliceWithError(GPUTypesKey)
+	if err != nil && !errors.Is(err, pointerstructure.ErrNotFound) {
+		return fmt.Errorf("failed to get gpu types: %w", err)
+	}
+
+	if len(types) > 0 {
+		gpuEnabled = true
+		gpuTypes = strings.Join(types, ",")
+		gpuNvidiaVersion = config.Get(GPUNvidiaVersion)
+	}
+
+	if err := config.Set(PackerGPUPath, gpuEnabled); err != nil {
+		return fmt.Errorf("failed to set packer gpu enabled: %w", err)
+	}
+
+	if err := config.SetAllowEmpty(PackerGPUTypes, gpuTypes); err != nil {
+		return fmt.Errorf("failed to set packer gpu enabled: %w", err)
+	}
+
+	if err := config.SetAllowEmpty(PackerGPUNvidiaVersion, gpuNvidiaVersion); err != nil {
+		return fmt.Errorf("failed to set packer gpu enabled: %w", err)
+	}
+
+	return nil
+}
+
 func GenPackerVars(config Config, extraVarsPath string) ([]byte, error) {
+	if err := genPackerGPUVars(config); err != nil {
+		return nil, fmt.Errorf("error copying gpu config to packer config: %w", err)
+	}
+
 	i, found := config["packer"]
 	p := make(map[string]interface{})
 	if found {
