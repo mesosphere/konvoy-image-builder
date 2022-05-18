@@ -14,6 +14,18 @@
       not 'containerd.io-' + containerd_version in exportedversionlocklist.stdout
       )"
 
+# remove previous install with KIB through an OS package
+- name: remove containerd.io rpm package
+  yum:
+    name: "containerd.io"
+    state: absent
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: result
+  until: result is success
+  retries: 5
+  delay: 3
+
 # Oracle Linux does not have 'tar' or 'gtar' installed
 - name: install tar rpm package
   yum:
@@ -26,18 +38,6 @@
   delay: 3
   when:
     - ansible_distribution == 'OracleLinux'
-
-# remove previous install with KIB through an OS package
-- name: remove containerd.io rpm package
-  yum:
-    name: "containerd.io"
-    state: absent
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  register: result
-  until: result is success
-  retries: 5
-  delay: 3
 
 # only required for RHEL when not installing from a local file
 - name: install container-selinux GPG key
