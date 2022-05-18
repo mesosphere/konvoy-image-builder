@@ -1,4 +1,16 @@
 ---
+- name: Create containerd systemd drop-in directory
+  file:
+    path: "/etc/systemd/system/containerd.service.d/"
+    state: directory
+
+- name: Create containerd proxy conf
+  template:
+    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
+    src: etc/systemd/system/containerd.service.d/http-proxy.conf
+    mode: 0644
+  when: http_proxy is defined or https_proxy is defined or no_proxy is defined
+
 - include: redhat.yaml
   when: ansible_os_family == "RedHat"
 
@@ -13,18 +25,6 @@
 
 - include: install-flatcar.yaml
   when: ansible_os_family == "Flatcar"
-
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
-- name: create containerd proxy conf
-  template:
-    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
-    src: etc/systemd/system/containerd.service.d/http-proxy.conf
-    mode: 0644
-  when: http_proxy is defined or https_proxy is defined or no_proxy is defined
 
 - name: enable containerd
   systemd:
