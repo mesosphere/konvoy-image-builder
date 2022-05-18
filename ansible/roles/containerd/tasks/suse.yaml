@@ -1,4 +1,5 @@
 ---
+# NOTE This is distinct from the containerd.io package
 - name: remove preinstalled containerd
   zypper:
     name: containerd
@@ -22,7 +23,7 @@
 # remove previous install with KIB through an OS package
 - name: remove containerd.io package
   zypper:
-    name: "{{ 'containerd.io=' + containerd_version }}"
+    name: "containerd.io"
     state: absent
   register: result
   until: result is success
