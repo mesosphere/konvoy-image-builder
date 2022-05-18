@@ -19,11 +19,6 @@
     path: "/etc/systemd/system/containerd.service.d/"
     state: directory
 
-- name: create kubelet systemd directory
-  file:
-    path: "/etc/systemd/system/kubelet.service.d/"
-    state: directory
-
 - name: create containerd proxy conf
   template:
     dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
