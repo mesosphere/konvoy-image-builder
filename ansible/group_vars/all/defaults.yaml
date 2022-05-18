@@ -47,10 +47,6 @@ sysusr_prefix: /usr
 sysusrlocal_prefix: /usr/local
 flatcar_sysusr_prefix: /opt
 flatcar_sysusrlocal_prefix: /opt
-containerd_flatcar_bins:
-  - ctr
-  - containerd
-  - containerd-shim
 
 kubernetes_goarch: amd64
 kubernetes_bins:
