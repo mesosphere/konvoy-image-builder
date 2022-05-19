@@ -1,4 +1,18 @@
 ---
+- name: Gather os-release facts
+  ansible.utils.cli_parse:
+    command: cat /etc/os-release
+    parser:
+      name: ansible.netcommon.native
+      command: cat os-release
+      os: linux
+    set_fact: os_release
+
+- name: Set containerd_tar_file
+  set_fact:
+    containerd_tar_file: "containerd-{{ containerd_version }}-{{ os_release.ID }}-{{ ansible_distribution_version }}-d2iq{{ build_name_extra }}.1.tar.gz"
+
+
 # Check if containerd file already exists
 # used to skip the download when offline
 - name: check if the containerd tar exists
@@ -12,15 +26,15 @@
     path: "{{ containerd_remote_bundle_path }}"
     state: directory
   when:
-    - not containerd_tar_file_exists.stat.exists  
+    - not containerd_tar_file_exists.stat.exists
 
 - name: download containerd
   get_url:
-    url: "{{ containerd_url }}"
+    url: "{{ containerd_base_url }}/{{ containerd_tar_file }}"
     dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
     mode: 0600
   when:
-    - not containerd_tar_file_exists.stat.exists  
+    - not containerd_tar_file_exists.stat.exists
 
 - name: unpack containerd
   unarchive:

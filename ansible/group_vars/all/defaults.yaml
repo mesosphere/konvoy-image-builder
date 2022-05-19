@@ -31,8 +31,7 @@ aws_images: []
 extra_images: []
 
 # FIXME (dkoshkin) use an OS specific and FIPS tar
-containerd_tar_file: containerd-{{ containerd_version }}-centos-7.9-d2iq-fips.1.tar.gz
-containerd_url: https://konvoy-image-builder-test.s3.us-west-2.amazonaws.com/{{ containerd_tar_file }}
+containerd_base_url: https://konvoy-image-builder-test.s3.us-west-2.amazonaws.com
 kubernetes_http_source: https://storage.googleapis.com/kubernetes-release/release
 kubernetes_cni_semver: v{{ kubernetes_cni_version }}
 kubernetes_cni_http_checksum: sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
