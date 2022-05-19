@@ -35,6 +35,7 @@
     "vsphere_username": "{{env `VSPHERE_USERNAME`}}",
     "vsphere_password": "{{env `VSPHERE_PASSWORD`}}",
     "vcenter_server": "{{env `VSPHERE_SERVER`}}",
+    "disable_shutdown": "true",
     "vsphere_guest_os_type": null
   },
   "builders": [
@@ -76,6 +77,7 @@
       "ssh_bastion_username": "{{ user  `ssh_bastion_username` }}",
       "ssh_bastion_password": "{{ user `ssh_bastion_password` }}",
       "ssh_bastion_private_key_file": "{{ user `ssh_bastion_private_key_file` }}",
+      "disable_shutdown": "{{user `disable_shutdown`}}",
       "vm_name": "{{user `vm_name`}}"
     }
   ],
