@@ -26,28 +26,4 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2021.1"
 
-project {
-
-    buildType(ClosedSource_KonvoyImageBuilder_DslKonvoyImageBuilder_Build)
-}
-
-object ClosedSource_KonvoyImageBuilder_DslKonvoyImageBuilder_Build : BuildType({
-    id("Build")
-    name = "Build"
-
-    vcs {
-        root(DslContext.settingsRoot)
-    }
-
-    steps {
-        script {
-            name = "Test"
-            scriptContent = """echo "testing""""
-        }
-    }
-
-    triggers {
-        vcs {
-        }
-    }
-})
+project(_self.KIBProject)
