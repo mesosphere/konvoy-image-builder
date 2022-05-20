@@ -10,7 +10,7 @@
 
 - name: Set containerd_tar_file
   set_fact:
-    containerd_tar_file: "containerd-{{ containerd_version }}-{{ os_release.ID }}-{{ ansible_distribution_version }}-d2iq{{ build_name_extra }}.1.tar.gz"
+    containerd_tar_file: "containerd-{{ containerd_version }}-{{ os_release.ID }}-{{ ansible_distribution_version }}-d2iq{{ '-fips' if fips.enabled else '' }}.1.tar.gz"
 
 
 # Check if containerd file already exists
