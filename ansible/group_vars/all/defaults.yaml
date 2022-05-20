@@ -75,3 +75,6 @@ os_packages_remote_bundle_path: "/opt/dkp/packages/"
 pip_packages_local_bundle_file: ""
 pip_packages_remote_bundle_path: "/opt/dkp/pip-packages/"
 pip_packages_remote_filesystem_repo_path: "/opt/dkp/pip-packages/offline-packages/"
+
+# NOTE(jkoelker) UEK is the default. Set to RHCK to change to RH kernel.
+oracle_kernel: UEK

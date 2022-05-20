@@ -19,7 +19,7 @@
     state: present
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-    update_cache: yes
+    update_cache: true
   register: result
   until: result is success
   retries: 5
@@ -47,9 +47,10 @@
     - kubectl
   args:
     warn: false
-  ignore_errors: True
+  ignore_errors: true
   register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
+  changed_when: >
+    'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
   when:
     - versionlock_plugin_enabled
     - item in exportedversionlocklist.stdout
@@ -58,7 +59,7 @@
   yum:
     name: "{{ 'kubectl-' + package_versions.kubernetes_rpm }}"
     state: present
-    update_cache: yes
+    update_cache: true
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
@@ -70,7 +71,7 @@
   yum:
     name: "{{ 'kubelet-' + package_versions.kubernetes_rpm }}"
     state: present
-    update_cache: yes
+    update_cache: true
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: kubelet_installation_rpm
@@ -86,6 +87,10 @@
   args:
     warn: false
   register: command_result
-  changed_when: 'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+  changed_when: >
+    'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
   when:
     - versionlock_plugin_enabled
+
+- include: oracle.yaml
+  when: ansible_distribution == "OracleLinux"
