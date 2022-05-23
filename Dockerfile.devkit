@@ -1,6 +1,6 @@
 #
 FROM hashicorp/packer:1.8.0 as packer
-FROM golangci/golangci-lint:v1.46.1-alpine as golangci-lint
+FROM golangci/golangci-lint:v1.46.2-alpine as golangci-lint
 FROM goreleaser/goreleaser:v1.9.1 as goreleaser
 FROM docker:20.10 as docker
 FROM vmware/govc:v0.28.0 as govc
