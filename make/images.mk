@@ -70,7 +70,7 @@ download-images-bundle: $(ARTIFACTS_DIR)/images
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
 #after version it should be os_release.ID
-	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz -fsSL $(CONTAINED_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz
+	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-d2iq$(containerd_bundle_suffix).1.tar.gz -fsSL $(CONTAINED_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-d2iq$(containerd_bundle_suffix).1.tar.gz
 	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
 
 # NOTE(jkoelker) set no-op cleanup targets for providers that support `DryRun`.
@@ -127,6 +127,7 @@ build-%:
 		os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
 		os_distribution_major_minor_version=$(call version,$*) \
 		os_distribution_arch=x86_64 \
+		containerd_bundle_suffix= \
 		bundle_suffix= \
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
@@ -145,7 +146,8 @@ build-%:
 		os_distribution_major_minor_version=$(call version,$*) \
 		os_distribution_major_version=$(call major_version,$(call version,$*)) \
 		os_distribution_arch=x86_64 \
-		bundle_suffix=-fips \
+		containerd_bundle_suffix=-fips \
+		bundle_suffix=_fips \
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix=_fips download-images-bundle
