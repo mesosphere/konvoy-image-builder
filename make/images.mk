@@ -14,6 +14,7 @@ NULL :=
 SPACE := $(NULL) $(NULL)
 
 AIRGAPPED_BUNDLE_URL ?= konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
+CONTAINED_URL ?= https://konvoy-image-builder-test.s3.us-west-2.amazonaws.com
 ARTIFACTS_DIR ?= artifacts/
 DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell \
 	grep -E -e "kubernetes_version:" ansible/group_vars/all/defaults.yaml | \
@@ -24,6 +25,7 @@ DEFAULT_CONTAINERD_VERSION ?= $(shell \
 	grep -E -e "containerd_version:" ansible/group_vars/all/defaults.yaml | \
 	cut -d\" -f2 \
 )
+
 
 # NOTE(jkoelker) Extract the provider as the first part (same as `cut -d- -f1`)
 provider = $(firstword $(subst -,$(SPACE),$(1)))
@@ -36,6 +38,8 @@ version = $(wordlist 3,3,$(subst -,$(SPACE),$(1)))
 
 #NOTE(jkoelker) Extract the major as the first part (same as `cut -d. -f1`)
 major_version = $(firstword $(subst .,$(SPACE),$(1)))
+
+major_minor_version = $(1)
 
 #NOTE(jkoelker) Convert the distro to the package bundle distro name
 os_distro = $(subst rhel,redhat,$(1))
@@ -65,8 +69,9 @@ download-images-bundle: $(ARTIFACTS_DIR)/images
 
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
+#after version it should be os_release.ID
+	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz -fsSL $(CONTAINED_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz
 	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
-	curl -o $(ARTIFACTS_DIR)/cri-containerd-cni-$(DEFAULT_CONTAINERD_VERSION)-linux-amd64.tar.gz -fsSL https://github.com/containerd/containerd/releases/download/v$(DEFAULT_CONTAINERD_VERSION)/cri-containerd-cni-$(DEFAULT_CONTAINERD_VERSION)-linux-amd64.tar.gz
 
 # NOTE(jkoelker) set no-op cleanup targets for providers that support `DryRun`.
 .PHONY: aws-build-image-cleanup
@@ -119,6 +124,7 @@ build-%:
 	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
 	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
 		os_distribution_major_version=$(call major_version,$(call version,$*)) \
+		os_distribution_major_minor_version=$(call major_minor_version,$(call version,$*)) \
 		os_distribution_arch=x86_64 \
 		bundle_suffix= \
 		download-os-packages-bundle
@@ -136,7 +142,7 @@ build-%:
 	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
 		os_distribution_major_version=$(call major_version,$(call version,$*)) \
 		os_distribution_arch=x86_64 \
-		bundle_suffix=_fips \
+		bundle_suffix=-fips \
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix=_fips download-images-bundle
@@ -155,17 +161,24 @@ build-%:
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN)
 
 # Centos 7 AWS
+#
+.PHONY: centos79
+centos79:
+	$(MAKE) build-aws-centos-7.9
+
+.PHONY: centos79-offline
+centos7-offline:
+	$(MAKE) aws-centos-7.9_offline
+
 .PHONY: centos7
-centos7:
-	$(MAKE) build-aws-centos-7
+centos7: centos79
 
 .PHONY: centos7-fips
 centos7-fips:
 	$(MAKE) aws-centos-7_fips
 
 .PHONY: centos7-offline
-centos7-offline:
-	$(MAKE) aws-centos-7_offline
+centos7-offline: centos79-offline
 
 .PHONY: centos7-nvidia
 centos7-nvidia:
