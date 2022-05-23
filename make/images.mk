@@ -175,36 +175,56 @@ centos79:
 centos7-offline:
 	$(MAKE) aws-centos-7.9_offline
 
+.PHONY: centos79-fips
+centos79-fips:
+	$(MAKE) aws-centos-7.9_fips
+
+.PHONY: centos79-nvidia
+centos7-nvidia:
+	$(MAKE) aws-centos-7.9_nvidia
+
 .PHONY: centos7
 centos7: centos79
 
 .PHONY: centos7-fips
-centos7-fips:
-	$(MAKE) aws-centos-7_fips
+centos7-fips: centos79-fips
 
 .PHONY: centos7-offline
 centos7-offline: centos79-offline
 
 .PHONY: centos7-nvidia
-centos7-nvidia:
-	$(MAKE) aws-centos-7_nvidia
+centos7-nvidia: centos79-nvidia
 
 # Centos 7 Azure
+#
+
+.PHONY: centos79-azure
+centos79-azure:
+	$(MAKE) build-azure-centos-7.9
+
 .PHONY: centos7-azure
-centos7-azure:
-	$(MAKE) build-azure-centos-7
+centos7-azure: centos79-azure
+
+.PHONY: centos79-fips-azure
+centos79-fips-azure:
+	$(MAKE) azure-centos-7.9_fips
 
 .PHONY: centos7-fips-azure
-centos7-fips-azure:
-	$(MAKE) azure-centos-7_fips
+centos7-fips-azure: centos79-fips-azure
 
 .PHONY: centos7-offline-azure
-centos7-offline-azure:
-	$(MAKE) azure-centos-7_offline
+centos79-offline-azure:
+	$(MAKE) azure-centos-7.9_offline
+
+.PHONY: centos7-offline-azure
+centos7-offline-azure: centos79-offline-azure
+
+.PHONY: centos79-nvidia-azure
+centos7-nvidia-azure:
+	$(MAKE) azure-centos-7.9_nvidia
 
 .PHONY: centos7-nvidia-azure
-centos7-nvidia-azure:
-	$(MAKE) azure-centos-7_nvidia
+centos7-nvidia-azure: centos79-nvidia-azure
 
 .PHONY: flatcar
 flatcar:
