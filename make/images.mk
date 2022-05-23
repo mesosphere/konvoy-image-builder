@@ -26,7 +26,6 @@ DEFAULT_CONTAINERD_VERSION ?= $(shell \
 	cut -d\" -f2 \
 )
 
-
 # NOTE(jkoelker) Extract the provider as the first part (same as `cut -d- -f1`)
 provider = $(firstword $(subst -,$(SPACE),$(1)))
 
@@ -39,10 +38,11 @@ version = $(wordlist 3,3,$(subst -,$(SPACE),$(1)))
 #NOTE(jkoelker) Extract the major as the first part (same as `cut -d. -f1`)
 major_version = $(firstword $(subst .,$(SPACE),$(1)))
 
-major_minor_version = $(1)
 
 #NOTE(jkoelker) Convert the distro to the package bundle distro name
 os_distro = $(subst rhel,redhat,$(1))
+
+os_distro_os_release = $(subst oracle,ol,$(subst redhat,rhel,$(1)))
 
 # NOTE(jkoelker) Convert the provider to an image subdir
 image_dir = $(subst aws,ami,$(call provider, $(1)))
@@ -70,7 +70,7 @@ download-images-bundle: $(ARTIFACTS_DIR)/images
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
 #after version it should be os_release.ID
-	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz -fsSL $(CONTAINED_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz
+	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz -fsSL $(CONTAINED_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-d2iq$(bundle_suffix).1.tar.gz
 	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
 
 # NOTE(jkoelker) set no-op cleanup targets for providers that support `DryRun`.
@@ -124,7 +124,8 @@ build-%:
 	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
 	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
 		os_distribution_major_version=$(call major_version,$(call version,$*)) \
-		os_distribution_major_minor_version=$(call major_minor_version,$(call version,$*)) \
+		os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
+		os_distribution_major_minor_version=$(call version,$*) \
 		os_distribution_arch=x86_64 \
 		bundle_suffix= \
 		download-os-packages-bundle
@@ -140,6 +141,8 @@ build-%:
 %_offline-fips:
 	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
 	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
+		os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
+		os_distribution_major_minor_version=$(call version,$*) \
 		os_distribution_major_version=$(call major_version,$(call version,$*)) \
 		os_distribution_arch=x86_64 \
 		bundle_suffix=-fips \
