@@ -42,6 +42,10 @@ image_dir = $(subst aws,ami,$(call provider, $(1)))
 #                and squashes major and minor, e.g 7.9 -> 79, 8.2 -> 82
 image_file = $(subst .,,$(subst $(SPACE),-,$(wordlist 2, 3, $(subst -,$(SPACE),$(1)))))
 
+aws_gpu_vm_size = --instance-type p2.xlarge
+azure_gpu_vm_size = --instance-type Standard_NV6
+gpu_vm_size = $($(1)_gpu_vm_size)
+
 azure_vm_size = --instance-type Standard_B2ms
 # NOTE(jkoelker) Set the VM Size argument for the provider if not already
 #                in the ADDITIONAL_ARGS.
@@ -143,7 +147,7 @@ build-%:
 .PHONY: %_nvidia
 %_nvidia:
 	$(MAKE) build-$* \
-		ADDITIONAL_ARGS="--instance-type p2.xlarge$(if $(ADDITIONAL_ARGS),$(SPACE)$(ADDITIONAL_ARGS))" \
+		ADDITIONAL_ARGS="$(call gpu_vm_size,$(call provider,$*))$(if $(ADDITIONAL_ARGS),$(SPACE)$(ADDITIONAL_ARGS))" \
 		ADDITIONAL_OVERRIDES=overrides/nvidia.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)$(ADDITIONAL_OVERRIDES))
 		VERBOSITY=$(VERBOSITY) \
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN)

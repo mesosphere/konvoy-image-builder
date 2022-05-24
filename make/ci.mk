@@ -82,6 +82,8 @@ e2e.build.ubuntu-18-azure: ubuntu18-azure
 
 e2e.build.ubuntu-20-azure: ubuntu20-azure
 
+e2e.build.ubuntu-20-azure-nvidia: ubuntu20-nvidia-azure
+
 # vSphere
 e2e.build.rhel-8.4-ova: rhel84-ova
 
