@@ -1,4 +1,5 @@
 ---
+
 # Check if containerd file already exists
 # used to skip the download when offline
 - name: check if the containerd tar exists
@@ -12,15 +13,15 @@
     path: "{{ containerd_remote_bundle_path }}"
     state: directory
   when:
-    - not containerd_tar_file_exists.stat.exists  
+    - not containerd_tar_file_exists.stat.exists
 
 - name: download containerd
   get_url:
-    url: "{{ containerd_url }}"
+    url: "{{ containerd_base_url }}/{{ containerd_tar_file }}"
     dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
     mode: 0600
   when:
-    - not containerd_tar_file_exists.stat.exists  
+    - not containerd_tar_file_exists.stat.exists
 
 - name: unpack containerd
   unarchive:

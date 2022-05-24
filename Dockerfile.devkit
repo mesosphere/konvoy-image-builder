@@ -127,7 +127,7 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
             && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
         rm -rf /tmp/docker.group*; \
     fi
-
+RUN ansible-galaxy collection install ansible.utils
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
 CMD ["/bin/bash"]
