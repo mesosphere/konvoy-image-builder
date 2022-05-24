@@ -1,0 +1,5 @@
+---
+- example: ID=manjaro
+  getval: '^\s*(?P<key>\S+)\s*=\s*(?P<val>.*)$'
+  result:
+    "{{ key }}": "{{ val }}"
