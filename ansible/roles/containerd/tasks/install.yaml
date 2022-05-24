@@ -1,6 +1,5 @@
 ---
 
-
 # Check if containerd file already exists
 # used to skip the download when offline
 - name: check if the containerd tar exists
