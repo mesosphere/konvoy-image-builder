@@ -3,7 +3,7 @@ download_images: true
 
 packer:
   distribution: "oracle-linux"     # Offer
-  distribution_version: "7_9-gen2"  # SKU
+  distribution_version: "79-gen2"  # SKU
   image_publisher: "oracle"
   image_version: "latest"
   ssh_username: "azureuser"

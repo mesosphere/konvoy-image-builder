@@ -3,7 +3,7 @@ download_images: true
 
 packer:
   distribution: "rhel"                # Offer
-  distribution_version: "8-lvm-gen2"  # SKU
+  distribution_version: "84-lvm-gen2"  # SKU
   image_publisher: "redhat"
   image_version: "latest"
   ssh_username: "azureuser"
