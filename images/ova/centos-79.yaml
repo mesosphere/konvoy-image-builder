@@ -1,6 +1,6 @@
 ---
 download_images: true
-build_name: "rhel-79"
+build_name: "centos-79"
 packer_builder_type: "vsphere"
 guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
 guestinfo_datasource_ref: "v1.4.0"
@@ -8,14 +8,14 @@ guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasour
 packer:
   cluster: "zone1"
   datacenter: "dc1"
-  datastore: "esxi-06-disk1"
+  datastore: "ovh-nfs"
   folder: "cluster-api"
   insecure_connection: "false"
-  network: "Airgapped"
+  network: "Public"
   resource_pool: "Users"
-  template: "base-rhel-7"
-  vsphere_guest_os_type: "rhel7_64Guest"
-  guest_os_type: "rhel7-64"
+  template: "base-centos-7"
+  vsphere_guest_os_type: "centos7_64Guest"
+  guest_os_type: "cetos7-64"
   #goss params
-  distribution: "RHEL"
+  distribution: "Cento"
   distribution_version: "7.9"
