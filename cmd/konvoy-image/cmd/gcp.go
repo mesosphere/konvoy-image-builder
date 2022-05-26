@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	gcpExample = "gpc ... images/azure/centos-7.yaml"
+	gcpExample = "gcp ... images/gcp/centos-7.yaml"
 	gcpUse     = "gcp <image.yaml>"
 )
 
