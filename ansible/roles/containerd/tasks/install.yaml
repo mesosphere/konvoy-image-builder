@@ -31,18 +31,6 @@
     extra_opts:
       - --no-overwrite-dir
 
-# Remove /opt/cni directory, as we will install cni later
-- name: delete /opt/cni directory
-  file:
-    path: /opt/cni
-    state: absent
-
-# Remove /etc/cni directory, as we will configure cni later
-- name: delete /etc/cni directory
-  file:
-    path: /etc/cni
-    state: absent
-
 # We run ctr. When we do, it must be in the PATH of the ansible process. On some distributions, /usr/local/bin is not in
 # the PATH. The symlink makes ctr available in /usr/bin, which is in the PATH across all distributions where we install
 # ctr. We do not install ctr on flatcar, but there it is already in the PATH.
