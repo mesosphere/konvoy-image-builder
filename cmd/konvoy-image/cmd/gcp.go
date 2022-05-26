@@ -3,8 +3,6 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
-
-	"github.com/mesosphere/konvoy-image-builder/pkg/app"
 )
 
 var (
@@ -33,10 +31,4 @@ func initBuildGCP() {
 }
 
 func initGCPFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
-	gFlags.userArgs.Azure = &app.AzureArgs{}
-	addGCPArgs(fs, gFlags.userArgs.Azure)
-}
-
-func addGCPArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
-
 }
