@@ -32,7 +32,9 @@
 # epel-release for Centos/RHEL/Oracle 8 will be installed using Alma linux "extra" repository
 - name: install epel-release for RHEL 8.x
   yum:
-    name: epel-release
+    name: 
+      - epel-release
+      - epel-modular
     state: present
     disablerepo: appstream
   when:
