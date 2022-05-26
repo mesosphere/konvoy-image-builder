@@ -12,6 +12,53 @@
         ansible_distribution_major_version == '8'
       ) }}"
 
+- name: remove release ver file for azure
+  file:
+    path: /etc/yum/vars/releasever
+    state: absent
+  when:
+    - packer_builder_type.startswith('azure')
+    - ansible_distribution_major_version == '8'
+
+- name: disable eus repos azure
+  yum:
+    name:
+      - rhui-azure-rhel8-eus
+    state: absent
+    disablerepo: '*'
+  when:
+    - packer_builder_type.startswith('azure')
+    - ansible_distribution_major_version == '8'
+
+- name: get the regular repos config file
+  get_url:
+    url: https://rhelimage.blob.core.windows.net/repositories/rhui-microsoft-azure-rhel8.config
+    dest: /tmp/rhel8.config
+  when:
+    - packer_builder_type.startswith('azure')
+    - ansible_distribution_major_version == '8'
+
+- name: add non-eus repos
+  yum:
+    name:
+      - rhui-azure-rhel8
+    conf_file: /tmp/rhel8.config
+  when:
+    - packer_builder_type.startswith('azure')
+    - ansible_distribution_major_version == '8'
+
+- name: install yum utilities azure
+  yum:
+    name:
+      - yum-utils
+      - yum-plugin-versionlock
+    state: present
+    disablerepo: modular
+  when:
+    - packer_builder_type.startswith('azure')
+    - ansible_distribution_major_version == '8'
+
+
 - name: install yum utilities
   yum:
     name:
@@ -26,6 +73,7 @@
   delay: 3
   when:
     - versionlock_plugin_enabled
+    - not packer_builder_type.startswith('azure')
 
 - name: check if versionlock exists
   command: yum versionlock list
