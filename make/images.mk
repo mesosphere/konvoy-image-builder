@@ -14,7 +14,7 @@ NULL :=
 SPACE := $(NULL) $(NULL)
 
 AIRGAPPED_BUNDLE_URL ?= konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
-CONTAINERD_URL ?= https://konvoy-image-builder-test.s3.us-west-2.amazonaws.com
+CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 ARTIFACTS_DIR ?= artifacts/
 DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell \
 	grep -E -e "kubernetes_version:" ansible/group_vars/all/defaults.yaml | \
