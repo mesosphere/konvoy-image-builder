@@ -69,7 +69,6 @@ download-images-bundle: $(ARTIFACTS_DIR)/images
 
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
-#after version it should be os_release.ID
 	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL $(CONTAINERD_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz
 	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
 
