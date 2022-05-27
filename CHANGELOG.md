@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.15.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.14.0...v1.15.0) (2022-05-27)
+
+
+### Features
+
+* Download containerd from packages.d2iq.com ([1388af9](https://github.com/mesosphere/konvoy-image-builder/commit/1388af9f47e1e09b8ce1360dc39d61907ba2f273))
+* dynamic containerd install per OS ([#355](https://github.com/mesosphere/konvoy-image-builder/issues/355)) ([fad6da0](https://github.com/mesosphere/konvoy-image-builder/commit/fad6da0af6f19d0c61558b44ca1e877109462436))
+
+
+### Bug Fixes
+
+* change build name for rhel7 azure ([fc86874](https://github.com/mesosphere/konvoy-image-builder/commit/fc86874b326a235ec3f178a78341b53704c77c64))
+* make non eus repos logic generic ([58dafd6](https://github.com/mesosphere/konvoy-image-builder/commit/58dafd62708f4249def11ecd733c2f5b79d0c201))
+* On SUSE, remove containerd.io package irrespective of version ([9261e85](https://github.com/mesosphere/konvoy-image-builder/commit/9261e8592b280d8322509db3cf2fca77523a22e9))
+* remove major version 7 specific code ([8e79910](https://github.com/mesosphere/konvoy-image-builder/commit/8e799101d335370a12212b8f4ac3565d9eb2f04f))
+* remove release ver ([9276b1f](https://github.com/mesosphere/konvoy-image-builder/commit/9276b1f82f2f8c09f470f3beee75fd93ec5e1400))
+* rhel 8.4 SKU for azure ([cee86a1](https://github.com/mesosphere/konvoy-image-builder/commit/cee86a1f26f5ae5e00ea6e7cb822665f1e8f16ee))
+* set different non-eus repos for different versions ([92f25e7](https://github.com/mesosphere/konvoy-image-builder/commit/92f25e7c73f74683d682c6ed83122e4b194a30ab))
+* set outputs from release please ([#351](https://github.com/mesosphere/konvoy-image-builder/issues/351)) ([65dce6f](https://github.com/mesosphere/konvoy-image-builder/commit/65dce6f1271198d4c45f8004f8b89e0dc478bcfc))
+* try installing epel modular for azure ([6276cb8](https://github.com/mesosphere/konvoy-image-builder/commit/6276cb8be7244276464f2dc95381139e80789760))
+* try it another way ([0e200f4](https://github.com/mesosphere/konvoy-image-builder/commit/0e200f46ca8735d0e03f351fffd3fcb56878f5c4))
+* use different build name ([4dd6304](https://github.com/mesosphere/konvoy-image-builder/commit/4dd6304a542081d22deaf7760acf8d46c07dad42))
+* use different build name to avoid conflict ([e00317d](https://github.com/mesosphere/konvoy-image-builder/commit/e00317ddab4ca19ec1c29870302c700cf5c62a0a))
+
 ## [1.14.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.13.2...v1.14.0) (2022-05-20)
 
 
