@@ -30,5 +30,7 @@ COPY bin/konvoy-image /usr/local/bin
 COPY images /root/images
 COPY ansible /root/ansible
 COPY packer /root/packer
+# this is needed for containerd tar
+RUN ansible-galaxy collection install ansible.utils
 WORKDIR /root
 ENTRYPOINT ["/usr/local/bin/konvoy-image"]

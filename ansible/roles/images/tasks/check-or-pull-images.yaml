@@ -7,6 +7,8 @@
 # If image is not present, or is present, but some layer is missing, its name is not written to stdout. Return code is 0.
 #   > ctr --namespace k8s.io images check -q name==docker.io/mesosphere/pause-alpine:999; echo $?
 #   0
+#
+# NOTE ctr must be in the PATH of the ansible process.
 - name: check existing image to ensure all content is available locally  # noqa no-changed-when
   command: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images check name=={{ image_name }}
   register: ctr_images_check

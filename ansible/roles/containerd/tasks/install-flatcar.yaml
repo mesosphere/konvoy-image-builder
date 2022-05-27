@@ -1,9 +1,4 @@
 ---
-- name: create containerd systemd directory
-  file:
-    path: "/etc/systemd/system/containerd.service.d/"
-    state: directory
-
 - name: Create systemd unit file for containerd
   template:
     dest: /etc/systemd/system/containerd.service
@@ -46,8 +41,3 @@
   block:
     - name: disable cgroups v2
       command: sed -E -i 's/^(set linux_append=.*)"$/\1 systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"/g' /usr/share/oem/grub.cfg
-
-- name: enable containerd
-  systemd:
-    name: containerd
-    enabled: true

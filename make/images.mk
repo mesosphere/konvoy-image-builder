@@ -14,9 +14,15 @@ NULL :=
 SPACE := $(NULL) $(NULL)
 
 AIRGAPPED_BUNDLE_URL ?= konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
+CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 ARTIFACTS_DIR ?= artifacts/
 DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell \
 	grep -E -e "kubernetes_version:" ansible/group_vars/all/defaults.yaml | \
+	cut -d\" -f2 \
+)
+
+DEFAULT_CONTAINERD_VERSION ?= $(shell \
+	grep -E -e "containerd_version:" ansible/group_vars/all/defaults.yaml | \
 	cut -d\" -f2 \
 )
 
@@ -32,8 +38,11 @@ version = $(wordlist 3,3,$(subst -,$(SPACE),$(1)))
 #NOTE(jkoelker) Extract the major as the first part (same as `cut -d. -f1`)
 major_version = $(firstword $(subst .,$(SPACE),$(1)))
 
+
 #NOTE(jkoelker) Convert the distro to the package bundle distro name
 os_distro = $(subst rhel,redhat,$(1))
+
+os_distro_os_release = $(subst oracle,ol,$(subst redhat,rhel,$(1)))
 
 # NOTE(jkoelker) Convert the provider to an image subdir
 image_dir = $(subst aws,ami,$(call provider, $(1)))
@@ -60,6 +69,7 @@ download-images-bundle: $(ARTIFACTS_DIR)/images
 
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
+	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL $(CONTAINERD_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz
 	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
 
 # NOTE(jkoelker) set no-op cleanup targets for providers that support `DryRun`.
@@ -113,6 +123,8 @@ build-%:
 	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
 	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
 		os_distribution_major_version=$(call major_version,$(call version,$*)) \
+		os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
+		os_distribution_major_minor_version=$(call version,$*) \
 		os_distribution_arch=x86_64 \
 		bundle_suffix= \
 		download-os-packages-bundle
@@ -128,6 +140,8 @@ build-%:
 %_offline-fips:
 	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
 	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
+		os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
+		os_distribution_major_minor_version=$(call version,$*) \
 		os_distribution_major_version=$(call major_version,$(call version,$*)) \
 		os_distribution_arch=x86_64 \
 		bundle_suffix=_fips \
@@ -149,38 +163,65 @@ build-%:
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN)
 
 # Centos 7 AWS
+#
+.PHONY: centos79
+centos79:
+	$(MAKE) build-aws-centos-7.9
+
+.PHONY: centos79-offline
+centos7-offline:
+	$(MAKE) aws-centos-7.9_offline
+
+.PHONY: centos79-fips
+centos79-fips:
+	$(MAKE) aws-centos-7.9_fips
+
+.PHONY: centos79-nvidia
+centos7-nvidia:
+	$(MAKE) aws-centos-7.9_nvidia
+
 .PHONY: centos7
-centos7:
-	$(MAKE) build-aws-centos-7
+centos7: centos79
 
 .PHONY: centos7-fips
-centos7-fips:
-	$(MAKE) aws-centos-7_fips
+centos7-fips: centos79-fips
 
 .PHONY: centos7-offline
-centos7-offline:
-	$(MAKE) aws-centos-7_offline
+centos7-offline: centos79-offline
 
 .PHONY: centos7-nvidia
-centos7-nvidia:
-	$(MAKE) aws-centos-7_nvidia
+centos7-nvidia: centos79-nvidia
 
 # Centos 7 Azure
+#
+
+.PHONY: centos79-azure
+centos79-azure:
+	$(MAKE) build-azure-centos-7.9
+
 .PHONY: centos7-azure
-centos7-azure:
-	$(MAKE) build-azure-centos-7
+centos7-azure: centos79-azure
+
+.PHONY: centos79-fips-azure
+centos79-fips-azure:
+	$(MAKE) azure-centos-7.9_fips
 
 .PHONY: centos7-fips-azure
-centos7-fips-azure:
-	$(MAKE) azure-centos-7_fips
+centos7-fips-azure: centos79-fips-azure
 
 .PHONY: centos7-offline-azure
-centos7-offline-azure:
-	$(MAKE) azure-centos-7_offline
+centos79-offline-azure:
+	$(MAKE) azure-centos-7.9_offline
+
+.PHONY: centos7-offline-azure
+centos7-offline-azure: centos79-offline-azure
+
+.PHONY: centos79-nvidia-azure
+centos7-nvidia-azure:
+	$(MAKE) azure-centos-7.9_nvidia
 
 .PHONY: centos7-nvidia-azure
-centos7-nvidia-azure:
-	$(MAKE) azure-centos-7_nvidia
+centos7-nvidia-azure: centos79-nvidia-azure
 
 .PHONY: flatcar
 flatcar:

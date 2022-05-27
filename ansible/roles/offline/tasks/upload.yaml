@@ -1,4 +1,19 @@
 ---
+- name: Gather os-release facts
+  ansible.utils.cli_parse:
+    command: cat /etc/os-release
+    parser:
+      name: ansible.netcommon.native
+      command: cat os-release
+      os: linux
+    set_fact: os_release
+
+- name: Set containerd_tar_file
+  set_fact:
+    # we need os_release.ID because d2iqs containerd tars are released with using /etc/os-release for determining OS
+    # distribution_version is used instead of an os_release fact because centos 7 does not include minor version
+    # in VERSION_ID and ansible_distribution_version does get the minor version
+    containerd_tar_file: "containerd-{{ containerd_version }}-d2iq.1-{{ os_release.ID }}-{{ ansible_distribution_version }}-{{ ansible_architecture }}{{ '_fips' if fips.enabled else '' }}.tar.gz"
 
 - block:
     - name: create images directory
@@ -89,3 +104,15 @@
         dest: "{{ pip_packages_remote_filesystem_repo_path }}"
         remote_src: yes
   when: pip_packages_local_bundle_file != ""
+
+- block:
+    - name: create offline containerd bundle directory
+      file:
+        path: "{{ containerd_remote_bundle_path }}"
+        state: directory
+
+    - name: upload containerd bundle to remote
+      copy:
+        src: "{{ containerd_local_bundle_file }}"
+        dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
+  when: containerd_local_bundle_file != ""

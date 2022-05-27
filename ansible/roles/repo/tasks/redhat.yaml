@@ -65,16 +65,3 @@
   until: konvoy_repo_installation_rpm is success
   retries: 3
   delay: 3
-
-# Set priority: 50 to be higher priority than the default 99 but leave room
-# for future repos
-- name: add Konvoy Containerd rpm repository
-  yum_repository:
-    name: konvoy-packages
-    description: Konvoy Containerd package repository
-    priority: "50"
-    baseurl: "{{ docker_rpm_repository_url }}"
-    gpgkey: "{{ docker_rpm_gpg_key_url }}"
-    gpgcheck: true
-  retries: 3
-  delay: 3
