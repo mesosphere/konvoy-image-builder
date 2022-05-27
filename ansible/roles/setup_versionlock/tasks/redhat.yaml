@@ -48,26 +48,6 @@
     - packer_builder_type.startswith('azure')
     - ansible_distribution_major_version == '8'
 
-- name: add non-eus repos major version 7
-  yum:
-    name:
-      - 'rhui-azure-rhel{{ ansible_distribution_major_version }}'
-    conf_file: 'https://rhelimage.blob.core.windows.net/repositories/rhui-microsoft-azure-rhel{{ ansible_distribution_major_version}}.config'
-  when:
-    - packer_builder_type.startswith('azure')
-    - ansible_distribution_major_version == '7'
-    - ansible_distribution == 'RedHat'
-
-- name: install yum utilities azure
-  yum:
-    name:
-      - yum-utils
-      - yum-plugin-versionlock
-    state: present
-    disablerepo: modular
-  when:
-    - packer_builder_type.startswith('azure')
-
 - name: install yum utilities
   yum:
     name:
