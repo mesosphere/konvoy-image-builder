@@ -7,7 +7,6 @@ BUILD_DRY_RUN ?= true
 ifeq ($(BUILD_DRY_RUN),true)
 $(warning Warning: BUILD_DRY_RUN is true)
 endif
-
 VERBOSITY ?= 0
 COMMA := ,
 NULL :=
@@ -241,24 +240,40 @@ flatcar-nvidia-azure:
 	$(MAKE) azure-flatcar_nvidia
 
 # Oracle 7 AWS
+.PHONY: oracle79
+oracle79:
+	$(MAKE) build-aws-oracle-7.9
+
+# old make targets to map to new ones
 .PHONY: oracle7
-oracle7:
-	$(MAKE) build-aws-oracle-7
+oracle7: oracle79
 
 # Oracle 7 Azure
+.PHONY: oracle79-azure
+oracle79-azure:
+	$(MAKE) build-azure-oracle-7.9
+
+# old make targets to map to new ones
 .PHONY: oracle7-azure
-oracle7-azure:
-	$(MAKE) build-azure-oracle-7
+oracle7-azure: oracle79-azure
 
 # Oracle 8 AWS
+.PHONY: oracle84
+oracle84:
+	$(MAKE) build-aws-oracle-8.4
+
+# old make targets to map to new ones
 .PHONY: oracle8
-oracle8:
-	$(MAKE) build-aws-oracle-8
+oracle8: oracle84
 
 # Oracle 8 Azure
+.PHONY: oracle84-azure
+oracle84-azure:
+	$(MAKE) build-azure-oracle-8.4
+
+# old make targets to map to new ones
 .PHONY: oracle8-azure
-oracle8-azure:
-	$(MAKE) build-azure-oracle-8
+oracle8: oracle84-azure
 
 # RHEL 7.9 AWS
 .PHONY: rhel79
@@ -278,21 +293,34 @@ rhel79-fips-offline:
 	$(MAKE) aws-rhel-7.9_offline-fips
 
 # RHEL 7.9 Azure
-.PHONY: rhel7-azure
+.PHONY: rhel79-azure
 rhel7-azure:
-	$(MAKE) build-azure-rhel-7
+	$(MAKE) build-azure-rhel-7.9
+
+.PHONY: rhel79-nvidia-azure
+rhel7-nvidia-azure:
+	$(MAKE) azure-rhel-7.9_nvidia
+
+.PHONY: rhel79-fips-azure
+rhel7-fips-azure:
+	$(MAKE) azure-rhel-7.9_fips
+
+.PHONY: rhel79-fips-offline-azure
+rhel7-fips-offline-azure:
+	$(MAKE) azure-rhel7.9_offline-fips
+
+# old make targets to map to new ones
+.PHONY: rhel7-azure
+rhel7-azure: rhel79-azure
 
 .PHONY: rhel7-nvidia-azure
-rhel7-nvidia-azure:
-	$(MAKE) azure-rhel-7_nvidia
+rhel7-nvidia-azure: rhel79-nvidia-azure
 
 .PHONY: rhel7-fips-azure
-rhel7-fips-azure:
-	$(MAKE) azure-rhel-7_fips
+rhel7-fips-azure: rhel79-fips-azure
 
 .PHONY: rhel7-fips-offline-azure
-rhel7-fips-offline-azure:
-	$(MAKE) azure-rhel7_offline-fips
+rhel7-fips-offline-azure: rhel79-fips-offline-azure
 
 # RHEL 7.9 vSphere
 .PHONY: rhel79-ova
@@ -346,21 +374,38 @@ rhel84-fips-offline:
 	$(MAKE) aws-rhel-8.4_offline-fips
 
 # RHEL 8 Azure
-.PHONY: rhel8-azure
-rhel8-azure:
+.PHONY: rhel84-azure
+rhel84-azure:
+	$(MAKE) build-azure-rhel-8.4
+
+.PHONY: rhel84-nvidia-azure
+rhel84-nvidia-azure:
+	$(MAKE) azure-rhel-8.4_nvidia
+
+.PHONY: rhel84-fips-azure
+rhel84-fips-azure:
+	$(MAKE) azure-rhel-8.4_fips
+
+.PHONY: rhel84-fips-offline-azure
+rhel84-fips-offline-azure:
+	$(MAKE) azure-rhel-8.4_offline-fips
+
+.PHONY: rhel84-azure
+rhel84-azure:
 	$(MAKE) build-azure-rhel-8
 
+# old make targets so this continues to work
+.PHONY: rhel8-azure
+rhel8-azure: rhel84-azure
+
 .PHONY: rhel8-nvidia-azure
-rhel8-nvidia-azure:
-	$(MAKE) azure-rhel-8_nvidia
+rhel8-nvidia-azure: rhel84-nvidia-azure
 
 .PHONY: rhel8-fips-azure
-rhel8-fips-azure:
-	$(MAKE) azure-rhel-8_fips
+rhel8-fips-azure: rhel84-fips-azure
 
 .PHONY: rhel8-fips-offline-azure
-rhel8-fips-offline-azure:
-	$(MAKE) azure-rhel-8_offline-fips
+rhel8-fips-offline-azure: rhel84-fips-offline-azure
 
 # RHEL 8.4 vSphere
 .PHONY: rhel84-ova
