@@ -88,5 +88,6 @@ jobs:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
           body: bumps KIB to latest version
-          commit: "feat: bump kib to latest"
+          commit: "feat: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
           path: cluster-api-provider-preprovisioned
+          title: "feat: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
