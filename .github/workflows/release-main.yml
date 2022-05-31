@@ -83,7 +83,6 @@ jobs:
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Create Pull Request for KIB bump in CAPPP
         uses: peter-evans/create-pull-request@v4
-        working-directory: cluster-api-provider-preprovisioned
         with:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
