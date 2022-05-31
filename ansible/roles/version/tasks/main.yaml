@@ -40,6 +40,7 @@
     containerd config default |
     sed -n 's/^.*sandbox_image\s*=\s"\(\S*\)".*$/\1/p'
   register: containerd_sandbox_image
+  failed_when: containerd_sandbox_image.stdout_lines | length == 0
 
 # NOTE(jkoelker) Event though this will only be a single element, it is a list
 #                for concatination convience.
