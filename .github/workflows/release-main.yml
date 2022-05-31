@@ -51,10 +51,9 @@ jobs:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WHAT: make release
-
   bump-kib:
-    runs-on: ubuntu-latest
     needs: release-please
+    runs-on: ubuntu-latest
     steps:
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Setup Go
@@ -68,7 +67,8 @@ jobs:
         with:
           repository: mesosphere/cluster-api-provider-preprovisioned
           token: ${{ secrets.GITHUB_TOKEN }}
-          submodules: true
+          path: cluster-api-provider-preprovisioned
+          fetch-depth: 0
 
       - if: ${{ needs.release-please.outputs.release_created }}
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -76,14 +76,17 @@ jobs:
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Update KIB in CAPPP
         run: make update-kib
+        working-directory: cluster-api-provider-preprovisioned
         env:
            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Create Pull Request for KIB bump in CAPPP
         uses: peter-evans/create-pull-request@v4
+        working-directory: cluster-api-provider-preprovisioned
         with:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          add-paths: preprovsioned/kib
+          add-paths: preprovisioned/kib
           body: bumps KIB to latest version
           commit: "feat: bump kib to latest"
+          path: cluster-api-provider-preprovisioned
