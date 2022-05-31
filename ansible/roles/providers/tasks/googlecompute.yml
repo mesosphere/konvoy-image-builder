@@ -18,6 +18,11 @@
     dest: /tmp/install-gcloud.sh
     mode: 0700
 
+- name: Clean existing gcloud SDK content & directory
+  file:
+    state: absent
+    path: /google-cloud-sdk/
+
 - name: Execute install-gcloud.sh
   shell: >-
     bash -o errexit -o pipefail
@@ -40,3 +45,44 @@
     path: "/bin/{{ item.path | basename }}"
     state: link
   with_items: "{{ find.files }}"
+
+- name: Install cloud-init packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    force_apt_get: true
+  vars:
+    packages:
+      - cloud-init
+      - cloud-guest-utils
+      - cloud-initramfs-copymods
+      - cloud-initramfs-dyn-netconf
+  when: ansible_os_family == "Debian"
+
+- name: Install cloud-init packages
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - cloud-init
+      - cloud-utils-growpart
+      - python2-pip
+  when: ansible_os_family == "RedHat"
+
+- name: Install cloud-init packages
+  zypper:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - cloud-init
+      - cloud-init-guestinfo
+  when: ansible_os_family == "Suse"
+
+- name: Disable Hyper-V KVP protocol daemon on Ubuntu
+  systemd:
+    name: hv-kvp-daemon
+    state: stopped
+    enabled: false
+  when: ansible_os_family == "Debian"

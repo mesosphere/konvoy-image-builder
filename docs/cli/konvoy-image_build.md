@@ -46,4 +46,5 @@ konvoy-image build <image.yaml> [flags]
 * [konvoy-image](konvoy-image.md)	 - Create, provision, and customize images for running Konvoy
 * [konvoy-image build aws](konvoy-image_build_aws.md)	 - build and provision aws images
 * [konvoy-image build azure](konvoy-image_build_azure.md)	 - build and provision azure images
+* [konvoy-image build gcp](konvoy-image_build_gcp.md)	 - build and provision gcp images
 

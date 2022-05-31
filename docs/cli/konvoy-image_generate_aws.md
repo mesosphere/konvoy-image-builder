@@ -9,7 +9,7 @@ konvoy-image generate aws <image.yaml> [flags]
 ### Examples
 
 ```
-aws --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.yaml
+aws --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-79.yaml
 ```
 
 ### Options
