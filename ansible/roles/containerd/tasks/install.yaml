@@ -43,3 +43,4 @@
     force: yes
   loop:
     - ctr
+    - containerd
