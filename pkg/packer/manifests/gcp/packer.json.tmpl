@@ -13,7 +13,9 @@
     "manifest_output": "manifest.json",
     "network": "",
     "project_id": "",
-    "zone": ""
+    "zone": "",
+    "disk_size": "80",
+    "disk_type": "pd-standard"
   },
   "builders": [
     {
@@ -25,6 +27,8 @@
        "source_image_family": "{{ user `distribution_family` }}",
        "zone": "{{ user `zone` }}",
        "ssh_username": "packer",
+       "disk_size": "{{ user `disk_size` }}",
+       "disk_type": "{{ user `disk_type` }}",
        "ssh_key_exchange_algorithms": [
          "curve25519-sha256@libssh.org",
          "ecdh-sha2-nistp256",
@@ -45,9 +49,9 @@
          "kubernetes_cni_version": "{{ user `kubernetes_cni_version` }}",
          "kubernetes_version": "{{ user `kubernetes_full_version` | clean_resource_name }}"
        },
-       "metadata": {
-
-       },
+        ((- if .DryRun ))
+       "skip_create_image": true,
+       ((- end ))
        "network": "{{ user `network` }}"
     }
   ],
