@@ -35,14 +35,23 @@
       first
     }}"
 
-- name: determine containerd pause image
-  shell: >
-    containerd config default |
-    sed -n 's/^.*sandbox_image\s*=\s"\(\S*\)".*$/\1/p'
-  register: containerd_sandbox_image
-
-# NOTE(jkoelker) Event though this will only be a single element, it is a list
-#                for concatination convience.
-- name: set containerd images
+- name: Get containerd pause image name
+  # NOTE Only `config default` guarantees to output the containerd sandbox image configuration. By comparison, if
+  # user-defined configurations are defined for containerd, then `config dump` merges them, and, as a result, may end up
+  # removing the sandbox image configuration. Also, if no configuration files exist on disk, `config dump` returns an
+  # error.
+  command: containerd config default
+  register: system_containerd_config_default_cmd
+- name: Set containerd pause image name fact
   set_fact:
-    containerd_images: "{{ containerd_sandbox_image.stdout_lines }}"
+      # If match is found, evaluates to a list, e.g., ["k8s.gcr.io/pause:3.6"]. Otherwise, evaluates to an empty string.
+      containerd_sandbox_image: "{{ system_containerd_config_default_cmd.stdout | regex_search('sandbox_image = \"(?P<name>.*)\"', '\\g<name>') }}"
+
+# NOTE Create a list for easy concatenation.
+- name: Set containerd_images fact as default empty list
+  set_fact:
+    containerd_images: []
+- name: Append containerd pause image, if defined, to the containerd_images fact
+  set_fact:
+    containerd_images: "{{ containerd_sandbox_image }}"
+  when: containerd_sandbox_image != ""
