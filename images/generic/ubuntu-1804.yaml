@@ -1,5 +1,5 @@
 ---
 download_images: true
-build_name: "ubuntu-18"
+build_name: "ubuntu-1804"
 packer_builder_type: ""
 python_path: ""
