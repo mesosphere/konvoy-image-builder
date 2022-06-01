@@ -8,13 +8,16 @@
 - include: url.yaml
 
 - name: Get crictl version
-  shell: crictl --version | cut -d\  -f 3
-  register: system_crictl_version
+  command: crictl --version
+  register: system_crictl_version_cmd
   changed_when: false
+- name: Set crictl version fact
+  set_fact:
+    system_crictl_version: "{{ system_crictl_version_cmd.stdout | regex_replace('^crictl version v(?P<version>.*)$', '\\g<version>', multiline=True) }}"
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.
 - include: crictl-url.yaml
-  when: crictl_version not in system_crictl_version.stdout
+  when: crictl_version != system_crictl_version
 
 - name: create kubelet systemd directory
   file:
