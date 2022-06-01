@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.16.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.16.0...v1.16.1) (2022-06-01)
+
+
+### Bug Fixes
+
+* Parse command output without using shell pipelines ([#369](https://github.com/mesosphere/konvoy-image-builder/issues/369)) ([f7b9d3e](https://github.com/mesosphere/konvoy-image-builder/commit/f7b9d3ef8531969cd4df4ae6274bf2d811116266))
+
 ## [1.16.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.15.0...v1.16.0) (2022-06-01)
 
 
