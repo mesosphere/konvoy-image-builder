@@ -128,6 +128,7 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
         rm -rf /tmp/docker.group*; \
     fi
 RUN ansible-galaxy collection install ansible.utils
+RUN packer plugins install github.com/hashicorp/googlecompute ">=1.0.0"
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
 CMD ["/bin/bash"]

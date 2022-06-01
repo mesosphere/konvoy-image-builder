@@ -10,6 +10,9 @@ packer:
   distribution_family: "centos-7"
   # The username to connect to SSH with. Required if using SSH.
   ssh_username: "centos"
+  project_id: "eng-ksphere-platform"
+  zone: "us-west1-a"
+  network: "kib-ssh-network"
 
 build_name: "centos-7"
 packer_builder_type: "googlecompute"
