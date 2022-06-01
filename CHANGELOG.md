@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.16.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.15.0...v1.16.0) (2022-06-01)
+
+
+### Features
+
+* create centos images for gcp  ([#350](https://github.com/mesosphere/konvoy-image-builder/issues/350)) ([1229047](https://github.com/mesosphere/konvoy-image-builder/commit/12290478cdfca66ec03d39e7284c0735645f4aa8))
+
+
+### Bug Fixes
+
+* correctly set default pause image ([#367](https://github.com/mesosphere/konvoy-image-builder/issues/367)) ([164d03a](https://github.com/mesosphere/konvoy-image-builder/commit/164d03a4eaf5790897680cfbfa4ee6711d12ec0e))
+* set token param correctly ([#361](https://github.com/mesosphere/konvoy-image-builder/issues/361)) ([70d7200](https://github.com/mesosphere/konvoy-image-builder/commit/70d720014a657b373c5351271d02524e4b85f284))
+
 ## [1.15.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.14.0...v1.15.0) (2022-05-27)
 
 
