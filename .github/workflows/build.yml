@@ -11,17 +11,6 @@ on:
       - main
 
 jobs:
-  cappp-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fetch CAPPP
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.MESOSPHERE_CI_TOKEN }}
-          repository: mesosphere/cluster-api-provider-preprovisioned
-          path: cluster-api-provider-preprovisioned
-          fetch-depth: 0
-
   build:
     runs-on: ubuntu-latest
     steps:
