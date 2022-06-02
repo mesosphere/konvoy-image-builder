@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: mesosphere/cluster-api-provider-preprovisioned
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MESOSPHERE_CI_TOKEN }}
           path: cluster-api-provider-preprovisioned
           fetch-depth: 0
 
@@ -78,13 +78,13 @@ jobs:
         run: make update-kib
         working-directory: cluster-api-provider-preprovisioned
         env:
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERE_CI_TOKEN }}
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Create Pull Request for KIB bump in CAPPP
         uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          token: ${{ secrets.MESOSPHERE_CI_TOKEN }}
           add-paths: preprovisioned/kib
           body: bumps KIB to latest version
           commit: "feat: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
