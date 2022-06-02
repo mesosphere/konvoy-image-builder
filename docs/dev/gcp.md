@@ -2,20 +2,23 @@
 
 
 ## Prerequisites
-- Install gcloud CLI: (Instructions](https://cloud.google.com/sdk/docs/install)
+- Install gcloud CLI: [Instructions](https://cloud.google.com/sdk/docs/install)
 - Authentication:
+
     Packer plugin for google compute requires authenticate with GCP using service account credentails. Instructions to create service account and credentials file can be found [here](https://www.packer.io/plugins/builders/googlecompute#running-outside-of-google-cloud)
+    
     **Using CLI:**
-    ```shell
+    ```bash
     export USER=<SERVICE_ACCOUNT_USER>
     export GCP_PROJECT=<GCP_PROJECT_NAME>
-    export GOOGLE_APPLICATION_CREDENTIALS=</PATH/TO/credentials.json>
+    export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.gcp/credentials.json
     gcloud iam service-accounts create "$USER"
     gcloud projects add-iam-policy-binding $GCP_PROJECT --member="serviceAccount:$USER@$GCP_PROJECT.iam.gserviceaccount.com" --role=roles/compute.instanceAdmin.v1
     gcloud projects add-iam-policy-binding $GCP_PROJECT --member="serviceAccount:$USER@$GCP_PROJECT.iam.gserviceaccount.com" --role=roles/iam.serviceAccountUser
     gcloud iam service-accounts keys create $GOOGLE_APPLICATION_CREDENTIALS --iam-account="$USER@$GCP_PROJECT.iam.gserviceaccount.com"
     ```
-- Network
+- Network:
+
     A network with firewall rule set to allow SSH traffic must be created to allow packer communicate to the VM provisioning image.
     **Using CLI:**
     ```shell
@@ -26,9 +29,10 @@
     ```
 - Environment variables
 Make sure to create file with credentials for the service account using instructions above.
-export GOOGLE_APPLICATION_CREDENTIALS=</PATH/TO/credentials.json>
+export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.gcp/credentials.json
 
 **Packer variables for GCP:**
+
 Add following configuration in the `image.yaml`
 Substitue following variables needed for building images in GCP
 - PROJECT_NAME
@@ -53,8 +57,7 @@ packer_builder_type: "googlecompute"
 python_path: ""
 ```
 
-## Create template image on vSphere
-
+## Create image on GCP
 ```bash
 konvoy-image build gcp path/to/image.yaml
 ```
