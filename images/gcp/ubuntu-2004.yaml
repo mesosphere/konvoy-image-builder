@@ -3,17 +3,17 @@ download_images: true
 
 packer:
   # The source image to use to create the new image from. source_image = `distribution`-`distribution_version-k8sversion-timestamp`
-  distribution: "centos"
-  distribution_version: "7-9-v20220519"
-  source_image: "centos-7-v20220519"
+  distribution: "ubuntu"
+  distribution_version: "2004-focal-v20220419"
+  source_image: "ubuntu-2004-focal-v20220419"
   # The source_image_family to use to create the new image from.
-  distribution_family: "centos-7"
+  distribution_family: "ubuntu-2004-lts"
   # The username to connect to SSH with. Required if using SSH.
-  ssh_username: "centos"
+  ssh_username: "ubuntu"
   project_id: "eng-ksphere-platform"
   zone: "us-west1-a"
   network: "kib-ssh-network"
 
-build_name: "centos-7"
+build_name: "ubuntu-2004"
 packer_builder_type: "googlecompute"
 python_path: ""

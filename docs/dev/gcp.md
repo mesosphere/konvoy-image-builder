@@ -6,7 +6,7 @@
 - Authentication:
 
     Packer plugin for google compute requires authenticate with GCP using service account credentails. Instructions to create service account and credentials file can be found [here](https://www.packer.io/plugins/builders/googlecompute#running-outside-of-google-cloud)
-    
+
     **Using CLI:**
     ```bash
     export USER=<SERVICE_ACCOUNT_USER>

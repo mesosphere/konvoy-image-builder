@@ -79,10 +79,3 @@
       - cloud-init
       - cloud-init-guestinfo
   when: ansible_os_family == "Suse"
-
-- name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
-    name: hv-kvp-daemon
-    state: stopped
-    enabled: false
-  when: ansible_os_family == "Debian"

@@ -27,7 +27,7 @@
        "source_image": "{{ user `source_image` }}",
        "source_image_family": "{{ user `distribution_family` }}",
        "zone": "{{ user `zone` }}",
-       "ssh_username": "packer",
+       "ssh_username": "{{user `ssh_username`}}",
        "disk_size": "{{ user `disk_size` }}",
        "disk_type": "{{ user `disk_type` }}",
        "ssh_key_exchange_algorithms": [

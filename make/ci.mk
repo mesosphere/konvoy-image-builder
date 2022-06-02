@@ -78,9 +78,9 @@ e2e.build.rhel-7-fips-azure: rhel7-fips-azure
 
 e2e.build.rhel-8-fips-azure: rhel8-fips-azure
 
-e2e.build.ubuntu-18-azure: ubuntu18-azure
+e2e.build.ubuntu-18-azure: ubuntu1804-azure
 
-e2e.build.ubuntu-20-azure: ubuntu20-azure
+e2e.build.ubuntu-20-azure: ubuntu2004-azure
 
 # vSphere
 e2e.build.rhel-8.4-ova: rhel84-ova
@@ -89,7 +89,12 @@ e2e.build.rhel-7.9-ova: rhel79-ova
 
 # GCP
 e2e.build.centos-7.9-gcp: centos79-gcp
+
 e2e.build.centos-7.9-gcp-fips: centos79-fips-gcp
+
+e2e.build.ubuntu-18.04-gcp: ubuntu1804-gcp
+
+e2e.build.ubuntu-20.04-gcp: ubuntu2004-gcp
 
 # use sibling containers to handle dependencies and avoid DinD
 ci.e2e.ansible:
