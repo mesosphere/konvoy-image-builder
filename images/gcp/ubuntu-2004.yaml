@@ -10,6 +10,9 @@ packer:
   distribution_family: "ubuntu-2004-lts"
   # The username to connect to SSH with. Required if using SSH.
   ssh_username: "ubuntu"
+  project_id: "eng-ksphere-platform"
+  zone: "us-west1-a"
+  network: "kib-ssh-network"
 
 build_name: "ubuntu-2004"
 packer_builder_type: "googlecompute"
