@@ -89,7 +89,12 @@ e2e.build.rhel-7.9-ova: rhel79-ova
 
 # GCP
 e2e.build.centos-7.9-gcp: centos79-gcp
+
 e2e.build.centos-7.9-gcp-fips: centos79-fips-gcp
+
+e2e.build.ubuntu-18.04-gcp: ubuntu1804-gcp
+
+e2e.build.ubuntu-20.04-gcp: ubuntu2004-gcp
 
 # use sibling containers to handle dependencies and avoid DinD
 ci.e2e.ansible:

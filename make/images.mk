@@ -461,6 +461,11 @@ ubuntu18:
 ubuntu18-azure:
 	$(MAKE) build-azure-ubuntu-18
 
+# Ubuntu 18(04) GCP
+.PHONY: ubuntu1804-gcp
+ubuntu1804-gcp:
+	$(MAKE) build-gcp-ubuntu-1804
+
 # Ubuntu 20(04) AWS
 .PHONY: ubuntu20
 ubuntu20:
@@ -474,6 +479,11 @@ ubuntu20-nvidia:
 .PHONY: ubuntu20-azure
 ubuntu20-azure:
 	$(MAKE) build-azure-ubuntu-20
+
+# Ubuntu 20(04) GCP
+.PHONY: ubuntu2004-gcp
+ubuntu2004-gcp:
+	$(MAKE) build-gcp-ubuntu-2004
 
 .PHONY: ubuntu20-nvidia-azure
 ubuntu20-nvidia-azure:
