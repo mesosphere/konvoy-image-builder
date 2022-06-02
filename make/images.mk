@@ -458,10 +458,10 @@ ubuntu18:
 
 # Ubuntu 18(04) Azure
 # preserve old make targets for CI 
-.PHONY ubuntu18-azure
+.PHONY: ubuntu18-azure
 ubuntu18-azure: ubuntu1804-azure
 
-.PHONY ubuntu20-azure
+.PHONY: ubuntu20-azure
 ubuntu20-azure: ubuntu2004-azure
 .PHONY: ubuntu1804-azure
 ubuntu1804-azure:
