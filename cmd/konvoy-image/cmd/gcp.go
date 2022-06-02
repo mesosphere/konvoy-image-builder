@@ -40,21 +40,21 @@ func addGCPArgs(fs *flag.FlagSet, gcp *app.GCPArgs) {
 	fs.StringVar(
 		&gcp.ProjectID,
 		"project-id",
-		"default",
+		"",
 		"the project id to use when storing created image",
 	)
 
 	fs.StringVar(
 		&gcp.Network,
 		"network",
-		"default",
+		"",
 		"the network to use when creating an image",
 	)
 
 	fs.StringVar(
 		&gcp.Zone,
 		"zone",
-		"default",
+		"",
 		"the zone to use when storing a created image",
 	)
 }

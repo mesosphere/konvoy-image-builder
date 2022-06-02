@@ -78,6 +78,9 @@ aws-build-image-cleanup: ;
 .PHONY: ova-build-image-cleanup
 ova-build-image-cleanup: ;
 
+.PHONY: gcp-build-image-cleanup
+gcp-build-image-cleanup: ;
+
 .PHONY: azure-build-image-cleanup
 azure-build-image-cleanup:
 	bash -x test/e2e/scripts/clean-last-azure-image.sh
@@ -190,6 +193,16 @@ centos7-offline: centos79-offline
 
 .PHONY: centos7-nvidia
 centos7-nvidia: centos79-nvidia
+
+# Centos 7 GCP
+#
+.PHONY: centos79
+centos79-gcp:
+	$(MAKE) build-gcp-centos-7.9
+
+.PHONY: centos79-fips-gcp
+centos79-fips-gcp:
+	$(MAKE) gcp-centos-7.9_fips
 
 # Centos 7 Azure
 #
@@ -389,10 +402,6 @@ rhel84-fips-azure:
 .PHONY: rhel84-fips-offline-azure
 rhel84-fips-offline-azure:
 	$(MAKE) azure-rhel-8.4_offline-fips
-
-.PHONY: rhel84-azure
-rhel84-azure:
-	$(MAKE) build-azure-rhel-8
 
 # old make targets so this continues to work
 .PHONY: rhel8-azure

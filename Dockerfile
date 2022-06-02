@@ -26,6 +26,7 @@ RUN apk add --no-cache \
 COPY --from=devkit /usr/local/bin/goss /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer-provisioner-goss /usr/local/bin/
+COPY --from=devkit /root/.config/packer/plugins/ /root/.config/packer/plugins/
 COPY bin/konvoy-image /usr/local/bin
 COPY images /root/images
 COPY ansible /root/ansible
