@@ -457,9 +457,9 @@ ubuntu18:
 	$(MAKE) build-aws-ubuntu-18
 
 # Ubuntu 18(04) Azure
-.PHONY: ubuntu18-azure
-ubuntu18-azure:
-	$(MAKE) build-azure-ubuntu-18
+.PHONY: ubuntu1804-azure
+ubuntu1804-azure:
+	$(MAKE) build-azure-ubuntu-1804
 
 # Ubuntu 18(04) GCP
 .PHONY: ubuntu1804-gcp
@@ -476,9 +476,9 @@ ubuntu20-nvidia:
 	$(MAKE) aws-ubuntu-20_nvidia
 
 # Ubuntu 20(04) Azure
-.PHONY: ubuntu20-azure
-ubuntu20-azure:
-	$(MAKE) build-azure-ubuntu-20
+.PHONY: ubuntu2004-azure
+ubuntu2004-azure:
+	$(MAKE) build-azure-ubuntu-2004
 
 # Ubuntu 20(04) GCP
 .PHONY: ubuntu2004-gcp

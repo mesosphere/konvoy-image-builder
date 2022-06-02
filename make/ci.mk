@@ -78,9 +78,9 @@ e2e.build.rhel-7-fips-azure: rhel7-fips-azure
 
 e2e.build.rhel-8-fips-azure: rhel8-fips-azure
 
-e2e.build.ubuntu-18-azure: ubuntu18-azure
+e2e.build.ubuntu-18.04-azure: ubuntu1804-azure
 
-e2e.build.ubuntu-20-azure: ubuntu20-azure
+e2e.build.ubuntu-20.04-azure: ubuntu2004-azure
 
 # vSphere
 e2e.build.rhel-8.4-ova: rhel84-ova
