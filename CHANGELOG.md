@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.16.1...v1.17.0) (2022-06-02)
+
+
+### Features
+
+* allow ubuntu image creation on gcp ([#374](https://github.com/mesosphere/konvoy-image-builder/issues/374)) ([edf8fd4](https://github.com/mesosphere/konvoy-image-builder/commit/edf8fd41cf485f8346c031d8d1c0ec8001723027))
+* install googlecompute packer plugin ([#373](https://github.com/mesosphere/konvoy-image-builder/issues/373)) ([fc626af](https://github.com/mesosphere/konvoy-image-builder/commit/fc626af3a45fc95745a2d0ac44271aef45e712e6))
+
 ### [1.16.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.16.0...v1.16.1) (2022-06-01)
 
 
