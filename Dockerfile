@@ -4,7 +4,7 @@ ARG BASE=mesosphere/konvoy-image-builder:latest-devkit
 # hadolint ignore=DL3006
 FROM ${BASE} as devkit
 
-FROM alpine:3.16.0
+FROM alpine:3.15.4
 
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
@@ -31,7 +31,10 @@ COPY bin/konvoy-image /usr/local/bin
 COPY images /root/images
 COPY ansible /root/ansible
 COPY packer /root/packer
+
 # this is needed for containerd tar
-RUN ansible-galaxy collection install ansible.utils
+# place it in /usr/share/ansible/collections, the container will be run with a different user
+RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
+
 WORKDIR /root
 ENTRYPOINT ["/usr/local/bin/konvoy-image"]

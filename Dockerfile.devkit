@@ -127,7 +127,11 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
             && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
         rm -rf /tmp/docker.group*; \
     fi
-RUN ansible-galaxy collection install ansible.utils
+
+# this is needed for containerd tar
+# place it in /usr/share/ansible/collections, the container will be run with a different user
+RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
+
 
 # hadolint ignore=DL3059
 RUN packer plugins install github.com/hashicorp/googlecompute ">=1.0.0"
