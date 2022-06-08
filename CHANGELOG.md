@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.17.1...v1.17.2) (2022-06-08)
+
+
+### Bug Fixes
+
+* upload command flag ([cb31f33](https://github.com/mesosphere/konvoy-image-builder/commit/cb31f330589927fa1e791547dd33d83926286a7f))
+
 ## [1.17.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.17.0...v1.17.1) (2022-06-08)
 
 
