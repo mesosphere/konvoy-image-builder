@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.17.0...v1.17.1) (2022-06-08)
+
+
+### Bug Fixes
+
+* fixes an SSH error ([a7a2d62](https://github.com/mesosphere/konvoy-image-builder/commit/a7a2d6237953b59fd7b85247ca65ca40d465c04f))
+* missing ansible.utils collection ([d982a8d](https://github.com/mesosphere/konvoy-image-builder/commit/d982a8da7487be273917851ab74f41c77a4bf9fe))
+
 ## [1.17.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.16.1...v1.17.0) (2022-06-02)
 
 
