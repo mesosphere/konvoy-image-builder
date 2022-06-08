@@ -8,7 +8,7 @@ guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasour
 packer:
   cluster: "zone1"
   datacenter: "dc1"
-  datastore: "ovh-nfs"
+  datastore: "esxi-06-disk1"
   folder: "cluster-api"
   insecure_connection: "false"
   network: "Airgapped"
