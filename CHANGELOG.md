@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.17.2...v1.18.0) (2022-06-15)
+
+
+### Features
+
+* bump versions of k8s to 1.23.7 ([350a016](https://github.com/mesosphere/konvoy-image-builder/commit/350a0167f1ddcaf484f537b6442e608ab9461d73))
+
 ## [1.17.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.17.1...v1.17.2) (2022-06-08)
 
 
