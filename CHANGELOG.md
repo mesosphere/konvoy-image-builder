@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.18.0...v1.18.1) (2022-06-16)
+
+
+### Bug Fixes
+
+* use the same instance-type as konvoy ([#393](https://github.com/mesosphere/konvoy-image-builder/issues/393)) ([73abc28](https://github.com/mesosphere/konvoy-image-builder/commit/73abc281daa1fa7f00181282f266c853d060b3b4))
+
 ## [1.18.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.17.2...v1.18.0) (2022-06-15)
 
 
