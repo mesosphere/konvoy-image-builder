@@ -136,7 +136,7 @@ func addAzureArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
 	fs.StringVar(
 		&azure.InstanceType,
 		"instance-type",
-		"Standard_D2ds_v5",
+		"Standard_D2s_v3",
 		"the Instance Type to use for the build",
 	)
 }

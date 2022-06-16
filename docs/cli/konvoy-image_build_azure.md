@@ -26,7 +26,7 @@ azure --location westus2 --subscription-id <sub_id> images/azure/centos-79.yaml
       --gallery-image-sku string           the gallery image sku to set
       --gallery-name string                the gallery name to publish the image in (default "dkp")
   -h, --help                               help for azure
-      --instance-type string               the Instance Type to use for the build (default "Standard_D2ds_v5")
+      --instance-type string               the Instance Type to use for the build (default "Standard_D2s_v3")
       --kubernetes-version string          The version of kubernetes to install. Example: 1.21.6
       --location string                    the location in which to build the image (default "westus2")
       --overrides strings                  a comma separated list of override YAML files
