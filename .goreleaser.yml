@@ -33,7 +33,7 @@ builds:
       - amd64
 
   - main: ./cmd/konvoy-image/main.go
-    id: konvoy-image
+    id: konvoy-image-osx
     binary: konvoy-image
     mod_timestamp: "{{ .CommitTimestamp }}"
     env:
