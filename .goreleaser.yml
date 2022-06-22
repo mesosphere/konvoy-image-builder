@@ -55,7 +55,7 @@ builds:
     goarch:
       - amd64
     hooks:
-        post: gon gon.hcl
+      post: gon gon.hcl
 
   - main: ./cmd/konvoy-image-wrapper/main.go
     id: konvoy-image-wrapper
