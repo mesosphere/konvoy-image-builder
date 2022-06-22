@@ -28,8 +28,8 @@ builds:
       - -X {{ .ModulePath }}/pkg/version.branch={{ .Branch }}
       - -X {{ .ModulePath }}/pkg/version.builtBy=goreleaser
     goos:
-      - darwin
       - linux
+      - darwin
     goarch:
       - amd64
 
@@ -54,9 +54,9 @@ builds:
       - -X {{ .ModulePath }}/pkg/version.branch={{ .Branch }}
       - -X {{ .ModulePath }}/pkg/version.builtBy=goreleaser
     goos:
-      - darwin
       - linux
       - windows
+      - darwin
     goarch:
       - amd64
     hooks:
