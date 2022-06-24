@@ -48,7 +48,7 @@ const (
 
 	PackerGCPProjectIDPath = "/packer/project_id"
 	PackerGCPNetworkPath   = "/packer/network"
-	PackerGCPZonePath      = "/packer/zone"
+	PackerGCPRegionPath    = "/packer/region"
 
 	PackerGPUPath          = "/packer/gpu"
 	PackerGPUTypes         = "/packer/gpu_types"

@@ -13,7 +13,8 @@
     "manifest_output": "manifest.json",
     "network": "",
     "project_id": "",
-    "zone": "",
+    "region": "",
+    "zone": "{{ user `region` }}-a",
     "disk_size": "80",
     "disk_type": "pd-standard"
   },
@@ -26,6 +27,7 @@
        "project_id": "{{ user `project_id` }}",
        "source_image": "{{ user `source_image` }}",
        "source_image_family": "{{ user `distribution_family` }}",
+       "region": "{{ user `region` }}",
        "zone": "{{ user `zone` }}",
        "ssh_username": "{{user `ssh_username`}}",
        "disk_size": "{{ user `disk_size` }}",

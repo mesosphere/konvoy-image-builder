@@ -52,9 +52,9 @@ func addGCPArgs(fs *flag.FlagSet, gcp *app.GCPArgs) {
 	)
 
 	fs.StringVar(
-		&gcp.Zone,
-		"zone",
-		"",
-		"the zone to use when storing a created image",
+		&gcp.Region,
+		"region",
+		"us-west1",
+		"the region in which to launch the instance",
 	)
 }
