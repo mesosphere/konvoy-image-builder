@@ -40,6 +40,9 @@ const (
 
 	envAzureLocation = "AZURE_LOCATION"
 
+	//nolint:gosec // environment var set by user
+	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
+
 	envHTTPSProxy = "HTTPS_PROXY"
 	envHTTPProxy  = "HTTP_PROXY"
 	envNoProxy    = "NO_PROXY"
@@ -184,6 +187,36 @@ func (r *Runner) setAzureEnv() {
 			r.env[env] = value
 		}
 	}
+}
+
+func (r *Runner) setGCPEnv() error {
+	for _, env := range []string{
+		envGCPApplicationCredentials,
+	} {
+		value, found := os.LookupEnv(env)
+		if found {
+			r.env[env] = value
+		}
+	}
+
+	for _, env := range []string{
+		envGCPApplicationCredentials,
+	} {
+		path, found := os.LookupEnv(env)
+		if found {
+			if fi, err := os.Stat(path); err == nil {
+				if fi.IsDir() {
+					return fmt.Errorf("env %s must be set to a file", env)
+				}
+				// bind to exact same path
+				r.addBindVolume(path, path)
+			} else if !os.IsNotExist(err) {
+				return fmt.Errorf("could not determine if %q exists: %v", path, err)
+			}
+		}
+	}
+
+	return nil
 }
 
 // awsCABundle will return the path to a custom AWS CA bundle from AWS_CA_BUNDLE env var.
@@ -437,8 +470,11 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return err
 	}
-
 	r.setAzureEnv()
+	err = r.setGCPEnv()
+	if err != nil {
+		return err
+	}
 
 	err = r.setHTTPProxyEnv()
 	if err != nil {
