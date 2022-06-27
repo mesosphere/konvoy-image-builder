@@ -21,7 +21,7 @@ To load completions for every new session, execute once:
 
 #### macOS:
 
-	konvoy-image completion bash > /usr/local/etc/bash_completion.d/konvoy-image
+	konvoy-image completion bash > $(brew --prefix)/etc/bash_completion.d/konvoy-image
 
 You will need to start a new shell for this setup to take effect.
 
