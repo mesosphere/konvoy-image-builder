@@ -190,30 +190,22 @@ func (r *Runner) setAzureEnv() {
 }
 
 func (r *Runner) setGCPEnv() error {
-	for _, env := range []string{
-		envGCPApplicationCredentials,
-	} {
-		value, found := os.LookupEnv(env)
-		if found {
-			r.env[env] = value
-		}
+	path, found := os.LookupEnv(envGCPApplicationCredentials)
+	if !found {
+		// return early if env is not set, may be using a different provider
+		return nil
 	}
-
-	for _, env := range []string{
-		envGCPApplicationCredentials,
-	} {
-		path, found := os.LookupEnv(env)
-		if found {
-			if fi, err := os.Stat(path); err == nil {
-				if fi.IsDir() {
-					return fmt.Errorf("env %s must be set to a file", env)
-				}
-				// bind to exact same path
-				r.addBindVolume(path, path)
-			} else if !os.IsNotExist(err) {
-				return fmt.Errorf("could not determine if %q exists: %v", path, err)
-			}
+	if fi, err := os.Stat(path); err == nil {
+		if fi.IsDir() {
+			return fmt.Errorf("env %s must be set to a file", envGCPApplicationCredentials)
 		}
+		r.env[envGCPApplicationCredentials] = path
+		// bind to exact same path
+		r.addBindVolume(path, path)
+	} else if os.IsNotExist(err) {
+		return fmt.Errorf("env %s ise set, but file %s does not exist", envGCPApplicationCredentials, path)
+	} else {
+		return fmt.Errorf("could not determine if %q exists: %w", path, err)
 	}
 
 	return nil
