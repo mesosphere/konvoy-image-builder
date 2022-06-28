@@ -558,8 +558,8 @@ func MergeGCPUserArgs(config Config, gcpArgs *GCPArgs) error {
 		return fmt.Errorf("failed to set %s: %w", PackerGCPNetworkPath, err)
 	}
 
-	if err := config.Set(PackerGCPZonePath, gcpArgs.Zone); err != nil {
-		return fmt.Errorf("failed to set %s: %w", PackerGCPZonePath, err)
+	if err := config.Set(PackerGCPRegionPath, gcpArgs.Region); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerGCPRegionPath, err)
 	}
 
 	return nil
