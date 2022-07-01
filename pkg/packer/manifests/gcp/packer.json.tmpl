@@ -22,7 +22,7 @@
     {
        "name": "{{(user `distribution`) | lower}}-{{user `distribution_version`}}{{user `build_name_extra`}}",
        "image_name": "konvoy-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}-{{user `build_timestamp`}}",
-       "image_family": "{{ user `distribution_family` }}",
+       "image_family": "konvoy-{{user `build_name`}}-{{user `kubernetes_full_version` | clean_resource_name}}",
        "type": "googlecompute",
        "project_id": "{{ user `project_id` }}",
        "source_image": "{{ user `source_image` }}",
