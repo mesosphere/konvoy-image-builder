@@ -8,62 +8,71 @@ on:
       - shalin/darwin-sig
 
 jobs:
-
-  notarize-release:
-    runs-on: macos-latest
+  build-kib:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: install podman
-        run:  |
-          brew install podman
-          podman machine init
-          podman machine start
-          sudo /usr/local/Cellar/podman/4.1.1/bin/podman-mac-helper install
-          podman machine stop
-          podman machine start
-          export DOCKER_HOST='unix:///Users/runner/.local/share/containers/podman/machine/podman-machine-default/podman.sock'
-          alias docker=podman
-
-      - name: Snapshot
-        run: make devkit.run
-        env:
-          WHAT: make build.snapshot
-
-      - name: Docker Login
-        uses: docker/login-action@v2
+      - name: create build artifacts
+        uses: goreleaser/goreleaser-action@v3
         with:
-          registry: docker.io
-          username: mesosphereci
-          password: ${{ secrets.DOCKER_PASS }}
-
-      - name: Import Code-Signing Certificates
-        uses: Apple-Actions/import-codesign-certs@v1
-        with:
-          # The certificates in a PKCS12 file encoded as a base64 string
-          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
-          # The password used to import the PKCS12 file.
-          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
-
-      - name: Install required binaries
-        run: |
-          brew tap mitchellh/gon
-          brew install mitchellh/gon/gon
-
-      - name: Release
-        run: make devkit.run
+          distribution: goreleaser
+          version: latest
+          args: release --rm-dist --skip-publish
         env:
-          DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AC_USERNAME: ${{ secrets.AC_USERNAME }}
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
-          WHAT: make release
-      
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: |
             dist
+
+  # notarize-release:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Snapshot
+  #       run: make devkit.run
+  #       env:
+  #         WHAT: make build.snapshot
+
+  #     - name: Docker Login
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: docker.io
+  #         username: mesosphereci
+  #         password: ${{ secrets.DOCKER_PASS }}
+
+  #     - name: Import Code-Signing Certificates
+  #       uses: Apple-Actions/import-codesign-certs@v1
+  #       with:
+  #         # The certificates in a PKCS12 file encoded as a base64 string
+  #         p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+  #         # The password used to import the PKCS12 file.
+  #         p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+
+  #     - name: Install required binaries
+  #       run: |
+  #         brew tap mitchellh/gon
+  #         brew install mitchellh/gon/gon
+
+  #     - name: Release
+  #       run: make devkit.run
+  #       env:
+  #         DOCKER_CLI_EXPERIMENTAL: "enabled"
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         AC_USERNAME: ${{ secrets.AC_USERNAME }}
+  #         AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+  #         WHAT: make release
+      
+  #     - name: Archive artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: binaries
+  #         path: |
+  #           dist
 

@@ -89,8 +89,7 @@ builds:
     hooks:
       pre:
         - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
-      post:
-        - gon ./gon.hcl -log-level=info -log-json ./config.hcl
+
 # dockers:
 #   - dockerfile: Dockerfile.devkit
 #     image_templates:
@@ -149,9 +148,9 @@ archives:
       - LICENSE
       - README.md
 
-# release:
-#   github:
-#   prerelease: auto
-#   draft: true
-#   ids:
-#     - konvoy-image-bundle
+release:
+  github:
+  prerelease: auto
+  draft: true
+  ids:
+    - konvoy-image-bundle
