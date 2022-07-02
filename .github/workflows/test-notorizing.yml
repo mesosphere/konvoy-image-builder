@@ -20,6 +20,10 @@ jobs:
           brew install podman
           podman machine init
           podman machine start
+          sudo /usr/local/Cellar/podman/4.1.1/bin/podman-mac-helper install
+          podman machine stop
+          podman machine start
+          export DOCKER_HOST='unix:///Users/runner/.local/share/containers/podman/machine/podman-machine-default/podman.sock'
           alias docker=podman
 
       - name: Snapshot
