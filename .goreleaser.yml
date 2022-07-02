@@ -56,57 +56,86 @@ builds:
     goos:
       - linux
       - windows
-      - darwin
     goarch:
       - amd64
     hooks:
       pre:
         - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 
-dockers:
-  - dockerfile: Dockerfile.devkit
-    image_templates:
-      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
-    build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
-      - "--label=org.opencontainers.image.source={{ .GitURL }}"
-      - "--platform=linux/amd64"
-    skip_push: true
-    extra_files:
-      - requirements.txt
-      - requirements-devkit.txt
+  - id: konvoy-image-wrapper-mac
+    main: ./cmd/konvoy-image-wrapper/main.go
+    binary: konvoy-image
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    tags:
+      - EMBED_DOCKER_IMAGE
+    ldflags:
+      - -s -w
+      - -X {{ .ModulePath }}/pkg/version.version=v{{trimprefix .Version "v"}}
+      - -X {{ .ModulePath }}/pkg/version.major={{ .Major }}
+      - -X {{ .ModulePath }}/pkg/version.minor={{ .Minor }}
+      - -X {{ .ModulePath }}/pkg/version.patch={{ .Patch }}
+      - -X {{ .ModulePath }}/pkg/version.revision={{ .FullCommit }}
+      - -X {{ .ModulePath }}/pkg/version.commitDate={{ .CommitDate }}
+      - -X {{ .ModulePath }}/pkg/version.branch={{ .Branch }}
+      - -X {{ .ModulePath }}/pkg/version.builtBy=goreleaser
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    hooks:
+      pre:
+        - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+      post:
+        - gon ./gon.hcl -log-level=info -log-json ./config.hcl
+# dockers:
+#   - dockerfile: Dockerfile.devkit
+#     image_templates:
+#       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
+#     build_flag_templates:
+#       - "--pull"
+#       - "--label=org.opencontainers.image.created={{ .Date }}"
+#       - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+#       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+#       - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
+#       - "--label=org.opencontainers.image.source={{ .GitURL }}"
+#       - "--platform=linux/amd64"
+#     skip_push: true
+#     extra_files:
+#       - requirements.txt
+#       - requirements-devkit.txt
 
-  - dockerfile: Dockerfile
-    image_templates:
-      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}'
-    ids:
-      - konvoy-image
-    # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
-    #                was just build and is local, it will not be found.
-    build_flag_templates:
-      - '--build-arg=BASE=mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
-      - "--label=org.opencontainers.image.source={{ .GitURL }}"
-      - "--platform=linux/amd64"
-    skip_push: false
-    extra_files:
-      - bin
-      - images
-      - ansible
-      - packer
-      - requirements.txt
+#   - dockerfile: Dockerfile
+#     image_templates:
+#       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}'
+#     ids:
+#       - konvoy-image
+#     # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
+#     #                was just build and is local, it will not be found.
+#     build_flag_templates:
+#       - '--build-arg=BASE=mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
+#       - "--label=org.opencontainers.image.created={{ .Date }}"
+#       - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+#       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+#       - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
+#       - "--label=org.opencontainers.image.source={{ .GitURL }}"
+#       - "--platform=linux/amd64"
+#     skip_push: false
+#     extra_files:
+#       - bin
+#       - images
+#       - ansible
+#       - packer
+#       - requirements.txt
 
 archives:
   - id: konvoy-image-bundle
     builds:
       - konvoy-image-wrapper
+      - konvoy-image-wrapper-mac
     name_template: "konvoy-image-bundle-v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
@@ -120,8 +149,9 @@ archives:
       - LICENSE
       - README.md
 
-release:
-  github:
-  prerelease: auto
-  ids:
-    - konvoy-image-bundle
+# release:
+#   github:
+#   prerelease: auto
+#   draft: true
+#   ids:
+#     - konvoy-image-bundle
