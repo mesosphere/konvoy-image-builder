@@ -16,12 +16,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: install podman
-        run:
-          - brew install podman
-          - podman machine init
-          - podman machine start
-          - alias docker=podman
-          
+        run:  |
+          brew install podman
+          podman machine init
+          podman machine start
+          alias docker=podman
+
       - name: Snapshot
         run: make devkit.run
         env:
