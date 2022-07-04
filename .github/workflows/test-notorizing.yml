@@ -22,7 +22,7 @@ jobs:
           username: mesosphereci
           password: ${{ secrets.DOCKER_PASS }}
     
-      - name: Archive kib devkit image
+      - name: Create kib devkit image archive
         run: make devkit.run
         env:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
@@ -54,9 +54,9 @@ jobs:
         uses: Apple-Actions/import-codesign-certs@v1
         with:
           # The certificates in a PKCS12 file encoded as a base64 string
-          p12-file-base64: ${{ secrets.D2iQ_APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           # The password used to import the PKCS12 file.
-          p12-password: ${{ secrets.D2iQ_APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
         
       - name: Install gon
         run: |
@@ -71,8 +71,8 @@ jobs:
           args: release --rm-dist --skip-publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AC_USERNAME: ${{ secrets.D2IQ_APPLE_DEVELOPER_USERNAME }}
-          AC_PASSWORD: ${{ secrets.D2IQ_APPLE_DEVELOPER_PASSWORD }}
+          AC_USERNAME: ${{ secrets.AC_USERNAME }}
+          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
           NOTARIZE_KIB: "true"
 
       - name: Upload artifacts
