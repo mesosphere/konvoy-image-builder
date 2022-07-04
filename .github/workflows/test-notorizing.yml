@@ -45,6 +45,10 @@ jobs:
     needs: build-devkit-docker-image-archive
     runs-on: macos-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
       - name: Download devkit image archive
         uses: actions/download-artifact@v3
         with:
