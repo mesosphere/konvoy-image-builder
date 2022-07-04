@@ -34,9 +34,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WHAT: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
       
-       - name: Upload devkit docker image archive
+      - name: Upload devkit docker image archive
         uses: actions/upload-artifact@v3
-        with:
+          with:
           name: devkit-image
           retention-days: 1
           path: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
