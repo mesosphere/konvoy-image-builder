@@ -3,7 +3,8 @@ before:
   hooks:
     - go mod download
     - go mod tidy
-
+env:
+  - NOTARIZE_KIB={{ if index .Env "NOTARIZE_KIB"  }}{{ .Env.NOTARIZE_KIB }}{{ else }}false{{ end }}
 # NOTE(jkoelker) the changelog is managed by `release-please`
 changelog:
   skip: true
@@ -34,7 +35,7 @@ builds:
       - amd64
 
   - main: ./cmd/konvoy-image-wrapper/main.go
-    id: konvoy-image-wrapper
+    id: konvoy-image-wrapper-linwin
     binary: konvoy-image
     mod_timestamp: "{{ .CommitTimestamp }}"
     env:
@@ -62,7 +63,7 @@ builds:
       pre:
         - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 
-  - id: konvoy-image-wrapper-mac
+  - id: konvoy-image-wrapper-darwin
     main: ./cmd/konvoy-image-wrapper/main.go
     binary: konvoy-image
     mod_timestamp: "{{ .CommitTimestamp }}"
@@ -86,9 +87,21 @@ builds:
       - darwin
     goarch:
       - amd64
+      - arm64
     hooks:
       pre:
         - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+
+universal_binaries:
+  - id: konvoy-image-wrapper-universal-darwin
+    name_template: konvoy-image
+    ids:
+      - konvoy-image-wrapper-darwin
+    replace: true
+    hooks:
+      # creates konvoy-image.dmg file at ./dist/konvoy-image-wrapper-universal-darwin_darwin_all/konvoy-image.dmg
+      # check gon configuration at gon.hcl
+      post: '{{ if eq .Env.NOTARIZE_KIB "true" }} gon -log-level=info ./gon.hcl && rm -f ./dist/konvoy-image-wrapper-universal-darwin_darwin_all/konvoy-image {{else}} echo "skip signing" {{ end }}'
 
 # dockers:
 #   - dockerfile: Dockerfile.devkit
@@ -133,8 +146,8 @@ builds:
 archives:
   - id: konvoy-image-bundle
     builds:
-      - konvoy-image-wrapper
-      - konvoy-image-wrapper-mac
+      - konvoy-image-wrapper-linwin
+      - konvoy-image-wrapper-universal-darwin
     name_template: "konvoy-image-bundle-v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
@@ -148,9 +161,9 @@ archives:
       - LICENSE
       - README.md
 
-release:
-  github:
-  prerelease: auto
-  draft: true
-  ids:
-    - konvoy-image-bundle
+# release:
+#   github:
+#   prerelease: auto
+#   draft: true
+#   ids:
+#     - konvoy-image-bundle

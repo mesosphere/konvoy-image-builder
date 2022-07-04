@@ -8,13 +8,66 @@ on:
       - shalin/darwin-sig
 
 jobs:
-  build-kib:
+  build-devkit-docker-image-archive:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: create build artifacts
+      
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: docker.io
+          username: mesosphereci
+          password: ${{ secrets.DOCKER_PASS }}
+      
+      - name: Build snapshot
+        run: make devkit.run
+        env:
+          WHAT: make build.snapshot
+    
+      - name: Archive kib devkit image
+        run: make devkit.run
+        env:
+          DOCKER_CLI_EXPERIMENTAL: "enabled"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WHAT: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+      
+       - name: Upload devkit docker image archive
+        uses: actions/upload-artifact@v3
+        with:
+          name: devkit-image
+          retention-days: 1
+          path: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+          
+  notarize-release:
+    runs-on: macos-latest
+    steps:
+      - name: Download devkit image archive
+        uses: actions/download-artifact@v3
+        with:
+          name: devkit-image
+          path: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+      
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory:  cmd/konvoy-image-wrapper/image
+      
+      - name: Import Code-Signing Certificates
+        uses: Apple-Actions/import-codesign-certs@v1
+        with:
+          # The certificates in a PKCS12 file encoded as a base64 string
+          p12-file-base64: ${{ secrets.D2iQ_APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+          # The password used to import the PKCS12 file.
+          p12-password: ${{ secrets.D2iQ_APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+        
+      - name: Install gon
+        run: |
+          brew tap mitchellh/gon
+          brew install mitchellh/gon/gon
+
+      - name: Create build artifacts
         uses: goreleaser/goreleaser-action@v3
         with:
           distribution: goreleaser
@@ -22,57 +75,23 @@ jobs:
           args: release --rm-dist --skip-publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Archive artifacts
+          AC_USERNAME: ${{ secrets.D2IQ_APPLE_DEVELOPER_USERNAME }}
+          AC_PASSWORD: ${{ secrets.D2IQ_APPLE_DEVELOPER_PASSWORD }}
+          NOTARIZE_KIB: "true"
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: binaries
+          name: kib-image-bundle
+          retention-days: 1
           path: |
-            dist
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*.txt
 
-  # notarize-release:
-  #   runs-on: macos-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0
-  #     - name: Snapshot
-  #       run: make devkit.run
-  #       env:
-  #         WHAT: make build.snapshot
-
-  #     - name: Docker Login
-  #       uses: docker/login-action@v2
-  #       with:
-  #         registry: docker.io
-  #         username: mesosphereci
-  #         password: ${{ secrets.DOCKER_PASS }}
-
-  #     - name: Import Code-Signing Certificates
-  #       uses: Apple-Actions/import-codesign-certs@v1
-  #       with:
-  #         # The certificates in a PKCS12 file encoded as a base64 string
-  #         p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
-  #         # The password used to import the PKCS12 file.
-  #         p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
-
-  #     - name: Install required binaries
-  #       run: |
-  #         brew tap mitchellh/gon
-  #         brew install mitchellh/gon/gon
-
-  #     - name: Release
-  #       run: make devkit.run
-  #       env:
-  #         DOCKER_CLI_EXPERIMENTAL: "enabled"
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         AC_USERNAME: ${{ secrets.AC_USERNAME }}
-  #         AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
-  #         WHAT: make release
-      
-  #     - name: Archive artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: binaries
-  #         path: |
-  #           dist
-
+      # - name: Run Gon to notarize
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     AC_USERNAME: ${{ secrets.AC_USERNAME }}
+      #     AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+      #   run: gon ./gon.hcl -log-level=info -log-json
