@@ -21,11 +21,6 @@ jobs:
           registry: docker.io
           username: mesosphereci
           password: ${{ secrets.DOCKER_PASS }}
-      
-      - name: Build snapshot
-        run: make devkit.run
-        env:
-          WHAT: make build.snapshot
     
       - name: Archive kib devkit image
         run: make devkit.run
@@ -42,6 +37,7 @@ jobs:
           path: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
           
   notarize-release:
+    needs: build-devkit-docker-image-archive
     runs-on: macos-latest
     steps:
       - name: Download devkit image archive
