@@ -90,7 +90,7 @@ builds:
       - arm64
     hooks:
       pre:
-        - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+        - touch cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 
 universal_binaries:
   - id: konvoy-image-wrapper-universal-darwin
