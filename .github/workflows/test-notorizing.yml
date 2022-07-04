@@ -22,12 +22,17 @@ jobs:
           username: mesosphereci
           password: ${{ secrets.DOCKER_PASS }}
     
-      - name: Create kib devkit image archive
-        run: make devkit.run
+      - name: Fake Create kib devkit image archive
+        run: touch cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
         env:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WHAT: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+      # - name: Create kib devkit image archive
+      #   run: make devkit.run
+      #   env:
+      #     DOCKER_CLI_EXPERIMENTAL: "enabled"
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     WHAT: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
       
       - name: Upload devkit docker image archive
         uses: actions/upload-artifact@v3

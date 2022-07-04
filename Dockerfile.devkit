@@ -1,140 +1,140 @@
 #
 FROM hashicorp/packer:1.8.1 as packer
-# FROM golangci/golangci-lint:v1.46.2-alpine as golangci-lint
-# FROM goreleaser/goreleaser:v1.9.2 as goreleaser
-# FROM docker:20.10 as docker
-# FROM vmware/govc:v0.28.0 as govc
+FROM golangci/golangci-lint:v1.46.2-alpine as golangci-lint
+FROM goreleaser/goreleaser:v1.9.2 as goreleaser
+FROM docker:20.10 as docker
+FROM vmware/govc:v0.28.0 as govc
 
-# FROM golang:1.18.3-alpine3.15 as builder
+FROM golang:1.18.3-alpine3.15 as builder
 
-# # NOTE(jkoelker) since this is a multistage build we
-# #                can have an explosion at the layer
-# #                factory to help with caching
+# NOTE(jkoelker) since this is a multistage build we
+#                can have an explosion at the layer
+#                factory to help with caching
 
-# RUN mkdir -p /tools
+RUN mkdir -p /tools
 
-# # NOTE(jkoelker) Ignore "Multiple consecutive `RUN` | Pin versions in apk add."
-# # hadolint ignore=DL3059,DL3018
-# RUN apk add --no-cache \
-#         p7zip
+# NOTE(jkoelker) Ignore "Multiple consecutive `RUN` | Pin versions in apk add."
+# hadolint ignore=DL3059,DL3018
+RUN apk add --no-cache \
+        p7zip
 
-# ARG PACKER_GOSS_VERSION=3.0.3
-# ARG PACKER_GOSS_SHA265=1994069f78d44a76d463b76fef42c7e4ab412df14703a51643642ecdefa2c029
-# ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
-# ARG PACKER_GOSS_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
-# ARG PACKER_GOSS_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_FILE}"
-# RUN wget \
-#         --no-verbose \
-#         --output-document="/tmp/${PACKER_GOSS_FILE}" \
-#         "${PACKER_GOSS_URL}" \
-#     && echo "${PACKER_GOSS_SHA265}  /tmp/${PACKER_GOSS_FILE}" \
-#         > "/tmp/${PACKER_GOSS_FILE}.sha256" \
-#     && sha256sum -c "/tmp/${PACKER_GOSS_FILE}.sha256" \
-#     && tar --extract \
-#         --file "/tmp/${PACKER_GOSS_FILE}" \
-#         --directory /tools
+ARG PACKER_GOSS_VERSION=3.0.3
+ARG PACKER_GOSS_SHA265=1994069f78d44a76d463b76fef42c7e4ab412df14703a51643642ecdefa2c029
+ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
+ARG PACKER_GOSS_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
+ARG PACKER_GOSS_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_FILE}"
+RUN wget \
+        --no-verbose \
+        --output-document="/tmp/${PACKER_GOSS_FILE}" \
+        "${PACKER_GOSS_URL}" \
+    && echo "${PACKER_GOSS_SHA265}  /tmp/${PACKER_GOSS_FILE}" \
+        > "/tmp/${PACKER_GOSS_FILE}.sha256" \
+    && sha256sum -c "/tmp/${PACKER_GOSS_FILE}.sha256" \
+    && tar --extract \
+        --file "/tmp/${PACKER_GOSS_FILE}" \
+        --directory /tools
 
-# ARG GO_ACC_VERSION=0.2.6
-# # TODO(jkoelker) migrate to binary release for next release:
-# #                https://github.com/ory/go-acc/pull/23
-# RUN go install "github.com/ory/go-acc@v${GO_ACC_VERSION}" \
-#     && mv /go/bin/go-acc /tools
+ARG GO_ACC_VERSION=0.2.6
+# TODO(jkoelker) migrate to binary release for next release:
+#                https://github.com/ory/go-acc/pull/23
+RUN go install "github.com/ory/go-acc@v${GO_ACC_VERSION}" \
+    && mv /go/bin/go-acc /tools
 
-# ARG GOCOVER_COBERTURA_VERSION=1.1.0
-# ARG GOCOVER_COBERTURA_SHA265=bd4cb244f88b2eee22a868dccb88433cc303d11ffa29e1cae3e772caada1b615
-# ARG GOCOVER_COBERTURA_REPO="https://github.com/boumenot/gocover-cobertura"
-# ARG GOCOVER_COBERTURA_FILE="gocover-cobertura.linux.x64.7z"
-# ARG GOCOVER_COBERTURA_URL="${GOCOVER_COBERTURA_REPO}/releases/download/v${GOCOVER_COBERTURA_VERSION}/${GOCOVER_COBERTURA_FILE}"
-# RUN wget \
-#         --no-verbose \
-#         --output-document="/tmp/${GOCOVER_COBERTURA_FILE}" \
-#         "${GOCOVER_COBERTURA_URL}" \
-#     && echo "${GOCOVER_COBERTURA_SHA265}  /tmp/${GOCOVER_COBERTURA_FILE}" \
-#         > "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
-#     && sha256sum -c "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
-#     && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
-#     && chmod +x /tools/gocover-cobertura
+ARG GOCOVER_COBERTURA_VERSION=1.1.0
+ARG GOCOVER_COBERTURA_SHA265=bd4cb244f88b2eee22a868dccb88433cc303d11ffa29e1cae3e772caada1b615
+ARG GOCOVER_COBERTURA_REPO="https://github.com/boumenot/gocover-cobertura"
+ARG GOCOVER_COBERTURA_FILE="gocover-cobertura.linux.x64.7z"
+ARG GOCOVER_COBERTURA_URL="${GOCOVER_COBERTURA_REPO}/releases/download/v${GOCOVER_COBERTURA_VERSION}/${GOCOVER_COBERTURA_FILE}"
+RUN wget \
+        --no-verbose \
+        --output-document="/tmp/${GOCOVER_COBERTURA_FILE}" \
+        "${GOCOVER_COBERTURA_URL}" \
+    && echo "${GOCOVER_COBERTURA_SHA265}  /tmp/${GOCOVER_COBERTURA_FILE}" \
+        > "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
+    && sha256sum -c "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
+    && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
+    && chmod +x /tools/gocover-cobertura
 
-# # NOTE(jkoelker) From here we care about layers
-# FROM golang:1.18.3-alpine3.15
+# NOTE(jkoelker) From here we care about layers
+FROM golang:1.18.3-alpine3.15
 
-# ARG ANSIBLE_VERSION=2.10.7
-# ARG DOCKER_PY_VERSION=5.0.3
-# ENV ANSIBLE_PATH=/usr
-# ENV PYTHON_PATH=/usr
+ARG ANSIBLE_VERSION=2.10.7
+ARG DOCKER_PY_VERSION=5.0.3
+ENV ANSIBLE_PATH=/usr
+ENV PYTHON_PATH=/usr
 
-# ARG USER_NAME=root
-# ARG USER_ID=0
-# ARG GROUP_NAME=root
-# ARG GROUP_ID=0
-# ARG DOCKER_GID=0
+ARG USER_NAME=root
+ARG USER_ID=0
+ARG GROUP_NAME=root
+ARG GROUP_ID=0
+ARG DOCKER_GID=0
 
-# COPY requirements.txt /tmp/
-# COPY requirements-devkit.txt /tmp/
-# # NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
-# # hadolint ignore=DL3013,DL3018
-# RUN apk add --no-cache \
-#         bash \
-#         curl \
-#         git \
-#         gcc \
-#         jq \
-#         libc6-compat \
-#         linux-headers \
-#         musl-dev \
-#         make \
-#         openssl \
-#         openssh-client \
-#         python3 \
-#         python3-dev \
-#         gettext \
-#         py3-pynacl \
-#         py3-pip \
-#     && pip3 install --no-cache-dir --upgrade pip wheel \
-#     && pip3 install --no-cache-dir \
-#         --requirement /tmp/requirements.txt \
-#         --requirement /tmp/requirements-devkit.txt \
-#     && rm -rf \
-#         /root/.cache
+COPY requirements.txt /tmp/
+COPY requirements-devkit.txt /tmp/
+# NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
+# hadolint ignore=DL3013,DL3018
+RUN apk add --no-cache \
+        bash \
+        curl \
+        git \
+        gcc \
+        jq \
+        libc6-compat \
+        linux-headers \
+        musl-dev \
+        make \
+        openssl \
+        openssh-client \
+        python3 \
+        python3-dev \
+        gettext \
+        py3-pynacl \
+        py3-pip \
+    && pip3 install --no-cache-dir --upgrade pip wheel \
+    && pip3 install --no-cache-dir \
+        --requirement /tmp/requirements.txt \
+        --requirement /tmp/requirements-devkit.txt \
+    && rm -rf \
+        /root/.cache
 
-# RUN  curl -fsSL --output /tmp/goss.install  https://goss.rocks/install \
-#     && GOSS_VER=v0.3.16 GOSS_DST=/usr/local/bin bash /tmp/goss.install \
-#     && rm /tmp/goss.install
-# COPY --from=packer /bin/packer /usr/local/bin/
-# COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
-# COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
-# COPY --from=docker /usr/local/bin/docker /usr/local/bin/
-# COPY --from=govc /govc /usr/local/bin/
-# COPY --from=builder /tools /usr/local/bin
-
-
-# RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
-#     || addgroup -S -g "${GROUP_ID}" "${GROUP_NAME}"
-
-# # NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
-# # hadolint ignore=DL3059
-# RUN getent passwd "${USER_ID}" > /dev/null 2>&1 \
-#     || adduser -D -u "${USER_ID}" -G "${GROUP_NAME}" "${USER_NAME}"
-
-# # NOTE(jkoelker) Ignore "A && B || C is not if-then-else"
-# # NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
-# # hadolint ignore=SC2015,DL3059
-# RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
-#         getent group "${DOCKER_GID}" > /dev/null 2>&1 \
-#             || addgroup -S -g "${DOCKER_GID}" "docker"; \
-#         getent group ${DOCKER_GID} >> /tmp/docker.group \
-#             && cut -d: -f1 /tmp/docker.group >> /tmp/docker.group_name \
-#             && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
-#         rm -rf /tmp/docker.group*; \
-#     fi
-
-# # this is needed for containerd tar
-# # place it in /usr/share/ansible/collections, the container will be run with a different user
-# RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
+RUN  curl -fsSL --output /tmp/goss.install  https://goss.rocks/install \
+    && GOSS_VER=v0.3.16 GOSS_DST=/usr/local/bin bash /tmp/goss.install \
+    && rm /tmp/goss.install
+COPY --from=packer /bin/packer /usr/local/bin/
+COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
+COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/
+COPY --from=govc /govc /usr/local/bin/
+COPY --from=builder /tools /usr/local/bin
 
 
-# # hadolint ignore=DL3059
-# RUN packer plugins install github.com/hashicorp/googlecompute ">=1.0.0"
-# # Non-trivial bash scripting like e.g. the Makefile require bash instead of
-# # plain sh, in order to function.
+RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
+    || addgroup -S -g "${GROUP_ID}" "${GROUP_NAME}"
+
+# NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
+# hadolint ignore=DL3059
+RUN getent passwd "${USER_ID}" > /dev/null 2>&1 \
+    || adduser -D -u "${USER_ID}" -G "${GROUP_NAME}" "${USER_NAME}"
+
+# NOTE(jkoelker) Ignore "A && B || C is not if-then-else"
+# NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
+# hadolint ignore=SC2015,DL3059
+RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
+        getent group "${DOCKER_GID}" > /dev/null 2>&1 \
+            || addgroup -S -g "${DOCKER_GID}" "docker"; \
+        getent group ${DOCKER_GID} >> /tmp/docker.group \
+            && cut -d: -f1 /tmp/docker.group >> /tmp/docker.group_name \
+            && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
+        rm -rf /tmp/docker.group*; \
+    fi
+
+# this is needed for containerd tar
+# place it in /usr/share/ansible/collections, the container will be run with a different user
+RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
+
+
+# hadolint ignore=DL3059
+RUN packer plugins install github.com/hashicorp/googlecompute ">=1.0.0"
+# Non-trivial bash scripting like e.g. the Makefile require bash instead of
+# plain sh, in order to function.
 CMD ["/bin/bash"]
