@@ -35,9 +35,9 @@ jobs:
         uses: Apple-Actions/import-codesign-certs@v1
         with:
           # The certificates in a PKCS12 file encoded as a base64 string
-          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+          p12-file-base64: ${{ secrets.D2iQ_APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           # The password used to import the PKCS12 file.
-          p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+          p12-password: ${{ secrets.D2iQ_APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
 
       - name: Install required binaries
         run: |
@@ -47,8 +47,8 @@ jobs:
       - name: Run Gon to notarize
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AC_USERNAME: ${{ secrets.AC_USERNAME }}
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+          AC_USERNAME: ${{ secrets.D2IQ_APPLE_DEVELOPER_USERNAME }}
+          AC_PASSWORD: ${{ secrets.D2IQ_APPLE_DEVELOPER_PASSWORD }}
         run: gon ./gon.hcl -log-level=info -log-json ./config.hcl
 
       - name: Tar signed bundle
