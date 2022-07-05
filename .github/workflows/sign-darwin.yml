@@ -16,6 +16,9 @@ jobs:
           version: "tags/${{ inputs.tag }}"
           file: "konvoy-image-bundle-${{ inputs.tag }}_darwin_amd64.tar.gz"
 
+      - name: Create directory to extract the pulled file into
+        run: mkdir "konvoy-image-bundle_darwin_amd64"
+
       - name: Extract the pulled file
         run: tar -xvzf "konvoy-image-bundle-${{ inputs.tag }}_darwin_amd64.tar.gz" -C "konvoy-image-bundle_darwin_amd64"
 
