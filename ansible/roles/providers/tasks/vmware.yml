@@ -29,6 +29,8 @@
   yum:
     name: "{{ packages }}"
     state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   vars:
     packages:
       - cloud-init
