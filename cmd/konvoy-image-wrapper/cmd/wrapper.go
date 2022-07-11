@@ -40,6 +40,12 @@ const (
 
 	envAzureLocation = "AZURE_LOCATION"
 
+	envVSphereServer                     = "VSPHERE_SERVER"
+	envVSphereUser                       = "VSPHERE_USERNAME"
+	envVSpherePassword                   = "VSPHERE_PASSWORD"
+	envRedHatSubscriptionManagerUser     = "RHSM_USER"
+	envRedHatSubscriptionManagerPassword = "RHSM_PASS"
+
 	//nolint:gosec // environment var set by user
 	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
 
@@ -182,6 +188,21 @@ func (r *Runner) setAzureEnv() {
 	}
 
 	for _, env := range azureEnvVars {
+		value, found := os.LookupEnv(env)
+		if found {
+			r.env[env] = value
+		}
+	}
+}
+
+func (r *Runner) setVSphereEnv() {
+	for _, env := range []string{
+		envVSphereServer,
+		envVSphereUser,
+		envVSpherePassword,
+		envRedHatSubscriptionManagerUser,
+		envRedHatSubscriptionManagerPassword,
+	} {
 		value, found := os.LookupEnv(env)
 		if found {
 			r.env[env] = value
@@ -463,6 +484,7 @@ func (r *Runner) Run(args []string) error {
 		return err
 	}
 	r.setAzureEnv()
+	r.setVSphereEnv()
 	err = r.setGCPEnv()
 	if err != nil {
 		return err
