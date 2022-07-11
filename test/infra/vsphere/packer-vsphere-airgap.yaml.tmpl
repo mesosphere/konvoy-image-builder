@@ -3,7 +3,14 @@
 # The ssh_bastion_private_key_file is hardcoded to use the devkit container path
 # as thats where these run in CI. If a user wants to run locally, they must update
 # the appropirate ova make goals and change this path.
+# Also setting here D2IQ's vSphere details
 packer:
   ssh_bastion_username: "${SSH_BASTION_USERNAME}"
   ssh_bastion_host: "${SSH_BASTION_HOST}"
   ssh_bastion_private_key_file: /kib/vsphere-tests.pem
+  cluster: "zone1"
+  datacenter: "dc1"
+  datastore: "esxi-06-disk1"
+  folder: "cluster-api"
+  network: "Airgapped"
+  resource_pool: "Users"
