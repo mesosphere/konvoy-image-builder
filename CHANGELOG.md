@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.19.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.18.1...v1.19.0) (2022-07-12)
+
+
+### Features
+
+* set a GCP image-family that can be used in dkp ([e2d3ad3](https://github.com/mesosphere/konvoy-image-builder/commit/e2d3ad31835e979da6181e68e003fd5913b7bec8))
+
+
+### Bug Fixes
+
+* install cloud-init packages for vsphere in offline mode ([#406](https://github.com/mesosphere/konvoy-image-builder/issues/406)) ([64e3116](https://github.com/mesosphere/konvoy-image-builder/commit/64e3116cc8dafb979dfc22f535772d0ccefc104e))
+* match the image name for GCP with AWS ([cc26ea7](https://github.com/mesosphere/konvoy-image-builder/commit/cc26ea74ba5e259d13b2c491d700040f1734c911))
+* pass GOOGLE_APPLICATION_CREDENTIALS env and file to wrapper ([6a472bf](https://github.com/mesosphere/konvoy-image-builder/commit/6a472bfbedd280473ac41990d45ca2f3f8c23d51))
+* pass vSphere envs in wrapper ([5fc0fa0](https://github.com/mesosphere/konvoy-image-builder/commit/5fc0fa08ff797a767d1b160b3a2c9d86b32cc434))
+* remove d2iq specific packer config for vSphere in images/ ([cdec236](https://github.com/mesosphere/konvoy-image-builder/commit/cdec236c3d637d71499fad1aaaf0c63495a5fd4b))
+* remove d2iq vars from GCP image files ([74efc02](https://github.com/mesosphere/konvoy-image-builder/commit/74efc0212bba2a86d86fe667b0abe9f41baec870))
+* use same defaults and flags as in konvoy ([4c90ac3](https://github.com/mesosphere/konvoy-image-builder/commit/4c90ac3dc31d2a07af3d02620bf68627bc09c076))
+
 ## [1.18.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.18.0...v1.18.1) (2022-06-16)
 
 
