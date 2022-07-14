@@ -30,7 +30,7 @@ build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-79.yaml 
 Example:
 ```sh
 build --region us-west-2 \
-    --aws-instance-type p3.xlarge \
+    --aws-instance-type p2.xlarge \
     images/ami/flatcar.yaml \
     --overrides overrides/nvidia.yaml
 ```
