@@ -80,10 +80,7 @@ func init() {
 	initBuildGCP()
 
 	fs := buildCmd.Flags()
-
 	initGenerateFlags(fs, &buildFlags.generateCLIFlags)
-	initAmazonFlags(fs, &buildFlags.generateCLIFlags)
-
 	addBuildArgs(fs, &buildFlags)
 
 	buildCmd.AddCommand(awsBuildCmd)

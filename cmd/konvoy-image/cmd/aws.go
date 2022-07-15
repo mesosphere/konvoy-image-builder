@@ -88,13 +88,6 @@ func addAmazonArgs(fs *flag.FlagSet, amazonArgs *app.AmazonArgs) {
 	)
 	fs.StringVar(
 		&amazonArgs.AWSInstanceType,
-		"aws-instance-type",
-		"",
-		"instance type used to build the AMI; the type must be present in the region in which the AMI is built",
-	)
-	_ = fs.MarkDeprecated("aws-instance-type", "please use `--instance-type`.")
-	fs.StringVar(
-		&amazonArgs.AWSInstanceType,
 		"instance-type",
 		"",
 		"instance type used to build the AMI; the type must be present in the region in which the AMI is built",
