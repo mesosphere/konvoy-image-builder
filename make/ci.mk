@@ -24,6 +24,7 @@ ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.2-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
+ci.e2e.build.all: ci.e2e.build.rhel-8.4-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
@@ -62,6 +63,8 @@ e2e.build.centos-7-nvidia: centos7-nvidia
 e2e.build.sles-15-nvidia: sles15-nvidia
 
 e2e.build.rhel-8-fips: rhel82-fips
+
+e2e.build.rhel-8.4-nvidia: rhel84-nvidia
 
 # Azure
 e2e.build.centos-7-azure: centos7-azure
