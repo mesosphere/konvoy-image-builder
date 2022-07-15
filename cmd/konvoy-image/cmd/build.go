@@ -21,26 +21,35 @@ type buildCLIFlags struct {
 	generateCLIFlags
 }
 
-var buildFlags buildCLIFlags
+func NewBuildCmd() *cobra.Command {
+	flags := &buildCLIFlags{}
+	cmd := &cobra.Command{
+		Use:   "build <image.yaml>",
+		Short: "build and provision images",
+		Long: "Build and Provision images. Specifying AWS arguments is deprecated and will " +
+			"be removed in a future version. Use the `aws` subcommand instead.",
+		Args: cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			runBuild(args[0], flags)
+		},
+	}
 
-var buildCmd = &cobra.Command{
-	Use:   "build <image.yaml>",
-	Short: "build and provision images",
-	Long: "Build and Provision images. Specifying AWS arguments is deprecated and will " +
-		"be removed in a future version. Use the `aws` subcommand instead.",
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runBuild(args[0])
-	},
+	cmd.AddCommand(NewAWSBuildCmd())
+	cmd.AddCommand(NewAzureBuildCmd())
+	cmd.AddCommand(NewGCPBuildCmd())
+
+	initBuildFlags(cmd.Flags(), flags)
+
+	return cmd
 }
 
 func newBuilder() *app.Builder {
 	return &app.Builder{}
 }
 
-func workDir(image string, builder *app.Builder) string {
+func workDir(image string, builder *app.Builder, buildFlags *buildCLIFlags) string {
 	if buildFlags.workDir == "" {
-		dir, err := builder.InitConfig(newInitOptions(image, buildFlags.generateCLIFlags))
+		dir, err := builder.InitConfig(newInitOptions(image, &buildFlags.generateCLIFlags))
 		if err != nil {
 			bail("error rendering builder configuration", err, 2)
 		}
@@ -52,16 +61,16 @@ func workDir(image string, builder *app.Builder) string {
 	return buildFlags.workDir
 }
 
-func runBuild(image string) {
+func runBuild(image string, buildFlags *buildCLIFlags) {
 	builder := newBuilder()
-	work := workDir(image, builder)
+	work := workDir(image, builder, buildFlags)
 
-	if err := builder.Run(work, NewBuildOptions()); err != nil {
+	if err := builder.Run(work, NewBuildOptions(buildFlags)); err != nil {
 		bail("error during run", err, 3)
 	}
 }
 
-func NewBuildOptions() app.BuildOptions {
+func NewBuildOptions(buildFlags *buildCLIFlags) app.BuildOptions {
 	return app.BuildOptions{
 		PackerPath: buildFlags.packerPath,
 		PackerBuildFlags: packer.BuildFlags{
@@ -74,21 +83,11 @@ func NewBuildOptions() app.BuildOptions {
 	}
 }
 
-func init() {
-	initBuildAws()
-	initBuildAzure()
-	initBuildGCP()
+func initBuildFlags(fs *flag.FlagSet, buildFlags *buildCLIFlags) {
+	initGenerateArgs(fs, &buildFlags.generateCLIFlags)
+	initAWSArgs(fs, &buildFlags.generateCLIFlags)
 
-	fs := buildCmd.Flags()
-
-	initGenerateFlags(fs, &buildFlags.generateCLIFlags)
-	initAmazonFlags(fs, &buildFlags.generateCLIFlags)
-
-	addBuildArgs(fs, &buildFlags)
-
-	buildCmd.AddCommand(awsBuildCmd)
-	buildCmd.AddCommand(azureBuildCmd)
-	buildCmd.AddCommand(gcpBuildCmd)
+	addBuildArgs(fs, buildFlags)
 }
 
 func addBuildArgs(fs *flag.FlagSet, buildArgs *buildCLIFlags) {

@@ -14,43 +14,51 @@ var (
 	azureUse     = "azure <image.yaml>"
 )
 
-var azureBuildCmd = &cobra.Command{
-	Use:     azureUse,
-	Short:   "build and provision azure images",
-	Example: azureExample,
-	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runBuild(args[0])
-	},
+func NewAzureBuildCmd() *cobra.Command {
+	flags := &buildCLIFlags{}
+	cmd := &cobra.Command{
+		Use:     azureUse,
+		Short:   "build and provision azure images",
+		Example: azureExample,
+		Args:    cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			runBuild(args[0], flags)
+		},
+	}
+
+	initBuildAzureFlags(cmd.Flags(), flags)
+	return cmd
 }
 
-var azureGenerateCmd = &cobra.Command{
-	Use:     azureUse,
-	Short:   "generate files relating to building azure images",
-	Example: azureExample,
-	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runGenerate(args[0])
-	},
+func NewAzureGenerateCmd() *cobra.Command {
+	flags := &generateCLIFlags{}
+	cmd := &cobra.Command{
+		Use:     azureUse,
+		Short:   "generate files relating to building azure images",
+		Example: azureExample,
+		Args:    cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			runGenerate(args[0], flags)
+		},
+	}
+
+	initGenerateAzureFlags(cmd.Flags(), flags)
+	return cmd
 }
 
-func initBuildAzure() {
-	fs := azureBuildCmd.Flags()
+func initBuildAzureFlags(fs *flag.FlagSet, buildFlags *buildCLIFlags) {
+	initGenerateArgs(fs, &buildFlags.generateCLIFlags)
+	initAzurergs(fs, &buildFlags.generateCLIFlags)
 
-	initGenerateFlags(fs, &buildFlags.generateCLIFlags)
-	initAzureFlags(fs, &buildFlags.generateCLIFlags)
-
-	addBuildArgs(fs, &buildFlags)
+	addBuildArgs(fs, buildFlags)
 }
 
-func initGenerateAzure() {
-	fs := azureGenerateCmd.Flags()
-
-	initGenerateFlags(fs, &generateFlags)
-	initAzureFlags(fs, &generateFlags)
+func initGenerateAzureFlags(fs *flag.FlagSet, generateFlags *generateCLIFlags) {
+	initGenerateArgs(fs, generateFlags)
+	initAzurergs(fs, generateFlags)
 }
 
-func initAzureFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
+func initAzurergs(fs *flag.FlagSet, gFlags *generateCLIFlags) {
 	gFlags.userArgs.Azure = &app.AzureArgs{}
 	addAzureArgs(fs, gFlags.userArgs.Azure)
 }

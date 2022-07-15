@@ -12,26 +12,30 @@ var (
 	gcpUse     = "gcp <image.yaml>"
 )
 
-var gcpBuildCmd = &cobra.Command{
-	Use:     gcpUse,
-	Short:   "build and provision gcp images",
-	Example: gcpExample,
-	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runBuild(args[0])
-	},
+func NewGCPBuildCmd() *cobra.Command {
+	flags := &buildCLIFlags{}
+	cmd := &cobra.Command{
+		Use:     gcpUse,
+		Short:   "build and provision gcp images",
+		Example: gcpExample,
+		Args:    cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			runBuild(args[0], flags)
+		},
+	}
+
+	initBuildGCPFlags(cmd.Flags(), flags)
+	return cmd
 }
 
-func initBuildGCP() {
-	fs := gcpBuildCmd.Flags()
+func initBuildGCPFlags(fs *flag.FlagSet, buildFlags *buildCLIFlags) {
+	initGenerateArgs(fs, &buildFlags.generateCLIFlags)
+	initGCPArgs(fs, &buildFlags.generateCLIFlags)
 
-	initGenerateFlags(fs, &buildFlags.generateCLIFlags)
-	initGCPFlags(fs, &buildFlags.generateCLIFlags)
-
-	addBuildArgs(fs, &buildFlags)
+	addBuildArgs(fs, buildFlags)
 }
 
-func initGCPFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
+func initGCPArgs(fs *flag.FlagSet, gFlags *generateCLIFlags) {
 	gFlags.userArgs.GCP = &app.GCPArgs{}
 	addGCPArgs(fs, gFlags.userArgs.GCP)
 }

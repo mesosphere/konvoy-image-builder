@@ -14,48 +14,56 @@ var (
 	awsUse     = "aws <image.yaml>"
 )
 
-var awsBuildCmd = &cobra.Command{
-	Use:     awsUse,
-	Short:   "build and provision aws images",
-	Example: awsExample,
-	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runBuild(args[0])
-	},
+func NewAWSBuildCmd() *cobra.Command {
+	flags := &buildCLIFlags{}
+	cmd := &cobra.Command{
+		Use:     awsUse,
+		Short:   "build and provision aws images",
+		Example: awsExample,
+		Args:    cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			runBuild(args[0], flags)
+		},
+	}
+
+	initBuildAWSFlags(cmd.Flags(), flags)
+	return cmd
 }
 
-var awsGenerateCmd = &cobra.Command{
-	Use:     awsUse,
-	Short:   "generate files relating to building aws images",
-	Example: awsExample,
-	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runGenerate(args[0])
-	},
+func NewAWSGenerateCmd() *cobra.Command {
+	flags := &generateCLIFlags{}
+	cmd := &cobra.Command{
+		Use:     awsUse,
+		Short:   "generate files relating to building aws images",
+		Example: awsExample,
+		Args:    cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			runGenerate(args[0], flags)
+		},
+	}
+
+	initGenerateAWSFlags(cmd.Flags(), flags)
+	return cmd
 }
 
-func initBuildAws() {
-	fs := awsBuildCmd.Flags()
+func initBuildAWSFlags(fs *flag.FlagSet, buildFlags *buildCLIFlags) {
+	initGenerateArgs(fs, &buildFlags.generateCLIFlags)
+	initAWSArgs(fs, &buildFlags.generateCLIFlags)
 
-	initGenerateFlags(fs, &buildFlags.generateCLIFlags)
-	initAmazonFlags(fs, &buildFlags.generateCLIFlags)
-
-	addBuildArgs(fs, &buildFlags)
+	addBuildArgs(fs, buildFlags)
 }
 
-func initGenerateAws() {
-	fs := awsGenerateCmd.Flags()
-
-	initGenerateFlags(fs, &generateFlags)
-	initAmazonFlags(fs, &generateFlags)
+func initGenerateAWSFlags(fs *flag.FlagSet, generateFlags *generateCLIFlags) {
+	initGenerateArgs(fs, generateFlags)
+	initAWSArgs(fs, generateFlags)
 }
 
-func initAmazonFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
+func initAWSArgs(fs *flag.FlagSet, gFlags *generateCLIFlags) {
 	gFlags.userArgs.Amazon = &app.AmazonArgs{}
-	addAmazonArgs(fs, gFlags.userArgs.Amazon)
+	addAWSArgs(fs, gFlags.userArgs.Amazon)
 }
 
-func addAmazonArgs(fs *flag.FlagSet, amazonArgs *app.AmazonArgs) {
+func addAWSArgs(fs *flag.FlagSet, amazonArgs *app.AmazonArgs) {
 	fs.StringVar(
 		&amazonArgs.AWSBuilderRegion,
 		"region",
