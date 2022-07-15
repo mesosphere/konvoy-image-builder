@@ -12,7 +12,7 @@ COMMA := ,
 NULL :=
 SPACE := $(NULL) $(NULL)
 
-AIRGAPPED_BUNDLE_URL ?= konvoy-kubernetes-staging.s3.us-west-2.amazonaws.com
+AIRGAPPED_BUNDLE_URL_PREFIX ?= downloads.mesosphere.io/dkp
 CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 ARTIFACTS_DIR ?= artifacts/
 DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell \
@@ -64,12 +64,12 @@ $(ARTIFACTS_DIR)/images:
 # TODO(jkoelker) UnPHONYify these targets
 .PHONY: download-images-bundle
 download-images-bundle: $(ARTIFACTS_DIR)/images
-	curl -o $(ARTIFACTS_DIR)/images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/kubernetes-images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz
+	curl -o $(ARTIFACTS_DIR)/images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz
 
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
 	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL $(CONTAINERD_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz
-	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL)/konvoy/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
+	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
 
 # NOTE(jkoelker) set no-op cleanup targets for providers that support `DryRun`.
 .PHONY: aws-build-image-cleanup
