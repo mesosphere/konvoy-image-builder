@@ -79,8 +79,8 @@ func bail(message string, err error, code int) {
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
-	rootCmd.AddCommand(buildCmd)
-	rootCmd.AddCommand(generateCmd)
+	rootCmd.AddCommand(NewBuildCmd())
+	rootCmd.AddCommand(NewGenereateCmd())
 	rootCmd.AddCommand(generateDocsCmd)
 	rootCmd.AddCommand(provisionCmd)
 	rootCmd.AddCommand(uploadCmd)

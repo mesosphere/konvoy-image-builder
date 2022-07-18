@@ -13,20 +13,29 @@ type generateCLIFlags struct {
 	userArgs app.UserArgs
 }
 
-var generateFlags generateCLIFlags
+func NewGenereateCmd() *cobra.Command {
+	flags := &generateCLIFlags{}
 
-var generateCmd = &cobra.Command{
-	Use:   "generate <image.yaml>",
-	Short: "generate files relating to building images",
-	Long: "Generate files relating to building images. Specifying AWS arguments is deprecated " +
-		"and will be removed in a future version. Use the `aws` subcommand instead.",
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runGenerate(args[0])
-	},
+	cmd := &cobra.Command{
+		Use:   "generate <image.yaml>",
+		Short: "generate files relating to building images",
+		Long: "Generate files relating to building images. Specifying AWS arguments is deprecated " +
+			"and will be removed in a future version. Use the `aws` subcommand instead.",
+		Args: cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			runGenerate(args[0], flags)
+		},
+	}
+
+	cmd.AddCommand(NewAWSGenerateCmd())
+	cmd.AddCommand(NewAzureGenerateCmd())
+
+	initGenerateFlags(cmd.Flags(), flags)
+
+	return cmd
 }
 
-func newInitOptions(image string, flags generateCLIFlags) app.InitOptions {
+func newInitOptions(image string, flags *generateCLIFlags) app.InitOptions {
 	return app.InitOptions{
 		CommonConfigPath: app.CommonConfigDefaultPath,
 		Image:            image,
@@ -35,7 +44,7 @@ func newInitOptions(image string, flags generateCLIFlags) app.InitOptions {
 	}
 }
 
-func runGenerate(image string) {
+func runGenerate(image string, generateFlags *generateCLIFlags) {
 	builder := newBuilder()
 	_, err := builder.InitConfig(newInitOptions(image, generateFlags))
 	if err != nil {
@@ -43,26 +52,18 @@ func runGenerate(image string) {
 	}
 }
 
-func init() {
-	initGenerateAws()
-	initGenerateAzure()
-
-	fs := generateCmd.Flags()
-
-	initGenerateFlags(fs, &generateFlags)
-	initAmazonFlags(fs, &generateFlags)
-
-	generateCmd.AddCommand(awsGenerateCmd)
-	generateCmd.AddCommand(azureGenerateCmd)
+func initGenerateFlags(fs *flag.FlagSet, generateFlags *generateCLIFlags) {
+	initGenerateArgs(fs, generateFlags)
+	initAWSArgs(fs, generateFlags)
 }
 
-func initGenerateFlags(fs *flag.FlagSet, gFlags *generateCLIFlags) {
-	addOverridesArg(fs, &gFlags.overrides)
+func initGenerateArgs(fs *flag.FlagSet, generateFlags *generateCLIFlags) {
+	addOverridesArg(fs, &generateFlags.overrides)
 	addClusterArgs(
 		fs,
-		&gFlags.userArgs.ClusterArgs.KubernetesVersion,
-		&gFlags.userArgs.ClusterArgs.ContainerdVersion,
+		&generateFlags.userArgs.ClusterArgs.KubernetesVersion,
+		&generateFlags.userArgs.ClusterArgs.ContainerdVersion,
 	)
 
-	addExtraVarsArg(fs, &gFlags.userArgs.ExtraVars)
+	addExtraVarsArg(fs, &generateFlags.userArgs.ExtraVars)
 }
