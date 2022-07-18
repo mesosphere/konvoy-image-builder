@@ -94,6 +94,8 @@ jobs:
   sign-binary:
     runs-on: macos-latest
     needs: release-please
+    env:
+      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
     steps:
       - if: ${{ needs.release-please.outputs.release_created }}
         uses: dsaltares/fetch-gh-release-asset@1.0.0
@@ -125,6 +127,7 @@ jobs:
         name: Import Code-Signing Certificates
         uses: Apple-Actions/import-codesign-certs@v1
         with:
+          keychain: ${{ env.KEYCHAIN }}
           # The certificates in a PKCS12 file encoded as a base64 string
           p12-file-base64: ${{ secrets.D2IQ_APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           # The password used to import the PKCS12 file.
@@ -147,6 +150,11 @@ jobs:
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Tar signed bundle
         run: tar czf konvoy-image-bundle-${{ needs.release-plese.outputs.release_tag_name }}_darwin_amd64.tar.gz konvoy-image-bundle_darwin_amd64
+
+      - name: Delete keychain
+        if: always() # Always run this step to ensure the keychain is properly disposed of
+        run: |
+          security delete-keychain "${{ env.KEYCHAIN }}".keychain
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Replace release artifact
