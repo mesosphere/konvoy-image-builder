@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.0...v1.19.1) (2022-07-19)
+
+
+### Bug Fixes
+
+* flags not being set correctly ([#413](https://github.com/mesosphere/konvoy-image-builder/issues/413)) ([1309357](https://github.com/mesosphere/konvoy-image-builder/commit/1309357e7e40115d4990fc3382c31d24d0dc9250))
+
 ## [1.19.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.18.1...v1.19.0) (2022-07-12)
 
 
