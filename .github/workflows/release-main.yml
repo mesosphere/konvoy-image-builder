@@ -150,7 +150,11 @@ jobs:
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Tar signed bundle
-        run: tar czf konvoy-image-bundle-${{ needs.release-please.outputs.release_tag_name }}_darwin_amd64.tar.gz konvoy-image-bundle_darwin_amd64
+        run: |
+          unzip -o konvoy-image.zip
+          mv konvoy-image konvoy-image-bundle_darwin_amd64
+          mv konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-${{ needs.release-please.outputs.release_tag_name }}_darwin_amd64
+          tar czf konvoy-image-bundle-${{ needs.release-please.outputs.release_tag_name }}_darwin_amd64.tar.gz konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-${{ needs.release-please.outputs.release_tag_name }}_darwin_amd64
 
       - name: Delete keychain
         if: ${{ needs.release-please.outputs.release_created }}
@@ -176,7 +180,7 @@ jobs:
         name: Replace release artifact
         uses: ncipollo/release-action@v1
         with:
-          tag: "tags/${{ needs.release-please.outputs.release_tag_name }}"
+          tag: "${{ needs.release-please.outputs.release_tag_name }}"
           artifacts: konvoy-image-bundle-${{ needs.release-please.outputs.release_tag_name }}_darwin_amd64.tar.gz,*checksums.txt
           replacesArtifacts: true
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
