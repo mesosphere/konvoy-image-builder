@@ -98,6 +98,13 @@ jobs:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
     steps:
       - if: ${{ needs.release-please.outputs.release_created }}
+        name: Fetch current main directory
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - if: ${{ needs.release-please.outputs.release_created }}
         uses: dsaltares/fetch-gh-release-asset@1.0.0
         with:
           version: "tags/${{ needs.release-plese.outputs.release_tag_name }}"
@@ -115,14 +122,6 @@ jobs:
         name: Remove original downloaded file
         run: rm "konvoy-image-bundle-${{ needs.release-plese.outputs.release_tag_name }}_darwin_amd64.tar.gz"
 
-
-      - if: ${{ needs.release-please.outputs.release_created }}
-        name: Fetch current main directory
-        uses: actions/checkout@v3
-        with:
-          ref: main
-          fetch-depth: 0
-
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Import Code-Signing Certificates
         uses: Apple-Actions/import-codesign-certs@v1
@@ -138,6 +137,7 @@ jobs:
         run: |
           brew tap mitchellh/gon
           brew install mitchellh/gon/gon
+          brew install coreutils
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Run Gon to notarize
@@ -145,7 +145,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           AC_USERNAME: ${{ secrets.D2IQ_APPLE_DEVELOPER_USERNAME }}
           AC_PASSWORD: ${{ secrets.D2IQ_APPLE_DEVELOPER_PASSWORD }}
-        run: gon ./gon.hcl -log-level=info -log-json ./config.hcl
+        run: |
+          gon  -log-level=info -log-json gon.hcl
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Tar signed bundle
@@ -161,15 +162,15 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@1.0.0
         with:
           version: "tags/${{ needs.release-plese.outputs.release_tag_name }}"
-          file: "*_checksums.txt"
+          file: "checksums"
+          regex: true
 
       - name: Calculate checksum
         if: ${{ needs.release-please.outputs.release_created }}
         run: |
-          cat *checksums.txt | grep darwin | xargs -I{} sed -i'' s/{}//g *checksums.txt
-          sed -i'' '/^[[:space:]]*$/d'*checksums.txt
-          sha256sum konvoy-image-bundle-${{ needs.release-plese.outputs.release_tag_name }}_darwin_amd64.tar.gz >> *checksums.txt
-
+          cat *checksums.txt | grep darwin | xargs -I{} sed -i'.bak' s/{}//g *checksums.txt
+          sed -i'.bak' '/^[[:space:]]*$/d' *checksums.txt
+          sha256sum konvoy-image-bundle-v1.19.0_darwin_amd64.tar.gz >> *checksums.txt
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Replace release artifact
