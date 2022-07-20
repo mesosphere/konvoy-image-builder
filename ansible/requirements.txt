@@ -3,6 +3,6 @@ molecule-ec2
 ansible-lint
 boto
 boto3
-ansible==2.10.7
+ansible==2.11.12
 yamllint
 pytest-testinfra

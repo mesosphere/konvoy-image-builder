@@ -58,7 +58,7 @@ RUN wget \
 # NOTE(jkoelker) From here we care about layers
 FROM golang:1.18.3-alpine3.15
 
-ARG ANSIBLE_VERSION=2.10.7
+ARG ANSIBLE_VERSION=2.11.12
 ARG DOCKER_PY_VERSION=5.0.3
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
