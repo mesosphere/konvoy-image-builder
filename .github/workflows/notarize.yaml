@@ -75,7 +75,7 @@ jobs:
         run: |
           cat konvoy-image-builder_v1.19.6_checksums.txt | grep darwin | xargs -I{} sed -i'.bak' s/{}//g konvoy-image-builder_v1.19.6_checksums.txt
           sed -i'.bak' '/^[[:space:]]*$/d' konvoy-image-builder_v1.19.6_checksums.txt
-          sha256sum konvoy-image-bundle-${{ github.ref_name}}_darwin_amd64.tar.gz >> konvoy-image-builder_v1.19.6_checksums.txt
+          sha256sum konvoy-image-bundle-v1.19.6_darwin_amd64.tar.gz >> konvoy-image-builder_v1.19.6_checksums.txt
 
 
       - name: Replace release artifact
