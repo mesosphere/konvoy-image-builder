@@ -11,5 +11,5 @@ sign {
 }
 
 zip {
-  "output_path": "konvoy-image.zip"
+  output_path = "konvoy-image.zip"
 }
