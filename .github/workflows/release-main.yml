@@ -90,9 +90,7 @@ jobs:
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Get bump pr type
         run: |
-          make install-github
           make install-semver
-          export GITHUB_CLI_BIN=.local/github_cli/2.14.0/gh
           export SEMVER_CLI_BIN=.local/semver-cli/semver
           PR_TYPE=$(hack/version-diff.sh --version-latest ${{ needs.release-please.outputs.release_tag_name }} --version-previous $PREV_VERSION)
           echo "::set-env name=PR_TYPE::$PR_TYPE"
