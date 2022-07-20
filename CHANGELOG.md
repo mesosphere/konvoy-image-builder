@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.19.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.1...v1.19.2) (2022-07-20)
+
+
+### Bug Fixes
+
+* always use fix for CAPPP bumps ([#423](https://github.com/mesosphere/konvoy-image-builder/issues/423)) ([3e2af00](https://github.com/mesosphere/konvoy-image-builder/commit/3e2af00398317707d62abfbb0c2fdf2a72e3b797))
+* gon release fixes ([#418](https://github.com/mesosphere/konvoy-image-builder/issues/418)) ([5565295](https://github.com/mesosphere/konvoy-image-builder/commit/55652951ccdeb5d2deed886c2bcce22cdb9d5132))
+
 ## [1.19.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.0...v1.19.1) (2022-07-19)
 
 
