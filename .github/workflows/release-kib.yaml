@@ -12,7 +12,7 @@ on:
 name: Release konvoy-image-builder
 jobs:
   release-to-github:
-    runs-on: 
+    runs-on:
     - self-hosted
     - small
     steps:
@@ -61,18 +61,40 @@ jobs:
       - name: Track default github workspace as safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+      - name: Get KIB Version
+        run: |
+          PREV_VERSION=$(make --silent get-kib-version)
+        working-directory: cluster-api-provider-preprovisioned
+
       - name: Update Konvoy-image-builder version in mesosphere/cluster-api-provider-preprovisioned repository
         run: make update-kib
         working-directory: cluster-api-provider-preprovisioned
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
 
-      - name: Create Pull Request in mesosphere/cluster-api-provider-preprovisioned for Konvoy-image-builder version update
-        uses: peter-evans/create-pull-request@v5
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#environment-files
+      - name: Get bump pr type
+        run: |
+          make install-semver
+          export SEMVER_CLI_BIN=.local/semver-cli/semver
+          PR_TYPE=$(hack/version-diff.sh --version-latest ${{ GITHUB_REF_NAME }} --version-previous $PREV_VERSION)
+          echo "pr_type=$PR_TYPE" >> "$GITHUB_ENV"
+
+      - name: Create Pull Request for KIB bump in CAPPP
+        uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
           body: bumps KIB to latest version
-          commit-message: "fix: bump kib to ${{ github.ref_name }}"
+          commit-message: "$pr_type: bump kib to ${{ GITHUB_REF_NAME }}"
           path: cluster-api-provider-preprovisioned
-          title: "fix: bump kib to ${{ github.ref_name }}"
+          title: "$pr_type: bump kib to ${{ GITHUB_REF_NAME }}"
+
+  sign-binary:
+    runs-on: macos-latest
+    needs: release-please
+    env:
+      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+    steps:
+      - if: ${{ needs.release-please.outputs.release_created }}
+        name: Fetch current main directory
