@@ -62,6 +62,7 @@ jobs:
           title: "fix: bump kib to ${{ github.ref }}"
 
   sign-binary:
+    runs-on: macos-latest
     env:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
     steps:
