@@ -74,11 +74,26 @@ jobs:
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - if: ${{ needs.release-please.outputs.release_created }}
+        name: Get KIB Version
+        run: |
+          PREV_VERSION=$(make --silent get-kib-version)
+          echo "::set-env name=PREV_VERSION::$PREV_VERSION"
+        working-directory: cluster-api-provider-preprovisioned
+
+      - if: ${{ needs.release-please.outputs.release_created }}
         name: Update KIB in CAPPP
         run: make update-kib
         working-directory: cluster-api-provider-preprovisioned
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+
+      - if: ${{ needs.release-please.outputs.release_created }}
+        name: Get bump pr type
+        run: |
+          make install-semver
+          export SEMVER_CLI_BIN=.local/semver-cli/semver
+          PR_TYPE=$(hack/version-diff.sh --version-latest ${{ needs.release-please.outputs.release_tag_name }} --version-previous $PREV_VERSION)
+          echo "::set-env name=PR_TYPE::$PR_TYPE"
 
       - if: ${{ needs.release-please.outputs.release_created }}
         name: Create Pull Request for KIB bump in CAPPP
@@ -87,9 +102,9 @@ jobs:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
           body: bumps KIB to latest version
-          commit-message: "feat: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
+          commit-message: "$PR_TYPE: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
           path: cluster-api-provider-preprovisioned
-          title: "feat: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
+          title: "$PR_TYPE: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
 
   sign-binary:
     runs-on: macos-latest

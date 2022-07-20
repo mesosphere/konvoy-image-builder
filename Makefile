@@ -383,6 +383,44 @@ define print-target
     @printf "Executing target: \033[36m$@\033[0m\n"
 endef
 
+export GITHUB_CLI_VERSION=2.14.0
+export GITHUB_CLI_ASSETS=$(CURDIR)/.local/github_cli/
+export GITHUB_CLI_URL_GOOS := $(shell echo $(OS) | tr '[:upper:]' '[:lower:]')
+ifeq ($(GOOS),darwin)
+  export GITHUB_CLI_URL_GOOS=macOS
+endif
+export GITHUB_CLI_BIN=$(GITHUB_CLI_ASSETS)/gh
+export GITHUB_CLI_URL=https://github.com/cli/cli/releases/download/v$(GITHUB_CLI_VERSION)/gh_$(GITHUB_CLI_VERSION)_$(GITHUB_CLI_URL_GOOS)_amd64.tar.gz
+
+.PHONY: install-github
+install-github:
+install-github: $(GITHUB_CLI_ASSETS)/gh
+
+$(GITHUB_CLI_ASSETS)/gh:
+	mkdir -p $(GITHUB_CLI_ASSETS) && \
+	cd $(GITHUB_CLI_ASSETS) && \
+	curl -qL $(GITHUB_CLI_URL) -o gh.tar.gz && \
+	tar fxz gh.tar.gz && \
+	mv $(GITHUB_CLI_ASSETS)/gh_$(GITHUB_CLI_VERSION)_$(GITHUB_CLI_URL_GOOS)_amd64/bin/gh .  && \
+	rm -rf gh.tar.gz gh_$(GITHUB_CLI_VERSION)_$(GITHUB_CLI_URL_GOOS)_amd64
+
+export SEMVER_CLI_INSTALL_URL=https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver
+export SEMVER_CLI_ASSETS=$(CURDIR)/.local/semver-cli/
+export SEMVER_CLI_BIN=$(SEMVER_CLI_ASSETS)/semver
+
+.PHONY: install-semver
+install-semver:
+install-semver:
+	mkdir -p $(SEMVER_CLI_ASSETS) && \
+	cd $(SEMVER_CLI_ASSETS) && \
+	wget -qO semver $(SEMVER_CLI_INSTALL_URL) && \
+	chmod +x semver
+
+.PHONY: version-diff
+version-diff:
+version-diff: install-github install-semver
+	hack/version-diff.sh
+
 release-bundle-GOOS:
 	GOOS=$(GOOS) go build -tags EMBED_DOCKER_IMAGE \
 		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
