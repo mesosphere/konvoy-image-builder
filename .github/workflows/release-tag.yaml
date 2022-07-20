@@ -1,7 +1,7 @@
 on:
   push:
-    tags:        
-      - '*' 
+    tags:
+      - '*'
 
 name: upload-release-artifacts
 jobs:
@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: {{ github.ref }}
+          ref: ${{ github.ref }}
 
       - name: Docker Login
         uses: docker/login-action@v2
@@ -26,7 +26,7 @@ jobs:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           WHAT: make release
-  
+
   bump-kib:
     runs-on: ubuntu-latest
     steps:
@@ -62,7 +62,6 @@ jobs:
           title: "fix: bump kib to ${{ github.ref }}"
 
   sign-binary:
-    needs: release-please
     env:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
     steps:
@@ -130,15 +129,13 @@ jobs:
           target: checksum_${{ github.ref }}.txt
 
       - name: Calculate checksum
-        if: ${{ needs.release-please.outputs.release_created }}
         run: |
           cat checksum_${{ github.ref }}.txt | grep darwin | xargs -I{} sed -i'.bak' s/{}//g checksum_${{ github.ref }}.txt
           sed -i'.bak' '/^[[:space:]]*$/d' checksum_${{ github.ref }}.txt
           sha256sum konvoy-image-bundle-${{ github.ref}}_darwin_amd64.tar.gz >> checksum_${{ github.ref }}.txt
 
 
-      - if: ${{ needs.release-please.outputs.release_created }}
-        name: Replace release artifact
+      - name: Replace release artifact
         uses: ncipollo/release-action@v1
         with:
           tag: "${{ github.ref }}"
