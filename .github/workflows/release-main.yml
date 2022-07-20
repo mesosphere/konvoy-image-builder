@@ -16,6 +16,7 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         id: release-please
         with:
+          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           release-type: go
           package-name: konvoy-image-builder
           changelog-types: >-
