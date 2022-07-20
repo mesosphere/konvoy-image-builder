@@ -31,7 +31,7 @@ case $DIFF in
     PR_TYPE=feat
   ;;
   major)
-    PR_TYPE=!feat
+    PR_TYPE=feat!
   ;;
   *)
     echo "Bump not necessary"
