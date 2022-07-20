@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.4](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.3...v1.19.4) (2022-07-20)
+
+
+### Bug Fixes
+
+* use other user token that can run actions ([#429](https://github.com/mesosphere/konvoy-image-builder/issues/429)) ([efc7d1c](https://github.com/mesosphere/konvoy-image-builder/commit/efc7d1c9713249c94e0e72c1059ab5b2eebface5))
+
 ## [1.19.3](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.2...v1.19.3) (2022-07-20)
 
 
