@@ -384,7 +384,7 @@ define print-target
 endef
 
 export GITHUB_CLI_VERSION=2.14.0
-export GITHUB_CLI_ASSETS=$(CURDIR)/.local/github_cli/$(GITHUB_CLI_VERSION)
+export GITHUB_CLI_ASSETS=$(CURDIR)/.local/github_cli/
 export GITHUB_CLI_URL_GOOS := $(shell echo $(OS) | tr '[:upper:]' '[:lower:]')
 ifeq ($(GOOS),darwin)
   export GITHUB_CLI_URL_GOOS=macOS
@@ -416,12 +416,10 @@ install-semver:
 	wget -qO semver $(SEMVER_CLI_INSTALL_URL) && \
 	chmod +x semver
 
-
 .PHONY: version-diff
 version-diff:
 version-diff: install-github install-semver
 	hack/version-diff.sh
-
 
 release-bundle-GOOS:
 	GOOS=$(GOOS) go build -tags EMBED_DOCKER_IMAGE \
