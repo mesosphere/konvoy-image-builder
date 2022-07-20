@@ -58,7 +58,7 @@ jobs:
           unzip -o konvoy-image.zip
           mv konvoy-image konvoy-image-bundle_darwin_amd64
           mv konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-v1.19.6_darwin_amd64
-          tar czf konvoy-image-bundle-v1.19.6_darwin_amd64.tar.gz konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-v1.19.6_darwin_amd64
+          tar czf konvoy-image-bundle-v1.19.6_darwin_amd64.tar.gz konvoy-image-bundle-v1.19.6_darwin_amd64
 
       - name: Delete keychain
         if: always()
