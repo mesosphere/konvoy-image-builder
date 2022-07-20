@@ -1,0 +1,148 @@
+on:
+  push:
+    tags:        
+      - '*' 
+
+name: upload-release-artifacts
+jobs:
+  release-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: {{ github.ref }}
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: docker.io
+          username: mesosphereci
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Release
+        run: make devkit.run
+        env:
+          DOCKER_CLI_EXPERIMENTAL: "enabled"
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          WHAT: make release
+  
+  bump-kib:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+           go-version: '1.17.0'
+
+      - name: Fetch CAPPP
+        uses: actions/checkout@v3
+        with:
+          repository: mesosphere/cluster-api-provider-preprovisioned
+          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          path: cluster-api-provider-preprovisioned
+          fetch-depth: 0
+
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Update KIB in CAPPP
+        run: make update-kib
+        working-directory: cluster-api-provider-preprovisioned
+        env:
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+
+      - name: Create Pull Request for KIB bump in CAPPP
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          add-paths: preprovisioned/kib
+          body: bumps KIB to latest version
+          commit-message: "fix: bump kib to ${{ github.ref }}"
+          path: cluster-api-provider-preprovisioned
+          title: "fix: bump kib to ${{ github.ref }}"
+
+  sign-binary:
+    needs: release-please
+    env:
+      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+    steps:
+      - name: Fetch current main directory
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: dsaltares/fetch-gh-release-asset@1.0.0
+        with:
+          version: "tags/${{ github.ref }}"
+          file: "konvoy-image-bundle-${{ github.ref }}_darwin_amd64.tar.gz"
+
+      - name: Create directory to extract the pulled file into
+        run: mkdir "konvoy-image-bundle_darwin_amd64"
+
+      - name: Extract the pulled file
+        run: tar -xvzf "konvoy-image-bundle-${{ github.ref }}_darwin_amd64.tar.gz" -C "konvoy-image-bundle_darwin_amd64"
+
+      - name: Remove original downloaded file
+        run: rm "konvoy-image-bundle-${{ github.ref }}_darwin_amd64.tar.gz"
+
+      - name: Import Code-Signing Certificates
+        uses: Apple-Actions/import-codesign-certs@v1
+        with:
+          keychain: ${{ env.KEYCHAIN }}
+          # The certificates in a PKCS12 file encoded as a base64 string
+          p12-file-base64: ${{ secrets.D2IQ_APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+          # The password used to import the PKCS12 file.
+          p12-password: ${{ secrets.D2IQ_APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+
+      - name: Install required binaries
+        run: |
+          brew tap mitchellh/gon
+          brew install mitchellh/gon/gon
+          brew install coreutils
+
+      - name: Run Gon to notarize
+        env:
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          AC_USERNAME: ${{ secrets.D2IQ_APPLE_DEVELOPER_USERNAME }}
+          AC_PASSWORD: ${{ secrets.D2IQ_APPLE_DEVELOPER_PASSWORD }}
+        run: |
+          gon  -log-level=info -log-json gon.hcl
+
+      - name: Tar signed bundle
+        run: |
+          unzip -o konvoy-image.zip
+          mv konvoy-image konvoy-image-bundle_darwin_amd64
+          mv konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-${{ github.ref }}_darwin_amd64
+          tar czf konvoy-image-bundle-${{ github.ref }}_darwin_amd64.tar.gz konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-${{ github.ref }}_darwin_amd64
+
+      - name: Delete keychain
+        if: always()
+        run: |
+          security delete-keychain "${{ env.KEYCHAIN }}".keychain
+
+      - name: Get checksum file
+        uses: dsaltares/fetch-gh-release-asset@1.0.0
+        with:
+          version: "tags/${{ github.ref }}"
+          file: "checksums"
+          regex: true
+          target: checksum_${{ github.ref }}.txt
+
+      - name: Calculate checksum
+        if: ${{ needs.release-please.outputs.release_created }}
+        run: |
+          cat checksum_${{ github.ref }}.txt | grep darwin | xargs -I{} sed -i'.bak' s/{}//g checksum_${{ github.ref }}.txt
+          sed -i'.bak' '/^[[:space:]]*$/d' checksum_${{ github.ref }}.txt
+          sha256sum konvoy-image-bundle-${{ github.ref}}_darwin_amd64.tar.gz >> checksum_${{ github.ref }}.txt
+
+
+      - if: ${{ needs.release-please.outputs.release_created }}
+        name: Replace release artifact
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{ github.ref }}"
+          artifacts: konvoy-image-bundle-${{ github.ref }}_darwin_amd64.tar.gz,checksum_${{ github.ref }}.txt
+          replacesArtifacts: true
+          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          artifactErrorsFailBuild: true
