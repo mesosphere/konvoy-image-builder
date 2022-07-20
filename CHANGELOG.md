@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.6](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.5...v1.19.6) (2022-07-20)
+
+
+### Bug Fixes
+
+* gon.hcl ([#433](https://github.com/mesosphere/konvoy-image-builder/issues/433)) ([3fb4923](https://github.com/mesosphere/konvoy-image-builder/commit/3fb49232c128b95a29e93597bd4a9b90294fa32e))
+
 ## [1.19.5](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.4...v1.19.5) (2022-07-20)
 
 
