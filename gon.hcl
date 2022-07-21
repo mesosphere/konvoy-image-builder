@@ -5,6 +5,6 @@ sign {
   application_identity = "Developer ID Application: Mesosphere Inc. (JQJDUUPXFN)"
 }
 
-zip {
-  output_path = "konvoy-image.zip"
+dmg {
+  output_path = "konvoy-image.dmg"
 }
