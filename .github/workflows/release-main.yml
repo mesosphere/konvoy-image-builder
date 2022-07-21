@@ -16,6 +16,7 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         id: release-please
         with:
+          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           release-type: go
           package-name: konvoy-image-builder
           changelog-types: >-
@@ -24,69 +25,3 @@ jobs:
               {"type":"fix","section":"Bug Fixes","hidden":false},
               {"type":"chore","section":"Miscellaneous","hidden":true}
             ]
-
-      - if: ${{ steps.release-please.outputs.release_created }}
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - if: ${{ steps.release-please.outputs.release_created }}
-        name: Snapshot
-        run: make devkit.run
-        env:
-          WHAT: make build.snapshot
-
-      - if: ${{ steps.release-please.outputs.release_created }}
-        name: Docker Login
-        uses: docker/login-action@v2
-        with:
-          registry: docker.io
-          username: mesosphereci
-          password: ${{ secrets.DOCKER_PASS }}
-
-      - if: ${{ steps.release-please.outputs.release_created }}
-        name: Release
-        run: make devkit.run
-        env:
-          DOCKER_CLI_EXPERIMENTAL: "enabled"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WHAT: make release
-  bump-kib:
-    needs: release-please
-    runs-on: ubuntu-latest
-    steps:
-      - if: ${{ needs.release-please.outputs.release_created }}
-        name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-           go-version: '1.17.0'
-
-      - if: ${{ needs.release-please.outputs.release_created }}
-        name: Fetch CAPPP
-        uses: actions/checkout@v3
-        with:
-          repository: mesosphere/cluster-api-provider-preprovisioned
-          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          path: cluster-api-provider-preprovisioned
-          fetch-depth: 0
-
-      - if: ${{ needs.release-please.outputs.release_created }}
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-      - if: ${{ needs.release-please.outputs.release_created }}
-        name: Update KIB in CAPPP
-        run: make update-kib
-        working-directory: cluster-api-provider-preprovisioned
-        env:
-          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-
-      - if: ${{ needs.release-please.outputs.release_created }}
-        name: Create Pull Request for KIB bump in CAPPP
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          add-paths: preprovisioned/kib
-          body: bumps KIB to latest version
-          commit: "feat: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
-          path: cluster-api-provider-preprovisioned
-          title: "feat: bump kib to ${{ needs.release-please.outputs.release_tag_name }}"
