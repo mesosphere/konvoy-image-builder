@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.7](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.6...v1.19.7) (2022-07-21)
+
+
+### Bug Fixes
+
+* notarization and upload fixes ([#435](https://github.com/mesosphere/konvoy-image-builder/issues/435)) ([c92c6ee](https://github.com/mesosphere/konvoy-image-builder/commit/c92c6ee7bb7aa198d5f22d2040e04b7ce994283c))
+
 ## [1.19.6](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.5...v1.19.6) (2022-07-20)
 
 
