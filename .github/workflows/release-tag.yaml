@@ -115,7 +115,7 @@ jobs:
           unzip -o konvoy-image.zip
           mv konvoy-image konvoy-image-bundle_darwin_amd64
           mv konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64
-          tar czf konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64.tar.gz konvoy-image-bundle_darwin_amd64 konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64
+          tar czf konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64.tar.gz konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64
 
       - name: Delete keychain
         if: always()
@@ -143,3 +143,4 @@ jobs:
           replacesArtifacts: true
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           artifactErrorsFailBuild: true
+          allowUpdates: true
