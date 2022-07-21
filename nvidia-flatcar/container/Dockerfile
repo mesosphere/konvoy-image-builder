@@ -1,0 +1,4 @@
+ARG FLATCAR_RELEASE_VERSION
+FROM faiq/flatcar-dev:$FLATCAR_RELEASE_VERSION
+COPY nvidia.sh nvidia.sh
+ENTRYPOINT /nvidia.sh
