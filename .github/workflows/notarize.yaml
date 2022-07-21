@@ -85,4 +85,5 @@ jobs:
           artifacts: konvoy-image-bundle-v1.19.6_darwin_amd64.tar.gz,konvoy-image-builder_v1.19.6_checksums.txt
           replacesArtifacts: true
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          allowUpdates: true
           artifactErrorsFailBuild: true
