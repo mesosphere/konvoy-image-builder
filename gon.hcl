@@ -7,4 +7,5 @@ sign {
 
 dmg {
   output_path = "konvoy-image.dmg"
+  volume_name = "konvoy-image"
 }
