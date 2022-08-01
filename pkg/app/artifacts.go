@@ -15,6 +15,8 @@ type ArtifactsCmdFlags struct {
 	ContainerImagesBundleDir string
 	Inventory                string
 	RootFlags
+	Overrides []string
+	ExtraVars []string
 }
 
 func UploadArtifacts(artifactFlags ArtifactsCmdFlags) error {
@@ -43,13 +45,23 @@ func playbookOptionsFromFlag(artifactFlags ArtifactsCmdFlags) (*ansible.Playbook
 	if err != nil {
 		return nil, fmt.Errorf("failed to find absolute path for --container-images-dir %w", err)
 	}
+	passedUserArgs := map[string]interface{}{
+		"os_packages_local_bundle_file":  osPackagesBundleFile,
+		"containerd_local_bundle_file":   containerdBundleFile,
+		"pip_packages_local_bundle_file": pipPackagesBundleFile,
+		"images_local_bundle_dir":        containerImagesDir,
+	}
+
+	if err := mergeUserOverridesToMap(artifactFlags.Overrides, passedUserArgs); err != nil {
+		return nil, fmt.Errorf("error merging overrides: %w", err)
+	}
+
+	if err = addExtraVarsToMap(artifactFlags.ExtraVars, passedUserArgs); err != nil {
+		//nolint:golint // error has context needed
+		return nil, err
+	}
 	playbookOptions := &ansible.PlaybookOptions{
-		ExtraVars: []string{
-			fmt.Sprintf(extraVarsTemplate, "os_packages_local_bundle_file", osPackagesBundleFile),
-			fmt.Sprintf(extraVarsTemplate, "containerd_local_bundle_file", containerdBundleFile),
-			fmt.Sprintf(extraVarsTemplate, "pip_packages_local_bundle_file", pipPackagesBundleFile),
-			fmt.Sprintf(extraVarsTemplate, "images_local_bundle_dir", containerImagesDir),
-		},
+		ExtraVarsMap: passedUserArgs,
 	}
 	return playbookOptions, nil
 }

@@ -31,4 +31,6 @@ func init() {
 	fs.StringVar(&artifactsFlags.PIPPackagesBundleFile, "pip-packages-bundle", "", "path to pip-packages tar file"+
 		" for install on remote hosts.")
 	fs.StringVar(&artifactsFlags.ContainerImagesBundleDir, "container-images-dir", "", "path to container images for install on remote hosts.")
+	addOverridesArg(fs, &artifactsFlags.Overrides)
+	addExtraVarsArg(fs, &artifactsFlags.ExtraVars)
 }
