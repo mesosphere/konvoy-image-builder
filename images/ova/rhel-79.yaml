@@ -13,7 +13,6 @@ packer:
   insecure_connection: "false"
   network: ""
   resource_pool: ""
-  template: "base-rhel-7"
   vsphere_guest_os_type: "rhel7_64Guest"
   guest_os_type: "rhel7-64"
   # goss params

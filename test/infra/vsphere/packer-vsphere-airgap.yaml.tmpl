@@ -10,7 +10,8 @@ packer:
   ssh_bastion_private_key_file: /kib/vsphere-tests.pem
   cluster: "zone1"
   datacenter: "dc1"
-  datastore: "esxi-05-disk2"
+  template: "base-rhel-7-sortega"
+  datastore: "esxi-06-disk1"
   folder: "cluster-api"
-  network: "Public"
+  network: "Airgapped"
   resource_pool: "Users"
