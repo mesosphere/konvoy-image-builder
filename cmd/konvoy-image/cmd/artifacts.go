@@ -38,4 +38,29 @@ func init() {
 	addOverridesArg(fs, &artifactsFlags.Overrides)
 	addWorkDirArg(fs, &artifactsFlags.WorkDir)
 	addExtraVarsArg(fs, &artifactsFlags.ExtraVars)
+	err := artifactsCmd.MarkFlagRequired("inventory-file")
+	if err != nil {
+		// This is a programming error
+		panic(fmt.Sprintf("unable to mark flag `inventory-file` as required: %v", err))
+	}
+	err = artifactsCmd.MarkFlagRequired("os-packages-bundle")
+	if err != nil {
+		// This is a programming error
+		panic(fmt.Sprintf("unable to mark flag `os-packaes-bundle` as required: %v", err))
+	}
+	err = artifactsCmd.MarkFlagRequired("containerd-bundle")
+	if err != nil {
+		// This is a programming error
+		panic(fmt.Sprintf("unable to mark flag `containerd-bundle` as required: %v", err))
+	}
+	err = artifactsCmd.MarkFlagRequired("pip-packages-bundle")
+	if err != nil {
+		// This is a programming error
+		panic(fmt.Sprintf("unable to mark flag `pip-packages-bundle` as required: %v", err))
+	}
+	err = artifactsCmd.MarkFlagRequired("container-images-dir")
+	if err != nil {
+		// This is a programming error
+		panic(fmt.Sprintf("unable to mark flag `container-images-dir` as required: %v", err))
+	}
 }
