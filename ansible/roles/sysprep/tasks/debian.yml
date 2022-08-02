@@ -100,3 +100,11 @@
   file:
     state: absent
     path: /etc/udev/rules.d/70-persistent-net.rules
+
+- name: Mount /run with exec for cloud-init scripts
+  ansible.posix.mount:
+    path: /run
+    src: tmpfs
+    fstype: tmpfs
+    opts: rw,nosuid,exec,noatime,mode=755
+    state: present
