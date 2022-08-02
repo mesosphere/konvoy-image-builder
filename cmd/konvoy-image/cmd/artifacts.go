@@ -16,6 +16,9 @@ var artifactsCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		uploader, err := app.NewArtifactUploader(artifactsFlags.WorkDir)
+		if err != nil {
+			return fmt.Errorf("failed to initialize uploader %w", err)
+		}
 		err = uploader.UploadArtifacts(artifactsFlags)
 		if err != nil {
 			return fmt.Errorf("failed to upload artifacts %w", err)

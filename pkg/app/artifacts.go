@@ -74,7 +74,7 @@ func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFla
 		"images_local_bundle_dir":        containerImagesDir,
 	}
 
-	if err := mergeUserOverridesToMap(artifactFlags.Overrides, passedUserArgs); err != nil {
+	if err = mergeUserOverridesToMap(artifactFlags.Overrides, passedUserArgs); err != nil {
 		return nil, fmt.Errorf("error merging overrides: %w", err)
 	}
 
@@ -82,7 +82,10 @@ func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFla
 		//nolint:golint // error has context needed
 		return nil, err
 	}
-	extraVarsPath, err := filepath.Abs(filepath.Join(a.workDir, ansibleVarsFilename))
+	extraVarsPath, varsErr := filepath.Abs(filepath.Join(a.workDir, ansibleVarsFilename))
+	if varsErr != nil {
+		return nil, fmt.Errorf("failed to create vars file %w", varsErr)
+	}
 	if err = initAnsibleConfig(extraVarsPath, passedUserArgs); err != nil {
 		//nolint:golint // error has context needed
 		return nil, err

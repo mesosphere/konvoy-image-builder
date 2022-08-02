@@ -57,7 +57,6 @@ type UserArgs struct {
 	ExtraVars []string
 }
 
-//nolint:gocyclo // this will be refactored
 func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	config, err := loadYAML(initOptions.CommonConfigPath)
 	if err != nil {
@@ -77,7 +76,6 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	if err = mergeUserOverridesToMap(initOptions.Overrides, config); err != nil {
 		//nolint:golint // error has context needed
 		return "", err
-
 	}
 
 	if err = EnrichKubernetesFullVersion(config, initOptions.UserArgs.KubernetesVersion); err != nil {
