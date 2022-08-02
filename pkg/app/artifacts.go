@@ -2,7 +2,9 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"path/filepath"
+	"time"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/ansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
@@ -17,18 +19,38 @@ type ArtifactsCmdFlags struct {
 	RootFlags
 	Overrides []string
 	ExtraVars []string
+	WorkDir   string
 }
 
-func UploadArtifacts(artifactFlags ArtifactsCmdFlags) error {
-	playbookOptions, err := playbookOptionsFromFlag(artifactFlags)
+type ArtifactUploader struct {
+	workDir string
+}
+
+func NewArtifactUploader(buildName string) (*ArtifactUploader, error) {
+	if buildName == "" {
+		name := "artifact-upload"
+		buildName = fmt.Sprintf("%s-%d", name, time.Now().Unix())
+	}
+	workDir, err := createRunDirectory(buildName, OutputDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize artifact uploader %w", err)
+	}
+	return &ArtifactUploader{
+		workDir: workDir,
+	}, nil
+}
+
+func (a *ArtifactUploader) UploadArtifacts(artifactFlags ArtifactsCmdFlags) error {
+	playbookOptions, err := a.playbookOptionsFromFlag(artifactFlags)
 	if err != nil {
 		return err
 	}
+	log.Printf("writing new configuration to %s", a.workDir)
 	playbook := appansible.NewPlaybook("upload-artifacts", artifactFlags.Inventory, playbookOptions)
 	return playbook.Run(NewRunOptions(artifactFlags.RootFlags))
 }
 
-func playbookOptionsFromFlag(artifactFlags ArtifactsCmdFlags) (*ansible.PlaybookOptions, error) {
+func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFlags) (*ansible.PlaybookOptions, error) {
 	osPackagesBundleFile, err := filepath.Abs(artifactFlags.OSPackagesBundleFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find absolute path for --os-packages-bundle %w", err)
@@ -60,8 +82,15 @@ func playbookOptionsFromFlag(artifactFlags ArtifactsCmdFlags) (*ansible.Playbook
 		//nolint:golint // error has context needed
 		return nil, err
 	}
+	extraVarsPath, err := filepath.Abs(filepath.Join(a.workDir, ansibleVarsFilename))
+	if err = initAnsibleConfig(extraVarsPath, passedUserArgs); err != nil {
+		//nolint:golint // error has context needed
+		return nil, err
+	}
 	playbookOptions := &ansible.PlaybookOptions{
-		ExtraVarsMap: passedUserArgs,
+		ExtraVars: []string{
+			fmt.Sprintf("@%s", extraVarsPath),
+		},
 	}
 	return playbookOptions, nil
 }
