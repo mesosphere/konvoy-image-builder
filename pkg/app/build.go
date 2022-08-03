@@ -6,10 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
-
-	"github.com/imdario/mergo"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/ansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
@@ -60,7 +57,6 @@ type UserArgs struct {
 	ExtraVars []string
 }
 
-//nolint:gocyclo // this will be refactored
 func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 	config, err := loadYAML(initOptions.CommonConfigPath)
 	if err != nil {
@@ -77,13 +73,9 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 		return "", fmt.Errorf("error merging image config: %w", err)
 	}
 
-	overrides, err := getOverrides(initOptions.Overrides)
-	if err != nil {
-		return "", fmt.Errorf("error getting overrides: %w", err)
-	}
-
-	if err = MergeMapsOverwrite(config, overrides...); err != nil {
-		return "", fmt.Errorf("error merging overrides: %w", err)
+	if err = mergeUserOverridesToMap(initOptions.Overrides, config); err != nil {
+		//nolint:golint // error has context needed
+		return "", err
 	}
 
 	if err = EnrichKubernetesFullVersion(config, initOptions.UserArgs.KubernetesVersion); err != nil {
@@ -110,21 +102,9 @@ func (b *Builder) InitConfig(initOptions InitOptions) (string, error) {
 		return "", InitConfigError("failed to get ansible variables path", err)
 	}
 
-	// merge extraVars passed through args into config -- which will
-	// show up in extraVarsPath
-	extraVarSet := make(map[string]interface{})
-	for _, extraVars := range initOptions.UserArgs.ExtraVars {
-		set := strings.Split(extraVars, "=")
-		//nolint:gomnd // the code is splitting on the equal
-		if len(set) == 2 {
-			k := set[0]
-			v := set[1]
-			extraVarSet[k] = v
-		}
-	}
-
-	if err = MergeMapsOverwrite(config, extraVarSet); err != nil {
-		return "", fmt.Errorf("error merging overrides: %w", err)
+	if err = addExtraVarsToMap(initOptions.UserArgs.ExtraVars, config); err != nil {
+		//nolint:golint // error has context needed
+		return "", err
 	}
 
 	if err = initAnsibleConfig(extraVarsPath, config); err != nil {
@@ -227,17 +207,6 @@ func (b *Builder) Provision(workDir string, flags ProvisionFlags) error {
 
 	if err := playbook.Run(NewRunOptions(flags.RootFlags)); err != nil {
 		return fmt.Errorf("error running playbook: %w", err)
-	}
-
-	return nil
-}
-
-// recursively merges maps into orig, orig is modified.
-func MergeMapsOverwrite(orig map[string]interface{}, maps ...map[string]interface{}) error {
-	for _, m := range maps {
-		if err := mergo.Merge(&orig, m, mergo.WithOverride); err != nil {
-			return fmt.Errorf("error merging: %w", err)
-		}
 	}
 
 	return nil

@@ -327,21 +327,6 @@ func GenPackerVars(config Config, extraVarsPath string) ([]byte, error) {
 	return data, nil
 }
 
-func getOverrides(paths []string) ([]map[string]interface{}, error) {
-	overrides := make([]map[string]interface{}, 0, len(paths))
-
-	for _, path := range paths {
-		data, err := loadYAML(path)
-		if err != nil {
-			return nil, fmt.Errorf("error loading override: %w", err)
-		}
-
-		overrides = append(overrides, data)
-	}
-
-	return overrides, nil
-}
-
 func initAnsibleConfig(path string, config Config) error {
 	ansibleData, err := yaml.Marshal(config)
 	if err != nil {
