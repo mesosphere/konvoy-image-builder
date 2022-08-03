@@ -52,7 +52,6 @@ func TestMapMerge(t *testing.T) {
 	if assert.Contains(t, m1, "four") {
 		assert.Equal(t, m1["four"], m3["four"])
 	}
-
 }
 
 func TestMapMergeForArtifacts(t *testing.T) {
