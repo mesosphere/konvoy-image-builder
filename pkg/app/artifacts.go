@@ -67,18 +67,11 @@ func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFla
 	if err != nil {
 		return nil, fmt.Errorf("failed to find absolute path for --container-images-dir %w", err)
 	}
-	passedUserArgs := map[string]interface{}{
-		"os_packages_local_bundle_file":  osPackagesBundleFile,
-		"containerd_local_bundle_file":   containerdBundleFile,
-		"pip_packages_local_bundle_file": pipPackagesBundleFile,
-		"images_local_bundle_dir":        containerImagesDir,
-	}
-
-	if err = mergeUserOverridesToMap(artifactFlags.Overrides, passedUserArgs); err != nil {
+	args := make(map[string]interface{})
+	if err = mergeUserOverridesToMap(artifactFlags.Overrides, args); err != nil {
 		return nil, fmt.Errorf("error merging overrides: %w", err)
 	}
-
-	if err = addExtraVarsToMap(artifactFlags.ExtraVars, passedUserArgs); err != nil {
+	if err = addExtraVarsToMap(artifactFlags.ExtraVars, args); err != nil {
 		//nolint:golint // error has context needed
 		return nil, err
 	}
@@ -86,7 +79,18 @@ func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFla
 	if varsErr != nil {
 		return nil, fmt.Errorf("failed to create vars file %w", varsErr)
 	}
-	if err = initAnsibleConfig(extraVarsPath, passedUserArgs); err != nil {
+
+	passedUserArgs := map[string]interface{}{
+		"os_packages_local_bundle_file":  osPackagesBundleFile,
+		"containerd_local_bundle_file":   containerdBundleFile,
+		"pip_packages_local_bundle_file": pipPackagesBundleFile,
+		"images_local_bundle_dir":        containerImagesDir,
+	}
+	// passedUserArgs take highest precedence
+	if err = MergeMapsOverwrite(args, passedUserArgs); err != nil {
+		return nil, fmt.Errorf("failed to merge user override %w", err)
+	}
+	if err = initAnsibleConfig(extraVarsPath, args); err != nil {
 		//nolint:golint // error has context needed
 		return nil, err
 	}

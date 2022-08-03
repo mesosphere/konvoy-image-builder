@@ -52,4 +52,59 @@ func TestMapMerge(t *testing.T) {
 	if assert.Contains(t, m1, "four") {
 		assert.Equal(t, m1["four"], m3["four"])
 	}
+
+}
+
+func TestMapMergeForArtifacts(t *testing.T) {
+	cases := []struct {
+		caseName                     string
+		mapFromOverridesAndExtraVars map[string]interface{}
+		passedUserArgs               map[string]interface{}
+		expectedOutput               map[string]interface{}
+	}{
+		{
+			caseName: "if there is an exisiting field from the overrides",
+			mapFromOverridesAndExtraVars: map[string]interface{}{
+				"os_packages_local_bundle_file": "passed-artifacts/centos-7.9.tar.gz",
+				"fips":                          true,
+			},
+			passedUserArgs: map[string]interface{}{
+				"os_packages_local_bundle_file":  "artifacts/centos-7.9-fips.tar.gz",
+				"containerd_local_bundle_file":   "artifacts/containerd-1.4.13-centos-7.9-d2iq.1.tar.gz",
+				"pip_packages_local_bundle_file": "artifacts/pip-packages.tar.gz",
+				"images_local_bundle_dir":        "artifacts/images",
+			},
+			expectedOutput: map[string]interface{}{
+				"os_packages_local_bundle_file":  "artifacts/centos-7.9-fips.tar.gz",
+				"containerd_local_bundle_file":   "artifacts/containerd-1.4.13-centos-7.9-d2iq.1.tar.gz",
+				"pip_packages_local_bundle_file": "artifacts/pip-packages.tar.gz",
+				"images_local_bundle_dir":        "artifacts/images",
+				"fips":                           true,
+			},
+		},
+		{
+			caseName: "if there is no exisiting field from the overrides",
+			mapFromOverridesAndExtraVars: map[string]interface{}{
+				"fips": false,
+			},
+			passedUserArgs: map[string]interface{}{
+				"os_packages_local_bundle_file":  "artifacts/centos-7.9-fips.tar.gz",
+				"containerd_local_bundle_file":   "artifacts/containerd-1.4.13-centos-7.9-d2iq.1.tar.gz",
+				"pip_packages_local_bundle_file": "artifacts/pip-packages.tar.gz",
+				"images_local_bundle_dir":        "artifacts/images",
+			},
+			expectedOutput: map[string]interface{}{
+				"os_packages_local_bundle_file":  "artifacts/centos-7.9-fips.tar.gz",
+				"containerd_local_bundle_file":   "artifacts/containerd-1.4.13-centos-7.9-d2iq.1.tar.gz",
+				"pip_packages_local_bundle_file": "artifacts/pip-packages.tar.gz",
+				"images_local_bundle_dir":        "artifacts/images",
+				"fips":                           false,
+			},
+		},
+	}
+	for _, testCase := range cases {
+		err := app.MergeMapsOverwrite(testCase.mapFromOverridesAndExtraVars, testCase.passedUserArgs)
+		assert.NoError(t, err)
+		assert.Equal(t, testCase.mapFromOverridesAndExtraVars, testCase.expectedOutput)
+	}
 }
