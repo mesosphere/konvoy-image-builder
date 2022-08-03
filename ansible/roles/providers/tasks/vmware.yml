@@ -82,6 +82,16 @@
     group: root
     mode: 0644
 
+- name: Remove subiquity-disable-cloudinit-networking.cfg
+  file:
+    path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
+    state: absent
+
+- name: Remove 99-installer.cfg
+  file:
+    path: /etc/cloud/cloud.cfg.d/99-installer.cfg
+    state: absent
+
 # this program used by ds-identify to determine whether or not the
 # VMwareGuestInfo datasource is useable.
 - name: Create ds-check program to verify VMwareGuestInfo datasource
