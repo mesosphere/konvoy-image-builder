@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.8](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.7...v1.19.8) (2022-08-03)
+
+
+### Bug Fixes
+
+* add overrides, work-dir, and extra-args flags to upload artifacts ([#452](https://github.com/mesosphere/konvoy-image-builder/issues/452)) ([5367cf4](https://github.com/mesosphere/konvoy-image-builder/commit/5367cf4029716c04d2314dcb0e38acc9ab316cd7))
+
 ## [1.19.7](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.6...v1.19.7) (2022-07-21)
 
 
