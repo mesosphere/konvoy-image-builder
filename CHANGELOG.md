@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.9](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.8...v1.19.9) (2022-08-04)
+
+
+### Bug Fixes
+
+* remove mark inventory file as required ([#455](https://github.com/mesosphere/konvoy-image-builder/issues/455)) ([0e24f96](https://github.com/mesosphere/konvoy-image-builder/commit/0e24f968155dbf5c1d98fb194c15c2260bfb1810))
+
 ## [1.19.8](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.7...v1.19.8) (2022-08-03)
 
 
