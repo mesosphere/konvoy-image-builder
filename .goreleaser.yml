@@ -120,6 +120,10 @@ archives:
       - LICENSE
       - README.md
 
+checksum:
+  # override the name template to include the "v" prefix
+  name_template: '{{ .ProjectName }}_v{{trimprefix .Version "v"}}_checksums.txt'
+
 release:
   github:
   prerelease: auto
