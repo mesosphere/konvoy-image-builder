@@ -66,6 +66,7 @@ os_packages_remote_bundle_path: "/opt/dkp/packages/"
 
 containerd_local_bundle_file: ""
 containerd_remote_bundle_path: "/opt/dkp/containerd/"
+image_credentials_provider_remote_path: "/etc/kubernetes/image-credential-provider/"
 
 pip_packages_local_bundle_file: ""
 pip_packages_remote_bundle_path: "/opt/dkp/pip-packages/"

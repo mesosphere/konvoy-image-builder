@@ -116,3 +116,16 @@
         src: "{{ containerd_local_bundle_file }}"
         dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
   when: containerd_local_bundle_file != ""
+
+- block:
+    - name: create offline image credentails plugin directory
+      file:
+        path: "{{ image_credentials_provider_remote_path }}"
+        state: directory
+
+    - name: upload ecr credential plugin to remote
+      copy:
+        src: "{{ ecr_credential_provider_local_file }}"
+        dest: "{{ image_credentials_provider_remote_path }}/{{ ecr_credential_provider_local_file | basename }}"
+        mode: 0755
+  when: ecr_credential_provider_local_file != ""

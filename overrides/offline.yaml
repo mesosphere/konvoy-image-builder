@@ -2,3 +2,4 @@ os_packages_local_bundle_file: "{{ playbook_dir }}/../artifacts/{{ kubernetes_ve
 containerd_local_bundle_file: "{{ playbook_dir }}/../artifacts/{{ containerd_tar_file }}"
 pip_packages_local_bundle_file: "{{ playbook_dir }}/../artifacts/pip-packages.tar.gz"
 images_local_bundle_dir: "{{ playbook_dir}}/../artifacts/images"
+ecr_credential_provider_local_file: "{{ playbook_dir}}/../artifacts/ecr/ecr-credential-provider"
