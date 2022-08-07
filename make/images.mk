@@ -457,7 +457,7 @@ ubuntu18:
 	$(MAKE) build-aws-ubuntu-18
 
 # Ubuntu 18(04) Azure
-# preserve old make targets for CI 
+# preserve old make targets for CI
 .PHONY: ubuntu18-azure
 ubuntu18-azure: ubuntu1804-azure
 
