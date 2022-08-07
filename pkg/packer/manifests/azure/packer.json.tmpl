@@ -67,6 +67,9 @@
         "plan_publisher": "{{user `plan_image_publisher`}}"
       },
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
+      ((- if .DryRun ))
+      "skip_create_image": true,
+      ((- end ))
       "shared_image_gallery_destination": {
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `gallery_image_name`}}",
