@@ -80,24 +80,130 @@
     state: absent
   changed_when: False
 
-# Install NVIDIA repository, driver and tools
-- name: Add NVIDIA repository for drivers and tools
-  yum_repository:
-    name: cuda
-    description: NVIDIA driver repository
-    enabled: true
-    baseurl: "{{ nvidia_repo_baseurl }}"
-    gpgkey: "{{ nvidia_repo_gpgkey }}"
-    gpgcheck: true
-- name: Install nvidia driver
+# Download and install gpu runfile
+
+- name: create nvidia install directory
+  file:
+    path: /opt/dkp/nvidia
+    state: directory
+
+- name: Download gpu runfile
+  get_url:
+    url: "{{ nvidia_runfile_installer_url }}"
+    dest: /opt/dkp/nvidia/nvidia.run
+    mode: 711
+  when:
+   - not offline_mode_enabled
+
+- name: Extract driver source files
+  shell: |
+    /opt/dkp/nvidia/nvidia.run -x -s
+  args:
+    chdir: /opt/dkp/nvidia
+
+- name: install gcc
   yum:
-    name:
-      - "{{ nvidia_driver_package }}"
+    name: gcc
     state: present
   register: result
   until: result is success
   retries: 5
   delay: 3
+
+- name: Install driver
+  shell:
+    ./nvidia-installer -s -n \
+      --kernel-name={{ ansible_kernel }} \
+      --no-check-for-alternate-installs \
+      --no-opengl-files \
+      --no-distro-scripts \
+      --kernel-install-path=$(pwd) \
+      --log-file-name=$(pwd)/nvidia-installer.log || true
+  args:
+    chdir: /opt/dkp/nvidia/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}
+
+- name: Create drivers dir
+  file:
+    path: /opt/drivers/nvidia
+    state: directory
+
+- name: Create lib dir
+  file:
+    path: /opt/drivers/nvidia/lib/modules/{{ ansible_kernel}}
+    state: directory
+
+- name: Create bin dir
+  file:
+    path: /opt/drivers/nvidia/bin
+    state: directory
+
+- name: Create ld.so conf dir
+  file:
+    path: /etc/ld.so.conf.d/
+    state: directory
+
+- name: Create ld.so conf for nvidia
+  file:
+    path: /etc/ld.so.conf.d/nvidia.conf
+    state: touch
+
+- name: Write location of library files
+  lineinfile:
+    path: /etc/ld.so.conf.d/nvidia.conf
+    line: '/opt/drivers/nvidia/lib'
+    insertbefore: BOF
+
+- name: List all so files
+  shell: ls /opt/dkp/nvidia/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}/*.so*
+  register: so_glob
+
+- name: Copy so files
+  copy:
+    remote_src: yes
+    src: "{{ item }}"
+    dest: /opt/drivers/nvidia/lib
+  with_items: "{{ so_glob.stdout_lines }}"
+
+- name: List all ko files
+  shell: ls /opt/dkp/nvidia/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}/kernel/*.ko
+  register: ko_glob
+
+- name: Copy ko files
+  copy:
+    remote_src: yes
+    src: "{{ item }}"
+    dest: /opt/drivers/nvidia/lib/modules/{{ ansible_kernel }}
+  with_items: "{{ ko_glob.stdout_lines }}"
+
+- name: Load all libraries
+  shell:
+    ldconfig -r /
+    depmod -b /
+    modprobe -d / ipmi_devintf || true
+    depmod -b   /opt/drivers/nvidia || true
+    modprobe -d /opt/drivers/nvidia nvidia
+    modprobe -d /opt/drivers/nvidia nvidia-modeset
+    modprobe -d /opt/drivers/nvidia nvidia-uvm
+  become: yes
+
+- name: create systemd unit file for nvidia-driver service
+  template:
+    dest: /etc/systemd/system/nvidia-driver.service
+    src: etc/systemd/system/nvidia-driver.service
+    mode: 0600
+
+- name: create systemd unit file for nvidia-persistenced service
+  template:
+    dest: /etc/systemd/system/nvidia-persistenced.service
+    src: etc/systemd/system/nvidia-persistenced.service
+    mode: 0600
+
+- name: force systemd to reread configs
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: nvidia-driver
+    enabled: yes
+  become: yes
 
 # libnvidia-container
 - name: Add libnvidia-container repository

@@ -74,11 +74,7 @@ imports = ["/etc/containerd/conf.d/*.toml"]
     disable_proc_mount = false
     [plugins."io.containerd.grpc.v1.cri".containerd]
       snapshotter = "overlayfs"
-{% if gpu is defined and 'nvidia' in gpu.types %}
-      default_runtime_name = "nvidia-container-runtime"
-{% else %}
       default_runtime_name = "runc"
-{% endif %}
       no_pivot = false
       [plugins."io.containerd.grpc.v1.cri".containerd.default_runtime]
         runtime_type = ""
@@ -147,11 +143,7 @@ imports = ["/etc/containerd/conf.d/*.toml"]
     no_prometheus = false
   [plugins."io.containerd.runtime.v1.linux"]
     shim = "containerd-shim"
-{% if gpu is defined and 'nvidia' in gpu.types  %}
-    runtime = "nvidia-container-runtime"
-{% else %}
     runtime = "runc"
-{% endif %}
     runtime_root = ""
     no_shim = false
     shim_debug = false
