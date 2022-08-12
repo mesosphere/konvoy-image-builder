@@ -87,7 +87,7 @@
 - name: Write location of library files
   lineinfile:
     path: /etc/ld.so.conf.d/nvidia.conf
-    line: '/opt/drivers/nvidia/lib'
+    line: '/usr/lib64'
     insertbefore: BOF
 
 - name: List all so files
@@ -98,7 +98,7 @@
   copy:
     remote_src: yes
     src: "{{ item }}"
-    dest: /opt/drivers/nvidia/lib
+    dest: /usr/lib64
   with_items: "{{ so_glob.stdout_lines }}"
 
 - name: List all ko files
@@ -109,7 +109,7 @@
   copy:
     remote_src: yes
     src: "{{ item }}"
-    dest: /opt/drivers/nvidia/lib/modules/{{ ansible_kernel }}
+    dest: /lib/modules/{{ ansible_kernel }}
   with_items: "{{ ko_glob.stdout_lines }}"
 
 - name: copy script
