@@ -3,9 +3,10 @@ Description=nvidia kernel modules systemd service unit file.
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c "modprobe -d /opt/drivers/nvidia -a nvidia nvidia-uvm nvidia-modeset"
+ExecStart=/opt/dkp/nvidia/nvidia-service.sh
 RemainAfterExit=true
 StandardOutput=journal
 
 [Install]
 WantedBy=multi-user.target
+
