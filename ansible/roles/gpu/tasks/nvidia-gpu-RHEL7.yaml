@@ -5,13 +5,6 @@
       - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
       - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
 
-# ensure nouveau being unloaded
-- name: ensure nouveau being unloaded
-  modprobe:
-    name: nouveau
-    state: absent
-  changed_when: False
-
 - name: use Centos Base Repo for vulkan-filesystem
   yum_repository:
     name: vulkanfs-repo
@@ -25,10 +18,6 @@
     name: vulkan-filesystem
     enablerepo: vulkanfs-repo
 
-- name: install EPEL release
-  yum:
-    name: "{{ epel_centos_7_rpm }}"
-    state: present
 
 - name: install additional Nvidia runfile prerequisites
   yum:
@@ -37,71 +26,3 @@
       - make
       - gcc
 
-- name: add Nvidia repository for cuda drivers and tools
-  yum_repository:
-    name: cuda
-    description: NVIDIA cuda repository
-    enabled: true
-    baseurl: "{{ nvidia_repo_baseurl }}"
-    gpgkey: "{{ nvidia_repo_gpgkey }}"
-    gpgcheck: true
-
-- name: create temporary run file directory
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: build
-  register: runfile_dir
-
-# It appears impossible to pin a specific CUDA version on RHEL7 unless
-# one uses the runfile installer.
-# Installing `cuda-XX-X` will result in sliding CUDA versions.
-# TODO(tillt): Find a way that spares us the runfile.
-- name: download Nvidia driver installer
-  get_url:
-    url: "{{ nvidia_runfile_installer_url }}"
-    dest: "{{ runfile_dir.path }}/{{ nvidia_runfile_installer }}"
-    mode: 0755
-  retries: 3
-  delay: 3
-
-- name: run Nvidia driver installer
-  command: "{{ runfile_dir.path }}/{{ nvidia_runfile_installer }} --silent"
-
-# libnvidia-container
-- name: add libnvidia-container repository
-  yum_repository:
-    name: libnvidia-container
-    description: NVIDIA cuda repository
-    enabled: false
-    baseurl: "{{ libnvidia_container_repo_rhel }}"
-    gpgkey: "{{ libnvidia_container_repo_gpgkey }}"
-    gpgcheck: true
-
-- name: install libnvidia-container
-  yum:
-    name: libnvidia-container1
-    enablerepo: libnvidia-container
-    state: present
-
-- name: add libnvidia-container-runtime repository
-  yum_repository:
-    name: nvidia-container-runtime
-    description: NVIDIA cuda repository
-    enabled: false
-    baseurl: "{{ nvidia_container_runtime_repo_rhel }}"
-    gpgkey: "{{ nvidia_container_runtime_repo_gpgkey }}"
-    gpgcheck: true
-
-- name: install nvidia-container-tools
-  yum:
-    name: libnvidia-container-tools
-    enablerepo:
-      - libnvidia-container
-    state: present
-
-- name: install nvidia-container-runtime
-  yum:
-    name: "{{ nvidia_container_runtime_package }}"
-    enablerepo:
-      - nvidia-container-runtime
-    state: present

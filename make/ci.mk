@@ -66,6 +66,9 @@ e2e.build.rhel-8-fips: rhel82-fips
 
 e2e.build.rhel-8.4-nvidia: rhel84-nvidia
 
+e2e.build.rhel-7.9-nvidia: rhel79-nvidia
+
+
 # Azure
 e2e.build.centos-7-azure: centos7-azure
 
