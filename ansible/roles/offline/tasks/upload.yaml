@@ -134,6 +134,7 @@
       copy:
         src: "{{ nvidia_runfile_local_file }}"
         dest: "{{ nvidia_remote_bundle_path }}/nvidia.run"
+        mode: 711
   when:
     - gpu is defined
     - "'nvidia' in gpu.types"

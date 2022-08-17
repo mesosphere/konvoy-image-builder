@@ -46,6 +46,7 @@
     /opt/dkp/nvidia/nvidia.run -x -s
   args:
     chdir: /opt/dkp/nvidia
+  become: yes
 
 - name: install driver
   shell:
