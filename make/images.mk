@@ -169,8 +169,21 @@ build-%:
 		VERBOSITY=$(VERBOSITY) \
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN)
 
+.PHONY: %_offline-nvidia
+%_offline-nvidia:
+	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
+	$(MAKE) devkit.run WHAT="make $*_nvidia \
+		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
+		VERBOSITY=$(VERBOSITY) \
+		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
+		ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+
 # Centos 7 AWS
 #
+.PHONY: centos79-offline-nvidia
+centos79-offline-nvidia:
+	$(MAKE) aws-centos-7.9_offline-nvidia
+
 .PHONY: centos79
 centos79:
 	$(MAKE) build-aws-centos-7.9

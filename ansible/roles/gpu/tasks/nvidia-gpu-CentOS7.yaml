@@ -8,11 +8,15 @@
   until: result is success
   retries: 5
   delay: 3
+  when:
+    - not offline_mode_enabled
 
 - name: find this kernel headers
   yum:
     list: "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
   register: pkgheaders
+  when:
+    - not offline_mode_enabled
 
 - name: get CentOS specific release version
   slurp:
@@ -25,12 +29,21 @@
     name:
       - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
       - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
-  when: pkgheaders.results|length > 0
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    update_cache: true
+  when:
+    - pkgheaders.results|length > 0 or offline_mode_enabled
+
 # CentOS VAULT - Kernel Headers not available in main OS repo anymore. Use Vault for this release
 - name: CentOS VAULT - Kernel Headers not available in main OS repo anymore. Use Vault for this release
   # 2019-09-18: CentOS created new version 7.7.1908 and rebased the /7 repo.
   # But vault for 7.6.1810 is not available but mirror is
-  when: pkgheaders.results|length == 0
+  # don't do this for offline
+  when:
+    - pkgheaders.results|length == 0
+    - not offline_mode_enabled
   block:
     - name: ThisVault
       yum_repository:
@@ -78,6 +91,8 @@
   yum:
     name: gcc
     state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
   retries: 5

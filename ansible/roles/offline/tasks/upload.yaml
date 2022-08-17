@@ -123,3 +123,17 @@
         src: "{{ containerd_local_bundle_file }}"
         dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
   when: containerd_local_bundle_file != ""
+
+- block:
+    - name: create nvidia directory
+      file:
+        path: "{{ nvidia_remote_bundle_path }}"
+        state: directory
+
+    - name: upload runfile artifact
+      copy:
+        src: "{{ nvidia_runfile_local_file }}"
+        dest: "{{ nvidia_remote_bundle_path }}/nvidia.run"
+  when:
+    - gpu is defined
+    - "'nvidia' in gpu.types"
