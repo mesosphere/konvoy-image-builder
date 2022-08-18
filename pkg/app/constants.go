@@ -45,6 +45,7 @@ const (
 	PackerAzureResourceGroupNamePath     = "/packer/resource_group_name"
 	PackerAzureSubscriptionIDPath        = "/packer/subscription_id"
 	PackerAzureTenantIDPath              = "/packer/tenant_id"
+	PackerAzureCloudEndpointPath         = "/packer/cloud_environment_name"
 
 	PackerGCPProjectIDPath = "/packer/project_id"
 	PackerGCPNetworkPath   = "/packer/network"
@@ -59,6 +60,7 @@ const (
 	AzureClientSecretEnvVariable   = "AZURE_CLIENT_SECRET"
 	AzureSubscriptionIDEnvVariable = "AZURE_SUBSCRIPTION_ID"
 	AzureTenantIDEnvVariable       = "AZURE_TENANT_ID"
+	AzureCloudEndpointForClient    = "/packer/cloud_environment_client"
 
 	//nolint:gosec // environment var set by user
 	GCPCredentialEnvVariable = "GOOGLE_APPLICATION_CREDENTIALS"

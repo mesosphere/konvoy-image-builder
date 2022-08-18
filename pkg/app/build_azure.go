@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+
 	"github.com/mesosphere/konvoy-image-builder/pkg/azure"
 )
 
@@ -25,6 +27,7 @@ type AzureArgs struct {
 
 	SubscriptionID string
 	TenantID       string
+	CloudEndpoint  string
 }
 
 func azureCredentials(config Config) (*azure.Credentials, error) {
@@ -49,7 +52,11 @@ func azureCredentials(config Config) (*azure.Credentials, error) {
 		return nil, fmt.Errorf("failed to get tenant id: %w", err)
 	}
 
-	credentials, err := azure.NewCredentials(clientID, clientSecret, tenantID)
+	endpoint, err := config.GetWithError(AzureCloudEndpointForClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get cloud endpoint: %w", err)
+	}
+	credentials, err := azure.NewCredentials(clientID, clientSecret, tenantID, arm.Endpoint(endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed create credentials: %w", err)
 	}

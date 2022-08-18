@@ -3,6 +3,9 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
@@ -147,4 +150,18 @@ func addAzureArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
 		"Standard_D2s_v3",
 		"the Instance Type to use for the build",
 	)
+	fs.StringVar(
+		&azure.CloudEndpoint,
+		"cloud-endpoint",
+		string(arm.AzurePublicCloud),
+		fmt.Sprintf("Azure cloud endpoint. Which can be one of %v", getEndpoints()),
+	)
+}
+
+func getEndpoints() []string {
+	return []string{
+		string(arm.AzureChina),
+		string(arm.AzureGovernment),
+		string(arm.AzurePublicCloud),
+	}
 }

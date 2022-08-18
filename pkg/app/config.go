@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/mitchellh/pointerstructure"
 	"gopkg.in/yaml.v2"
 
@@ -462,6 +463,7 @@ func MergeAmazonUserArgs(config Config, amazonArgs *AmazonArgs) error {
 	return nil
 }
 
+//nolint:gocyclo // there's just a lot of error checking
 func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 	if err := config.Set(PackerAzureClientIDPath, azureArgs.ClientID); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureTenantIDPath, err)
@@ -469,6 +471,25 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 
 	if err := config.Set(PackerAzureInstanceType, azureArgs.InstanceType); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureInstanceType, err)
+	}
+
+	cloudEndpointPacker := ""
+	// packer takes endpoints in a different way
+	// see https://www.packer.io/plugins/builders/azure/arm#cloud_environment_name
+	switch azureArgs.CloudEndpoint {
+	case string(arm.AzureChina):
+		cloudEndpointPacker = "China"
+	case string(arm.AzureGovernment):
+		cloudEndpointPacker = "USGovernment"
+	default:
+		cloudEndpointPacker = "Public"
+	}
+	if err := config.Set(PackerAzureCloudEndpointPath, cloudEndpointPacker); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureCloudEndpointPath, err)
+	}
+
+	if err := config.Set(AzureCloudEndpointForClient, azureArgs.CloudEndpoint); err != nil {
+		return fmt.Errorf("failed to set %s: %w", AzureCloudEndpointForClient, err)
 	}
 
 	galleryImageLocations := azureArgs.GalleryImageLocations
