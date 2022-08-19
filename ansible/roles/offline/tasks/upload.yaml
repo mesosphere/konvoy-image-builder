@@ -138,3 +138,4 @@
   when:
     - gpu is defined
     - "'nvidia' in gpu.types"
+    - nvidia_runfile_local_file != ""

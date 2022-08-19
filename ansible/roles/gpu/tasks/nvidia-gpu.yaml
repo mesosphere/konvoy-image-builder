@@ -36,14 +36,14 @@
 - name: download gpu runfile
   get_url:
     url: "{{ nvidia_runfile_installer_url }}"
-    dest: /opt/dkp/nvidia/nvidia.run
+    dest: /opt/dkp/nvidia/nvidia-{{ nvidia_driver_version }}.run
     mode: 711
   when:
    - not offline_mode_enabled
 
 - name: extract driver source files
   shell: |
-    /opt/dkp/nvidia/nvidia.run -x -s
+    /opt/dkp/nvidia/nvidia-{{ nvidia_driver_version }}.run -x -s
   args:
     chdir: /opt/dkp/nvidia
   become: yes
@@ -136,4 +136,5 @@
     daemon_reload: yes
     name: nvidia-driver
     enabled: yes
+    state: restarted
   become: yes
