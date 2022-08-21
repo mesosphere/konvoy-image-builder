@@ -80,6 +80,54 @@ func strslice(v interface{}) ([]string, error) {
 	}
 }
 
+func strmap(original map[interface{}]interface{}) (map[string]interface{}, error) {
+	fixed := make(map[string]interface{})
+
+	for oKey, oValue := range original {
+		key, ok := oKey.(string)
+		if !ok {
+			return nil, fmt.Errorf("cannot assert key `%v` to string: %w", oKey, ErrKeyNotString)
+		}
+
+		fixed[key] = oValue
+
+		// NOTE(jkoelker) Check if the value is also a map and recursively convert it.
+		mapValue, ok := oValue.(map[interface{}]interface{})
+		if ok {
+			value, err := strmap(mapValue)
+			if err != nil {
+				return nil, fmt.Errorf("cannot convert map `%v`: `%v`: %w", key, mapValue, err)
+			}
+
+			fixed[key] = value
+		}
+
+		sliceValue, ok := oValue.([]interface{})
+		if ok {
+			slice := make([]interface{}, len(sliceValue))
+
+			for idx := range sliceValue {
+				// NOTE(jkoelker) Check if the value is also a map and recursively convert it.
+				mapValue, ok := sliceValue[idx].(map[interface{}]interface{})
+				if ok {
+					value, err := strmap(mapValue)
+					if err != nil {
+						return nil, fmt.Errorf("cannot convert map `%v`: `%v`: %w", key, mapValue, err)
+					}
+
+					slice = append(slice, value)
+				}
+			}
+
+			if len(slice) > 0 {
+				fixed[key] = slice
+			}
+		}
+	}
+
+	return fixed, nil
+}
+
 type Config map[string]interface{}
 
 func (config Config) get(path string) (interface{}, error) {
@@ -187,6 +235,28 @@ func (config Config) Delete(path string) error {
 	}
 
 	return nil
+}
+
+func (config Config) JSON() ([]byte, error) {
+	// TODO(jkoelker) get rid of this copy
+	configCopy := make(map[interface{}]interface{})
+	for k, v := range config {
+		configCopy[k] = v
+	}
+
+	// NOTE(jkoelker) nested keys will be `map[interface{}]interface{}` which
+	//                is not JSON serializable. Fix to have string keys.
+	fixed, err := strmap(configCopy)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fix config: %w", err)
+	}
+
+	json, err := json.MarshalIndent(fixed, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal json: %w", err)
+	}
+
+	return json, nil
 }
 
 func BuildName(config Config) string {

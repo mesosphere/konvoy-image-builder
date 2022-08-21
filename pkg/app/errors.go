@@ -10,6 +10,7 @@ import (
 var (
 	ErrInitConfig               = errors.New("init configuration failure")
 	ErrBuild                    = errors.New("build failure")
+	ErrKeyNotString             = errors.New("key is not a string")
 	ErrKubernetesVersionMissing = errors.New("necessary kubernetes_version key missing")
 	ErrPathNotString            = errors.New("path value is not a string")
 	ErrPathNotSlice             = errors.New("path value is not a slice")
