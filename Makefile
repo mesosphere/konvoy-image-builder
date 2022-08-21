@@ -9,6 +9,9 @@ root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
 export REPO_REV := $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
 
+export IMAGE_HOME ?= /home/imagebuilder
+export IMAGE_KIB ?= $(IMAGE_HOME)/kib
+
 UID ?= $(shell id -u)
 GID ?= $(shell id -g)
 USER_NAME ?= $(shell id -u -n)
@@ -31,12 +34,6 @@ endif
 
 
 export DOCKER_REPOSITORY ?= mesosphere/konvoy-image-builder
-export DOCKER_SOCKET ?= /var/run/docker.sock
-ifeq ($(OS),Darwin)
-export DOCKER_SOCKET_GID ?= $(shell /usr/bin/stat -f "%g" $(DOCKER_SOCKET))
-else
-export DOCKER_SOCKET_GID ?= $(shell stat -c %g $(DOCKER_SOCKET))
-endif
 
 export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)
 export DOCKER_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_IMG)' | tr '/:' '.')
@@ -44,9 +41,9 @@ export DOCKER_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_IMG)' | tr '/:' '.')
 export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit
 export DOCKER_DEVKIT_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_DEVKIT_IMG)' | tr '/:' '.')
 export DOCKER_DEVKIT_GO_ENV_ARGS ?= \
-	--env GOCACHE=/kib/.cache/go-build \
-	--env GOMODCACHE=/kib/.cache/go-mod \
-	--env GOLANGCI_LINT_CACHE=/kib/.cache/golangci-lint
+	--env GOCACHE=$(IMAGE_KIB)/.cache/go-build \
+	--env GOMODCACHE=$(IMAGE_KIB)/.cache/go-mod \
+	--env GOLANGCI_LINT_CACHE=$(IMAGE_KIB)/.cache/golangci-lint
 
 export DOCKER_DEVKIT_ENV_ARGS ?= \
 	--env CI \
@@ -59,11 +56,11 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--env AWS_SECRET_ACCESS_KEY \
 	--env AWS_SESSION_TOKEN \
 	--env AWS_DEFAULT_REGION \
-	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
+	--volume "$(HOME)/.aws":"$(IMAGE_HOME)/.aws"
 
 ifeq ($(strip $(TEAMCITY_EXTRA_MOUNT)),)
-DOCKER_GCP_CREDENTIALS_ARGS=--volume "$(HOME)/.gcp":"/home/$(USER_NAME)/.gcp" \
-	                             --env GOOGLE_APPLICATION_CREDENTIALS=/home/$(USER_NAME)/.gcp/credentials.json
+DOCKER_GCP_CREDENTIALS_ARGS=--volume "$(HOME)/.gcp":"$(IMAGE_HOME)/.gcp" \
+	                             --env GOOGLE_APPLICATION_CREDENTIALS=$(IMAGE_HOME)/.gcp/credentials.json
 else
 DOCKER_GCP_CREDENTIALS_ARGS=--volume $(TEAMCITY_EXTRA_MOUNT):$(TEAMCITY_EXTRA_MOUNT) \
 								 --env GOOGLE_APPLICATION_CREDENTIALS=$(TEAMCITY_EXTRA_MOUNT)/$(TEAMCITY_BUILD_ID)-credentials.json
@@ -78,7 +75,7 @@ export DOCKER_DEVKIT_AZURE_ARGS ?= \
 	--env AZURE_CLIENT_SECRET \
 	--env AZURE_SUBSCRIPTION_ID \
 	--env AZURE_TENANT_ID \
-	--volume "$(HOME)/.azure":"/home/$(USER_NAME)/.azure"
+	--volume "$(HOME)/.azure":"$(IMAGE_HOME)/.azure"
 
 export DOCKER_DEVKIT_VSPHERE_ARGS ?= \
 	--env VSPHERE_SERVER \
@@ -92,42 +89,17 @@ export DOCKER_DEVKIT_BASTION_ARGS ?= \
 	--env SSH_BASTION_HOST \
 	--env SSH_BASTION_KEY_CONTENTS
 
-ifneq ($(wildcard $(DOCKER_SOCKET)),)
-	export DOCKER_SOCKET_ARGS ?= \
-		--volume "$(DOCKER_SOCKET)":/var/run/docker.sock
-endif
-
-export DOCKER_DEVKIT_PUSH_ARGS ?= \
-	--volume "$(HOME)/.docker":"/home/$(USER_NAME)/.docker" \
-	--env DOCKER_PASS \
-	--env DOCKER_CLI_EXPERIMENTAL
-
-# ulimit arg is a workaround for golang's "suboptimal" bug workaround that
-# manifests itself in alpine images, resulting in packer plugins simply dying.
-#
-# On LTS distros like Ubuntu, kernel bugs are backported, so the kernel version
-# may seem old even though it is not vulnerable. Golang ignores it and just
-# looks at the distro+kernel combination to determine if it should panic or
-# not. This results in packer silently failing when running in devkit
-# container, as it is using Alpine linux. See the issue below for more details:
-# https://github.com/docker-library/golang/issues/320
-export DOCKER_ULIMIT_ARGS ?= \
-	--ulimit memlock=67108864:67108864
-
-export DOCKER_DEVKIT_USER_ARGS ?= \
-	--user $(UID):$(GID) \
-	--group-add $(DOCKER_SOCKET_GID)
-
 export DOCKER_DEVKIT_SSH_ARGS ?= \
 	--env SSH_AUTH_SOCK=/run/ssh-agent.sock \
 	--volume $(SSH_AUTH_SOCK):/run/ssh-agent.sock
 
+# NOTE(jkoelker) uidmapping is podman specific need to detect
 export DOCKER_DEVKIT_ARGS ?= \
-	$(DOCKER_ULIMIT_ARGS) \
+	--uidmap $(UID):0:1 \
+	--uidmap 0:1:$(UID) \
 	$(DOCKER_DEVKIT_USER_ARGS) \
-	--volume $(REPO_ROOT_DIR):/kib \
-	--workdir /kib \
-	$(DOCKER_SOCKET_ARGS) \
+	--volume $(REPO_ROOT_DIR):$(IMAGE_KIB) \
+	--workdir $(IMAGE_KIB) \
 	$(DOCKER_DEVKIT_AWS_ARGS) \
 	$(DOCKER_DEVKIT_GCP_ARGS) \
 	$(DOCKER_DEVKIT_AZURE_ARGS) \
@@ -171,7 +143,6 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 		--build-arg GROUP_ID=$(GID) \
 		--build-arg USER_NAME=$(USER_NAME) \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
-		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 		--tag "$(DOCKER_DEVKIT_IMG)" \
 		$(REPO_ROOT_DIR) \
