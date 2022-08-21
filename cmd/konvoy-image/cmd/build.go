@@ -22,23 +22,15 @@ type buildCLIFlags struct {
 }
 
 func NewBuildCmd() *cobra.Command {
-	flags := &buildCLIFlags{}
 	cmd := &cobra.Command{
-		Use:   "build <image.yaml>",
+		Use:   "build <provider> <image.yaml>",
 		Short: "build and provision images",
-		Long: "Build and Provision images. Specifying AWS arguments is deprecated and will " +
-			"be removed in a future version. Use the `aws` subcommand instead.",
-		Args: cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			runBuild(args[0], flags)
-		},
+		Long: "Build and Provision images.",
 	}
 
 	cmd.AddCommand(NewAWSBuildCmd())
 	cmd.AddCommand(NewAzureBuildCmd())
 	cmd.AddCommand(NewGCPBuildCmd())
-
-	initBuildFlags(cmd.Flags(), flags)
 
 	return cmd
 }
@@ -81,13 +73,6 @@ func NewBuildOptions(buildFlags *buildCLIFlags) app.BuildOptions {
 		CustomManifestPath: buildFlags.packerManifestPath,
 		DryRun:             buildFlags.dryRun,
 	}
-}
-
-func initBuildFlags(fs *flag.FlagSet, buildFlags *buildCLIFlags) {
-	initGenerateArgs(fs, &buildFlags.generateCLIFlags)
-	initAWSArgs(fs, &buildFlags.generateCLIFlags)
-
-	addBuildArgs(fs, buildFlags)
 }
 
 func addBuildArgs(fs *flag.FlagSet, buildArgs *buildCLIFlags) {
