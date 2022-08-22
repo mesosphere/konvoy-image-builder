@@ -5,7 +5,6 @@ package azure
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
@@ -62,7 +61,10 @@ func createGalleryImage(
 	location string,
 	subscriptionID string,
 ) (*armcompute.GalleryImage, error) {
-	galleryImageClient := armcompute.NewGalleryImagesClient(subscriptionID, cred, nil)
+	galleryImageClient, err := armcompute.NewGalleryImagesClient(subscriptionID, cred, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to azure gallery image client: %w", err)
+	}
 
 	pollerResp, err := galleryImageClient.BeginCreateOrUpdate(
 		ctx,
@@ -70,15 +72,15 @@ func createGalleryImage(
 		description.GalleryName,
 		description.GalleryImageName,
 		armcompute.GalleryImage{
-			Location: to.StringPtr(location),
+			Location: to.Ptr(location),
 			Properties: &armcompute.GalleryImageProperties{
-				OSType:           armcompute.OperatingSystemTypesLinux.ToPtr(),
-				OSState:          armcompute.OperatingSystemStateTypesGeneralized.ToPtr(),
-				HyperVGeneration: armcompute.HyperVGenerationV2.ToPtr(),
+				OSType:           to.Ptr(armcompute.OperatingSystemTypesLinux),
+				OSState:          to.Ptr(armcompute.OperatingSystemStateTypesGeneralized),
+				HyperVGeneration: to.Ptr(armcompute.HyperVGenerationV2),
 				Identifier: &armcompute.GalleryImageIdentifier{
-					Offer:     to.StringPtr(description.Offer),
-					Publisher: to.StringPtr(description.Publisher),
-					SKU:       to.StringPtr(description.SKU),
+					Offer:     to.Ptr(description.Offer),
+					Publisher: to.Ptr(description.Publisher),
+					SKU:       to.Ptr(description.SKU),
 				},
 			},
 		},
@@ -93,7 +95,7 @@ func createGalleryImage(
 		)
 	}
 
-	resp, err := pollerResp.PollUntilDone(ctx, 10*time.Second)
+	resp, err := pollerResp.PollUntilDone(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating gallery image %s in %s: %w",
 			description.GalleryImageName,
@@ -112,16 +114,19 @@ func createGallery(
 	location string,
 	subscriptionID string,
 ) (*armcompute.Gallery, error) {
-	galleriesClient := armcompute.NewGalleriesClient(subscriptionID, cred, nil)
+	galleriesClient, err := armcompute.NewGalleriesClient(subscriptionID, cred, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to azure galleries client: %w", err)
+	}
 
 	pollerResp, err := galleriesClient.BeginCreateOrUpdate(
 		ctx,
 		description.ResourceGroupName,
 		description.GalleryName,
 		armcompute.Gallery{
-			Location: to.StringPtr(location),
+			Location: to.Ptr(location),
 			Properties: &armcompute.GalleryProperties{
-				Description: to.StringPtr("DKP Gallery."),
+				Description: to.Ptr("DKP Gallery."),
 			},
 		},
 		nil,
@@ -134,7 +139,7 @@ func createGallery(
 		)
 	}
 
-	resp, err := pollerResp.PollUntilDone(ctx, 10*time.Second)
+	resp, err := pollerResp.PollUntilDone(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating gallery %s: %w",
 			description.GalleryName,
@@ -152,13 +157,16 @@ func createResourceGroup(
 	location string,
 	subscriptionID string,
 ) (*armresources.ResourceGroup, error) {
-	resourceGroupClient := armresources.NewResourceGroupsClient(subscriptionID, cred, nil)
+	resourceGroupClient, err := armresources.NewResourceGroupsClient(subscriptionID, cred, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to azure resource groups client: %w", err)
+	}
 
 	resourceGroupResp, err := resourceGroupClient.CreateOrUpdate(
 		ctx,
 		description.ResourceGroupName,
 		armresources.ResourceGroup{
-			Location: to.StringPtr(location),
+			Location: to.Ptr(location),
 		},
 		nil,
 	)
