@@ -10,3 +10,51 @@
 
 - include: debian.yaml
   when: ansible_os_family == "Debian"
+
+- name: remove swapfile
+  file:
+    state: "{{ item.state }}"
+    path: "{{ item.path }}"
+  loop:
+    - path: /swapfile
+      state: absent
+    - path: /mnt/resource/swapfile
+      state: absent
+  when: ansible_memory_mb.swap.total != 0
+
+- name: remove swap from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: check if swap is on
+  command: swapon -s
+  register: swapon
+  changed_when: false
+
+- name: disable swap
+  command: swapoff -a
+  when: swapon.stdout
+
+- name: check if firewalld service exists
+  command: systemctl cat firewalld
+  check_mode: no
+  register: firewalld_exists
+  changed_when: False
+  failed_when: firewalld_exists.rc not in [0, 1]
+  when:
+    - disable_firewalld | default(true)
+
+- name: stop and disable firewalld service
+  systemd:
+    name: firewalld
+    enabled: false
+    masked: false
+    state: stopped
+  when:
+    - disable_firewalld | default(true)
+    - firewalld_exists.rc == 0
