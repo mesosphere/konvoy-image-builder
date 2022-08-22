@@ -19,7 +19,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: 'v1.17'
+          go-version: 'v1.18'
           check-latest: true
       - name: Checkout code
         uses: actions/checkout@v3
