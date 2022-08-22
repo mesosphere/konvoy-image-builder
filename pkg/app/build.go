@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -146,7 +145,7 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 			return fmt.Errorf("error getting internal manifest: %w", err)
 		}
 		manifestPath = filepath.Join(workDir, manifestFileName)
-		if err = ioutil.WriteFile(manifestPath, data, 0o600); err != nil {
+		if err = os.WriteFile(manifestPath, data, 0o600); err != nil {
 			return fmt.Errorf("error writing packer manifest: %w", err)
 		}
 	} else {

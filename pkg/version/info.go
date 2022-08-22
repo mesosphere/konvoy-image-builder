@@ -11,6 +11,7 @@ import (
 )
 
 // Build information. Populated at build-time.
+//
 //nolint:gochecknoglobals // Version globals are set at build time.
 var (
 	version    string
