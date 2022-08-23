@@ -157,6 +157,13 @@
     - path: /root/.ssh/authorized_keys
   when: ansible_os_family == "Flatcar"
 
+- name: Remove Builder User
+  user:
+    name: builder
+    state: absent
+    remove: yes
+  when: packer_builder_type.startswith('vsphere') or packer_builder_type.startswith('vmware')
+
 - name: Truncate all remaining log files in /var/log
   shell:
     cmd: |
