@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -389,7 +388,7 @@ func (r *Runner) setUserMapping() error {
 		r.homeDir,
 	)
 	//nolint:gosec // file must be world readable
-	return ioutil.WriteFile(filePath, []byte(content), 0o644)
+	return os.WriteFile(filePath, []byte(content), 0o644)
 }
 
 func (r *Runner) setGroupMapping() error {
@@ -407,7 +406,7 @@ func (r *Runner) setGroupMapping() error {
 		r.usr.Gid,
 	)
 	//nolint:gosec // file must be world readable
-	return ioutil.WriteFile(filePath, []byte(content), 0o644)
+	return os.WriteFile(filePath, []byte(content), 0o644)
 }
 
 func (r *Runner) Run(args []string) error {
@@ -436,7 +435,7 @@ func (r *Runner) Run(args []string) error {
 
 	// Create a temporary dir to hold some files that need to be mounted to the container,
 	// eg. /etc/passwd, /etc/group, etc.
-	r.tempDir, err = ioutil.TempDir(r.workingDir, ".konvoy-image-tmp")
+	r.tempDir, err = os.MkdirTemp(r.workingDir, ".konvoy-image-tmp")
 	if err != nil {
 		return err
 	}

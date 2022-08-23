@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -200,7 +199,7 @@ func BuildName(config Config) string {
 }
 
 func configFromWorkDir(workDir string, ansibleVarsFilename string) (Config, error) {
-	bytes, err := ioutil.ReadFile(path.Join(workDir, ansibleVarsFilename))
+	bytes, err := os.ReadFile(path.Join(workDir, ansibleVarsFilename))
 	if err != nil {
 		return nil, err
 	}
@@ -332,7 +331,7 @@ func initAnsibleConfig(path string, config Config) error {
 	if err != nil {
 		return fmt.Errorf("error marshelling ansible data: %w", err)
 	}
-	if err = ioutil.WriteFile(path, ansibleData, 0o600); err != nil {
+	if err = os.WriteFile(path, ansibleData, 0o600); err != nil {
 		return fmt.Errorf("error writing ansible vars: %w", err)
 	}
 	return nil
@@ -345,7 +344,7 @@ func initPackerConfig(workDir, extraVarsPath string, config Config) error {
 	}
 
 	log.Printf("writing new packer configuration to %s", workDir)
-	if err = ioutil.WriteFile(
+	if err = os.WriteFile(
 		filepath.Join(workDir, "packer_vars.json"), packerData, 0o600); err != nil {
 		return fmt.Errorf("error writing packer variables: %w", err)
 	}
@@ -357,7 +356,7 @@ func isSourceAMIProvided(config Config) bool {
 }
 
 func loadYAML(path string) (Config, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("error opening %s: %w", path, err)
 	}
