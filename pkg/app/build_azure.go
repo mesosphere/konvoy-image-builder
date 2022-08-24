@@ -56,7 +56,7 @@ func azureCredentials(config Config) (*azure.Credentials, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get cloud endpoint: %w", err)
 	}
-	cloudConfig := cloud.Configuration{}
+	var cloudConfig cloud.Configuration
 	switch endpoint {
 	case "China":
 		cloudConfig = cloud.AzureChina

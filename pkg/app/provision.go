@@ -1,10 +1,9 @@
 package app
 
 import (
-	"github.com/pkg/errors"
-
 	"github.com/mesosphere/konvoy-image-builder/pkg/ansible"
 	"github.com/mesosphere/konvoy-image-builder/pkg/appansible"
+	"github.com/pkg/errors"
 )
 
 type ProvisionFlags struct {
