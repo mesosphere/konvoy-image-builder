@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mesosphere/konvoy-image-builder/pkg/azure"
-
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+
+	"github.com/mesosphere/konvoy-image-builder/pkg/azure"
 )
 
 type AzureArgs struct {
@@ -102,9 +102,9 @@ func azureCredentials(config Config) (*azure.Credentials, error) {
 	}
 	var cloudConfig cloud.Configuration
 	switch endpoint {
-	case "China":
+	case string(AzureCloudEndpointChina):
 		cloudConfig = cloud.AzureChina
-	case "USGovernment":
+	case string(AzureCloudEndpointGovernment):
 		cloudConfig = cloud.AzureGovernment
 
 	default:

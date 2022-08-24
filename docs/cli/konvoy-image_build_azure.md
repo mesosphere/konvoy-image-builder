@@ -16,7 +16,7 @@ azure --location westus2 --subscription-id <sub_id> images/azure/centos-79.yaml
 
 ```
       --client-id string                   the client id to use for the build
-      --cloud-endpoint string              Azure cloud endpoint. Which can be one of [https://management.chinacloudapi.cn/ https://management.usgovcloudapi.net/ https://management.azure.com/] (default "https://management.azure.com/")
+      --cloud-endpoint string              Azure cloud endpoint. Which can be one of [Public USGovernment China] (default "Public")
       --containerd-version string          the version of containerd to install
       --dry-run                            do not create artifacts, or delete them after creating. Recommended for tests.
       --extra-vars strings                 flag passed Ansible's extra-vars

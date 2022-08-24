@@ -121,7 +121,6 @@ func createGallery(
 	subscriptionID string,
 	options *arm.ClientOptions,
 ) (*armcompute.Gallery, error) {
-
 	galleriesClient, err := armcompute.NewGalleriesClient(subscriptionID, cred, options)
 	if err != nil {
 		return nil, fmt.Errorf("failed to azure galleries client: %w", err)
