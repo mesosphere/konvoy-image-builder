@@ -474,7 +474,6 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 
 	// packer values
 	// see https://www.packer.io/plugins/builders/azure/arm#cloud_environment_name
-	fmt.Println(azureArgs.CloudEndpoint.String())
 	if err := config.Set(PackerAzureCloudEndpointPath, azureArgs.CloudEndpoint.String()); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureCloudEndpointPath, err)
 	}
