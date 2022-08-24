@@ -196,3 +196,4 @@
     line: "PasswordAuthentication no"
     state: present
     backup: yes
+  when: ansible_os_family != "Flatcar"
