@@ -48,7 +48,7 @@ image_dir = $(subst aws,ami,$(call provider, $(1)))
 
 # NOTE(jkoelker) Extract the file from the last part (same as `cut -d- -f2-`)
 #                and squashes major and minor, e.g 7.9 -> 79, 8.2 -> 82
-image_file = $(subst .,,$(subst $(SPACE),-,$(wordlist 2, 3, $(subst -,$(SPACE),$(1)))))
+image_file = $(subst $(SPACE),-,$(wordlist 2, 3, $(subst -,$(SPACE),$(1))))
 
 azure_vm_size = --instance-type Standard_B2ms
 # NOTE(jkoelker) Set the VM Size argument for the provider if not already
@@ -454,7 +454,7 @@ sles15-nvidia-azure:
 # Ubuntu 18(04) AWS
 .PHONY: ubuntu18
 ubuntu18:
-	$(MAKE) build-aws-ubuntu-18
+	$(MAKE) build-aws-ubuntu-18.04
 
 # Ubuntu 18(04) Azure
 # preserve old make targets for CI 
@@ -465,32 +465,32 @@ ubuntu18-azure: ubuntu1804-azure
 ubuntu20-azure: ubuntu2004-azure
 .PHONY: ubuntu1804-azure
 ubuntu1804-azure:
-	$(MAKE) build-azure-ubuntu-1804
+	$(MAKE) build-azure-ubuntu-18.04
 
 # Ubuntu 18(04) GCP
 .PHONY: ubuntu1804-gcp
 ubuntu1804-gcp:
-	$(MAKE) build-gcp-ubuntu-1804
+	$(MAKE) build-gcp-ubuntu-18.04
 
 # Ubuntu 20(04) AWS
 .PHONY: ubuntu20
 ubuntu20:
-	$(MAKE) build-aws-ubuntu-20
+	$(MAKE) build-aws-ubuntu-20.04
 
 .PHONY: ubuntu20-nvidia
 ubuntu20-nvidia:
-	$(MAKE) aws-ubuntu-20_nvidia
+	$(MAKE) aws-ubuntu-20.04_nvidia
 
 # Ubuntu 20(04) Azure
 .PHONY: ubuntu2004-azure
 ubuntu2004-azure:
-	$(MAKE) build-azure-ubuntu-2004
+	$(MAKE) build-azure-ubuntu-20.04
 
 # Ubuntu 20(04) GCP
 .PHONY: ubuntu2004-gcp
 ubuntu2004-gcp:
-	$(MAKE) build-gcp-ubuntu-2004
+	$(MAKE) build-gcp-ubuntu-20.04
 
 .PHONY: ubuntu20-nvidia-azure
 ubuntu20-nvidia-azure:
-	$(MAKE) azure-ubuntu-20_nvidia
+	$(MAKE) azure-ubuntu-20.04_nvidia
