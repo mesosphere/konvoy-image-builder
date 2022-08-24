@@ -24,7 +24,7 @@ Presently, KIB supports four OS families:
 ### Example Usage
 
 ```sh
-konvoy-image build images/ami/centos-79.yaml
+konvoy-image build images/ami/centos-7.9.yaml
 ```
 
 ### CLI documentation

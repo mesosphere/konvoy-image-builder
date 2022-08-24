@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	azureExample = "azure --location westus2 --subscription-id <sub_id> images/azure/centos-79.yaml"
+	azureExample = "azure --location westus2 --subscription-id <sub_id> images/azure/centos-7.9.yaml"
 	azureUse     = "azure <image.yaml>"
 )
 

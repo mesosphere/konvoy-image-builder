@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	awsExample = "aws --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-79.yaml"
+	awsExample = "aws --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-7.9.yaml"
 	awsUse     = "aws <image.yaml>"
 )
 
