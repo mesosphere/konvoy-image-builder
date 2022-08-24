@@ -8,6 +8,8 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
@@ -42,18 +44,18 @@ func NewImageDescription(
 }
 
 type Credentials struct {
-	ID       string
-	Secret   string
-	TenantID string
-	Endpoint arm.Endpoint
+	ID          string
+	Secret      string
+	TenantID    string
+	CloudConfig cloud.Configuration
 }
 
-func NewCredentials(clientID, clientSecret, tenantID string, endpoint arm.Endpoint) (*Credentials, error) {
+func NewCredentials(clientID, clientSecret, tenantID string, CloudConfig cloud.Configuration) (*Credentials, error) {
 	return &Credentials{
-		ID:       clientID,
-		Secret:   clientSecret,
-		TenantID: tenantID,
-		Endpoint: endpoint,
+		ID:          clientID,
+		Secret:      clientSecret,
+		TenantID:    tenantID,
+		CloudConfig: CloudConfig,
 	}, nil
 }
 
@@ -194,7 +196,12 @@ func EnsureImageDescriptions(
 	locations []string,
 	subscriptionID string,
 ) error {
-	endpoint := credentials.Endpoint
+	cloudConfig := credentials.CloudConfig
+	options := &arm.ClientOptions{
+		ClientOptions: policy.ClientOptions{
+			Cloud: cloudConfig,
+		},
+	}
 	cred, err := azidentity.NewClientSecretCredential(
 		credentials.TenantID,
 		credentials.ID,
@@ -206,7 +213,7 @@ func EnsureImageDescriptions(
 	}
 
 	for _, location := range locations {
-		_, err = createResourceGroup(ctx, cred, description, location, subscriptionID, endpoint)
+		_, err = createResourceGroup(ctx, cred, description, location, subscriptionID, options)
 		if err != nil {
 			return fmt.Errorf(
 				"failed to create resource group %s in %s: %w",
@@ -216,7 +223,7 @@ func EnsureImageDescriptions(
 			)
 		}
 
-		_, err = createGallery(ctx, cred, description, location, subscriptionID, endpoint)
+		_, err = createGallery(ctx, cred, description, location, subscriptionID, options)
 		if err != nil {
 			return fmt.Errorf(
 				"failed to create image gallery %s in %s: %w",
@@ -232,7 +239,7 @@ func EnsureImageDescriptions(
 			description,
 			location,
 			subscriptionID,
-			endpoint,
+			options,
 		)
 		if err != nil {
 			return fmt.Errorf(

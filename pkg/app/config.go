@@ -11,7 +11,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/mitchellh/pointerstructure"
 	"gopkg.in/yaml.v2"
 
@@ -473,18 +472,9 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureInstanceType, err)
 	}
 
-	cloudEndpointPacker := ""
-	// packer takes endpoints in a different way
+	// packer values
 	// see https://www.packer.io/plugins/builders/azure/arm#cloud_environment_name
-	switch azureArgs.CloudEndpoint {
-	case string(arm.AzureChina):
-		cloudEndpointPacker = "China"
-	case string(arm.AzureGovernment):
-		cloudEndpointPacker = "USGovernment"
-	default:
-		cloudEndpointPacker = "Public"
-	}
-	if err := config.Set(PackerAzureCloudEndpointPath, cloudEndpointPacker); err != nil {
+	if err := config.Set(PackerAzureCloudEndpointPath, azureArgs.CloudEndpoint); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureCloudEndpointPath, err)
 	}
 
