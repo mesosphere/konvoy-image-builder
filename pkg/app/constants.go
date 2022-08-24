@@ -60,7 +60,6 @@ const (
 	AzureClientSecretEnvVariable   = "AZURE_CLIENT_SECRET"
 	AzureSubscriptionIDEnvVariable = "AZURE_SUBSCRIPTION_ID"
 	AzureTenantIDEnvVariable       = "AZURE_TENANT_ID"
-	AzureCloudEndpointForClient    = "/packer/cloud_environment_client"
 
 	//nolint:gosec // environment var set by user
 	GCPCredentialEnvVariable = "GOOGLE_APPLICATION_CREDENTIALS"

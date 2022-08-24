@@ -61,7 +61,11 @@ func initGenerateAzureFlags(fs *flag.FlagSet, generateFlags *generateCLIFlags) {
 }
 
 func initAzurergs(fs *flag.FlagSet, gFlags *generateCLIFlags) {
-	gFlags.userArgs.Azure = &app.AzureArgs{}
+	gFlags.userArgs.Azure = &app.AzureArgs{
+		CloudEndpoint: &app.AzureCloudFlag{
+			Endpoint: app.AzureCloudEndpointPublic,
+		},
+	}
 	addAzureArgs(fs, gFlags.userArgs.Azure)
 }
 
@@ -149,18 +153,9 @@ func addAzureArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
 		"Standard_D2s_v3",
 		"the Instance Type to use for the build",
 	)
-	fs.StringVar(
-		&azure.CloudEndpoint,
+	fs.Var(
+		azure.CloudEndpoint,
 		"cloud-endpoint",
-		"Public",
-		fmt.Sprintf("Azure cloud endpoint. Which can be one of %v", getEndpoints()),
+		fmt.Sprintf("Azure cloud endpoint. Which can be one of %v", app.ListAzureEndpoints()),
 	)
-}
-
-func getEndpoints() []string {
-	return []string{
-		"China",
-		"Public",
-		"USGovernment",
-	}
 }

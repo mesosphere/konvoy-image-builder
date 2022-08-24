@@ -27,7 +27,51 @@ type AzureArgs struct {
 
 	SubscriptionID string
 	TenantID       string
-	CloudEndpoint  string
+	CloudEndpoint  *AzureCloudFlag
+}
+
+type AzureCloudFlag struct {
+	Endpoint AzureCloudEndpoint
+}
+
+type AzureCloudEndpoint string
+
+var (
+	AzureCloudEndpointChina      AzureCloudEndpoint = "China"
+	AzureCloudEndpointPublic     AzureCloudEndpoint = "Public"
+	AzureCloudEndpointGovernment AzureCloudEndpoint = "USGovernment"
+)
+
+func (a *AzureCloudFlag) String() string {
+	return string(a.Endpoint)
+}
+
+func (a *AzureCloudFlag) Set(s string) error {
+	switch s {
+	case "China":
+		a.Endpoint = AzureCloudEndpointChina
+		return nil
+	case "USGovernment":
+		a.Endpoint = AzureCloudEndpointGovernment
+		return nil
+	case "Public":
+		a.Endpoint = AzureCloudEndpointPublic
+		return nil
+	default:
+		return fmt.Errorf("flag must be set to one of %v", ListAzureEndpoints())
+	}
+}
+
+func (a *AzureCloudFlag) Type() string {
+	return "string"
+}
+
+func ListAzureEndpoints() []AzureCloudEndpoint {
+	return []AzureCloudEndpoint{
+		AzureCloudEndpointPublic,
+		AzureCloudEndpointGovernment,
+		AzureCloudEndpointChina,
+	}
 }
 
 func azureCredentials(config Config) (*azure.Credentials, error) {

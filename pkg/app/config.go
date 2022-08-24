@@ -474,12 +474,9 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 
 	// packer values
 	// see https://www.packer.io/plugins/builders/azure/arm#cloud_environment_name
-	if err := config.Set(PackerAzureCloudEndpointPath, azureArgs.CloudEndpoint); err != nil {
+	fmt.Println(azureArgs.CloudEndpoint.String())
+	if err := config.Set(PackerAzureCloudEndpointPath, azureArgs.CloudEndpoint.String()); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureCloudEndpointPath, err)
-	}
-
-	if err := config.Set(AzureCloudEndpointForClient, azureArgs.CloudEndpoint); err != nil {
-		return fmt.Errorf("failed to set %s: %w", AzureCloudEndpointForClient, err)
 	}
 
 	galleryImageLocations := azureArgs.GalleryImageLocations
