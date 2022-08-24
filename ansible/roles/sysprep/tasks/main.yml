@@ -157,13 +157,6 @@
     - path: /root/.ssh/authorized_keys
   when: ansible_os_family == "Flatcar"
 
-- name: Remove Builder User
-  user:
-    name: builder
-    state: absent
-    remove: yes
-  when: packer_builder_type.startswith('vsphere') or packer_builder_type.startswith('vmware')
-
 - name: Truncate all remaining log files in /var/log
   shell:
     cmd: |
@@ -195,3 +188,19 @@
     name: kubelet
     enabled: true
     state: started
+
+- name: Disable Password Authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: "PasswordAuthentication no"
+    state: present
+    backup: yes
+
+- name: Remove Builder User
+  become: true
+  user:
+    name: builder
+    state: absent
+    remove: yes
+  when: packer_builder_type.startswith('vsphere') or packer_builder_type.startswith('vmware')
