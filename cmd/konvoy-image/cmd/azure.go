@@ -3,6 +3,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
@@ -59,7 +61,11 @@ func initGenerateAzureFlags(fs *flag.FlagSet, generateFlags *generateCLIFlags) {
 }
 
 func initAzurergs(fs *flag.FlagSet, gFlags *generateCLIFlags) {
-	gFlags.userArgs.Azure = &app.AzureArgs{}
+	gFlags.userArgs.Azure = &app.AzureArgs{
+		CloudEndpoint: &app.AzureCloudFlag{
+			Endpoint: app.AzureCloudEndpointPublic,
+		},
+	}
 	addAzureArgs(fs, gFlags.userArgs.Azure)
 }
 
@@ -146,5 +152,10 @@ func addAzureArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
 		"instance-type",
 		"Standard_D2s_v3",
 		"the Instance Type to use for the build",
+	)
+	fs.Var(
+		azure.CloudEndpoint,
+		"cloud-endpoint",
+		fmt.Sprintf("Azure cloud endpoint. Which can be one of %v", app.ListAzureEndpoints()),
 	)
 }

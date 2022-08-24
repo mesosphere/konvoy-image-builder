@@ -462,6 +462,7 @@ func MergeAmazonUserArgs(config Config, amazonArgs *AmazonArgs) error {
 	return nil
 }
 
+//nolint:gocyclo // there's just a lot of error checking
 func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 	if err := config.Set(PackerAzureClientIDPath, azureArgs.ClientID); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureTenantIDPath, err)
@@ -469,6 +470,12 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 
 	if err := config.Set(PackerAzureInstanceType, azureArgs.InstanceType); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureInstanceType, err)
+	}
+
+	// packer values
+	// see https://www.packer.io/plugins/builders/azure/arm#cloud_environment_name
+	if err := config.Set(PackerAzureCloudEndpointPath, azureArgs.CloudEndpoint.String()); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerAzureCloudEndpointPath, err)
 	}
 
 	galleryImageLocations := azureArgs.GalleryImageLocations

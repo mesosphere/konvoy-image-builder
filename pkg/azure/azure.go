@@ -7,6 +7,9 @@ import (
 	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
@@ -41,16 +44,18 @@ func NewImageDescription(
 }
 
 type Credentials struct {
-	ID       string
-	Secret   string
-	TenantID string
+	ID          string
+	Secret      string
+	TenantID    string
+	CloudConfig cloud.Configuration
 }
 
-func NewCredentials(clientID string, clientSecret string, tenantID string) (*Credentials, error) {
+func NewCredentials(clientID, clientSecret, tenantID string, CloudConfig cloud.Configuration) (*Credentials, error) {
 	return &Credentials{
-		ID:       clientID,
-		Secret:   clientSecret,
-		TenantID: tenantID,
+		ID:          clientID,
+		Secret:      clientSecret,
+		TenantID:    tenantID,
+		CloudConfig: CloudConfig,
 	}, nil
 }
 
@@ -60,8 +65,9 @@ func createGalleryImage(
 	description *ImageDescription,
 	location string,
 	subscriptionID string,
+	options *arm.ClientOptions,
 ) (*armcompute.GalleryImage, error) {
-	galleryImageClient, err := armcompute.NewGalleryImagesClient(subscriptionID, cred, nil)
+	galleryImageClient, err := armcompute.NewGalleryImagesClient(subscriptionID, cred, options)
 	if err != nil {
 		return nil, fmt.Errorf("failed to azure gallery image client: %w", err)
 	}
@@ -113,8 +119,9 @@ func createGallery(
 	description *ImageDescription,
 	location string,
 	subscriptionID string,
+	options *arm.ClientOptions,
 ) (*armcompute.Gallery, error) {
-	galleriesClient, err := armcompute.NewGalleriesClient(subscriptionID, cred, nil)
+	galleriesClient, err := armcompute.NewGalleriesClient(subscriptionID, cred, options)
 	if err != nil {
 		return nil, fmt.Errorf("failed to azure galleries client: %w", err)
 	}
@@ -156,8 +163,9 @@ func createResourceGroup(
 	description *ImageDescription,
 	location string,
 	subscriptionID string,
+	options *arm.ClientOptions,
 ) (*armresources.ResourceGroup, error) {
-	resourceGroupClient, err := armresources.NewResourceGroupsClient(subscriptionID, cred, nil)
+	resourceGroupClient, err := armresources.NewResourceGroupsClient(subscriptionID, cred, options)
 	if err != nil {
 		return nil, fmt.Errorf("failed to azure resource groups client: %w", err)
 	}
@@ -187,6 +195,12 @@ func EnsureImageDescriptions(
 	locations []string,
 	subscriptionID string,
 ) error {
+	cloudConfig := credentials.CloudConfig
+	options := &arm.ClientOptions{
+		ClientOptions: policy.ClientOptions{
+			Cloud: cloudConfig,
+		},
+	}
 	cred, err := azidentity.NewClientSecretCredential(
 		credentials.TenantID,
 		credentials.ID,
@@ -198,7 +212,7 @@ func EnsureImageDescriptions(
 	}
 
 	for _, location := range locations {
-		_, err = createResourceGroup(ctx, cred, description, location, subscriptionID)
+		_, err = createResourceGroup(ctx, cred, description, location, subscriptionID, options)
 		if err != nil {
 			return fmt.Errorf(
 				"failed to create resource group %s in %s: %w",
@@ -208,7 +222,7 @@ func EnsureImageDescriptions(
 			)
 		}
 
-		_, err = createGallery(ctx, cred, description, location, subscriptionID)
+		_, err = createGallery(ctx, cred, description, location, subscriptionID, options)
 		if err != nil {
 			return fmt.Errorf(
 				"failed to create image gallery %s in %s: %w",
@@ -224,6 +238,7 @@ func EnsureImageDescriptions(
 			description,
 			location,
 			subscriptionID,
+			options,
 		)
 		if err != nil {
 			return fmt.Errorf(

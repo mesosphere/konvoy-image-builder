@@ -347,6 +347,10 @@ func TestMergeAzureUserArgs(t *testing.T) {
 		Location: gofakeit.Word(),
 	}
 
+	azureArgs.CloudEndpoint = &app.AzureCloudFlag{
+		Endpoint: app.AzureCloudEndpointPublic,
+	}
+
 	if err := app.MergeAzureUserArgs(config, azureArgs); assert.NoError(t, err) {
 		if value, err := config.GetSliceWithError(
 			app.PackerAzureGalleryLocations,

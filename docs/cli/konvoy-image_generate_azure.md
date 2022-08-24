@@ -16,6 +16,7 @@ azure --location westus2 --subscription-id <sub_id> images/azure/centos-79.yaml
 
 ```
       --client-id string                   the client id to use for the build
+      --cloud-endpoint string              Azure cloud endpoint. Which can be one of [Public USGovernment China] (default "Public")
       --containerd-version string          the version of containerd to install
       --extra-vars strings                 flag passed Ansible's extra-vars
       --gallery-image-locations location   a list of locatins to publish the image (default same as location)

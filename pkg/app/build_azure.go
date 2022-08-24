@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+
 	"github.com/mesosphere/konvoy-image-builder/pkg/azure"
 )
 
@@ -25,6 +27,51 @@ type AzureArgs struct {
 
 	SubscriptionID string
 	TenantID       string
+	CloudEndpoint  *AzureCloudFlag
+}
+
+type AzureCloudFlag struct {
+	Endpoint AzureCloudEndpoint
+}
+
+type AzureCloudEndpoint string
+
+var (
+	AzureCloudEndpointChina      AzureCloudEndpoint = "China"
+	AzureCloudEndpointPublic     AzureCloudEndpoint = "Public"
+	AzureCloudEndpointGovernment AzureCloudEndpoint = "USGovernment"
+)
+
+func (a *AzureCloudFlag) String() string {
+	return string(a.Endpoint)
+}
+
+func (a *AzureCloudFlag) Set(s string) error {
+	switch s {
+	case "China":
+		a.Endpoint = AzureCloudEndpointChina
+		return nil
+	case "USGovernment":
+		a.Endpoint = AzureCloudEndpointGovernment
+		return nil
+	case "Public":
+		a.Endpoint = AzureCloudEndpointPublic
+		return nil
+	default:
+		return fmt.Errorf("flag must be set to one of %v", ListAzureEndpoints())
+	}
+}
+
+func (a *AzureCloudFlag) Type() string {
+	return "string"
+}
+
+func ListAzureEndpoints() []AzureCloudEndpoint {
+	return []AzureCloudEndpoint{
+		AzureCloudEndpointPublic,
+		AzureCloudEndpointGovernment,
+		AzureCloudEndpointChina,
+	}
 }
 
 func azureCredentials(config Config) (*azure.Credentials, error) {
@@ -49,7 +96,21 @@ func azureCredentials(config Config) (*azure.Credentials, error) {
 		return nil, fmt.Errorf("failed to get tenant id: %w", err)
 	}
 
-	credentials, err := azure.NewCredentials(clientID, clientSecret, tenantID)
+	endpoint, err := config.GetWithError(PackerAzureCloudEndpointPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get cloud endpoint: %w", err)
+	}
+	var cloudConfig cloud.Configuration
+	switch endpoint {
+	case string(AzureCloudEndpointChina):
+		cloudConfig = cloud.AzureChina
+	case string(AzureCloudEndpointGovernment):
+		cloudConfig = cloud.AzureGovernment
+
+	default:
+		cloudConfig = cloud.AzurePublic
+	}
+	credentials, err := azure.NewCredentials(clientID, clientSecret, tenantID, cloudConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed create credentials: %w", err)
 	}
