@@ -15,8 +15,8 @@
         executable: /bin/bash
         cmd: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }})
       when:
-        - item | regexp(^1\.(\d)+\.(\d)+_images\.tar\.gz$)
-        - item.split('.')[1] |int < 24
+        - item.split('/')[-1] | regex_search('^1\.(\d)+\.(\d)+_images\.tar\.gz$')
+        - item.split('/')[-1].split('.')[1] |int < 24
       register: ctr_images_import
       failed_when: ctr_images_import.rc != 0
       changed_when: ctr_images_import.rc == 0
@@ -27,8 +27,8 @@
         executable: /bin/bash
         cmd: mindthegap import image-bundle {{ item }}
       when:
-        - item | regexp(^1\.(\d)+\.(\d)+_images\.tar\.gz$)
-        - item.split('.')[1] |int >= 24
+        - item.split('/')[-1] | regex_search('^1\.(\d)+\.(\d)+_images\.tar\.gz$')
+        - item.split('/')[-1].split('.')[1] |int >= 24
       register: ctr_images_import
       failed_when: ctr_images_import.rc != 0
       changed_when: ctr_images_import.rc == 0
