@@ -25,7 +25,7 @@
     - name: import images from files to local images cache with mindthegap
       shell:
         executable: /bin/bash
-        cmd: mindthegap import image-bundle {{ item }}
+        cmd: ${HOME}/bin/mindthegap import image-bundle {{ item }}
       when:
         - item.split('/')[-1] | regex_search('^1\.(\d)+\.(\d)+_images\.tar\.gz$')
         - item.split('/')[-1].split('.')[1] |int >= 24
