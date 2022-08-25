@@ -9,12 +9,28 @@
   register: images_cache_find_result
   changed_when: false
 
-- name: import images from files in the local images cache  # noqa no-changed-when
-  shell:
-    executable: /bin/bash
-    cmd: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }})
+- block:
+    - name: import images from files in the local images cache # noqa no-changed-when
+      shell:
+        executable: /bin/bash
+        cmd: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }})
+      when:
+        - item | regexp(^1\.(\d)+\.(\d)+_images\.tar\.gz$)
+        - item.split('.')[1] |int < 24
+      register: ctr_images_import
+      failed_when: ctr_images_import.rc != 0
+      changed_when: ctr_images_import.rc == 0
+      with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
+
+    - name: import images from files to local images cache with mindthegap
+      shell:
+        executable: /bin/bash
+        cmd: mindthegap import image-bundle {{ item }}
+      when:
+        - item | regexp(^1\.(\d)+\.(\d)+_images\.tar\.gz$)
+        - item.split('.')[1] |int >= 24
+      register: ctr_images_import
+      failed_when: ctr_images_import.rc != 0
+      changed_when: ctr_images_import.rc == 0
+      with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
   when: images_cache_find_result.files | length > 0
-  register: ctr_images_import
-  failed_when: ctr_images_import.rc != 0
-  changed_when: ctr_images_import.rc == 0
-  with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
