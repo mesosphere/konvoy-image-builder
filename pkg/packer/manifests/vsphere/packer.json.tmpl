@@ -147,7 +147,7 @@
     {
       "type": "shell",
       "inline": [
-      "mkdir -p ${HOME}/bin/"
+      "mkdir -p /tmp/bin/"
       ]
     },
     {
@@ -160,7 +160,7 @@
     {
         "type": "file",
         "source": "/usr/local/bin/mindthegap",
-        "destination": "${HOME}/bin/mindthegap",
+        "destination": "/tmp/bin/mindthegap",
         "direction": "upload",
         "max_retries": 10
     },
@@ -203,7 +203,7 @@
     {
         "type": "file",
         "source": "/usr/local/bin/mindthegap",
-        "destination": "${HOME}/bin/mindthegap",
+        "destination": "/tmp/bin/mindthegap",
         "direction": "upload",
         "max_retries": 10
     }
