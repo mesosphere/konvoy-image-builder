@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.20.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.9...v1.20.0) (2022-08-24)
+
+
+### Features
+
+* add cloudendpoint to azure flags ([#470](https://github.com/mesosphere/konvoy-image-builder/issues/470)) ([12e519c](https://github.com/mesosphere/konvoy-image-builder/commit/12e519c054ac47de44efdbf5f8d73a87a056d021))
+* bump Ansible to 4.10.0 ([#426](https://github.com/mesosphere/konvoy-image-builder/issues/426)) ([c04581e](https://github.com/mesosphere/konvoy-image-builder/commit/c04581ee9c7a2750aa9f72e8baebdd29596471c6))
+* bump kubernetes version to 1.24.4 ([#468](https://github.com/mesosphere/konvoy-image-builder/issues/468)) ([0904949](https://github.com/mesosphere/konvoy-image-builder/commit/0904949684377ef776adc01bfc94e5f2130a4c2f))
+* disable password ssh auth ([#474](https://github.com/mesosphere/konvoy-image-builder/issues/474)) ([ba1e55b](https://github.com/mesosphere/konvoy-image-builder/commit/ba1e55b71bc5ba389ff9bc1675ee168c19b73858))
+* move disabling swap and firewalld to a shared play ([#451](https://github.com/mesosphere/konvoy-image-builder/issues/451)) ([bc5b71b](https://github.com/mesosphere/konvoy-image-builder/commit/bc5b71becc96143693276e154b4c3e4291b5f768))
+
+
+### Bug Fixes
+
+* remove builder user in sysprep ([#469](https://github.com/mesosphere/konvoy-image-builder/issues/469)) ([dd99d11](https://github.com/mesosphere/konvoy-image-builder/commit/dd99d11691f482f91dae1f1e22871fffa9c66f9d))
+* upgrade azure packages to 1.x.x and golang to 1.18 ([#473](https://github.com/mesosphere/konvoy-image-builder/issues/473)) ([6488004](https://github.com/mesosphere/konvoy-image-builder/commit/6488004dfdc995db49139ab88c01508935e3a9d6))
+
 ## [1.19.9](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.8...v1.19.9) (2022-08-04)
 
 
