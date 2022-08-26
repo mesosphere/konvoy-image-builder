@@ -29,8 +29,12 @@
       when:
         - item.split('/')[-1] | regex_search('^1\.(\d)+\.(\d)+_images\.tar\.gz$')
         - item.split('/')[-1].split('.')[1] |int >= 24
-      register: ctr_images_import
-      failed_when: ctr_images_import.rc != 0
-      changed_when: ctr_images_import.rc == 0
+      register: mindthegap_images_import
+      failed_when: mindthegap_images_import.rc != 0
+      changed_when: mindthegap_images_import.rc == 0
       with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
+
+    - name: remove mindthegap if present
+      command: rm /usr/local/bin/mindthegap || true
+
   when: images_cache_find_result.files | length > 0
