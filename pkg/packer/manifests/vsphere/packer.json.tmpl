@@ -145,12 +145,6 @@
     ]
     },
     {
-      "type": "shell",
-      "inline": [
-      "mkdir -p /tmp/bin/"
-      ]
-    },
-    {
         "type": "file",
         "source": "/usr/local/bin/goss",
         "destination": "/tmp/.goss-dir/goss",
@@ -201,11 +195,10 @@
       ]
     },
     {
-        "type": "file",
-        "source": "/usr/local/bin/mindthegap",
-        "destination": "/tmp/bin/mindthegap",
-        "direction": "upload",
-        "max_retries": 10
+      "type": "shell",
+      "inline": [
+      "rm -r  /usr/local/bin/mindthegap"
+      ]
     }
   ]
 }

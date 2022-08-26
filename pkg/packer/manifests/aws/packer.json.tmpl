@@ -196,22 +196,9 @@
       ]
     },
     {
-      "type": "shell",
-      "inline": [
-      "mkdir -p /tmp/bin/"
-      ]
-    },
-    {
         "type": "file",
         "source": "/usr/local/bin/goss",
         "destination": "/tmp/.goss-dir/goss",
-        "direction": "upload",
-        "max_retries": 10
-    },
-    {
-        "type": "file",
-        "source": "/usr/local/bin/mindthegap",
-        "destination": "/tmp/bin/mindthegap",
         "direction": "upload",
         "max_retries": 10
     },
@@ -267,7 +254,7 @@
     {
       "type": "shell",
       "inline": [
-      "rm -r  /tmp/bin/mindthegap"
+      "rm /usr/local/bin/mindthegap"
       ]
     }
   ],
