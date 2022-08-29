@@ -18,16 +18,31 @@
   include_tasks: nvidia-gpu-Ubuntu20.yaml
   when: ansible_distribution == "Ubuntu"
 
-# Common tasks for install cuda+device drivers
-# ensure nouveau being unloaded
-- name: Ensure nouveau being unloaded
-  modprobe:
-    name: nouveau
-    state: absent
-  changed_when: False
+- name: create nouveau blacklist file
+  file:
+    path: /etc/modprobe.d/blacklist-nouveau.conf
+    state: touch
+
+- name: add contents
+  lineinfile:
+    path: /etc/modprobe.d/blacklist-nouveau.conf
+    line: " {{ item.line }}"
+    loop:
+      - {line: 'blacklist nouveau'}
+      - {line: 'options nouveau modeset=0'}
+
+- name: regenerate the kernel initramfs
+  command: dracut --force
+  become: yes
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: regenerate the kernel initramfs
+  command: update-initramfs -u
+  become: yes
+  when: ansible_os_family == "Debian"
 
 # Download and install gpu runfile
-
 - name: create nvidia install directory
   file:
     path: /opt/dkp/nvidia
@@ -50,30 +65,10 @@
 
 - name: install driver
   shell:
-    ./nvidia-installer -s -n \
-      --kernel-name={{ ansible_kernel }} \
-      --no-check-for-alternate-installs \
-      --no-opengl-files \
-      --no-distro-scripts \
-      --kernel-install-path=$(pwd) \
+    ./nvidia-installer -s \
       --log-file-name=$(pwd)/nvidia-installer.log || true
   args:
     chdir: /opt/dkp/nvidia/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}
-
-- name: Create drivers dir
-  file:
-    path: /opt/drivers/nvidia
-    state: directory
-
-- name: Create lib dir
-  file:
-    path: /opt/drivers/nvidia/lib/modules/{{ ansible_kernel}}
-    state: directory
-
-- name: Create bin dir
-  file:
-    path: /opt/drivers/nvidia/bin
-    state: directory
 
 - name: Create ld.so conf dir
   file:
@@ -91,39 +86,16 @@
     line: '/usr/lib64'
     insertbefore: BOF
 
-- name: List all so files
-  shell: ls /opt/dkp/nvidia/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}/*.so*
-  register: so_glob
+- name: run nvidia-smi
+  shell:
+    executable: /bin/bash
+    cmd: nvidia-smi
 
-- name: Copy so files
+- name: copy script for systemd unit
   copy:
-    remote_src: yes
-    src: "{{ item }}"
-    dest: /usr/lib64
-  with_items: "{{ so_glob.stdout_lines }}"
-
-- name: List all ko files
-  shell: ls /opt/dkp/nvidia/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}/kernel/*.ko
-  register: ko_glob
-
-- name: Copy ko files
-  copy:
-    remote_src: yes
-    src: "{{ item }}"
-    dest: /lib/modules/{{ ansible_kernel }}
-  with_items: "{{ ko_glob.stdout_lines }}"
-
-- name: copy script
-  copy:
-    dest: /opt/dkp/nvidia/nvidia-service.sh
-    src: ./nvidia-service.sh
+    dest: /opt/dkp/nvidia/nvidia-persistenced.sh
+    src: ./nvidia-persistenced.sh
     mode: 711
-
-- name: create systemd unit file for nvidia-driver service
-  template:
-    dest: /etc/systemd/system/nvidia-driver.service
-    src: etc/systemd/system/nvidia-driver.service
-    mode: 0600
 
 - name: create systemd unit file for nvidia-persistenced service
   template:
@@ -134,7 +106,7 @@
 - name: force systemd to reread configs
   ansible.builtin.systemd:
     daemon_reload: yes
-    name: nvidia-driver
+    name: nvidia-persistenced
     enabled: yes
     state: restarted
   become: yes

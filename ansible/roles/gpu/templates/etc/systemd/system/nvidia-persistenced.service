@@ -1,11 +1,12 @@
 [Unit]
 Description=nvidia persistenced systemd service unit file.
-Requires=nvidia-driver.service
-After=nvidia-driver.service
 
 [Service]
-Type=forking
-ExecStart=/opt/bin/nvidia-persistenced --persistence-mode --verbose
+Type=oneshot
+ExecStart=/opt/dkp/nvidia/nvidia-persistenced.sh
+RemainAfterExit=true
+StandardOutput=journal
+
 
 [Install]
 WantedBy=multi-user.target
