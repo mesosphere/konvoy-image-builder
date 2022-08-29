@@ -19,6 +19,14 @@
   when:
     - ansible_os_family == "Debian"
 
+- name: upgrade pip to latest
+  pip:
+    name: pip
+    executable: pip3
+    state: latest
+  when:
+    - ansible_os_family == "Debian"
+
 - name: install Azure clients
   pip:
     executable: pip3
