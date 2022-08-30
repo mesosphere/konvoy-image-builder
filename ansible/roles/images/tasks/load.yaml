@@ -24,5 +24,7 @@
       with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
 
     - name: remove mindthegap if present
-      command: rm {{ mindthegap_binary_location_on_remote }} || true
+      shell:
+        executable: /bin/bash
+        cmd: rm {{ mindthegap_binary_location_on_remote }} || true
   when: images_cache_find_result.files | length > 0
