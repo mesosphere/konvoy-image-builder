@@ -18,7 +18,7 @@ CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 NVIDIA_URL ?= https://download.nvidia.com/XFree86/Linux-x86_64
 
 NVIDIA_DRIVER_VERSION ?= $(shell \
-	grep -E -e "nvidia_driver_version:" ansible/roles/gpu/defaults/main.yaml | \
+	grep -E -e "nvidia_driver_version:" ansible/group_vars/all/defaults.yaml | \
 	cut -d\" -f2 \
 )
 
@@ -189,7 +189,7 @@ build-%:
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
-		ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+		ADDITIONAL_OVERRIDES=overrides/offline.yaml,overrides/offline-nvidia.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: %_nvidia
 %_nvidia:
