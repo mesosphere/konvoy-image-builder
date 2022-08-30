@@ -25,6 +25,6 @@
 
     - name: remove mindthegap if present
       file:
-        path: {{ mindthegap_binary_location_on_remote }}
+        path: "{{ mindthegap_binary_location_on_remote }}"
         state: absent
   when: images_cache_find_result.files | length > 0
