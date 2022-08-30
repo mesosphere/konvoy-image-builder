@@ -18,18 +18,11 @@
   include_tasks: nvidia-gpu-Ubuntu20.yaml
   when: ansible_distribution == "Ubuntu"
 
+# disable with these instructions https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#runfile-nouveau
 - name: create nouveau blacklist file
-  file:
-    path: /etc/modprobe.d/blacklist-nouveau.conf
-    state: touch
-
-- name: add contents
-  lineinfile:
-    path: /etc/modprobe.d/blacklist-nouveau.conf
-    line: " {{ item.line }}"
-    loop:
-      - {line: 'blacklist nouveau'}
-      - {line: 'options nouveau modeset=0'}
+  copy:
+    src: ./blacklist-nouveau.conf
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
 
 - name: regenerate the kernel initramfs
   command: dracut --force
