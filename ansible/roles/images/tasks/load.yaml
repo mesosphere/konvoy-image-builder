@@ -18,9 +18,6 @@
           if [[ $? -ne 0 ]]; then
             ctr --address {{ containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }});
           fi
-      register: ctr_images_import
-      failed_when: ctr_images_import.rc != 0
-      changed_when: ctr_images_import.rc == 0
       with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
 
     - name: remove mindthegap if present
