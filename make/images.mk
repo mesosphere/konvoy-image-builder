@@ -13,8 +13,16 @@ NULL :=
 SPACE := $(NULL) $(NULL)
 
 AIRGAPPED_BUNDLE_URL_PREFIX ?= downloads.mesosphere.io/dkp
-CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 ARTIFACTS_DIR ?= artifacts/
+CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
+NVIDIA_URL ?= https://download.nvidia.com/XFree86/Linux-x86_64
+
+NVIDIA_DRIVER_VERSION ?= $(shell \
+	grep -E -e "nvidia_driver_version:" ansible/roles/gpu/defaults/main.yaml | \
+	cut -d\" -f2 \
+)
+
+
 DEFAULT_KUBERNETES_VERSION_SEMVER ?= $(shell \
 	grep -E -e "kubernetes_version:" ansible/group_vars/all/defaults.yaml | \
 	cut -d\" -f2 \
@@ -76,6 +84,10 @@ endif
 download-os-packages-bundle: $(ARTIFACTS_DIR)
 	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL $(CONTAINERD_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz
 	curl -o $(ARTIFACTS_DIR)/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/os-packages/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_$(os_distribution)_$(os_distribution_major_version)_$(os_distribution_arch)$(bundle_suffix).tar.gz
+
+.PHONY: download-nvidia-runfile
+download-nvidia-runfile: $(ARTIFACTS_DIR)
+	curl -o $(ARTIFACTS_DIR)/NVIDIA-Linux-x86_64-$(NVIDIA_DRIVER_VERSION).run -fsSL $(NVIDIA_URL)/$(NVIDIA_DRIVER_VERSION)/NVIDIA-Linux-x86_64-$(NVIDIA_DRIVER_VERSION).run
 
 # NOTE(jkoelker) set no-op cleanup targets for providers that support `DryRun`.
 .PHONY: aws-build-image-cleanup
@@ -160,6 +172,24 @@ build-%:
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
 		ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+
+.PHONY: %_offline-nvidia
+%_offline-nvidia:
+	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
+	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
+		os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
+		os_distribution_major_minor_version=$(call version,$*) \
+		os_distribution_major_version=$(call major_version,$(call version,$*)) \
+		os_distribution_arch=x86_64 \
+		download-os-packages-bundle
+	$(MAKE) download-nvidia-runfile
+	$(MAKE) pip-packages-artifacts
+	$(MAKE) download-images-bundle
+	$(MAKE) devkit.run WHAT="make build-$* \
+		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
+		VERBOSITY=$(VERBOSITY) \
+		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
+		ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: %_nvidia
 %_nvidia:
