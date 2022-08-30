@@ -13,28 +13,16 @@
     - name: import images from files in the local images cache # noqa no-changed-when
       shell:
         executable: /bin/bash
-        cmd: ctr --address {{ containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }})
-      when:
-        - item.split('/')[-1] | regex_search('^1\.(\d)+\.(\d)+_images\.tar\.gz$')
-        - item.split('/')[-1].split('.')[1] |int < 24
+        cmd: |
+          ctr --address {{ containerd_cri_socket }} --namespace k8s.io images import <(gzip --decompress --stdout {{ item }});
+          if [[ $? -ne 0 ]]; then
+            {{ mindthegap_binary_location_on_remote }} import image-bundle --image-bundle={{ item }};
+          fi
       register: ctr_images_import
       failed_when: ctr_images_import.rc != 0
       changed_when: ctr_images_import.rc == 0
       with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
 
-    - name: import images from files to local images cache with mindthegap
-      shell:
-        executable: /bin/bash
-        cmd: mindthegap import image-bundle --image-bundle={{ item }}
-      when:
-        - item.split('/')[-1] | regex_search('^1\.(\d)+\.(\d)+_images\.tar\.gz$')
-        - item.split('/')[-1].split('.')[1] |int >= 24
-      register: mindthegap_images_import
-      failed_when: mindthegap_images_import.rc != 0
-      changed_when: mindthegap_images_import.rc == 0
-      with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
-
     - name: remove mindthegap if present
-      command: rm /usr/local/bin/mindthegap || true
-
+      command: rm {{ mindthegap_binary_location_on_remote }} || true
   when: images_cache_find_result.files | length > 0

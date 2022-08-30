@@ -76,6 +76,7 @@
         src: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
         dest: "{{ offline.os_packages_remote_filesystem_repo_path }}"
         remote_src: yes
+        mode: 0755
   when: offline.os_packages_local_bundle_file != ""
 
 - block:
