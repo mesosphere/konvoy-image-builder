@@ -82,8 +82,7 @@ ova-build-image-cleanup: ;
 gcp-build-image-cleanup: ;
 
 .PHONY: azure-build-image-cleanup
-azure-build-image-cleanup:
-	bash -x test/e2e/scripts/clean-last-azure-image.sh
+azure-build-image-cleanup: ;
 
 # NOTE(jkoelker) The common build target every other target ends up calling.
 .PHONY: build-image
@@ -457,7 +456,7 @@ ubuntu18:
 	$(MAKE) build-aws-ubuntu-18
 
 # Ubuntu 18(04) Azure
-# preserve old make targets for CI 
+# preserve old make targets for CI
 .PHONY: ubuntu18-azure
 ubuntu18-azure: ubuntu1804-azure
 
