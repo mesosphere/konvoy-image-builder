@@ -8,24 +8,6 @@
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
 
-- name: use Centos Base Repo for vulkan-filesystem
-  yum_repository:
-    name: vulkanfs-repo
-    description: Workaround repo to get vulkan-filesystem
-    baseurl: "{{ rhel7_vulkan_repo_baseurl }}"
-    gpgkey: "{{ rhel7_vulkan_repo_gpgkey }}"
-    enabled: false
-  when:
-    - not offline_mode_enabled
-
-- name: use vulkan-filesystem from centos
-  yum:
-    name: vulkan-filesystem
-    state: present
-    enablerepo: "{{ 'offline' if offline_mode_enabled else 'vulkanfs-repo' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-
-
 - name: install additional Nvidia runfile prerequisites
   yum:
     name:
