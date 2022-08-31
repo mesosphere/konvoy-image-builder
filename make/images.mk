@@ -71,7 +71,7 @@ ifeq ($(K8S_MINOR_LT_24),true)
 	curl -o $(ARTIFACTS_DIR)/images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz
 else
 	export bundle_suffix="-fips"
-	curl -o $(ARTIFACTS_DIR)/images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER).d2iq.1$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER).d2iq.1$(bundle_suffix).tar.gz
+	curl -o $(ARTIFACTS_DIR)/images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER).d2iq.1$(bundle_suffix).tar -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER).d2iq.1$(bundle_suffix).tar
 endif
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
