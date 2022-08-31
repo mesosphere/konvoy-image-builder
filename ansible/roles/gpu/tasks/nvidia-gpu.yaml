@@ -40,8 +40,11 @@
   become: yes
   when: ansible_os_family == "Debian"
 
+# to pick up the changes to unload nouveau
+# some hardware like aws g4dn.2xlarge require this
 - name: unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
+  when: sysprep
 
 # Download and install gpu runfile
 - name: create nvidia install directory
