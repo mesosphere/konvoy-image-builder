@@ -2,9 +2,9 @@
   find:
     paths:
     - "{{ images_cache }}"
-    use_regex: false
+    use_regex: true
     patterns:
-    - "*.tar.gz"
+    - .*\.tar(\.gz)?
     file_type: file
   register: images_cache_find_result
   changed_when: false

@@ -25,10 +25,10 @@
       find:
         paths:
           - "{{ images_local_bundle_dir }}"
-        use_regex: false
         patterns:
-          - "*.tar.gz"
+          - .*\.tar(\.gz)?
         file_type: file
+        use_regex: true
       register: images_cache_find_result
       delegate_to: 127.0.0.1
       become: no
