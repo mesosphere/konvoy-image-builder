@@ -188,7 +188,7 @@ build-%:
 	$(MAKE) devkit.run WHAT="make build-$* \
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \
-		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
+		ADDITIONAL_ARGS="--instance-type=g4dn.2xlarge$(if $(ADDITIONAL_ARGS),$(SPACE)$(ADDITIONAL_ARGS))" \
 		ADDITIONAL_OVERRIDES=overrides/offline.yaml,overrides/offline-nvidia.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
 
 .PHONY: %_nvidia
