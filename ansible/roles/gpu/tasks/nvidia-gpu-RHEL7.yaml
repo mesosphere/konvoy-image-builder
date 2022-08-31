@@ -4,6 +4,9 @@
     name:
       - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
       - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
 
 - name: use Centos Base Repo for vulkan-filesystem
   yum_repository:
@@ -12,11 +15,15 @@
     baseurl: "{{ rhel7_vulkan_repo_baseurl }}"
     gpgkey: "{{ rhel7_vulkan_repo_gpgkey }}"
     enabled: false
+  when:
+    - not offline_mode_enabled
 
 - name: use vulkan-filesystem from centos
   yum:
     name: vulkan-filesystem
-    enablerepo: vulkanfs-repo
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else 'vulkanfs-repo' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
 
 
 - name: install additional Nvidia runfile prerequisites
@@ -25,3 +32,6 @@
       - elfutils-libelf-devel
       - make
       - gcc
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
