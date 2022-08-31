@@ -44,6 +44,7 @@
       copy:
         src: "{{ mindthegap_binary_location }}"
         dest: "{{ mindthegap_binary_location_on_remote }}"
+        mode: 0755
   when: images_local_bundle_dir != ""
 
 - block:
