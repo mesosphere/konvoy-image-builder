@@ -25,6 +25,9 @@ DEFAULT_CONTAINERD_VERSION ?= $(shell \
 	cut -d\" -f2 \
 )
 
+K8S_VER_MINOR := $(shell echo $(DEFAULT_KUBERNETES_VERSION_SEMVER) | cut -f2 -d.)
+K8S_MINOR_LT_24 := $(shell [ $(K8S_VER_MINOR) -lt 24 ] && echo true)
+
 # NOTE(jkoelker) Extract the provider as the first part (same as `cut -d- -f1`)
 provider = $(firstword $(subst -,$(SPACE),$(1)))
 
@@ -64,8 +67,11 @@ $(ARTIFACTS_DIR)/images:
 # TODO(jkoelker) UnPHONYify these targets
 .PHONY: download-images-bundle
 download-images-bundle: $(ARTIFACTS_DIR)/images
+ifeq ($(K8S_MINOR_LT_24),true)
 	curl -o $(ARTIFACTS_DIR)/images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz
-
+else
+	curl -o $(ARTIFACTS_DIR)/images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER)-d2iq.1$(bundle_suffix).tar -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER)-d2iq.1$(bundle_suffix).tar
+endif
 .PHONY: download-os-packages-bundle
 download-os-packages-bundle: $(ARTIFACTS_DIR)
 	curl -o $(ARTIFACTS_DIR)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz -fsSL $(CONTAINERD_URL)/containerd-$(DEFAULT_CONTAINERD_VERSION)-d2iq.1-$(os_distribution_os_release)-$(os_distribution_major_minor_version)-$(os_distribution_arch)$(bundle_suffix).tar.gz
@@ -148,7 +154,7 @@ build-%:
 		bundle_suffix=_fips \
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix=_fips download-images-bundle
+	$(MAKE) download-images-bundle bundle_suffix=$$( if [ $$(echo "$(DEFAULT_KUBERNETES_VERSION_SEMVER)" | cut -f2 -d.) -lt 24 ];then echo "_fips"; else echo "-fips";fi )
 	$(MAKE) devkit.run WHAT="make $*_fips \
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \

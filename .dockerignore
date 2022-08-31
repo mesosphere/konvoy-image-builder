@@ -4,3 +4,4 @@ dist/
 *.swp
 work/
 ansible-runs/
+artifacts/

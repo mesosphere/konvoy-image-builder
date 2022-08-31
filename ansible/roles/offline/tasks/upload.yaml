@@ -25,10 +25,10 @@
       find:
         paths:
           - "{{ images_local_bundle_dir }}"
-        use_regex: false
         patterns:
-          - "*.tar.gz"
+          - .*\.tar(\.gz)?
         file_type: file
+        use_regex: true
       register: images_cache_find_result
       delegate_to: 127.0.0.1
       become: no
@@ -39,6 +39,12 @@
         src: "{{ item }}"
         dest: "{{ images_cache}}/{{ item | basename }}"
       with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
+
+    - name: upload mindthegap
+      copy:
+        src: "{{ mindthegap_binary_location }}"
+        dest: "{{ mindthegap_binary_location_on_remote }}"
+        mode: 0755
   when: images_local_bundle_dir != ""
 
 - block:
@@ -71,6 +77,7 @@
         src: "{{ offline.os_packages_remote_bundle_path }}/offline-repo.tar.gz"
         dest: "{{ offline.os_packages_remote_filesystem_repo_path }}"
         remote_src: yes
+        mode: 0755
   when: offline.os_packages_local_bundle_file != ""
 
 - block:
