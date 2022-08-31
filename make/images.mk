@@ -70,7 +70,6 @@ download-images-bundle: $(ARTIFACTS_DIR)/images
 ifeq ($(K8S_MINOR_LT_24),true)
 	curl -o $(ARTIFACTS_DIR)/images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/$(DEFAULT_KUBERNETES_VERSION_SEMVER)_images$(bundle_suffix).tar.gz
 else
-	export bundle_suffix="-fips"
 	curl -o $(ARTIFACTS_DIR)/images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER).d2iq.1$(bundle_suffix).tar -fsSL https://$(AIRGAPPED_BUNDLE_URL_PREFIX)/airgapped/kubernetes-images/kubernetes-images-$(DEFAULT_KUBERNETES_VERSION_SEMVER).d2iq.1$(bundle_suffix).tar
 endif
 .PHONY: download-os-packages-bundle
@@ -155,7 +154,7 @@ build-%:
 		bundle_suffix=_fips \
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
-	$(MAKE) bundle_suffix=_fips download-images-bundle
+	$(MAKE) download-images-bundle bundle_suffix=$$( if [ $$(echo "$(DEFAULT_KUBERNETES_VERSION_SEMVER)" | cut -f2 -d.) -lt 24 ];then echo "_fips"; else echo "-fips";fi )
 	$(MAKE) devkit.run WHAT="make $*_fips \
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \
