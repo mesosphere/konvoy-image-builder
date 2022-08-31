@@ -2,18 +2,23 @@
 - name: "NVIDIA Gpu - CentOS 7"
   include_tasks: nvidia-gpu-CentOS7.yaml
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
+
 - name: "NVIDIA Gpu - RHEL 7"
   include_tasks: nvidia-gpu-RHEL7.yaml
   when: ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7'
+
 - name: "NVIDIA Gpu - RHEL 8"
   include_tasks: nvidia-gpu-RHEL8.yaml
   when: ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8'
+
 - name: "NVIDIA Gpu - SLES 15"
   include_tasks: nvidia-gpu-SLES15.yaml
   when: ansible_distribution == "SLES" and ansible_distribution_major_version == '15'
+
 - name: "NVIDIA Gpu - Flatcar"
   include_tasks: nvidia-gpu-Flatcar.yaml
   when: ansible_distribution == "Flatcar"
+
 - name: "NVIDIA Gpu - Ubuntu 20"
   include_tasks: nvidia-gpu-Ubuntu20.yaml
   when: ansible_distribution == "Ubuntu"
@@ -35,6 +40,9 @@
   become: yes
   when: ansible_os_family == "Debian"
 
+- name: unconditionally reboot the machine with all defaults
+  ansible.builtin.reboot:
+
 # Download and install gpu runfile
 - name: create nvidia install directory
   file:
@@ -44,14 +52,14 @@
 - name: download gpu runfile
   get_url:
     url: "{{ nvidia_runfile_installer_url }}"
-    dest: /opt/dkp/nvidia/nvidia-{{ nvidia_driver_version }}.run
+    dest: "{{ nvidia_remote_bundle_path }}/{{ nvidia_runfile_installer }}"
     mode: 711
   when:
    - not offline_mode_enabled
 
 - name: extract driver source files
   shell: |
-    /opt/dkp/nvidia/nvidia-{{ nvidia_driver_version }}.run -x -s
+    "{{ nvidia_remote_bundle_path }}/{{ nvidia_runfile_installer }}" -x -s
   args:
     chdir: /opt/dkp/nvidia
   become: yes
@@ -61,7 +69,7 @@
     ./nvidia-installer -s \
       --log-file-name=$(pwd)/nvidia-installer.log || true
   args:
-    chdir: /opt/dkp/nvidia/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}
+    chdir: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}"
 
 - name: Create ld.so conf dir
   file:

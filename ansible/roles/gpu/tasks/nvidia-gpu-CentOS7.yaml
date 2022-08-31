@@ -87,9 +87,11 @@
         follow: false
 
 
-- name: install gcc
+- name: install runfile prereqs
   yum:
-    name: gcc
+    name:
+      - make
+      - gcc
     state: present
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
