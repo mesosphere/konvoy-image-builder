@@ -421,6 +421,10 @@ rhel84:
 rhel84-nvidia:
 	$(MAKE) aws-rhel-8.4_nvidia
 
+.PHONY: rhel84-offline-nvidia
+rhel84-offline-nvidia:
+	$(MAKE) aws-rhel-8.4_offline-nvidia
+
 .PHONY: rhel84-fips
 rhel84-fips:
 	$(MAKE) aws-rhel-8.4_fips
