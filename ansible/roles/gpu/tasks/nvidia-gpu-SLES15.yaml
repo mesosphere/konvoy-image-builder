@@ -20,3 +20,12 @@
     state: present
   retries: 15
   delay: 60
+
+- name: Install prereqs for nvidia run file
+  zypper:
+    name:
+      - gcc
+      - make
+    state: present
+  retries: 15
+  delay: 60
