@@ -61,6 +61,7 @@
     "{{ nvidia_remote_bundle_path }}/{{ nvidia_runfile_installer }}" -x -s
   args:
     chdir: "{{ nvidia_remote_bundle_path }}"
+    creates: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}"
   become: yes
 
 - name: install driver
