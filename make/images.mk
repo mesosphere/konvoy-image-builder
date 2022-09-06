@@ -337,7 +337,7 @@ rhel79-nvidia:
 	$(MAKE) aws-rhel-7.9_nvidia
 
 .PHONY: rhel79-offline-nvidia
-rhel79-nvidia:
+rhel79-offline-nvidia:
 	$(MAKE) aws-rhel-7.9_offline-nvidia
 
 .PHONY: rhel79-fips
