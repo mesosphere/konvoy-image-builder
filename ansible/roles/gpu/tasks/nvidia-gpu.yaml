@@ -45,7 +45,7 @@
 # Download and install gpu runfile
 - name: create nvidia install directory
   file:
-    path: /opt/dkp/nvidia
+    path: "{{ nvidia_remote_bundle_path }}"
     state: directory
 
 - name: download gpu runfile
@@ -60,7 +60,7 @@
   shell: |
     "{{ nvidia_remote_bundle_path }}/{{ nvidia_runfile_installer }}" -x -s
   args:
-    chdir: /opt/dkp/nvidia
+    chdir: "{{ nvidia_remote_bundle_path }}"
   become: yes
 
 - name: install driver
@@ -93,7 +93,7 @@
 
 - name: copy script for systemd unit
   copy:
-    dest: /opt/dkp/nvidia/nvidia-persistenced.sh
+    dest: "{{ nvidia_remote_bundle_path }}/nvidia-persistenced.sh"
     src: ./nvidia-persistenced.sh
     mode: 711
 
