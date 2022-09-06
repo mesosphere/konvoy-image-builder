@@ -7,7 +7,7 @@
   delay: 60
 
 - name: Activate PackageHub {{ ansible_distribution_version }} {{ ansible_architecture }}
-  command: SUSEConnect -p {{ suse_packagehub_product }}
+  command: SUSEConnect -p "{{ suse_packagehub_product }}"
   register: connect_register
   changed_when: "'Successfully registered' in connect_register.stdout"
   when: not 'PackageHub' in suseconnect_status.stdout
