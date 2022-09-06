@@ -56,6 +56,8 @@ e2e.build.ubuntu-18: ubuntu18
 
 e2e.build.ubuntu-20: ubuntu20
 
+e2e.build.ubuntu-20-nvidia: ubuntu20-nvidia
+
 e2e.build.sles-15: sles15
 
 e2e.build.oracle-7: oracle7
