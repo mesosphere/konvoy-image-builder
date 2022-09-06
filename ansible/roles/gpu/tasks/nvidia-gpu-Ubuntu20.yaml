@@ -10,3 +10,12 @@
   retries: 3
   delay: 3
 
+- name: install runfile prereqs
+  apt:
+    name:
+      - gcc
+      - make
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 3
