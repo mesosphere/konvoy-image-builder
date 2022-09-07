@@ -5,13 +5,13 @@
 - Install gcloud CLI: [Instructions](https://cloud.google.com/sdk/docs/install)
 - Authentication:
 
-    Packer plugin for google compute requires authenticate with GCP using service account credentails. Instructions to create service account and credentials file can be found [here](https://www.packer.io/plugins/builders/googlecompute#running-outside-of-google-cloud)
+    Packer plugin for Google Compute requires authenticate with GCP using service account credentials. Instructions to create service account and credentials file can be found [here](https://www.packer.io/plugins/builders/googlecompute#running-outside-of-google-cloud)
 
     **Using CLI:**
     ```bash
     export USER=<SERVICE_ACCOUNT_USER>
     export GCP_PROJECT=<GCP_PROJECT_NAME>
-    export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.gcp/credentials.json
+    export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.gcloud/credentials.json
     gcloud iam service-accounts create "$USER"
     gcloud projects add-iam-policy-binding $GCP_PROJECT --member="serviceAccount:$USER@$GCP_PROJECT.iam.gserviceaccount.com" --role=roles/compute.instanceAdmin.v1
     gcloud projects add-iam-policy-binding $GCP_PROJECT --member="serviceAccount:$USER@$GCP_PROJECT.iam.gserviceaccount.com" --role=roles/iam.serviceAccountUser
@@ -19,7 +19,7 @@
     ```
 - Network:
 
-    A network with firewall rule set to allow SSH traffic must be created to allow packer communicate to the VM provisioning image.
+    A network with a firewall rule set to allow SSH traffic must be created to allow Packer to communicate to the VM provisioning image.
     **Using CLI:**
     ```shell
     export NETWORK_NAME=<NAME_OF_NETWORK>
@@ -28,12 +28,15 @@
     gcloud compute firewall-rules create "${NETWORK_NAME}-allow-ssh" --project="$GCP_PROJECT" --network="projects/$GCP_PROJECT/global/networks/${CLUSTER_NAME}" --description=Allows\ TCP\ connections\ from\ any\ source\ to\ any\ instance\ on\ the\ network\ using\ port\ 22. --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
     ```
 - Environment variables
-Make sure to create file with credentials for the service account using instructions above.
-export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.gcp/credentials.json
+Make sure to create a file with credentials for the service account using the instructions above.
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.gcloud/credentials.json
+```
 
 **Packer variables for GCP:**
 
-Add following configuration in the `image.yaml`
+Add the following configuration in the `image.yaml`
 Substitue following variables needed for building images in GCP
 - PROJECT_NAME
 - ZONE
@@ -58,8 +61,9 @@ python_path: ""
 ```
 
 ## Create image on GCP
+
 ```bash
 konvoy-image build gcp path/to/image.yaml
 ```
 
-Checkout example image configuration at: [`<project_root>/images/gcp/`](../../images/gcp) directory.
+Checkout example image configurations at the [`<project_root>/images/gcp/`](../../images/gcp) directory.
