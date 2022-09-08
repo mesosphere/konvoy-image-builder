@@ -62,8 +62,8 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
 
 ifeq ($(strip $(TEAMCITY_EXTRA_MOUNT)),)
-DOCKER_GCP_CREDENTIALS_ARGS=--volume "$(HOME)/.gcp":"/home/$(USER_NAME)/.gcp" \
-	                             --env GOOGLE_APPLICATION_CREDENTIALS=/home/$(USER_NAME)/.gcp/credentials.json
+DOCKER_GCP_CREDENTIALS_ARGS=--volume "$(HOME)/.gcloud":"/home/$(USER_NAME)/.gcloud" \
+	                             --env GOOGLE_APPLICATION_CREDENTIALS=/home/$(USER_NAME)/.gcloud/credentials.json
 else
 DOCKER_GCP_CREDENTIALS_ARGS=--volume $(TEAMCITY_EXTRA_MOUNT):$(TEAMCITY_EXTRA_MOUNT) \
 								 --env GOOGLE_APPLICATION_CREDENTIALS=$(TEAMCITY_EXTRA_MOUNT)/$(TEAMCITY_BUILD_ID)-credentials.json
