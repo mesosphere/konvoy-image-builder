@@ -64,7 +64,6 @@ imports = ["/etc/containerd/conf.d/*.toml"]
     enable_selinux = false
     sandbox_image = "{{ pause_image }}"
     stats_collect_period = 10
-    systemd_cgroup = false
     enable_tls_streaming = false
     max_container_log_line_size = 16384
     disable_cgroup = false
@@ -96,6 +95,8 @@ imports = ["/etc/containerd/conf.d/*.toml"]
           runtime_engine = ""
           runtime_root = ""
           privileged_without_host_devices = false
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            systemd_cgroup = true
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-container-runtime]
           runtime_type = "io.containerd.runc.v1"
           [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-container-runtime.options]
