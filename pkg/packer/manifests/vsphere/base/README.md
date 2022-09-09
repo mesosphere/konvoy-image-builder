@@ -32,7 +32,7 @@ you must login to redhat in order to download the DVD ISO file.
 ```
 ## How it works
 The base image template is created from the RedHat DVD ISO file. The DVD ISO file has minimum core packages avaialble in it.
-The packer vspher-iso build will perform following steps
+The packer vsphere-iso build will perform following steps
 1. Creates a VM in vSphere and mounts the DVD ISO (`/dev/sr0`) and kickstart files (`/dev/sr1`) as cdrom drives. The kickstart files are mounted from `./linux/rhel/<version>/ks.cfg`
 
 1. Runs the kickstarts file at boot time using boot command `<up><tab> inst.text inst.ks=hd:sr1:linux/rhel/http/8/ks.cfg` [Reference documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/sect-kickstart-howto#sect-kickstart-installation-starting-automatic)
@@ -48,7 +48,7 @@ The packer vspher-iso build will perform following steps
 The VMs created with the template can only be accessed using the correosponding private key provided during base template installations.
 
 
-## References:
+## References
 - [Kickstart syntax reference](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/sect-kickstart-syntax)
 - [Centos community kickstart files](https://github.com/CentOS/Community-Kickstarts)
 
