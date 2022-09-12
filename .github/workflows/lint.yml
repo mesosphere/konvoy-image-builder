@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Environment Variables from Dotenv
-        uses: c-py/action-dotenv-to-setenv@v3
+        uses: c-py/action-dotenv-to-setenv@v4
         with:
           env-file: .github/super-linter.env
 
