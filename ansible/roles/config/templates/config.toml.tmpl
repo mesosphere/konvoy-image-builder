@@ -92,10 +92,6 @@ imports = ["/etc/containerd/conf.d/*.toml"]
           runtime_engine = ""
           runtime_root = ""
           privileged_without_host_devices = false
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-container-runtime]
-          runtime_type = "io.containerd.runc.v1"
-          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia-container-runtime.options]
-            BinaryName = "{{ sysusr_prefix }}/bin/nvidia-container-runtime"
     [plugins."io.containerd.grpc.v1.cri".cni]
       bin_dir = "/opt/cni/bin"
       conf_dir = "/etc/cni/net.d"
