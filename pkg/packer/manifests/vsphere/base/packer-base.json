@@ -39,7 +39,6 @@
         "datacenter": "{{user `datacenter`}}",
         "datastore": "{{user `datastore`}}",
         "disk_controller_type": "{{user `disk_controller_type`}}",
-        "floppy_dirs": "{{ user `floppy_dirs`}}",
         "firmware": "{{user `firmware`}}",
         "folder": "{{user `folder`}}",
         "guest_os_type": "{{user `vsphere_guest_os_type`}}",

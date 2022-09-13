@@ -24,7 +24,6 @@
   "distro_arch": "amd64",
   "distro_name": "rhel",
   "distro_version": "8",
-  "floppy_dirs": "./linux/{{user `distro_name`}}/http/",
   "kickstart_files": "./linux/{{user `distro_name`}}/http/",
   "authorized_keys_file": "./linux/authorized_keys",
   "guest_os_type": "rhel8-64",
