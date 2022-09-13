@@ -13,9 +13,14 @@ packer:
   insecure_connection: "false"
   network: ""
   resource_pool: ""
-  template: "base-rhel-8"
+  template: ""
   vsphere_guest_os_type: "rhel8_64Guest"
   guest_os_type: "rhel8-64"
   # goss params
   distribution: "RHEL"
   distribution_version: "8.4"
+# Use following overrides to select the authentication method that can be used with base template
+# ssh_username: ""
+# ssh_password: ""
+# ssh_private_key_file = "" #
+# ssh_agent_auth: false  # is set to true, ssh_password and ssh_private_key will be ignored

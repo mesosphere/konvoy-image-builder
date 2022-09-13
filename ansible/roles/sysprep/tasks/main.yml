@@ -191,11 +191,10 @@
 
 - name: Check if password authentication is enabled
   lineinfile:
-    dest: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication'
+    path: /etc/ssh/sshd_config
     line: "PasswordAuthentication yes"
     state: present
-    backup: yes
+  check_mode: true
   register: password_authentication_enabled
   when: ansible_os_family != "Flatcar"
 
