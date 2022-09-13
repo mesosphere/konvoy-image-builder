@@ -189,11 +189,16 @@
     enabled: true
     state: started
 
-- name: Disable Password Authentication
+- name: Check if password authentication is enabled
   lineinfile:
-    dest: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication'
-    line: "PasswordAuthentication no"
+    path: /etc/ssh/sshd_config
+    line: "PasswordAuthentication yes"
     state: present
-    backup: yes
+  check_mode: true
+  register: password_authentication_enabled
   when: ansible_os_family != "Flatcar"
+
+- name: Deprecation warning for disabling password authentication
+  debug:
+    msg: "WARN: SSH password based authentication will be disabled in future releases"
+  when: password_authentication_enabled is success
