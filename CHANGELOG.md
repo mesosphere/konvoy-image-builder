@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.21.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.20.0...v1.21.0) (2022-09-13)
+
+
+### Features
+
+* authenticate to vsphere base template using ssh private key and ssh auth agent. ([#498](https://github.com/mesosphere/konvoy-image-builder/issues/498)) ([aa4b7a5](https://github.com/mesosphere/konvoy-image-builder/commit/aa4b7a5f9a0b4f5bcb2198d74dc2337c19142c51))
+* import container images with mindthegap ([#476](https://github.com/mesosphere/konvoy-image-builder/issues/476)) ([657f102](https://github.com/mesosphere/konvoy-image-builder/commit/657f102fee4ddad98990a294676e118b20db8673))
+
+
+### Bug Fixes
+
+* **ansible:** fix ubuntu 18.04 build ([2648075](https://github.com/mesosphere/konvoy-image-builder/commit/264807583982a8b0495a523a405d71e8937ebb8c))
+* **azure:** support dry run ([c6cb4f1](https://github.com/mesosphere/konvoy-image-builder/commit/c6cb4f18166ad495ec5c563ea5ebf897b9e164e1))
+* centos does not need RHSM. Fix conditions ([#497](https://github.com/mesosphere/konvoy-image-builder/issues/497)) ([11b4d98](https://github.com/mesosphere/konvoy-image-builder/commit/11b4d984bc8e07621ea2e597dbdd0148268bd864))
+* create base centos 7.9 template without default password ([#499](https://github.com/mesosphere/konvoy-image-builder/issues/499)) ([251911d](https://github.com/mesosphere/konvoy-image-builder/commit/251911df0ba4d5ec9e3648cc2ef6cb2ab54c47f6))
+* create RHEL 8 base template without root and default user's password ([#492](https://github.com/mesosphere/konvoy-image-builder/issues/492)) ([a398397](https://github.com/mesosphere/konvoy-image-builder/commit/a3983971897f461b3b70a280b4fe1891c749839c))
+
 ## [1.20.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.19.9...v1.20.0) (2022-08-24)
 
 
