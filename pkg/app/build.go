@@ -16,7 +16,7 @@ import (
 
 const (
 	ansibleVarsFilename      = "ansible_vars.yaml"
-	manifestFileName         = "packer.json"
+	manifestFileName         = "packer.pkr.hcl"
 	runDirectorySuffixLength = 5
 )
 
