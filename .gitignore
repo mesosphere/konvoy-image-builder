@@ -68,3 +68,5 @@ packer-custom-vpc-override.yaml
 .env
 packer-vsphere-airgap.yaml
 vsphere-tests.pem
+authorized_keys
+

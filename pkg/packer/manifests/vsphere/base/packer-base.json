@@ -13,9 +13,9 @@
         "username": "{{env `VSPHERE_USERNAME`}}",
         "password": "{{env `VSPHERE_PASSWORD`}}",
         "vcenter_server": "{{env `VSPHERE_SERVER`}}",
-        "vsphere_guest_os_type": null,
-        "ssh_username": "",
-        "ssh_password": ""
+        "ssh_username": "{{env `SSH_USERNAME`}}",
+        "ssh_private_key_file": "{{env `SSH_PRIVATE_KEY_FILE`}}",
+        "vsphere_guest_os_type": null
     },
     "builders": [
       {
@@ -29,6 +29,8 @@
           "{{user `boot_command_suffix`}}"
         ],
         "boot_wait": "{{user `boot_wait`}}",
+        "cd_files": ["{{user `kickstart_files`}}", "{{user `authorized_keys_file`}}"],
+        "cd_label": "kickstarts",
         "cluster": "{{user `cluster`}}",
         "communicator": "ssh",
         "convert_to_template": "{{user `convert_to_template`}}",
@@ -53,11 +55,10 @@
           }
         ],
         "password": "{{user `password`}}",
-        "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c '{{user `shutdown_command`}}'",
-        "ssh_clear_authorized_keys": "false",
-        "ssh_password": "{{user `ssh_password`}}",
-        "ssh_timeout": "4h",
+        "shutdown_command": "sudo -S -E sh -c '{{user `shutdown_command`}}'",
         "ssh_username": "{{user `ssh_username`}}",
+        "ssh_private_key_file": "{{user `ssh_private_key_file`}}",
+        "ssh_clear_authorized_keys": "false",
         "storage": [
           {
             "disk_size": "{{user `disk_size`}}",
