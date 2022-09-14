@@ -1,9 +1,0 @@
-[Unit]
-Description=nvidia kernel modules systemd service unit file.
-
-[Service]
-Type=oneshot
-ExecStart=modprobe -d /opt/nvidia/{{ nvidia_driver_version }}/ -a nvidia nvidia-uvm nvidia-modeset
-
-[Install]
-WantedBy=multi-user.target

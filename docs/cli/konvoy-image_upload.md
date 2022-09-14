@@ -19,5 +19,5 @@ Upload one of [artifacts]
 ### SEE ALSO
 
 * [konvoy-image](konvoy-image.md)	 - Create, provision, and customize images for running Konvoy
-* [konvoy-image upload artifacts](konvoy-image_upload_artifacts.md)	 - upload artifacts to hosts defined in inventory-file
+* [konvoy-image upload artifacts](konvoy-image_upload_artifacts.md)	 - upload offline artifacts to hosts defined in inventory-file
 

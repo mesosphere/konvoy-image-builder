@@ -1,6 +1,6 @@
 ## konvoy-image upload artifacts
 
-upload artifacts to hosts defined in inventory-file
+upload offline artifacts to hosts defined in inventory-file
 
 ```
 konvoy-image upload artifacts [flags]
@@ -14,6 +14,7 @@ konvoy-image upload artifacts [flags]
       --extra-vars strings            flag passed Ansible's extra-vars
   -h, --help                          help for artifacts
       --inventory-file string         an ansible inventory defining your infrastructure (default "inventory.yaml")
+      --nvidia-runfile string         path to nvidia runfile to place on remote hosts.
       --os-packages-bundle string     path to os-packages tar file for install on remote hosts.
       --overrides strings             a comma separated list of override YAML files
       --pip-packages-bundle string    path to pip-packages tar file for install on remote hosts.

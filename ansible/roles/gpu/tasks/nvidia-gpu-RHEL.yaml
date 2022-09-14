@@ -1,0 +1,20 @@
+---
+
+- name: install kernel {{ hostvars[inventory_hostname].ansible_kernel }} headers and devel
+  yum:
+    name:
+      - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
+      - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+
+- name: install additional Nvidia runfile prerequisites
+  yum:
+    name:
+      - elfutils-libelf-devel
+      - gcc
+      - make
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"

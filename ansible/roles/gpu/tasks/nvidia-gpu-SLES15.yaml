@@ -7,31 +7,10 @@
   delay: 60
 
 - name: Activate PackageHub {{ ansible_distribution_version }} {{ ansible_architecture }}
-  command: SUSEConnect -p {{ suse_packagehub_product }}
+  command: SUSEConnect -p "{{ suse_packagehub_product }}"
   register: connect_register
   changed_when: "'Successfully registered' in connect_register.stdout"
   when: not 'PackageHub' in suseconnect_status.stdout
-  retries: 15
-  delay: 60
-
-- name: Import CUDA rpm repository key
-  rpm_key:
-    state: present
-    key: "{{ nvidia_repo_gpgkey }}"
-
-- name: Import Nvidia repository key
-  rpm_key:
-    state: present
-    key: "{{ nvidia_repo_gpgkey }}"
-
-- name: Add Nvidia repo
-  zypper_repository:
-    name: cuda
-    repo: "{{ nvidia_repo_baseurl }}"
-    disable_gpg_check: false
-    autorefresh: true
-  register: cuda_repo_installation_rpm
-  until: cuda_repo_installation_rpm is success
   retries: 15
   delay: 60
 
@@ -42,58 +21,11 @@
   retries: 15
   delay: 60
 
-- name: Install Nvidia drivers
+- name: Install prereqs for nvidia run file
   zypper:
-    name: cuda-drivers-{{ nvidia_cuda_version }}
-    state: present
-  retries: 15
-  delay: 60
-
-- name: Import libnvidia-container repository key
-  rpm_key:
-    state: present
-    key: "{{ libnvidia_container_repo_gpgkey }}"
-
-- name: Add libnvidia-container repository
-  zypper_repository:
-    name: libnvidia-container
-    description: NVIDIA libnvidia-container repository
-    autorefresh: true
-    repo: "{{ libnvidia_container_repo_sles }}"
-  changed_when: false # zypper repo is updating for this resource all the time
-
-- name: Install libnvidia-container
-  zypper:
-    name: libnvidia-container1
-    state: present
-  retries: 15
-  delay: 60
-
-- name: Import nvidia-container-runtime repository key
-  rpm_key:
-    state: present
-    key: "{{ nvidia_container_runtime_repo_gpgkey }}"
-
-- name: Add nvidia-container-runtime repository
-  zypper_repository:
-    name: nvidia-container-runtime
-    description: NVIDIA nvidia-container-runtime repository
-    autorefresh: true
-    repo: "{{ nvidia_container_runtime_repo_sles }}"
-  changed_when: false # zypper repo is updating for this resource all the time
-  retries: 15
-  delay: 60
-
-- name: Install nvidia-container-tools
-  zypper:
-    name: libnvidia-container-tools
-    state: present
-  retries: 15
-  delay: 60
-
-- name: Install nvidia-container-runtime
-  zypper:
-    name: "{{ nvidia_container_runtime_package }}"
+    name:
+      - gcc
+      - make
     state: present
   retries: 15
   delay: 60
