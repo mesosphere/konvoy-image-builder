@@ -15,6 +15,7 @@ type ArtifactsCmdFlags struct {
 	ContainerdBundleFile     string
 	PIPPackagesBundleFile    string
 	ContainerImagesBundleDir string
+	NvidiaRunfile            string
 	Inventory                string
 	RootFlags
 	Overrides []string
@@ -67,6 +68,10 @@ func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFla
 	if err != nil {
 		return nil, fmt.Errorf("failed to find absolute path for --container-images-dir %w", err)
 	}
+	nvidiaRunfile, err := filepath.Abs(artifactFlags.NvidiaRunfile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find absolute path for --nvidia-runfile %w", err)
+	}
 	args := make(map[string]interface{})
 	if err = mergeUserOverridesToMap(artifactFlags.Overrides, args); err != nil {
 		return nil, fmt.Errorf("error merging overrides: %w", err)
@@ -85,6 +90,7 @@ func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFla
 		"containerd_local_bundle_file":   containerdBundleFile,
 		"pip_packages_local_bundle_file": pipPackagesBundleFile,
 		"images_local_bundle_dir":        containerImagesDir,
+		"nvidia_runfile_local_file":      nvidiaRunfile,
 	}
 	// passedUserArgs take highest precedence
 	if err = MergeMapsOverwrite(args, passedUserArgs); err != nil {

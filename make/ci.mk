@@ -40,15 +40,23 @@ e2e.build.centos-7: centos7
 
 e2e.build.centos-7-offline: centos7-offline infra.aws.destroy
 
+e2e.build.centos-7-offline-nvidia: centos79-offline-nvidia infra.aws.destroy
+
 e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline infra.aws.destroy
+
+e2e.build.rhel-7.9-offline-nvidia: rhel79-offline-nvidia infra.aws.destroy
 
 e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline infra.aws.destroy
 
 e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline infra.aws.destroy
 
+e2e.build.rhel-8.4-offline-nvidia: rhel84-offline-nvidia infra.aws.destroy
+
 e2e.build.ubuntu-18: ubuntu18
 
 e2e.build.ubuntu-20: ubuntu20
+
+e2e.build.ubuntu-20-nvidia: ubuntu20-nvidia
 
 e2e.build.sles-15: sles15
 

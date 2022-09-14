@@ -7,8 +7,9 @@
     password: "{{ lookup('env', 'RHSM_PASS') }}"
     auto_attach: true
   when:
-    - packer_builder_type is defined   #save-image playbook resuse this role. save-image playbook is independent of platform
-    - packer_builder_type.startswith('vsphere') or packer_builder_type.startswith('vmware')
+    - lookup('env', 'RHSM_USER') | length > 0
+    - lookup('env', 'RHSM_PASS') | length > 0
+    - ansible_distribution == 'Red Hat Enterprise Linux'
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
