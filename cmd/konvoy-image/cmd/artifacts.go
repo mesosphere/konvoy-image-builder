@@ -12,7 +12,7 @@ var artifactsFlags app.ArtifactsCmdFlags
 
 var artifactsCmd = &cobra.Command{
 	Use:   "artifacts",
-	Short: "upload artifacts to hosts defined in inventory-file",
+	Short: "upload offline artifacts to hosts defined in inventory-file",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		uploader, err := app.NewArtifactUploader(artifactsFlags.WorkDir)
@@ -35,6 +35,7 @@ func init() {
 	fs.StringVar(&artifactsFlags.PIPPackagesBundleFile, "pip-packages-bundle", "", "path to pip-packages tar file"+
 		" for install on remote hosts.")
 	fs.StringVar(&artifactsFlags.ContainerImagesBundleDir, "container-images-dir", "", "path to container images for install on remote hosts.")
+	fs.StringVar(&artifactsFlags.NvidiaRunfile, "nvidia-runfile", "", "path to nvidia runfile to place on remote hosts.")
 	addOverridesArg(fs, &artifactsFlags.Overrides)
 	addWorkDirArg(fs, &artifactsFlags.WorkDir)
 	addExtraVarsArg(fs, &artifactsFlags.ExtraVars)
