@@ -2,19 +2,11 @@
 # Implements the NVIDIA Driver Installation Quickstart Guide for Ubuntu LTS - see
 # https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html#ubuntu-lts
 
-- name: install kernel headers
-  apt:
-    name: linux-headers-{{ ansible_kernel }}
-    state: present
-    update_cache: true
-  retries: 3
-  delay: 3
-
 - name: install runfile prereqs
   apt:
     name:
-      - gcc
-      - make
+      - linux-headers-{{ ansible_kernel }}
+      - build-essential
     state: present
     update_cache: true
   retries: 3
