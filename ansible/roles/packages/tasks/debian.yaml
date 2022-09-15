@@ -42,7 +42,6 @@
   apt:
     name: kubelet={{ package_versions.kubernetes_deb }}
     state: present
-    default_release: "{{ kubernetes_deb_release_name }}"
     force: true
   register: kubelet_installation_deb
   until: kubelet_installation_deb is success
@@ -53,7 +52,6 @@
   apt:
     name: kubectl={{ package_versions.kubernetes_deb }}
     state: present
-    default_release: "{{ kubernetes_deb_release_name }}"
     force: true
   register: result
   until: result is success
