@@ -34,3 +34,4 @@
   vars:
     packages:
       - azure-cli
+      - pyOpenSSL>=22.0.0
