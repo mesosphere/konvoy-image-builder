@@ -7,7 +7,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.1.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.0.0
-	github.com/brianvoe/gofakeit/v6 v6.18.0
+	github.com/brianvoe/gofakeit/v6 v6.19.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/imdario/mergo v0.3.13
 	github.com/mitchellh/go-homedir v1.1.0
