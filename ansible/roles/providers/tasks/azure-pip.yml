@@ -27,10 +27,11 @@
   when:
     - ansible_os_family == "Debian"
 
-- name: install Azure clients
+- name: install Azure clients and python libraries
   pip:
     executable: pip3
     name: "{{ packages }}"
   vars:
     packages:
       - azure-cli
+      - pyOpenSSL>=22.0.0

@@ -190,19 +190,6 @@
       "execute_command": "BUILD_NAME={{ user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
     },
     {
-      "type": "shell",
-      "inline": [
-        "mkdir -p /tmp/.goss-dir"
-      ]
-    },
-    {
-        "type": "file",
-        "source": "/usr/local/bin/goss",
-        "destination": "/tmp/.goss-dir/goss",
-        "direction": "upload",
-        "max_retries": 10
-    },
-    {
       "type": "ansible",
       "playbook_file": "./ansible/provision.yaml",
       "user": "{{user `ssh_username`}}",
@@ -214,6 +201,19 @@
         "--extra-vars",
         "{{ user `ansible_extra_vars` }}"
       ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "mkdir -p /tmp/.goss-dir"
+      ]
+    },
+    {
+        "type": "file",
+        "source": "/usr/local/bin/goss",
+        "destination": "/tmp/.goss-dir/goss",
+        "direction": "upload",
+        "max_retries": 10
     },
     {
       "arch": "{{user `goss_arch`}}",
