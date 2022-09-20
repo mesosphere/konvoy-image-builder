@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.22.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.21.0...v1.22.0) (2022-09-20)
+
+
+### Features
+
+* install nvidia driver using runfile ([#482](https://github.com/mesosphere/konvoy-image-builder/issues/482)) ([22f89b8](https://github.com/mesosphere/konvoy-image-builder/commit/22f89b8c95d176455a1e69352f4716867204293f))
+
+
+### Bug Fixes
+
+* bump mindthegap to preserves image IDs  ([#500](https://github.com/mesosphere/konvoy-image-builder/issues/500)) ([b58c969](https://github.com/mesosphere/konvoy-image-builder/commit/b58c969ece8a206ae42046b1df6ab781b086b8d8))
+* upgrade ansible to 6.3.0 and fix CI flakes ([#503](https://github.com/mesosphere/konvoy-image-builder/issues/503)) ([1e71e20](https://github.com/mesosphere/konvoy-image-builder/commit/1e71e208b2a2e69d82cb48391fc5e3519f434ae1))
+
 ## [1.21.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.20.0...v1.21.0) (2022-09-13)
 
 
