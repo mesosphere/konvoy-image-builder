@@ -159,6 +159,7 @@ RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN="$(cat /run/secre
     packer-${BUILDARCH} plugins install github.com/hashicorp/ansible ">=1.0.3" && \
     packer-${BUILDARCH} plugins install github.com/hashicorp/vsphere ">=1.0.8"
 
+RUN find /kib/pkg/packer/manifests -name '*.pkr.hcl' -exec packer init {} \;
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
 CMD ["/bin/bash"]
