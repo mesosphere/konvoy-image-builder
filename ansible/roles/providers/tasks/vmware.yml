@@ -152,3 +152,21 @@
     state: stopped
     enabled: false
   when: ('ufw.service' in ansible_facts.services) and (ansible_os_family == "Debian")
+
+# See https://kb.vmware.com/s/article/82229
+# From systemd docs: 
+# "If a valid D-Bus machine ID is already configured for the system, 
+# the D-Bus machine ID is copied and used to initialize the machine ID in /etc/machine-id"
+# This needs to be reset/truncated as well on Ubuntu.
+- name: Truncate D-Bus machine-id
+  file:
+    path: /var/lib/dbus/machine-id
+    state: absent
+  when: ansible_os_family == "Debian" 
+
+- name: Link D-Bus machine-id to /etc/machine-id
+  file:
+    path: /var/lib/dbus/machine-id
+    state: link
+    src: /etc/machine-id
+  when: ansible_os_family == "Debian"
