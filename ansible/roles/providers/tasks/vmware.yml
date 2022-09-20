@@ -142,3 +142,13 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Get a list of services
+  service_facts:
+
+- name: Disable UFW firewall on Ubuntu/Debian
+  systemd:
+    name: ufw
+    state: stopped
+    enabled: false
+  when: ('ufw.service' in ansible_facts.services) and (ansible_os_family == "Debian")
