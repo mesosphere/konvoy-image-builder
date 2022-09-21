@@ -1,15 +1,29 @@
+# download_images: true
+
+# packer:
+#   ami_filter_name: "RHEL-8.4.0_HVM-*"
+#   ami_filter_owners: "309956199498"
+#   distribution: "RHEL"
+#   distribution_version: "8.4"
+#   source_ami: ""
+#   ssh_username: "ec2-user"
+#   root_device_name: "/dev/sda1"
+#   volume_size: "15"
+
+# build_name: "rhel-8.4"
+# packer_builder_type: "amazon"
+# python_path: ""
+
 download_images: true
-
-packer:
-  ami_filter_name: "RHEL-8.4.0_HVM-*"
-  ami_filter_owners: "309956199498"
-  distribution: "RHEL"
-  distribution_version: "8.4"
-  source_ami: ""
-  ssh_username: "ec2-user"
-  root_device_name: "/dev/sda1"
-  volume_size: "15"
-
-build_name: "rhel-8.4"
-packer_builder_type: "amazon"
+packer: 
+  ami_filter_name: "rhel-84-fips-base" 
+  ami_filter_owners: "337834004759" 
+  distribution: "RHEL" 
+  distribution_version: "8.4" 
+  source_ami: "" 
+  ssh_username: "ec2-user" 
+  root_device_name: "/dev/sda1" 
+  volume_size: "200"
+  build_name: "rhel-8.4" 
+packer_builder_type: "amazon" 
 python_path: ""
