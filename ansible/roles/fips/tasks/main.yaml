@@ -1,0 +1,14 @@
+- name: "RHEL 7 FIPS setup"
+  include_tasks: redhat-7.yaml
+  when:
+    - ansible_distribution == 'RedHat'
+    - ansible_distribution_major_version == '7'
+    - fips.enabled
+
+# https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/security_hardening/using-the-system-wide-cryptographic-policies_security-hardening#switching-the-system-to-fips-mode_using-the-system-wide-cryptographic-policies
+- name: "RHEL 8 FIPS setup"
+  include_tasks: redhat-8.yaml
+  when:
+    - ansible_distribution == 'RedHat'
+    - ansible_distribution_version is version('8.1', '>')
+    - fips.enabled

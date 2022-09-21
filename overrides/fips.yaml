@@ -4,6 +4,8 @@ k8s_image_registry: docker.io/mesosphere
 fips:
   enabled: true
 
+fips_reboot: true
+
 build_name_extra: -fips
 kubernetes_build_metadata: fips.0
 default_image_repo: hub.docker.io/mesosphere

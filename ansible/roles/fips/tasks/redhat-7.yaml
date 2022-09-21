@@ -1,0 +1,71 @@
+- name: "redhat 7 fips: ensure fips_enabled is 1"
+  lineinfile:
+    dest: /proc/sys/crypto/fips_enabled
+    line: "1"
+    state: present
+  become: yes
+  check_mode: yes
+  register: sysfips
+
+- name: "redhat 7 fips: disable prelink"
+  ansible.builtin.replace:
+    path: /etc/sysconfig/prelink
+    regexp: '^PRELINKING=yes'
+    replace: '^PRELINKING=no'
+  when:
+    - sysfips is changed
+
+- name: "redhat 7 fips: install dracut fips"
+  yum:
+    name:
+      - dracut-fips
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  when:
+    - sysfips is changed
+
+- name: "redhat 7 fips: regenerate the kernel initramfs"
+  command: dracut --force
+  become: yes
+  when:
+    - sysfips is changed
+
+- name: "redhat 7 fips: enable fips mode for kernel"
+  lineinfile:
+    state: present
+    dest: /etc/default/grub
+    backrefs: yes
+    regexp: '^(GRUB_CMDLINE_LINUX=(?!.* fips)\"[^\"]+)(\".*)'
+    line: '\1 fips=1\2'
+  when:
+    - sysfips is changed
+
+- name: "redhat 7 fips: check if /boot is on its own partition"
+  shell: findmnt -no uuid /boot
+  ignore_errors: true
+  register: boot_uuid
+  when:
+    - sysfips is changed
+
+- name: "redhat 7 fips: add boot_uuid to grub config"
+  lineinfile:
+    state: present
+    dest: /etc/default/grub
+    backrefs: yes
+    regexp: '^(GRUB_CMDLINE_LINUX=(?!\w*boot)\"[^\"]+)(\".*)'
+    line: '\1 boot=UUID={{ boot_uuid.stdout }} \2'
+  when:
+    - boot_uuid.rc == 0
+    - sysfips is changed
+
+- name: "redhat 7 fips: rebuild the grub config"
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  when:
+    - sysfips is changed
+
+- name: "redhat 7 fips: reboot to pick up fips changes"
+  ansible.builtin.reboot:
+  when:
+    - sysfips is changed
+    - fips_reboot
