@@ -1,4 +1,59 @@
 ---
+- name: "redhat fips:ensure fips_enabled is 1"
+  lineinfile:
+    name: /proc/sys/crypto/fips_enabled
+    line: "1"
+    state: present
+  check_mode: yes
+  register: sysfips
+
+- name: install dracut fips
+  yum:
+    name:
+      - dracut-fips
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  when:
+    - fips.enabled
+    - not sysfips.found
+
+- name: redhat fips: regenerate the kernel initramfs
+  command: dracut --force
+  become: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - fips.enabled
+    - not sysfips.found
+
+- name: redhat fips: enable fips mode for kernel
+  lineinfile:
+    state: present
+    dest: /etc/default/grub
+    backrefs: yes
+    regexp: '^(GRUB_CMDLINE_LINUX=(?!.* fips)\"[^\"]+)(\".*)'
+    line: '\1 fips=1\2'
+  when:
+    - ansible_distribution == 'Red Hat Enterprise Linux'
+    - fips.enabled
+    - not sysfips.found
+
+- name: redhat fips:rebuild the grub config
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  when:
+    - ansible_os_family == "RedHat"
+    - fips.enabled
+    - not sysfips.found
+
+- name: redhat fips:reboot to pick up fips changes
+  ansible.builtin.reboot:
+  when:
+    - sysprep
+    - ansible_os_family == "RedHat"
+    - fips.enabled
+    - not sysfips.found
+    - fips_reboot
+
 - name: install common RPMS
   yum:
     name:
