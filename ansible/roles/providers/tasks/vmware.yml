@@ -82,6 +82,16 @@
     group: root
     mode: 0644
 
+- name: Remove subiquity-disable-cloudinit-networking.cfg
+  file:
+    path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
+    state: absent
+
+- name: Remove 99-installer.cfg
+  file:
+    path: /etc/cloud/cloud.cfg.d/99-installer.cfg
+    state: absent
+
 # this program used by ds-identify to determine whether or not the
 # VMwareGuestInfo datasource is useable.
 - name: Create ds-check program to verify VMwareGuestInfo datasource
@@ -132,3 +142,31 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Get a list of services
+  service_facts:
+
+- name: Disable UFW firewall on Ubuntu/Debian
+  systemd:
+    name: ufw
+    state: stopped
+    enabled: false
+  when: ('ufw.service' in ansible_facts.services) and (ansible_os_family == "Debian")
+
+# See https://kb.vmware.com/s/article/82229
+# From systemd docs: 
+# "If a valid D-Bus machine ID is already configured for the system, 
+# the D-Bus machine ID is copied and used to initialize the machine ID in /etc/machine-id"
+# This needs to be reset/truncated as well on Ubuntu.
+- name: Truncate D-Bus machine-id
+  file:
+    path: /var/lib/dbus/machine-id
+    state: absent
+  when: ansible_os_family == "Debian" 
+
+- name: Link D-Bus machine-id to /etc/machine-id
+  file:
+    path: /var/lib/dbus/machine-id
+    state: link
+    src: /etc/machine-id
+  when: ansible_os_family == "Debian"
