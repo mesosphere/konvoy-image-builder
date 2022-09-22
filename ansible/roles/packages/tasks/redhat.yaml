@@ -1,5 +1,4 @@
 ---
-
 - name: install common RPMS
   yum:
     name:
