@@ -3,3 +3,4 @@ dependencies:
   - repo
   - setup_versionlock
   - containerd
+  - fips

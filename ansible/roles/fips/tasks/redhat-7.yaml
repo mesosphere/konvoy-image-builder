@@ -7,13 +7,19 @@
   check_mode: yes
   register: sysfips
 
+- name: "redhat 7 fips: check prelink binary installed"
+  stat:
+    path: /usr/sbin/prelink
+  register: prelink_exists
+
 - name: "redhat 7 fips: disable prelink"
-  ansible.builtin.replace:
+  lineinfile:
     path: /etc/sysconfig/prelink
-    regexp: '^PRELINKING=yes'
-    replace: '^PRELINKING=no'
+    regexp: '^PRELINKING'
+    line: '^PRELINKING=no'
   when:
     - sysfips is changed
+    - prelink_exists.stat.exists
 
 - name: "redhat 7 fips: install dracut fips"
   yum:
@@ -48,19 +54,15 @@
   when:
     - sysfips is changed
 
-- name: "redhat 7 fips: add boot_uuid to grub config"
-  lineinfile:
-    state: present
-    dest: /etc/default/grub
-    backrefs: yes
-    regexp: '^(GRUB_CMDLINE_LINUX=(?!\w*boot)\"[^\"]+)(\".*)'
-    line: '\1 boot=UUID={{ boot_uuid.stdout }} \2'
+
+- name: Update grub command line with fips argument
+  shell: sed -i '/^GRUB_CMDLINE_LINUX=/s/"$/ fips=1"/' /etc/default/grub
   when:
     - boot_uuid.rc == 0
     - sysfips is changed
 
 - name: "redhat 7 fips: rebuild the grub config"
-  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  command: grub2-mkconfig -o /etc/grub2.cfg
   when:
     - sysfips is changed
 
