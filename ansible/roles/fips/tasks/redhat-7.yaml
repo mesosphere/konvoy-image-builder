@@ -68,4 +68,3 @@
   ansible.builtin.reboot:
   when:
     - sysfips is changed
-    - fips_reboot
