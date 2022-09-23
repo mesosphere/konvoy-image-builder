@@ -10,7 +10,7 @@ var PackerAmazon []byte
 
 // PackerAzure storage for Azurepacker template.
 //
-//go:embed azure/packer.json.tmpl
+//go:embed azure/packer.pkr.hcl
 var PackerAzure []byte
 
 // PackerGCP storage for GCP packer base template.
