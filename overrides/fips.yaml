@@ -3,6 +3,7 @@ k8s_image_registry: docker.io/mesosphere
 
 fips:
   enabled: true
+  configure: false
 
 build_name_extra: -fips
 kubernetes_build_metadata: fips.0

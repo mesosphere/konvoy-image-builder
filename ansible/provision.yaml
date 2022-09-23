@@ -29,6 +29,7 @@
   roles:
     - role: offline
     - role: packages
+    - role: fips
     - role: kubeadm
     - role: version
     - role: gpu
