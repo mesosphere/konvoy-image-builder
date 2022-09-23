@@ -69,4 +69,4 @@
   when:
     - lookup('env', 'RHSM_USER') | length > 0
     - lookup('env', 'RHSM_PASS') | length > 0
-    - ansible_distribution == 'Red Hat Enterprise Linux'
+    - ansible_distribution == 'RedHat'
