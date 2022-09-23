@@ -9,7 +9,7 @@
   when:
     - lookup('env', 'RHSM_USER') | length > 0
     - lookup('env', 'RHSM_PASS') | length > 0
-    - ansible_distribution == 'Red Hat Enterprise Linux'
+    - ansible_distribution == 'RedHat'
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
