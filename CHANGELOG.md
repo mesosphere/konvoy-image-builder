@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.23.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.22.0...v1.23.0) (2022-09-23)
+
+
+### Features
+
+* configure fips for rhel 8 ([#508](https://github.com/mesosphere/konvoy-image-builder/issues/508)) ([5269ff5](https://github.com/mesosphere/konvoy-image-builder/commit/5269ff56f56feb156d1ac0cee80953cea51a4db8))
+
+
+### Bug Fixes
+
+* incorrect RHEL when condition ([#510](https://github.com/mesosphere/konvoy-image-builder/issues/510)) ([2b4248a](https://github.com/mesosphere/konvoy-image-builder/commit/2b4248ac543848bc30016ee2cd94f5cb1eb0f7ae))
+* ubuntu  for vsphere  ([#458](https://github.com/mesosphere/konvoy-image-builder/issues/458)) ([7b0985b](https://github.com/mesosphere/konvoy-image-builder/commit/7b0985b490ed821ce3fe12f009dfc5dbc49a3dca))
+
 ## [1.22.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.21.0...v1.22.0) (2022-09-20)
 
 
