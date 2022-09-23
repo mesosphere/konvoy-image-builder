@@ -12,7 +12,7 @@ COMMA := ,
 NULL :=
 SPACE := $(NULL) $(NULL)
 
-AIRGAPPED_BUNDLE_URL_PREFIX ?= downloads.mesosphere.io/dkp
+AIRGAPPED_BUNDLE_URL_PREFIX ?= downloads.d2iq.com/dkp
 ARTIFACTS_DIR ?= artifacts/
 CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 NVIDIA_URL ?= https://download.nvidia.com/XFree86/Linux-x86_64
@@ -132,7 +132,7 @@ build-%:
 %_fips:
 	$(MAKE) build-$* \
 		ADDITIONAL_ARGS="$(ADDITIONAL_ARGS)" \
-		ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)$(ADDITIONAL_OVERRIDES)) \
+		ADDITIONAL_OVERRIDES=overrides/fips.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES}) \
 		VERBOSITY=$(VERBOSITY) \
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN)
 
