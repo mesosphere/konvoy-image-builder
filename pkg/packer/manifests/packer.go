@@ -20,5 +20,5 @@ var PackerGCP []byte
 
 // PackerVsphere storage for vSphere packer base template.
 //
-//go:embed vsphere/packer.json.tmpl
+//go:embed vsphere/packer.pkr.hcl
 var PackerVsphere []byte
