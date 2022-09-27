@@ -68,9 +68,12 @@ func (a *ArtifactUploader) playbookOptionsFromFlag(artifactFlags ArtifactsCmdFla
 	if err != nil {
 		return nil, fmt.Errorf("failed to find absolute path for --container-images-dir %w", err)
 	}
-	nvidiaRunfile, err := filepath.Abs(artifactFlags.NvidiaRunfile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find absolute path for --nvidia-runfile %w", err)
+	var nvidiaRunfile string
+	if artifactFlags.NvidiaRunfile != "" {
+		nvidiaRunfile, err = filepath.Abs(artifactFlags.NvidiaRunfile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to find absolute path for --nvidia-runfile %w", err)
+		}
 	}
 	args := make(map[string]interface{})
 	if err = mergeUserOverridesToMap(artifactFlags.Overrides, args); err != nil {

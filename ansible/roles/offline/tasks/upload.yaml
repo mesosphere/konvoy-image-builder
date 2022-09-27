@@ -136,6 +136,4 @@
         dest: "{{ nvidia_remote_bundle_path }}/{{ nvidia_runfile_installer }}"
         mode: 711
   when:
-    - gpu is defined
-    - "'nvidia' in gpu.types"
     - nvidia_runfile_local_file != ""
