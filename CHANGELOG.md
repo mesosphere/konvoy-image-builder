@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.23.0...v1.23.1) (2022-09-27)
+
+
+### Bug Fixes
+
+* upload nvidia runfile ([#511](https://github.com/mesosphere/konvoy-image-builder/issues/511)) ([2bc6762](https://github.com/mesosphere/konvoy-image-builder/commit/2bc6762f4d7e555738e6920ac95659b0b1527717))
+
 ## [1.23.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.22.0...v1.23.0) (2022-09-23)
 
 
