@@ -2,7 +2,12 @@ SHELL:=/bin/bash
 .DEFAULT_GOAL := help
 
 OS := $(shell uname -s)
-
+OS_LC := $(shell uname -s | tr A-Z a-z)
+ifeq ($(OS),Darwin)
+	UNAME_P := amd64
+else
+	UNAME_P := $(shell uname -p)
+endif
 INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -97,6 +102,12 @@ ifneq ($(wildcard $(DOCKER_SOCKET)),)
 		--volume "$(DOCKER_SOCKET)":/var/run/docker.sock
 endif
 
+ifeq ($(OS),Darwin)
+	export DOCKER_SOCKET_ARGS = \
+		--add-host=host.docker.internal:host-gateway
+		--env DOCKER_HOST=tcp://host.docker.internal:57819
+endif
+
 export DOCKER_DEVKIT_PUSH_ARGS ?= \
 	--volume "$(HOME)/.docker":"/home/$(USER_NAME)/.docker" \
 	--env DOCKER_PASS \
@@ -118,9 +129,11 @@ export DOCKER_DEVKIT_USER_ARGS ?= \
 	--user $(UID):$(GID) \
 	--group-add $(DOCKER_SOCKET_GID)
 
+ifneq ($(OS),Darwin)
 export DOCKER_DEVKIT_SSH_ARGS ?= \
 	--env SSH_AUTH_SOCK=/run/ssh-agent.sock \
 	--volume $(SSH_AUTH_SOCK):/run/ssh-agent.sock
+endif
 
 export DOCKER_DEVKIT_ARGS ?= \
 	$(DOCKER_ULIMIT_ARGS) \
@@ -165,15 +178,25 @@ include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
-$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
-	docker build \
+ifeq ($(OS),Darwin)
+DOCKER_BUILD_ARGS ?= \
+		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
+		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+		--tag "$(DOCKER_DEVKIT_IMG)"
+else
+DOCKER_BUILD_ARGS ?= \
 		--build-arg USER_ID=$(UID) \
 		--build-arg GROUP_ID=$(GID) \
 		--build-arg USER_NAME=$(USER_NAME) \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
-		--tag "$(DOCKER_DEVKIT_IMG)" \
+		--tag "$(DOCKER_DEVKIT_IMG)"
+endif
+
+$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
+	docker build \
+		$(DOCKER_BUILD_ARGS) \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
@@ -351,7 +374,7 @@ build.snapshot:
 	#                copying the dist folder into the temporary folder
 	#                that it uses as its docker build context ;(.
 	mkdir -p bin
-	cp dist/konvoy-image_linux_amd64_v1/konvoy-image bin/konvoy-image
+	cp dist/konvoy-image_$(OS_LC)_$(UNAME_P)/konvoy-image bin/konvoy-image
 	goreleaser --parallelism=1 --skip-publish --snapshot --rm-dist
 
 .PHONY: diff
