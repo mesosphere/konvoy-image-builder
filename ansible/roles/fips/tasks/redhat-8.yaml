@@ -1,0 +1,18 @@
+- name: "redhat 8 fips: ensure fips_enabled is 1"
+  lineinfile:
+    dest: /proc/sys/crypto/fips_enabled
+    line: "1"
+    state: present
+  become: yes
+  check_mode: yes
+  register: sysfips
+
+- name: "redhat 8 fips: run fips enable command"
+  command: fips-mode-setup --enable
+  when:
+    - sysfips is changed
+
+- name: "redhat 8 fips: reboot to pick up fips changes"
+  ansible.builtin.reboot:
+  when:
+    - sysfips is changed
