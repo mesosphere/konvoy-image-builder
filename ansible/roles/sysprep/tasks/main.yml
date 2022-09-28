@@ -236,12 +236,3 @@
     name: kubelet
     enabled: true
     state: started
-
-- name: Disable Password Authentication
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication'
-    line: "PasswordAuthentication no"
-    state: present
-    backup: yes
-  when: ansible_os_family != "Flatcar"
