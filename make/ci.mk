@@ -16,6 +16,7 @@ endif
 ci.e2e.build.all: ci.e2e.build.centos-7
 ci.e2e.build.all: ci.e2e.build.ubuntu-18
 ci.e2e.build.all: ci.e2e.build.ubuntu-20
+ci.e2e.build.all: ci.e2e.build.rhel-8.6
 ci.e2e.build.all: ci.e2e.build.sles-15
 ci.e2e.build.all: ci.e2e.build.oracle-7
 ci.e2e.build.all: ci.e2e.build.oracle-8
@@ -24,7 +25,9 @@ ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.2-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
+ci.e2e.build.all: e2e.build.rhel-8.6-offline
 ci.e2e.build.all: ci.e2e.build.rhel-8.4-nvidia
+ci.e2e.build.all: ci.e2e.build.rhel-8.6-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
@@ -73,6 +76,12 @@ e2e.build.sles-15-nvidia: sles15-nvidia
 e2e.build.rhel-8-fips: rhel82-fips
 
 e2e.build.rhel-8.4-nvidia: rhel84-nvidia
+
+e2e.build.rhel-8.6: rhel86
+
+e2e.build.rhel-8.6-offline: rhel86-offline infra.aws.destroy
+
+e2e.build.rhel-8.6-nvidia: rhel86-nvidia
 
 # Azure
 e2e.build.centos-7-azure: centos7-azure

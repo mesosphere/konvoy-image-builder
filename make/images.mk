@@ -433,6 +433,20 @@ rhel84-fips:
 rhel84-fips-offline:
 	$(MAKE) aws-rhel-8.4_offline-fips
 
+# RHEL 8.6 AWS
+.PHONY: rhel86
+rhel86:
+	$(MAKE) build-aws-rhel-8.6
+
+.PHONY: rhel86-nvidia
+rhel86-nvidia:
+	$(MAKE) aws-rhel-8.6_nvidia
+
+.PHONY: rhel86-offline
+rhel86-offline:
+	$(MAKE) aws-rhel-8.6_offline
+
+
 # RHEL 8 Azure
 .PHONY: rhel84-azure
 rhel84-azure:
