@@ -28,16 +28,3 @@
   copy:
     content: "export PATH=$PATH:/run/torcx/unpack/docker/bin/"
     dest: "/etc/profile.d/my_path.sh"
-
-- name: ensure cgroups v2 are disabled
-  command: grep -q systemd.unified_cgroup_hierarchy=0 /usr/share/oem/grub.cfg
-  changed_when: no
-  failed_when: false
-  register: cgroupsv2_check
-
-- name: cgroups setup
-  when:
-    - cgroupsv2_check.rc != 0
-  block:
-    - name: disable cgroups v2
-      command: sed -E -i 's/^(set linux_append=.*)"$/\1 systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"/g' /usr/share/oem/grub.cfg
