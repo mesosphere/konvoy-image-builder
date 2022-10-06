@@ -34,7 +34,7 @@ aws_images: []
 
 extra_images: []
 
-containerd_supplementary_images: ["mesosphere/toml-merge:v0.1.0"]
+containerd_supplementary_images: ["docker.io/mesosphere/toml-merge:v0.1.0"]
 
 containerd_base_url: https://packages.d2iq.com/dkp/containerd
 kubernetes_http_source: https://storage.googleapis.com/kubernetes-release/release
