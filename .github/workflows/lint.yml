@@ -41,3 +41,7 @@ jobs:
           #                https://github.com/github/super-linter/pull/1707
           # This can be removed when a release > 4.2.2 exists.
           VALIDATE_TERRAGRUNT: false
+          # we don't need a _pedantic_ natural language linter
+          VALIDATE_NATURAL_LANGUAGE: false
+          # we use terraform to provision *test* infrastructure that is deleted
+          VALIDATE_TERRAFORM_TFLINT: false
