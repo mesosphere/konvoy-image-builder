@@ -47,7 +47,7 @@
         "gpu_types": "{{user `gpu_types`}}",
         "image_builder_version": "{{user `konvoy_image_builder_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}",
-        "kubernetes_version": "{{user `kubernetes_full_version` | clean_resource_name}}"
+        "kubernetes_version": "{{user `kubernetes_full_version`}}"
       },
       "client_id": "{{user `client_id`}}",
       "client_secret": "{{user `client_secret`}}",
@@ -57,9 +57,9 @@
       "image_version": "{{user `image_version`}}",
       "cloud_environment_name": "{{user `cloud_environment_name`}}",
       "location": "{{user `location`}}",
-      "managed_image_name": "{{user `gallery_image_name`}}-{{user `build_timestamp`}}",
+      "managed_image_name": "{{user `gallery_image_name`}}-{{user `kubernetes_full_version`}}-{{user `build_timestamp`}}",
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",
-      "name": "{{(user `distribution`) | lower}}-{{user `distribution_version`}}{{user `build_name_extra`}}",
+      "name": "{{(user `distribution`) | lower}}-{{user `distribution_version`}}-{{user `kubernetes_full_version`}}{{user `build_name_extra`}}",
       "os_type": "Linux",
       "plan_info": {
         "plan_name": "{{user `plan_image_sku`}}",
