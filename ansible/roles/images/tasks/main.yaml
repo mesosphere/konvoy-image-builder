@@ -13,6 +13,7 @@
     pull_images: "{{
       kubernetes_images +
       containerd_images +
+      containerd_supplementary_images +
       control_plane_images +
       extra_images
     }}"
