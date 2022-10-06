@@ -64,7 +64,6 @@ imports = ["/etc/containerd/conf.d/*.toml"]
     enable_selinux = false
     sandbox_image = "{{ pause_image }}"
     stats_collect_period = 10
-    systemd_cgroup = false
     enable_tls_streaming = false
     max_container_log_line_size = 16384
     disable_cgroup = false
@@ -88,10 +87,12 @@ imports = ["/etc/containerd/conf.d/*.toml"]
         privileged_without_host_devices = false
       [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
-          runtime_type = "io.containerd.runc.v1"
+          runtime_type = "io.containerd.runc.v2"
           runtime_engine = ""
           runtime_root = ""
           privileged_without_host_devices = false
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            SystemdCgroup = true
     [plugins."io.containerd.grpc.v1.cri".cni]
       bin_dir = "/opt/cni/bin"
       conf_dir = "/etc/cni/net.d"
