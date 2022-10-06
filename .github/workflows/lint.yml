@@ -30,7 +30,7 @@ jobs:
           env-file: .github/super-linter.env
 
       - name: Run Super-Linter
-        uses: github/super-linter@v4.9.6
+        uses: github/super-linter@v4.9.7
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,3 +41,7 @@ jobs:
           #                https://github.com/github/super-linter/pull/1707
           # This can be removed when a release > 4.2.2 exists.
           VALIDATE_TERRAGRUNT: false
+          # we don't need a _pedantic_ natural language linter
+          VALIDATE_NATURAL_LANGUAGE: false
+          # we use terraform to provision *test* infrastructure that is deleted
+          VALIDATE_TERRAFORM_TFLINT: false
