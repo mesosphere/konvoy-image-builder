@@ -15,7 +15,7 @@
       - socat
       - sysstat
       - nfs-utils
-      - "NetworkManager{{ '-cloud-setup' if packer_builder_type not in ['vsphere'] }}" # OS images on cloud platforms (AWS, AZURE, GCP) supports only NetworkManager-cloud-setup package.
+      - "NetworkManager{{ '-cloud-setup' if packer_builder_type not in ['vsphere'] and ansible_distribution_major_version == '8' }}" # OS images on cloud platforms (AWS, AZURE, GCP) supports only NetworkManager-cloud-setup package.
     state: present
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
