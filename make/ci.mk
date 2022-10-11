@@ -107,6 +107,8 @@ e2e.build.rhel-8.4-ova: rhel84-ova
 
 e2e.build.rhel-7.9-ova: rhel79-ova
 
+e2e.build.rhel-8.6-ova: rhel86-ova
+
 # GCP
 e2e.build.centos-7.9-gcp: centos79-gcp
 

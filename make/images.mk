@@ -109,6 +109,7 @@ build-image: $(IMAGE)
 build-image: ## Build an image on a provider
 	./bin/konvoy-image build $(subst ova,,$(PROVIDER)) $(IMAGE) \
 	--dry-run=$(BUILD_DRY_RUN) \
+	--packer-on-error abort \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=$(ADDITIONAL_OVERRIDES)) \
 	$(call vm_size,$(PROVIDER),$(ADDITIONAL_ARGS)) \
@@ -490,9 +491,27 @@ rhel84-ova-offline:
 rhel84-ova-fips:
 	$(MAKE) ova-rhel-8.4_fips
 
-.PHONY: rhel82-ova-fips-offline
+.PHONY: rhel84-ova-fips-offline
 rhel84-ova-fips-offline:
 	$(MAKE) ova-rhel-8.4_offline-fips
+
+# RHEL 8.6 vSphere
+.PHONY: rhel86-ova
+rhel86-ova:
+	$(MAKE) build-ova-rhel-8.6
+
+.PHONY: rhel86-ova-offline
+rhel86-ova-offline:
+	$(MAKE) ova-rhel-8.6_offline
+
+.PHONY: rhel86-ova-fips
+rhel86-ova-fips:
+	$(MAKE) ova-rhel-8.6_fips
+
+.PHONY: rhel86-ova-fips-offline
+rhel86-ova-fips-offline:
+	$(MAKE) ova-rhel-8.6_offline-fips
+
 
 # SLES 15 AWS
 .PHONY: sles15
