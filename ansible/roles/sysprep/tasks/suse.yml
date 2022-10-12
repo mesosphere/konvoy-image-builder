@@ -53,6 +53,10 @@
 
 - name: Remove zypper package cache
   command: zypper clean -a
+  register: result
+  until: result is success
+  retries: 15
+  delay: 60
 
 - name: Reset network interface IDs
   shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network/ifcfg-*
