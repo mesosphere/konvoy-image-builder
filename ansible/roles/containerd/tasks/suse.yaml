@@ -17,8 +17,7 @@
   register: command_result
   changed_when: |
     'command_result.stdout is regex(".*lock has been successfully removed.")'
-  register: result
-  until: result is success
+  until: command_result is success
   retries: 15
   delay: 60
   when:
