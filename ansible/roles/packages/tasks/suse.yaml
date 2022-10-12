@@ -30,6 +30,9 @@
     warn: false
   ignore_errors: True
   register: command_result
+  until: command_result is success
+  retries: 15
+  delay: 60
   changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'
   when:
     - exportedversionlocklist is defined and exportedversionlocklist.stdout is defined
@@ -64,4 +67,7 @@
   args:
     warn: false
   register: command_result
+  until: result is success
+  retries: 15
+  delay: 60
   changed_when: 'command_result.stdout is regex(".*lock has been successfully removed.")'

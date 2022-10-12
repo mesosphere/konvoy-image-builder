@@ -79,3 +79,7 @@
       - cloud-init
       - cloud-init-guestinfo
   when: ansible_os_family == "Suse"
+  register: result
+  until: result is success
+  retries: 15
+  delay: 60

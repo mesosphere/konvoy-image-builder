@@ -4,6 +4,10 @@
   zypper:
     name: containerd
     state: absent
+  register: result
+  until: result is success
+  retries: 15
+  delay: 60
 
 - name: remove versionlock for containerd
   command: zypper removelock containerd.io
@@ -13,6 +17,9 @@
   register: command_result
   changed_when: |
     'command_result.stdout is regex(".*lock has been successfully removed.")'
+  until: command_result is success
+  retries: 15
+  delay: 60
   when:
     - exportedversionlocklist is defined and exportedversionlocklist.stdout is defined
     - "(
@@ -36,5 +43,5 @@
     state: present
   register: result
   until: result is success
-  retries: 3
-  delay: 3
+  retries: 15
+  delay: 60

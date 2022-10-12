@@ -47,6 +47,10 @@
       - cloud-init
       - cloud-init-vmware-guestinfo
   when: ansible_os_family == "Suse"
+  register: result
+  until: result is success
+  retries: 15
+  delay: 60
 
 - name: Install cloud-init and tools for VMware Photon OS
   command: tdnf install {{ packages }} -y
