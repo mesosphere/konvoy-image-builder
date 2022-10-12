@@ -276,6 +276,52 @@ variable "os_display_name" {
   default = ""
 }
 
+variable "goss_binary" {
+  type = string
+  default = "/usr/local/bin/goss"
+}
+
+variable "goss_entry_file" {
+  type    = string
+  default = null
+}
+
+variable "goss_inspect_mode" {
+  type    = bool
+  default = false
+}
+
+variable "goss_tests_dir" {
+  type    = string
+  default = null
+}
+
+variable "goss_url" {
+  type    = string
+  default = null
+}
+
+variable "goss_vars_file" {
+  type    = string
+  default = null
+}
+variable "goss_format" {
+  type    = string
+  default = null
+}
+variable "goss_format_options" {
+  type    = string
+  default = null
+}
+variable "goss_arch" {
+  type    = string
+  default = null
+}
+variable "goss_version" {
+  type    = string
+  default = null
+}
+
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
