@@ -1,0 +1,29 @@
+---
+download_images: true
+build_name: "rhel-79"
+packer_builder_type: "vsphere-iso"
+guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
+guestinfo_datasource_ref: "v1.4.0"
+guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasource_ref}}/install.sh"
+packer:
+  iso_url: "http://mirrors.mit.edu/centos/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso"
+  iso_checksum: "sha256:07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a"
+  insecure_connection: "false"
+  vsphere_guest_os_type: "rhel7_64Guest"
+  guest_os_type: "rhel7-64"
+  distro_name: "RHEL"
+  distro_version: "7.9"
+  # cluster: ""
+  # datacenter: ""
+  # datastore: ""
+  # folder: ""
+  # network: ""
+  # resource_pool: ""
+  # goss params
+  distribution: "RHEL"
+  distribution_version: "7.9"
+# Use following overrides to select the authentication method that can be used with base template
+# ssh_username: ""
+# ssh_password: ""
+# ssh_private_key_file = "" #
+# ssh_agent_auth: false  # is set to true, ssh_password and ssh_private_key will be ignored
