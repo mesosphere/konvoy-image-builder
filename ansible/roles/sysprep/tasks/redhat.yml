@@ -60,7 +60,7 @@
     - name: Remove subscriptions
       rhsm_repository:
         name: '*'
-        state: absent
+        state: disabled
     - name: Unregister system
       redhat_subscription:
         state: absent
@@ -70,3 +70,5 @@
     - lookup('env', 'RHSM_USER') | length > 0
     - lookup('env', 'RHSM_PASS') | length > 0
     - ansible_distribution == 'RedHat'
+    - "packer_builder_type not in ['amazon']"
+    - not offline_mode_enabled

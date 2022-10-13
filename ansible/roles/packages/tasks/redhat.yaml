@@ -1,13 +1,27 @@
 ---
-- name: install common RPMS
+- name: find installed RPMs
   yum:
-    name:
+    list: installed
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    update_cache: true
+  register: installed_rpms
+
+- name: install common RPMS if already not installed
+  yum:
+    name: "{{ item }}"
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    update_cache: true
+  when: installed_rpms.results | selectattr('name','equalto', item ) | list | count == 0
+  with_items:
       - audit
       - ca-certificates
       - conntrack-tools
       - chrony
       - curl
-      - ebtables
+      - "{{ 'iptables-' if ansible_distribution_major_version == '8' }}ebtables"
       - open-vm-tools
       - python3-pip
       - "python{{ '3' if ansible_distribution_major_version == '8' }}-netifaces"
@@ -16,10 +30,6 @@
       - sysstat
       - nfs-utils
       - NetworkManager
-    state: present
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-    update_cache: true
   register: result
   until: result is success
   retries: 5
