@@ -6,12 +6,13 @@ guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-
 guestinfo_datasource_ref: "v1.4.0"
 guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasource_ref}}/install.sh"
 packer:
-  iso_url: "http://mirrors.mit.edu/centos/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso"
-  iso_checksum: "sha256:07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a"
+  # a subscription is needed so please provide iso_url and iso_checksum by yourself
+  # iso_url: ""
+  # iso_checksum: ""
   insecure_connection: "false"
-  vsphere_guest_os_type: "centos64Guest"
-  guest_os_type: "centos64Guest"
-  distro_name: "CentOS"
+  vsphere_guest_os_type: "rhel7_64Guest"
+  guest_os_type: "rhel7-64"
+  distro_name: "RHEL"
   distro_version: "7"
   # cluster: ""
   # datacenter: ""
@@ -20,8 +21,8 @@ packer:
   # network: ""
   # resource_pool: ""
   # goss params
-  distribution: "CentOS"
-  distribution_version: "7.9"
+  distro_name: "RHEL"
+  distro_version: "7.9"
 # Use following overrides to select the authentication method that can be used with base template
 # ssh_username: ""
 # ssh_password: ""
