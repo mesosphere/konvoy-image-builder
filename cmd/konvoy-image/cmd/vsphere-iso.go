@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	vSphereISOExample = "vsphere-iso --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-79.yaml"
+	vSphereISOExample = "vsphere-iso --vsphere-datacenter=dc1 --vsphere-cluster=zone1 --vsphere-network=Public --vsphere-datastore=datastore1 images/vsphere-iso/ubuntu-2004.yaml"
 	vSphereISOUse     = "vsphere-iso <image.yaml>"
 )
 
