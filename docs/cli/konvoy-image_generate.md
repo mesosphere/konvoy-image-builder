@@ -41,4 +41,5 @@ konvoy-image generate <image.yaml> [flags]
 * [konvoy-image](konvoy-image.md)	 - Create, provision, and customize images for running Konvoy
 * [konvoy-image generate aws](konvoy-image_generate_aws.md)	 - generate files relating to building aws images
 * [konvoy-image generate azure](konvoy-image_generate_azure.md)	 - generate files relating to building azure images
+* [konvoy-image generate vsphere-iso](konvoy-image_generate_vsphere-iso.md)	 - generate files relating to building vsphere images from ISO
 
