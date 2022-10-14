@@ -340,7 +340,8 @@ func TestMergeAmazonUserArgs(t *testing.T) {
 
 func TestMergeAzureUserArgs(t *testing.T) {
 	config := app.Config{
-		"packer": map[interface{}]interface{}{},
+		"packer":                     map[interface{}]interface{}{},
+		app.KubernetesFullVersionKey: "1.24.6",
 	}
 
 	azureArgs := &app.AzureArgs{

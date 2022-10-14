@@ -145,21 +145,9 @@ func azureImageDescription(config Config) (*azure.ImageDescription, error) {
 	}
 
 	sku, err := config.GetWithError(PackerAzureGalleryImageSKU)
-	if err != nil || sku == "" {
-		// NOTE(jkoelker) fall back to mirroring the source
-		sku, err = config.GetWithError(PackerAzureDistributionVersionPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get gallery image sku: %w", err)
-		}
-
-		if sku == "" {
-			return nil, fmt.Errorf("failed to get gallery image sku: %w", ErrConfigRequired)
-		}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get azure gallery image sku: %w", err)
 	}
-
-	// NOTE(jkoelker) Append the build extra to the sku to prevent conflicts between
-	//                base images and their special flavors (e.g. centos7 and centos7-nvidia)
-	sku = config.AddBuildNameExtra(sku)
 
 	description, err := azure.NewImageDescription(
 		galleryName,
