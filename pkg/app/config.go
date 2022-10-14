@@ -413,6 +413,12 @@ func MergeUserArgs(config Config, userArgs UserArgs) error {
 		}
 	}
 
+	if userArgs.VSphereISO != nil {
+		if err := MergeVSphereISOUserArgs(config, userArgs.VSphereISO); err != nil {
+			return fmt.Errorf("failed to set gcp args: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -590,6 +596,30 @@ func MergeGCPUserArgs(config Config, gcpArgs *GCPArgs) error {
 	if err := config.Set(PackerGCPRegionPath, gcpArgs.Region); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerGCPRegionPath, err)
 	}
+
+	return nil
+}
+
+func MergeVSphereISOUserArgs(config Config, vSphereISOArgs *VSphereISOArgs) error {
+	for path, value := range map[string]interface{}{
+			PackerVSphereISOISOURL: vSphereISOArgs.ISOURL,
+			PackerVSphereISOISOChecksum: vSphereISOArgs.ISOChecksum,
+			PackerVSphereISOVCenterServer: vSphereISOArgs.VCenterServer,
+			PackerVSphereISOVSphereUser: vSphereISOArgs.VSphereUser,
+			PackerVSphereISOVSpherePassword: vSphereISOArgs.VSpherePassword,
+			PackerVSphereISOVSphereInsecureConnection: vSphereISOArgs.VSphereInsecureConnection,
+			PackerVSphereISOVSphereClusterName: vSphereISOArgs.VSphereClusterName,
+			PackerVSphereISOVSphereDataStoreName: vSphereISOArgs.VSphereDataStoreName,
+			PackerVSphereISOVSphereFolder: vSphereISOArgs.VSphereFolder,
+			PackerVSphereISOVSphereResourcePool: vSphereISOArgs.VSphereResourcePool,
+			PackerVSphereISOVSphereDataCenter: vSphereISOArgs.VSphereDataCenter,
+			PackerVSphereISOVSphereNetwork: vSphereISOArgs.VSphereNetwork,
+			PackerVSphereISOSSHUsername: vSphereISOArgs.SSHUsername,
+		} {
+			if err := config.Set(path, value); err != nil {
+				return fmt.Errorf("failed to set %s: %w", path, err)
+			}
+		}
 
 	return nil
 }
