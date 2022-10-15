@@ -256,6 +256,8 @@ source "googlecompute" "kib_image" {
   ssh_username                = var.ssh_username
   wait_to_add_ssh_keys        = "20s"
   zone                        = local.zone
+
+  skip_create_image = var.dry_run
 }
 
 # a build block invokes sources and runs provisioning steps on them. The

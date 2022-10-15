@@ -46,6 +46,9 @@ type ClusterArgs struct {
 }
 
 type UserArgs struct {
+	// set dry-run packer variable
+	DryRun             bool
+
 	ClusterArgs
 
 	Amazon *AmazonArgs

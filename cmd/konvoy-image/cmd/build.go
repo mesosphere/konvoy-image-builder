@@ -63,6 +63,11 @@ func workDir(image string, builder *app.Builder, buildFlags *buildCLIFlags) stri
 
 func runBuild(image string, buildFlags *buildCLIFlags) {
 	builder := newBuilder()
+
+	// forward dryRun option into packer vars
+	if buildFlags.dryRun {
+		buildFlags.userArgs.DryRun = buildFlags.dryRun
+	}
 	work := workDir(image, builder, buildFlags)
 
 	if err := builder.Run(work, NewBuildOptions(buildFlags)); err != nil {

@@ -373,6 +373,9 @@ source "vsphere-clone" "kib_image" {
   vcenter_server               = var.vcenter_server
   vm_name                      = local.vm_name
   resource_pool                = var.resource_pool
+
+  create_snapshot     = !var.dry_run
+  convert_to_template = !var.dry_run
 }
 
 build {

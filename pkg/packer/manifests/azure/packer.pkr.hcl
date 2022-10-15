@@ -356,6 +356,8 @@ source "azure-arm" "kib_image" {
   virtual_network_resource_group_name = var.virtual_network_resource_group_name
   virtual_network_subnet_name         = var.virtual_network_subnet_name
   vm_size                             = var.vm_size
+
+  skip_create_image = var.dry_run
 }
 
 # a build block invokes sources and runs provisioning steps on them. The

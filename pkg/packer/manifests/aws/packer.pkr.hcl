@@ -292,6 +292,11 @@ variable "goss_version" {
   default = null
 }
 
+variable "dry_run" {
+  type    = bool
+  default = false
+}
+
 
 # The amazon-ami data block is generated from your amazon builder source_ami_filter; a data
 # from this block can be referenced in source and locals blocks.
@@ -387,6 +392,8 @@ source "amazon-ebs" "kib_image" {
     source_ami             = local.source_ami
   }
   vpc_id = var.vpc_id
+
+  skip_create_ami = var.dry_run
 }
 
 # a build block invokes sources and runs provisioning steps on them. The
