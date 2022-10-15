@@ -280,6 +280,11 @@ variable "goss_version" {
   default = null
 }
 
+variable "dry_run" {
+  type    = bool
+  default = false
+}
+
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
@@ -424,6 +429,9 @@ source "vsphere-iso" "kib" {
   username                     = "${var.vsphere_user}"
   vcenter_server               = "${var.vcenter_server}"
   vm_name                      = "${local.vm_name}"
+
+  create_snapshot     = !var.dry_run
+  convert_to_template = !var.dry_run
 }
 
 # a build block invokes sources and runs provisioning steps on them. The
