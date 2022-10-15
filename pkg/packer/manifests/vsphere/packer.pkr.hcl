@@ -322,6 +322,11 @@ variable "goss_version" {
   default = null
 }
 
+variable "dry_run" {
+  type    = bool
+  default = false
+}
+
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
