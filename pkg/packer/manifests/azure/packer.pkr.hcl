@@ -306,6 +306,9 @@ locals {
   build_timestamp                    = "${local.timestamp}"
   shared_image_gallery_image_version = formatdate("YYYY.MM.DDhhmmss", timestamp())
   gallery_image_locations = split(",", var.gallery_image_locations)
+  generated_managed_image_name = "${var.gallery_image_name}-${local.build_timestamp}"
+  # clean_resource_name https://github.com/hashicorp/packer-plugin-azure/blob/a56b4569b8e71781cbe56bd09cd0cdc7419e4d48/builder/azure/common/template_funcs.go#L23
+  managed_image_name = trimsuffix(local.generated_managed_image_name, "-_.")
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -336,7 +339,7 @@ source "azure-arm" "kib_image" {
   image_sku                         = var.distribution_version
   image_version                     = var.image_version
   location                          = length(local.gallery_image_locations) > 0 ? element(local.gallery_image_locations, 0) : "westus"
-  managed_image_name                = "${var.gallery_image_name}-${local.build_timestamp}"
+  managed_image_name                = local.managed_image_name
   managed_image_resource_group_name = var.resource_group_name
   os_type                           = "Linux"
   plan_info {

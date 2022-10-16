@@ -225,9 +225,12 @@ locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 # Read the documentation for locals blocks here:
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
 locals {
-  ansible_extra_vars = "${var.ansible_extra_vars}"
-  build_timestamp    = local.timestamp
-  zone               = "${var.region}-a"
+  ansible_extra_vars   = "${var.ansible_extra_vars}"
+  build_timestamp      = local.timestamp
+  zone                 = "${var.region}-a"
+  generated_image_name = "konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
+  # clean_resource_name https://github.com/hashicorp/packer-plugin-googlecompute/blob/81d8d5a740c0d7fb0b02be93133ac17a11557f34/builder/googlecompute/template_funcs.go#L20
+  image_name           = regex_replace(lower(local.generated_image_name), "[^-a-z]", "-")
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -251,7 +254,7 @@ source "googlecompute" "kib_image" {
     kubernetes_cni_version = lower(regex_replace(var.kubernetes_cni_version, "[.: ,]+", "-"))
     kubernetes_version     = lower(regex_replace(var.kubernetes_full_version, "[.: ,]+", "-"))
   }
-  image_name                  = replace("konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}", ".", "-")
+  image_name                  = local.image_name
   network                     = var.network
   project_id                  = var.project_id
   region                      = var.region
