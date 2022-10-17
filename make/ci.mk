@@ -55,6 +55,8 @@ e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline infra.aws.destroy
 
 e2e.build.rhel-8.4-offline-nvidia: rhel84-offline-nvidia infra.aws.destroy
 
+e2e.build.rhel-8.6-offline-fips: rhel86-fips-offline infra.aws.destroy
+
 e2e.build.ubuntu-18: ubuntu18
 
 e2e.build.ubuntu-20: ubuntu20
