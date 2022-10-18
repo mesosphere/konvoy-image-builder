@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/mitchellh/pointerstructure"
@@ -26,6 +27,7 @@ const (
 	packerSSHBastionUsernameKey   = "ssh_bastion_username"
 	packerSSHBastionPasswordKey   = "ssh_bastion_password"         //nolint:gosec // just a key
 	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file" //nolint:gosec // just a key
+	azureaGlleryImageNameRegex    = "[^-a-zA-Z.0-9_]"
 )
 
 // NOTE(jkoelker) `strval` and `strslice` are taken from https://github.com/Masterminds/sprig.
@@ -502,6 +504,8 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 		galleryImageName = fmt.Sprintf("dkp-%s-%s", BuildName(config), fullKuberenetesVersion)
 	}
 
+	galleryRegex := regexp.MustCompile(azureaGlleryImageNameRegex)
+	galleryImageName = galleryRegex.ReplaceAllString(galleryImageName, "-")
 	if err := config.Set(PackerAzureGalleryImageNamePath, galleryImageName); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImageNamePath, err)
 	}

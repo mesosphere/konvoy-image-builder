@@ -415,6 +415,35 @@ func TestMergeAzureUserArgs(t *testing.T) {
 	}
 }
 
+func TestMergeAzureGalleryImageName(t *testing.T) {
+	azureArgs := &app.AzureArgs{
+		Location: gofakeit.Word(),
+		CloudEndpoint: &app.AzureCloudFlag{
+			Endpoint: app.AzureCloudEndpointPublic,
+		},
+	}
+
+	testcase := []struct {
+		fullK8sVersion                string
+		wantFullK8sVersionInImageName string
+	}{
+		{"1.24.6", "1.24.6"},
+		{"1.24.6+fips.0", "1.24.6-fips.0"},
+		{"1.24.6-nvidia", "1.24.6-nvidia"},
+	}
+	for _, tc := range testcase {
+		config := app.Config{
+			"packer":                     map[interface{}]interface{}{},
+			app.KubernetesFullVersionKey: tc.fullK8sVersion,
+		}
+		if err := app.MergeAzureUserArgs(config, azureArgs); assert.NoError(t, err) {
+			value, err := config.GetWithError(app.PackerAzureGalleryImageNamePath)
+			assert.NoError(t, err)
+			assert.Contains(t, value, tc.wantFullK8sVersionInImageName)
+		}
+	}
+}
+
 func TestConfigEnrichKubernetesFullVersion(t *testing.T) {
 	config := app.Config{}
 
