@@ -192,7 +192,7 @@ func EnsureImageDescriptions(
 	ctx context.Context,
 	credentials *Credentials,
 	description *ImageDescription,
-	locations []string,
+	location string,
 	subscriptionID string,
 ) error {
 	cloudConfig := credentials.CloudConfig
@@ -211,43 +211,41 @@ func EnsureImageDescriptions(
 		return fmt.Errorf("failed to obtain a credential: %w", err)
 	}
 
-	for _, location := range locations {
-		_, err = createResourceGroup(ctx, cred, description, location, subscriptionID, options)
-		if err != nil {
-			return fmt.Errorf(
-				"failed to create resource group %s in %s: %w",
-				description.ResourceGroupName,
-				location,
-				err,
-			)
-		}
-
-		_, err = createGallery(ctx, cred, description, location, subscriptionID, options)
-		if err != nil {
-			return fmt.Errorf(
-				"failed to create image gallery %s in %s: %w",
-				description.GalleryName,
-				location,
-				err,
-			)
-		}
-
-		_, err = createGalleryImage(
-			ctx,
-			cred,
-			description,
+	_, err = createResourceGroup(ctx, cred, description, location, subscriptionID, options)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to create resource group %s in %s: %w",
+			description.ResourceGroupName,
 			location,
-			subscriptionID,
-			options,
+			err,
 		)
-		if err != nil {
-			return fmt.Errorf(
-				"failed to create image gallery %s in %s: %w",
-				description.GalleryName,
-				location,
-				err,
-			)
-		}
+	}
+
+	_, err = createGallery(ctx, cred, description, location, subscriptionID, options)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to create image gallery %s in %s: %w",
+			description.GalleryName,
+			location,
+			err,
+		)
+	}
+
+	_, err = createGalleryImage(
+		ctx,
+		cred,
+		description,
+		location,
+		subscriptionID,
+		options,
+	)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to create image gallery %s in %s: %w",
+			description.GalleryName,
+			location,
+			err,
+		)
 	}
 
 	return nil

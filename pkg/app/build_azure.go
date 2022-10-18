@@ -175,7 +175,7 @@ func ensureAzure(config Config) error {
 		return fmt.Errorf("failed get image description: %w", err)
 	}
 
-	locations, err := config.GetSliceWithError(PackerAzureGalleryLocations)
+	location, err := config.GetWithError(PackerAzureLocation)
 	if err != nil {
 		return fmt.Errorf("failed to get location: %w", err)
 	}
@@ -194,7 +194,7 @@ func ensureAzure(config Config) error {
 		ctx,
 		credentials,
 		description,
-		locations,
+		location,
 		subscriptionID,
 	); err != nil {
 		return fmt.Errorf("failed to ensure azure image descriptions: %w", err)
