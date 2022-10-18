@@ -122,8 +122,8 @@ func addAzureArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
 	fs.StringArrayVar(
 		&azure.GalleryImageLocations,
 		"gallery-image-locations",
-		[]string{},
-		"a list of locatins to publish the image (default same as `location`)",
+		[]string{"westus"},
+		"a list of locations to publish the image",
 	)
 
 	fs.StringVar(

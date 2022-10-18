@@ -15,24 +15,24 @@ azure --location westus2 --subscription-id <sub_id> images/azure/centos-79.yaml
 ### Options
 
 ```
-      --client-id string                   the client id to use for the build
-      --cloud-endpoint string              Azure cloud endpoint. Which can be one of [Public USGovernment China] (default "Public")
-      --containerd-version string          the version of containerd to install
-      --extra-vars strings                 flag passed Ansible's extra-vars
-      --gallery-image-locations location   a list of locatins to publish the image (default same as location)
-      --gallery-image-name string          the gallery image name to publish the image to
-      --gallery-image-offer string         the gallery image offer to set (default "dkp")
-      --gallery-image-publisher string     the gallery image publisher to set (default "dkp")
-      --gallery-image-sku string           the gallery image sku to set
-      --gallery-name string                the gallery name to publish the image in (default "dkp")
-  -h, --help                               help for azure
-      --instance-type string               the Instance Type to use for the build (default "Standard_D2s_v3")
-      --kubernetes-version string          The version of kubernetes to install. Example: 1.21.6
-      --location string                    the location in which to build the image (default "westus2")
-      --overrides strings                  a comma separated list of override YAML files
-      --resource-group string              the resource group to create the image in (default "dkp")
-      --subscription-id string             the subscription id to use for the build
-      --tenant-id string                   the tenant id to use for the build
+      --client-id string                      the client id to use for the build
+      --cloud-endpoint string                 Azure cloud endpoint. Which can be one of [Public USGovernment China] (default "Public")
+      --containerd-version string             the version of containerd to install
+      --extra-vars strings                    flag passed Ansible's extra-vars
+      --gallery-image-locations stringArray   a list of locations to publish the image (default [westus])
+      --gallery-image-name string             the gallery image name to publish the image to
+      --gallery-image-offer string            the gallery image offer to set (default "dkp")
+      --gallery-image-publisher string        the gallery image publisher to set (default "dkp")
+      --gallery-image-sku string              the gallery image sku to set
+      --gallery-name string                   the gallery name to publish the image in (default "dkp")
+  -h, --help                                  help for azure
+      --instance-type string                  the Instance Type to use for the build (default "Standard_D2s_v3")
+      --kubernetes-version string             The version of kubernetes to install. Example: 1.21.6
+      --location string                       the location in which to build the image (default "westus2")
+      --overrides strings                     a comma separated list of override YAML files
+      --resource-group string                 the resource group to create the image in (default "dkp")
+      --subscription-id string                the subscription id to use for the build
+      --tenant-id string                      the tenant id to use for the build
 ```
 
 ### Options inherited from parent commands

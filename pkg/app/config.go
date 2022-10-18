@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/mitchellh/pointerstructure"
@@ -26,6 +27,7 @@ const (
 	packerSSHBastionUsernameKey   = "ssh_bastion_username"
 	packerSSHBastionPasswordKey   = "ssh_bastion_password"         //nolint:gosec // just a key
 	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file" //nolint:gosec // just a key
+	azureaGlleryImageNameRegex    = "[^-a-zA-Z.0-9_]"
 )
 
 // NOTE(jkoelker) `strval` and `strslice` are taken from https://github.com/Masterminds/sprig.
@@ -487,11 +489,23 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryLocations, err)
 	}
 
+	// The gallery_name must be unique and represented by unique Azure publisher, offer, sku combination
+	// Together these values creates URN that represents a image in the gallery. example: Publisher:Offer:Sku:Version
+	// https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage#terminology
+	// Create unique gallery image name to represent different OS flavors + kubernetes version + fips + metadata(release)
+	// to prevent conflicts when creating azure images.
+	// ex. dkp-ubuntu-2004-release-1.24.6-fips.0,  dkp-ubuntu-2004-release-1.24.6-nvidia
+	fullKuberenetesVersion, err := config.GetWithError(KubernetesFullVersionKey)
+	if err != nil {
+		return fmt.Errorf("unable to get full kubernetes version from config: %w", err)
+	}
 	galleryImageName := azureArgs.GalleryImageName
 	if galleryImageName == "" {
-		galleryImageName = fmt.Sprintf("dkp-%s", BuildName(config))
+		galleryImageName = fmt.Sprintf("dkp-%s-%s", BuildName(config), fullKuberenetesVersion)
 	}
 
+	galleryRegex := regexp.MustCompile(azureaGlleryImageNameRegex)
+	galleryImageName = galleryRegex.ReplaceAllString(galleryImageName, "-")
 	if err := config.Set(PackerAzureGalleryImageNamePath, galleryImageName); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImageNamePath, err)
 	}
@@ -510,7 +524,16 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImagePublisherPath, err)
 	}
 
-	if err := config.Set(PackerAzureGalleryImageSKU, azureArgs.GalleryImageSKU); err != nil {
+	galleryImageSKU := azureArgs.GalleryImageSKU
+	if galleryImageSKU == "" {
+		// NOTE(supershal) fall back to unique gallery image name.
+		// each gallery image name in the gallery must have unique URN: Publisher:Offer:Sku:Version
+		// Publisher and offer are set to `dkp`. If user does not provide unique SKU, setting SKU same
+		// as gallery image name ensures the image URN will be unique.
+		galleryImageSKU = galleryImageName
+	}
+
+	if err := config.Set(PackerAzureGalleryImageSKU, galleryImageSKU); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerAzureGalleryImageSKU, err)
 	}
 
