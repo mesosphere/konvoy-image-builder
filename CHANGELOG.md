@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.24.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.23.1...v1.24.0) (2022-10-18)
+
+
+### Features
+
+* add RHEl 8.6 base template ([#530](https://github.com/mesosphere/konvoy-image-builder/issues/530)) ([f20fa83](https://github.com/mesosphere/konvoy-image-builder/commit/f20fa83707906b9492050034aad70edcf052f6d2))
+* Add toml-merge image for containerd supplementary images ([#518](https://github.com/mesosphere/konvoy-image-builder/issues/518)) ([827fe40](https://github.com/mesosphere/konvoy-image-builder/commit/827fe4023fdade7816111edeb451f6bee65a952b))
+* build AMI and OVA for RHEL 8.6 networked, nvidia and airgapped flavors ([#531](https://github.com/mesosphere/konvoy-image-builder/issues/531)) ([249c1b4](https://github.com/mesosphere/konvoy-image-builder/commit/249c1b4f62fcf49ae78eae03ec2fa032734e45f6))
+* update to Kubernetes v1.24.6 ([#529](https://github.com/mesosphere/konvoy-image-builder/issues/529)) ([248821c](https://github.com/mesosphere/konvoy-image-builder/commit/248821cd3bf48b87156ad6ede66c01b11fd16562))
+
+
+### Bug Fixes
+
+* add kuberentes version to azure gallery image name ([#534](https://github.com/mesosphere/konvoy-image-builder/issues/534)) ([cf03315](https://github.com/mesosphere/konvoy-image-builder/commit/cf033156866cc4740b946ada1f6e5f7f313decd9))
+* add retries when installing SUSE packages  ([#532](https://github.com/mesosphere/konvoy-image-builder/issues/532)) ([ea8d183](https://github.com/mesosphere/konvoy-image-builder/commit/ea8d1838e077830eb137b2af751602e4fd8e67fe))
+* Configure containerd runc plugin options with systemd cgroup driver ([#493](https://github.com/mesosphere/konvoy-image-builder/issues/493)) ([1704c72](https://github.com/mesosphere/konvoy-image-builder/commit/1704c72ad33f776384af2041bf5441906eadb36d))
+* disable unnecessary linters  ([#521](https://github.com/mesosphere/konvoy-image-builder/issues/521)) ([1ad9232](https://github.com/mesosphere/konvoy-image-builder/commit/1ad92329f936634edbd67c08ecc883c5dc813829))
+* force register RHSM ([#520](https://github.com/mesosphere/konvoy-image-builder/issues/520)) ([e60e7b3](https://github.com/mesosphere/konvoy-image-builder/commit/e60e7b3ab750c14dde85beccd27c317d2b1ff5d5))
+* nvidia override files with correct information ([#538](https://github.com/mesosphere/konvoy-image-builder/issues/538)) ([c0eebd9](https://github.com/mesosphere/konvoy-image-builder/commit/c0eebd9c127c5e86c031d770c907558dbfea13b2))
+* remove fips.configure from a user facing override ([#516](https://github.com/mesosphere/konvoy-image-builder/issues/516)) ([17af80f](https://github.com/mesosphere/konvoy-image-builder/commit/17af80f1fec6aec7d38cd28da06d15b8881509df))
+
 ## [1.23.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.23.0...v1.23.1) (2022-09-27)
 
 
