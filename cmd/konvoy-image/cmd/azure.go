@@ -115,7 +115,7 @@ func addAzureArgs(fs *flag.FlagSet, azure *app.AzureArgs) {
 	fs.StringVar(
 		&azure.Location,
 		"location",
-		"westus2",
+		"westus",
 		"the location in which to build the image",
 	)
 

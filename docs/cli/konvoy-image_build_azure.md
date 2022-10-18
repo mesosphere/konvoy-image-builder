@@ -29,7 +29,7 @@ azure --location westus2 --subscription-id <sub_id> images/azure/centos-79.yaml
   -h, --help                               help for azure
       --instance-type string               the Instance Type to use for the build (default "Standard_D2s_v3")
       --kubernetes-version string          The version of kubernetes to install. Example: 1.21.6
-      --location string                    the location in which to build the image (default "westus2")
+      --location string                    the location in which to build the image (default "westus")
       --overrides strings                  a comma separated list of override YAML files
       --packer-manifest string             provide the path to a custom packer manifest
       --packer-on-error string             [advanced] set error strategy for packer. strategies [cleanup, abort, run-cleanup-provisioner]
