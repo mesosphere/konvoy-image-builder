@@ -352,9 +352,7 @@ source "vsphere-clone" "kib_image" {
   RAM                          = var.memory
   cluster                      = var.cluster
   communicator                 = "ssh"
-  convert_to_template          = "true"
   cpu_cores                    = var.cpu_cores
-  create_snapshot              = "true"
   datacenter                   = var.datacenter
   datastore                    = var.datastore
   folder                       = var.folder
