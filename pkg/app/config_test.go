@@ -199,7 +199,7 @@ func TestGenPackerVars(t *testing.T) {
 		"gpu": map[interface{}]interface{}{
 			"types": []string{"nvidia"},
 		},
-		"nvidia_cuda_version": "1234",
+		"nvidia_driver_version": "1234",
 	}
 
 	jsonVars, err := app.GenPackerVars(config, extraVarsPath)

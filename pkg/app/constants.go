@@ -16,7 +16,7 @@ const (
 	DefaultBuildName = "provision_build"
 
 	GPUTypesKey      = "/gpu/types"
-	GPUNvidiaVersion = "/nvidia_cuda_version"
+	GPUNvidiaVersion = "/nvidia_driver_version"
 
 	KubernetesVersionKey       = "kubernetes_version"
 	KubernetesFullVersionKey   = "kubernetes_full_version"

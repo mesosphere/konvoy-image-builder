@@ -1,7 +1,7 @@
+# Use this file when building a machine image, not as a override secret for preprovisioned environments
 nvidia_runfile_local_file: "{{ playbook_dir}}/../artifacts/{{ nvidia_runfile_installer }}"
 gpu:
   types:
     - nvidia
 
 build_name_extra: "-nvidia"
-nvidia_cuda_version: "470"
