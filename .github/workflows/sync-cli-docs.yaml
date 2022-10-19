@@ -1,0 +1,30 @@
+name: Sync CLI docs to Confluence
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths:
+      - docs/cli/**
+
+jobs:
+  sync-cli-docs:
+    runs-on: ubuntu-latest
+    name: Sync CLI docs to Confluence
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Checkout dkp-cli
+        uses: actions/checkout@v3
+        with:
+          repository: mesosphere/dkp-cli
+          path: dkp-cli
+          token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+      - name: Sync docs
+        uses: ./dkp-cli/hack/doc-automation
+        with:
+          docs-dir: 'docs/cli'
+          confluence-space-key: 'DENT'
+          confluence-parent-page-id: '97910803'
+          confluence-user: ${{ secrets.CONFLUENCE_USER }}
+          confluence-api-token: ${{ secrets.CONFLUENCE_APITOKEN }}
