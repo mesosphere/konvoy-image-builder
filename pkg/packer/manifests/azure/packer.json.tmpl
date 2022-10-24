@@ -237,7 +237,8 @@
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_version": "{{user `kubernetes_full_version`}}",
         "distribution": "{{user `distribution`}}",
-        "distribution_version": "{{user `distribution_version`}}"
+        "distribution_version": "{{user `distribution_version`}}",
+        "compute_gallery_image_id": "/subscriptions/{{user `subscription_id`}}/resourceGroups/{{user `resource_group_name`}}/providers/Microsoft.Compute/galleries/{{user `shared_image_gallery_name`}}/images/{{user `gallery_image_name`}}/versions/{{user `shared_image_gallery_image_version`}}"
       }
     }
   ]
