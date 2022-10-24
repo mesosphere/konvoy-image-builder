@@ -20,7 +20,7 @@ packer:
   distribution: "RHEL"
   distribution_version: "7.9"
 # Use following overrides to select the authentication method that can be used with base template
-# ssh_username: ""
-# ssh_password: ""
-# ssh_private_key_file = "" #
+# ssh_username: ""  # can be exported as environment variable 'SSH_USERNAME'
+# ssh_password: "" # can be exported as environment variable 'SSH_PASSWORD'
+# ssh_private_key_file = "" # can be exported as environment variable 'SSH_PRIVATE_KEY_FILE'
 # ssh_agent_auth: false  # is set to true, ssh_password and ssh_private_key will be ignored

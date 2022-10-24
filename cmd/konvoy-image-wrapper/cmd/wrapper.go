@@ -44,6 +44,9 @@ const (
 	envVSpherePassword                   = "VSPHERE_PASSWORD"
 	envRedHatSubscriptionManagerUser     = "RHSM_USER"
 	envRedHatSubscriptionManagerPassword = "RHSM_PASS"
+	envVSphereSSHUserName                = "SSH_USERNAME"
+	envVSphereSSHPassword                = "SSH_PASSWORD"
+	envVsphereSSHPrivatekeyFile          = "SSH_PRIVATE_KEY_FILE"
 
 	//nolint:gosec // environment var set by user
 	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
@@ -201,6 +204,9 @@ func (r *Runner) setVSphereEnv() {
 		envVSpherePassword,
 		envRedHatSubscriptionManagerUser,
 		envRedHatSubscriptionManagerPassword,
+		envVSphereSSHUserName,
+		envVSphereSSHPassword,
+		envVsphereSSHPrivatekeyFile,
 	} {
 		value, found := os.LookupEnv(env)
 		if found {
