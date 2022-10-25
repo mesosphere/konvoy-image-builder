@@ -81,7 +81,7 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family not in ["Debian", "Flatcar"] and system_cloud_init_version | float > 20.0
+  when: ansible_os_family not in ["Debian", "Flatcar"] and system_cloud_init_version is version('20.0', '>')
 
 - name: Ensure chrony is running
   systemd:
