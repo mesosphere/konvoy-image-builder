@@ -21,7 +21,6 @@ default_image_registry: ""
 
 fips:
   enabled: false
-  configure: false
 
 proxy_env:
   HTTPS_PROXY: "{{ https_proxy | default('') }}"
