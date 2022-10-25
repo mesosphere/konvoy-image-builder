@@ -5,4 +5,4 @@
     - ansible_distribution == 'RedHat'
     - ansible_distribution_version is version('8.1', '>')
     - fips.enabled
-    - fips.configure
+    - fips.configure | default(False)
