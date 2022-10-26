@@ -57,7 +57,11 @@
     register: system_cloud_init_cmd
   - name: Set cloud-init version fact
     set_fact:
-      system_cloud_init_version: "{{ system_cloud_init_cmd.stdout | regex_replace('^.*cloud-init\\s(?P<version>\\d+?\\.?\\d+)-.*$', '\\g<version>') }}"
+      system_cloud_init_version: "{{ system_cloud_init_cmd.stdout | regex_replace('^.*cloud-init\\s+(\\d+.*)$', '\\1') }}"
+  - name: Set cloud-init version fact from stderr
+    set_fact:
+      system_cloud_init_version: "{{ system_cloud_init_cmd.stderr | regex_replace('^.*cloud-init\\s+(\\d+.*)$', '\\1') }}"
+    when: not system_cloud_init_version
   when: ansible_os_family != "Flatcar"
 
 - name: set cloudinit feature flags
@@ -67,7 +71,7 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family == "Debian" and system_cloud_init_version | float > 20.0
+  when: ansible_os_family == "Debian" and system_cloud_init_version is version('20.0.0', '>')
 
 - name: get python3 location for non-debian
   register: python3_version
@@ -81,7 +85,7 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_os_family not in ["Debian", "Flatcar"] and system_cloud_init_version | float > 20.0
+  when: ansible_os_family not in ["Debian", "Flatcar"] and system_cloud_init_version is version('20.0.0', '>')
 
 - name: Ensure chrony is running
   systemd:
