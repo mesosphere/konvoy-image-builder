@@ -10,12 +10,6 @@ platforms:
     region: us-east-1
     instance_type: t3.small
     ssh_user: centos
-  - name: konvoyimage-centos8.3-${USER:-ci}-${HOSTNAME:-local}
-    image_search_name: "CentOS 8.3.2011 x86_64"
-    image_search_owner: "125523088429"
-    region: us-east-1
-    instance_type: t3.small
-    ssh_user: centos
   - name: konvoyimage-flatcar-stable-${USER:-ci}-${HOSTNAME:-local}
     image_search_name: "Flatcar*stable*"
     image_search_owner: "075585003325"
@@ -29,6 +23,30 @@ platforms:
     region: us-east-1
     instance_type: t3.small
     ssh_user: ec2-user
+  - name: konvoyimage-oracle-79-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "OL7.9-x86_64-HVM-2020-12-07"
+    image_search_owner: "131827586825"
+    region: us-east-1
+    instance_type: t3.small
+    ssh_user: ec2-user
+  - name: konvoyimage-oracle-84-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "OL8.4-x86_64-HVM-2021-05-28"
+    image_search_owner: "131827586825"
+    region: us-east-1
+    instance_type: t3.small
+    ssh_user: ec2-user
+  - name: konvoyimage-ubuntu-18.04-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server*"
+    image_search_owner: "099720109477"
+    region: us-east-1
+    instance_type: t3.small
+    ssh_user: ubuntu
+  - name: konvoyimage-ubuntu-20.04-${USER:-ci}-${HOSTNAME:-local}
+    image_search_name: "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server*"
+    image_search_owner: "099720109477"
+    region: us-east-1
+    instance_type: t3.small
+    ssh_user: ubuntu
 
 provisioner:
   name: ansible
