@@ -55,6 +55,7 @@
   - name: Run cloud-init --version
     command: cloud-init --version
     register: system_cloud_init_cmd
+    changed_when: false
   - name: Set cloud-init version fact
     set_fact:
       system_cloud_init_version: "{{ system_cloud_init_cmd.stdout | regex_replace('^.*cloud-init\\s+(\\d+.*)$', '\\1') }}"
@@ -77,6 +78,7 @@
   register: python3_version
   shell: python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))"
   when: ansible_os_family not in ["Debian", "Flatcar"]
+  changed_when: false
 
 - name: set cloudinit feature flags for non debian systems
   copy:

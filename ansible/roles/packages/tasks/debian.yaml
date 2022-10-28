@@ -17,6 +17,7 @@
   until: result is success
   retries: 3
   delay: 3
+  changed_when: false
 
 - name: install common debs
   apt:
@@ -31,11 +32,33 @@
   retries: 3
   delay: 3
 
-- name: remove version hold for kubelet and kubectl packages
-  command: apt-mark unhold {{ item }}
-  with_items:
-    - kubelet
-    - kubectl
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+    strategy: first
+
+# - name: kubelet package query
+#   command: "dpkg-query -W kubelet"
+#   register: dpkg_query_kubelet
+#   changed_when: false
+#   # rc == 1 expected
+#   failed_when: dpkg_query_kubelet.rc >= 2
+#
+# - name: kubectl package query
+#   command: "dpkg-query -W kubectl"
+#   register: dpkg_query_kubectl
+#   changed_when: false
+#   # rc == 1 expected
+#   failed_when: dpkg_query_kubelet.rc >= 2
+
+# only run if kubelet or kubectl ar not installed or with the wrong version
+- name: unlock, install and lock kubelet and kubectl packages
+  block:
+    - name: remove version hold for kubelet and kubectl packages
+      command: apt-mark unhold {{ item }}
+      with_items:
+        - kubelet
+        - kubectl
 
 
 - name: install kubelet deb package
@@ -58,8 +81,22 @@
   retries: 3
   delay: 3
 
-- name: add version hold for kubelet and kubectl packages
-  command: apt-mark hold {{ item }}
-  with_items:
-    - kubelet
-    - kubectl
+    - name: add version hold for kubelet and kubectl packages
+      command: apt-mark hold {{ item }}
+      with_items:
+        - kubelet
+        - kubectl
+  when: "'kubelet' not in ansible_facts.packages or
+         'kubectl' not in ansible_facts.packages or
+         ('kubelet' in ansible_facts.packages and
+          kubernetes_version not in
+            ansible_facts.packages['kubelet'][0]['version']) or
+         ('kubectl' in ansible_facts.packages and
+          kubernetes_version not in
+             ansible_facts.packages['kubectl'][0]['version'])"
+  # when: "dpkg_query_kubelet.rc != 0 or
+  #        dpkg_query_kubectl.rc != 0 or
+  #        (dpkg_query_kubelet.rc == 0 and
+  #         package_versions.kubernetes_deb not in dpkg_query_kubelet.stdout) or
+  #        (dpkg_query_kubectl.rc == 0 and
+  #         package_versions.kubernetes_deb not in dpkg_query_kubectl.stdout)"

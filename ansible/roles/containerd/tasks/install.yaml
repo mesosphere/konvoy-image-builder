@@ -21,6 +21,7 @@
     dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
     mode: 0600
     force: true
+  register: download_containerd_tar_file
   when:
     - not containerd_tar_file_exists.stat.exists
 
@@ -31,6 +32,7 @@
     dest: /
     extra_opts:
       - --no-overwrite-dir
+  when: download_containerd_tar_file.changed
 
 # Some ansible tasks run ctr and containerd. For these tasks, the executable must be in the PATH of the ansible process.
 # On some distributions, /usr/local/bin is not in the PATH. The symlink makes the executables available in /usr/bin,
@@ -41,7 +43,7 @@
     dest: "/usr/bin/{{ item }}"
     mode: 0777
     state: link
-    force: yes
+    # force: yes
   loop:
     - ctr
     - containerd

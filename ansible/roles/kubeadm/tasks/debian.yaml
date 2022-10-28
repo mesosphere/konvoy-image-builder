@@ -1,6 +1,13 @@
 ---
-- name: remove version hold for kubeadm packages
-  command: apt-mark unhold kubeadm
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+    strategy: first
+
+- name: remove lock install and lock kubeadm package
+  block:
+    - name: remove version hold for kubeadm packages
+      command: apt-mark unhold kubeadm
 
 - name: remove version hold for cri-tools package
   command: apt-mark unhold cri-tools
@@ -36,5 +43,9 @@
   retries: 3
   delay: 3
 
-- name: add version hold for kubeadm packages
-  command: apt-mark hold kubeadm
+    - name: add version hold for kubeadm packages
+      command: apt-mark hold kubeadm
+  when: "'kubeadm' not in ansible_facts.packages or
+         ('kubeadm' in ansible_facts.packages and
+          kubernetes_version not in
+            ansible_facts.packages['kubelet'][0]['version'])"

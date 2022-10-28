@@ -77,3 +77,22 @@ def test_cloudinit_feature_flags(host):
         assert b"ERROR_ON_USER_DATA_FAILURE = False" in featurefile.content
     else:
         assert True
+
+def test_kubelet_kubectl_installed(host):
+    if distro == "flatcar":
+        pytest.skip("no packages on flatcar")
+
+    assert host.package("kubectl").is_installed
+    assert host.package("kubelet").is_installed
+
+def test_kubeadm_installed(host):
+    if distro == "flatcar":
+        pytest.skip("no packages on flatcar")
+
+    assert host.package("kubeadm").is_installed
+    assert host.package("kubeadm").is_installed
+
+def test_kube_cmd_path(host):
+    assert host.exists("kubelet")
+    assert host.exists("kubeadm")
+    assert host.exists("kubelet")

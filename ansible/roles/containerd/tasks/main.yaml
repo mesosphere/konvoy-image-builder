@@ -1,7 +1,7 @@
 ---
 - name: Create containerd systemd drop-in directory
   file:
-    path: "/etc/systemd/system/containerd.service.d/"
+    path: "/etc/systemd/system/containerd.service.d"
     state: directory
 
 - name: Create containerd max files

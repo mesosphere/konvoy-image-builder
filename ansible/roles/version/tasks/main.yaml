@@ -3,6 +3,7 @@
 - name: detect build
   shell: kubeadm version -o short
   register: kubeadm_version_out
+  changed_when: false
 
 - name: set kubeadm version
   set_fact:
@@ -47,6 +48,7 @@
 - name: determine kubernetes images
   shell: kubeadm config images list --config kubeadm-conf.yaml
   register: kubernetes_kubeadm_images
+  changed_when: false
 
 - name: set kubernetes images
   set_fact:
@@ -67,6 +69,8 @@
   # error.
   command: containerd config default
   register: system_containerd_config_default_cmd
+  changed_when: false
+
 - name: Set containerd pause image name fact
   set_fact:
       # If match is found, evaluates to a list, e.g., ["registry.k8s.io/pause:3.6"]. Otherwise, evaluates to an empty string.

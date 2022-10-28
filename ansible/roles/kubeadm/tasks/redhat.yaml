@@ -1,37 +1,48 @@
 ---
-- name: remove versionlock for kubeadm packages
-  command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} delete kubeadm
-  args:
-    warn: false
-  ignore_errors: true
-  register: command_result
-  changed_when: |
-    'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
-  when:
-    - versionlock_plugin_enabled
-    - "(
-      'kubeadm' in exportedversionlocklist.stdout and
-      not 'kubeadm-' + package_versions.kubernetes_rpm in exportedversionlocklist.stdout
-      )"
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+    strategy: first
 
-- name: install kubeadm rpm package
-  yum:
-    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: true
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+- name: remove lock install and lock kubeadm package
+  block:
+    - name: remove versionlock for kubeadm packages
+      command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} delete kubeadm
+      args:
+        warn: false
+      ignore_errors: true
+      register: command_result
+      changed_when: |
+        'command_result.stdout is regex(".*versionlock deleted: [1-9]+.*")'
+      when:
+        - versionlock_plugin_enabled
+        - "(
+          'kubeadm' in exportedversionlocklist.stdout and
+          not 'kubeadm-' + package_versions.kubernetes_rpm in exportedversionlocklist.stdout
+          )"
 
-- name: add versionlock for kubeadm package
-  command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add kubeadm
-  args:
-    warn: false
-  register: command_result
-  changed_when: |
-    'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
-  when:
-    - versionlock_plugin_enabled
+    - name: install kubeadm rpm package
+      yum:
+        name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+        state: present
+        update_cache: true
+        enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+        disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+      register: result
+      until: result is success
+      retries: 3
+      delay: 3
+
+    - name: add versionlock for kubeadm package
+      command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add kubeadm
+      args:
+        warn: false
+      register: command_result
+      changed_when: |
+        'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
+      when:
+        - versionlock_plugin_enabled
+  when: "'kubeadm' not in ansible_facts.packages or
+         ('kubeadm' in ansible_facts.packages and
+          kubernetes_version not in
+            ansible_facts.packages['kubelet'][0]['version'])"
