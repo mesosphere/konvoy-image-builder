@@ -55,6 +55,7 @@ const (
 	envNoProxy    = "NO_PROXY"
 
 	containerWorkingDir = "/tmp/kib"
+	windows             = "windows"
 )
 
 var ErrEnv = errors.New("manifest not support")
@@ -282,15 +283,10 @@ func (r *Runner) dockerRun(args []string) error {
 		"-w", containerWorkingDir,
 	)
 
-	r.addBindVolume(r.workingDir, containerWorkingDir)
-
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != windows {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
 
-		r.addBindVolume(r.tempDir+"/passwd", "/etc/passwd")
-		r.addBindVolume(r.tempDir+"/group", "/etc/group")
 		r.addBindVolume(r.homeDir, r.homeDir)
-		r.addBindVolume(r.tempDir+"/ssh_known_hosts", r.usr.HomeDir+"/.ssh/known_hosts")
 	}
 
 	for _, gid := range r.supplementaryGroupIDs {
@@ -360,6 +356,9 @@ func (r *Runner) checkRequirements() error {
 }
 
 func (r *Runner) setUserMapping() error {
+	if runtime.GOOS == windows {
+		return nil
+	}
 	filePath := filepath.Join(r.tempDir, "passwd")
 	content := fmt.Sprintf(
 		"%s:!:%s:%s::%s:/bin/sh\n",
@@ -369,10 +368,17 @@ func (r *Runner) setUserMapping() error {
 		r.homeDir,
 	)
 	//nolint:gosec // file must be world readable
-	return os.WriteFile(filePath, []byte(content), 0o644)
+	if err := os.WriteFile(filePath, []byte(content), 0o644); err != nil {
+		return err
+	}
+	r.addBindVolume(filePath, "/etc/passwd")
+	return nil
 }
 
 func (r *Runner) setGroupMapping() error {
+	if runtime.GOOS == windows {
+		return nil
+	}
 	filePath := filepath.Join(r.tempDir, "group")
 
 	// Default to "konvoy" as the group name in the container.
@@ -387,13 +393,20 @@ func (r *Runner) setGroupMapping() error {
 		r.usr.Gid,
 	)
 	//nolint:gosec // file must be world readable
-	return os.WriteFile(filePath, []byte(content), 0o644)
+	if err := os.WriteFile(filePath, []byte(content), 0o644); err != nil {
+		return err
+	}
+	r.addBindVolume(filePath, "/etc/group")
+	return nil
 }
 
 // Mask the ssh config from the host. The ssh config format on OSX is
 // slightly different than that in Linux, which will cause Ansible to
 // fail sometimes.
 func (r *Runner) maskSSHConfig() error {
+	if runtime.GOOS == windows {
+		return nil
+	}
 	_, err := os.Stat(r.usr.HomeDir + "/.ssh/config")
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -416,6 +429,21 @@ func (r *Runner) maskSSHConfig() error {
 
 	r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+"/.ssh/config")
 
+	return nil
+}
+
+// Mask the ssh known_hosts file from the host.
+// This will prevent multiple runs from interfering with each other when targeting hosts with the same IPs.
+func (r *Runner) maskSSHKnownHosts() error {
+	if runtime.GOOS == windows {
+		return nil
+	}
+	f, err := os.Create(filepath.Join(r.tempDir, "ssh_known_hosts"))
+	if err != nil {
+		return err
+	}
+	f.Close()
+	r.addBindVolume(f.Name(), r.usr.HomeDir+"/.ssh/known_hosts")
 	return nil
 }
 
@@ -442,6 +470,7 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return err
 	}
+	r.addBindVolume(r.workingDir, containerWorkingDir)
 
 	// Create a temporary dir to hold some files that need to be mounted to the container,
 	// eg. /etc/passwd, /etc/group, etc.
@@ -467,13 +496,10 @@ func (r *Runner) Run(args []string) error {
 		return err
 	}
 
-	// Mask the ssh known_hosts file from the host.
-	// This will prevent multiple runs from interfering with each other when targeting hosts with the same IPs.
-	f, err := os.Create(filepath.Join(r.tempDir, "ssh_known_hosts"))
+	err = r.maskSSHKnownHosts()
 	if err != nil {
 		return err
 	}
-	f.Close()
 
 	err = r.setAWSEnv()
 	if err != nil {

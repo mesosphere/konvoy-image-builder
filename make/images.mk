@@ -17,6 +17,8 @@ ARTIFACTS_DIR ?= artifacts/
 CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 NVIDIA_URL ?= https://download.nvidia.com/XFree86/Linux-x86_64
 
+KONVOY_IMAGE_BIN ?= ./bin/konvoy-image-wrapper
+
 NVIDIA_DRIVER_VERSION ?= $(shell \
 	grep -E -e "nvidia_driver_version:" ansible/group_vars/all/defaults.yaml | \
 	cut -d\" -f2 \
@@ -104,12 +106,11 @@ azure-build-image-cleanup: ;
 
 # NOTE(jkoelker) The common build target every other target ends up calling.
 .PHONY: build-image
-build-image: build
+build-image: $(KONVOY_IMAGE_BIN)
 build-image: $(IMAGE)
 build-image: ## Build an image on a provider
-	./bin/konvoy-image build $(subst ova,,$(PROVIDER)) $(IMAGE) \
+	$(KONVOY_IMAGE_BIN) build $(subst ova,,$(PROVIDER)) $(IMAGE) \
 	--dry-run=$(BUILD_DRY_RUN) \
-	--packer-on-error abort \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=$(ADDITIONAL_OVERRIDES)) \
 	$(call vm_size,$(PROVIDER),$(ADDITIONAL_ARGS)) \

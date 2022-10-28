@@ -239,11 +239,17 @@ bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image:
 	$(call print-target)
-	go build \
+	GOOS=$(GOOS) go build \
 		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
 		-o ./bin/konvoy-image ./cmd/konvoy-image/main.go
 
-bin/konvoy-image-wrapper:
+.PHONY: konvoy-image-linux
+konvoy-image-linux: GOOS=linux
+konvoy-image-linux: bin/konvoy-image
+
+bin/konvoy-image-wrapper: konvoy-image-linux
+bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
+bin/konvoy-image-wrapper: 
 	$(call print-target)
 	go build \
 		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
@@ -261,6 +267,9 @@ dist/konvoy-image_linux_amd64/konvoy-image:
 .PHONY: build
 build: bin/konvoy-image
 build: ## go build
+
+.PHONY: build-wrapper
+build-wrapper: bin/konvoy-image-wrapper
 
 .PHONY: docs
 docs: build
@@ -383,6 +392,7 @@ define print-target
     @printf "Executing target: \033[36m$@\033[0m\n"
 endef
 
+release-bundle-GOOS: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 release-bundle-GOOS:
 	GOOS=$(GOOS) go build -tags EMBED_DOCKER_IMAGE \
 		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
@@ -397,7 +407,7 @@ release-bundle-GOOS:
 cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
 	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
-release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+release-bundle:
 	$(MAKE) GOOS=linux release-bundle-GOOS
 	$(MAKE) GOOS=windows release-bundle-GOOS
 	$(MAKE) GOOS=darwin release-bundle-GOOS
