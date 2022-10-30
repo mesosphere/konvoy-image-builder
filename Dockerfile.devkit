@@ -110,14 +110,13 @@ COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 COPY --from=govc /govc /usr/local/bin/
 COPY --from=builder /tools /usr/local/bin
 
-
 RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
     || addgroup -S -g "${GROUP_ID}" "${GROUP_NAME}"
 
 # NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
 # hadolint ignore=DL3059
 RUN getent passwd "${USER_ID}" > /dev/null 2>&1 \
-    || adduser -D -u "${USER_ID}" -G "${GROUP_NAME}" "${USER_NAME}"
+    || adduser -D -u "${USER_ID}" -g "${GROUP_ID}" "${USER_NAME}"
 
 # NOTE(jkoelker) Ignore "A && B || C is not if-then-else"
 # NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
