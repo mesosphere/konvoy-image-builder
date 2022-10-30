@@ -259,9 +259,9 @@ bin/konvoy-image:
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper: 
 	$(call print-target)
-	go build \
+	$(MAKE) docker WHAT="go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
+		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go"
 
 dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/cmd
 dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
