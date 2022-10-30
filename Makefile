@@ -22,6 +22,8 @@ INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
 
 export CGO_ENABLED=0
+export GO_VERSION := 1.19 #$(shell grep -oP '^(go )\K(\d+.\d+)$$' go.mod)
+GOLANG_IMAGE := golang:$(GO_VERSION)
 
 export CI ?= no
 ifeq ($(CI),yes)
@@ -178,8 +180,8 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
-$(DOCKER_PHONY_FILE): bin/konvoy-image
 $(DOCKER_PHONY_FILE): Dockerfile
+	$(MAKE) docker WHAT="GOOS=linux make bin/konvoy-image"
 	docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--tag "$(DOCKER_IMG)" \
@@ -232,6 +234,17 @@ generate: ## go generate
 	$(call print-target)
 	go generate ./...
 
+.PHONEY: docker
+docker:
+	docker run \
+	--rm \
+	$(DOCKER_ULIMIT_ARGS) \
+	--volume $(REPO_ROOT_DIR):/build \
+	--workdir /build \
+	--env GOOS \
+	$(GOLANG_IMAGE) \
+	/bin/bash -c "$(WHAT)"
+
 bin/konvoy-image: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image: $(REPO_ROOT_DIR)/pkg
@@ -239,20 +252,15 @@ bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image:
 	$(call print-target)
-	GOOS=$(GOOS) go build \
-		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
+	go build \
+		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image ./cmd/konvoy-image/main.go
 
-.PHONY: konvoy-image-linux
-konvoy-image-linux: GOOS=linux
-konvoy-image-linux: bin/konvoy-image
-
-bin/konvoy-image-wrapper: konvoy-image-linux
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper: 
 	$(call print-target)
 	go build \
-		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
+		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 
 dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/cmd
