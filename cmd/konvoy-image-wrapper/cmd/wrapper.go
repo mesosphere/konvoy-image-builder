@@ -214,9 +214,11 @@ func (r *Runner) mountFileEnv(envName string, containerPath string) error {
 	fi, err := os.Stat(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("env %s is set, but file %s does not exist", envName, filePath)
+			// Ignore if file does not exists
+			// The wrapper is common for all the provider so validation of the provider specific env variable should be moved to its subcommand
+			return nil
 		}
-		return fmt.Errorf("could not determine if file %q assigned to %s environment variable exists: %w", filePath, envName, err)
+		return fmt.Errorf("error accessing file %q assigned to %s environment variable %w", filePath, envName, err)
 	}
 
 	if fi.IsDir() {

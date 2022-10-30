@@ -78,15 +78,6 @@ func Test_mountFileEnv(t *testing.T) {
 		})
 	}
 
-	// test invalid path
-	t.Run("error on invalid path", func(t *testing.T) {
-		g := NewGomegaWithT(t)
-		t.Setenv("TEST_INVALID_PATH", "/path/doesnot/exists")
-		r := NewRunner()
-		err := r.mountFileEnv("TEST_INVALID_PATH", "")
-		g.Expect(err).ToNot(BeNil())
-	})
-
 	// test path set to dir
 	t.Run("error on path set to dir", func(t *testing.T) {
 		g := NewGomegaWithT(t)
