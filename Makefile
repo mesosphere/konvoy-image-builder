@@ -180,8 +180,8 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
+$(DOCKER_PHONY_FILE): konvoy-image-linux
 $(DOCKER_PHONY_FILE): Dockerfile
-	$(MAKE) docker WHAT="GOOS=linux make bin/konvoy-image"
 	docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--tag "$(DOCKER_IMG)" \
@@ -255,6 +255,9 @@ bin/konvoy-image:
 	go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image ./cmd/konvoy-image/main.go
+
+konvoy-image-linux:
+	$(MAKE) docker GOOS=linux WHAT="make bin/konvoy-image"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper: 
