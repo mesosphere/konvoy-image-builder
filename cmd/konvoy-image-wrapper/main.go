@@ -11,5 +11,6 @@ func main() {
 	err := cmd.NewRunner().Run(os.Args[1:])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error encountered: %s\n", err)
+		os.Exit(1)
 	}
 }
