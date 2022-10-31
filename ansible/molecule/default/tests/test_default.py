@@ -1,4 +1,5 @@
 import os
+
 import pytest
 import testinfra.utils.ansible_runner
 
@@ -28,6 +29,7 @@ def test_kubeadm_avail(host):
     cmd = host.run("bash -c 'PATH=$PATH:/opt/bin type kubeadm'")
     assert cmd.succeeded is True
 
+
 def test_cloudinit_feature_flags(host):
     """
     ubuntu 18.04: does not need the feature flag
@@ -44,9 +46,9 @@ def test_cloudinit_feature_flags(host):
     cloud_init_version = host.run("cloud-init --version")
     assert cloud_init_version.succeeded
 
-    cloud_init_version_str = cloud_init_version.stdout.strip('\n')
+    cloud_init_version_str = cloud_init_version.stdout.strip("\n")
     if not cloud_init_version_str:
-        cloud_init_version_str = cloud_init_version.stderr.strip('\n')
+        cloud_init_version_str = cloud_init_version.stderr.strip("\n")
 
     assert cloud_init_version_str
 
@@ -57,16 +59,22 @@ def test_cloudinit_feature_flags(host):
         pytest.skip("cloud-init major version ({}) below 20".format(major_version))
 
     if distro != "ubuntu":
-        cmd = host.run("python3 -c \"import sysconfig; print(sysconfig.get_path('purelib'))\"")
+        cmd = host.run(
+            "python3 -c \"import sysconfig; print(sysconfig.get_path('purelib'))\""
+        )
         assert cmd.succeeded
 
-        featurefile = host.file("{}/cloudinit/feature_overrides.py".format(cmd.stdout.strip('\n')))
+        featurefile = host.file(
+            "{}/cloudinit/feature_overrides.py".format(cmd.stdout.strip("\n"))
+        )
         assert featurefile.exists
-        assert b'ERROR_ON_USER_DATA_FAILURE = False' in featurefile.content
+        assert b"ERROR_ON_USER_DATA_FAILURE = False" in featurefile.content
     # ubuntu 18.04 still supported and no need for this feature flag
     elif distro == "ubuntu" and not release == "18.04":
-        featurefile = host.file("/usr/lib/python3/dist-packages/cloudinit/feature_overrides.py")
+        featurefile = host.file(
+            "/usr/lib/python3/dist-packages/cloudinit/feature_overrides.py"
+        )
         assert featurefile.exists
-        assert b'ERROR_ON_USER_DATA_FAILURE = False' in featurefile.content
+        assert b"ERROR_ON_USER_DATA_FAILURE = False" in featurefile.content
     else:
         assert True
