@@ -9,7 +9,7 @@ Presently, KIB supports four OS families:
 - Debian
 - Red Hat
 - Flatcar
-- and SUSE
+- SUSE
 
 ## KIB Repository Layout
 
