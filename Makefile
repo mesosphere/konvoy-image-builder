@@ -22,7 +22,7 @@ INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
 
 export CGO_ENABLED=0
-export GO_VERSION := 1.19 #$(shell grep -oP '^(go )\K(\d+.\d+)$$' go.mod)
+export GO_VERSION := $(shell grep -oP '^(go )\K(\d+.\d+)$$' go.mod)
 GOLANG_IMAGE := golang:$(GO_VERSION)
 
 export CI ?= no
