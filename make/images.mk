@@ -151,11 +151,11 @@ build-%:
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix= download-images-bundle
-	$(MAKE) devkit.run WHAT="make build-$* \
+	$(MAKE) build-$* \
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN) \
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
-		ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-$(call provider, $*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)$(ADDITIONAL_OVERRIDES))"
+		ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-$(call provider, $*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)$(ADDITIONAL_OVERRIDES))
 
 .PHONY: %_offline-fips
 %_offline-fips:
@@ -169,11 +169,11 @@ build-%:
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) download-images-bundle bundle_suffix=$$( if [ $$(echo "$(DEFAULT_KUBERNETES_VERSION_SEMVER)" | cut -f2 -d.) -lt 24 ];then echo "_fips"; else echo "-fips";fi )
-	$(MAKE) devkit.run WHAT="make $*_fips \
+	$(MAKE) $*_fips \
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
-		ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+		ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: %_offline-nvidia
 %_offline-nvidia:
@@ -187,11 +187,11 @@ build-%:
 	$(MAKE) download-nvidia-runfile
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) download-images-bundle
-	$(MAKE) devkit.run WHAT="make build-$* \
+	$(MAKE) make build-$* \
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS="--instance-type=g4dn.2xlarge$(if $(ADDITIONAL_ARGS),$(SPACE)$(ADDITIONAL_ARGS))" \
-		ADDITIONAL_OVERRIDES=overrides/offline.yaml,overrides/offline-nvidia.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+		ADDITIONAL_OVERRIDES=overrides/offline.yaml,overrides/offline-nvidia.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: %_nvidia
 %_nvidia:
