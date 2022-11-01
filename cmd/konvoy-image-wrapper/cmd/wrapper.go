@@ -201,6 +201,7 @@ func (r *Runner) setVSphereEnv() error {
 }
 
 func (r *Runner) setGCPEnv() error {
+	// mount same path as the host path set by GOOGLE_APPLICATION_CREDENTIALS environment variable.
 	return r.mountFileEnv(envGCPApplicationCredentials, "")
 }
 

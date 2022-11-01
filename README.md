@@ -102,11 +102,11 @@ make build
 
 ### Building the Wrapper
 
-To build the wrapper for testing. 
+To build the wrapper for testing.
 
 ```sh
 make build-wrapper
 ```
-creates `./bin/konvoy-image-wrapper` binary for testing using konvoy image wrapper. 
+creates `./bin/konvoy-image-wrapper` binary for testing using konvoy image wrapper.
 
 For further development, see the [Dev Docs](docs/dev).

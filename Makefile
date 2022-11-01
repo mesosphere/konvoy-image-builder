@@ -403,11 +403,10 @@ define print-target
     @printf "Executing target: \033[36m$@\033[0m\n"
 endef
 
-release-bundle-GOOS: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 release-bundle-GOOS:
-	GOOS=$(GOOS) go build -tags EMBED_DOCKER_IMAGE \
-		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
-		-o "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/konvoy-image" $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go
+	$(MAKE) make docker GOOS=$(GOOS) WHAT="go build -tags EMBED_DOCKER_IMAGE \
+		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
+		-o '$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/konvoy-image' $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go"
 	cp -a "$(REPO_ROOT_DIR)/ansible" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
 	cp -a "$(REPO_ROOT_DIR)/goss" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
 	cp -a "$(REPO_ROOT_DIR)/images" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
@@ -418,6 +417,7 @@ release-bundle-GOOS:
 cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
 	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
+release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 release-bundle:
 	$(MAKE) GOOS=linux release-bundle-GOOS
 	$(MAKE) GOOS=windows release-bundle-GOOS
