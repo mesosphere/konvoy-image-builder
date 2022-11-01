@@ -12,7 +12,6 @@ import (
 	"strconv"
 
 	"github.com/mitchellh/go-homedir"
-	errors2 "github.com/pkg/errors"
 	terminal "golang.org/x/term"
 
 	"github.com/mesosphere/konvoy-image-builder/cmd/konvoy-image-wrapper/image"
@@ -44,6 +43,9 @@ const (
 	envVSpherePassword                   = "VSPHERE_PASSWORD"
 	envRedHatSubscriptionManagerUser     = "RHSM_USER"
 	envRedHatSubscriptionManagerPassword = "RHSM_PASS"
+	envVSphereSSHUserName                = "SSH_USERNAME"
+	envVSphereSSHPassword                = "SSH_PASSWORD"
+	envVsphereSSHPrivatekeyFile          = "SSH_PRIVATE_KEY_FILE"
 
 	//nolint:gosec // environment var set by user
 	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
@@ -138,7 +140,6 @@ func (r *Runner) setAWSEnv() error {
 		envAWSSessionToken,
 		envAWSSTSRegionalEndpoints,
 		envAWSSDKLoadConfig,
-		envAWSCABundle,
 	}
 
 	for _, env := range awsEnvVars {
@@ -148,30 +149,12 @@ func (r *Runner) setAWSEnv() error {
 		}
 	}
 
-	// the homedir is already mounted, only mount if not the default
-	credentialsFile, found := os.LookupEnv(envAWSCredentialsFile)
-	if found {
-		if fi, err := os.Stat(credentialsFile); err == nil {
-			if fi.IsDir() {
-				return ENvError(fmt.Sprintf("env %s must be set to a file", envAWSCredentialsFile))
-			}
-			r.addBindVolume(
-				credentialsFile,
-				filepath.Join(r.homeDir, ".aws", "credentials"),
-			)
-		} else if !os.IsNotExist(err) {
-			return errors2.Wrap(err, fmt.Sprintf("could not determine if %q exists", credentialsFile))
-		}
+	if err := r.mountFileEnv(envAWSCredentialsFile, filepath.Join(r.homeDir, ".aws", "credentials")); err != nil {
+		return fmt.Errorf("unable to mount AWS credenttials file: %w", err)
 	}
 
-	// find AWS_CA_BUNDLE and mount the file into the container if exists
-	// https://docs.aws.amazon.com/cli/latest/topic/config-vars.html#general-options
-	caBundle, err := awsCABundleFromEnv()
-	if err != nil {
-		return err
-	}
-	if caBundle != "" {
-		r.addBindVolume(caBundle, caBundle)
+	if err := r.mountFileEnv(envAWSCABundle, ""); err != nil {
+		return fmt.Errorf("unable to mount AWS CA bundle: %w", err)
 	}
 
 	return nil
@@ -194,65 +177,63 @@ func (r *Runner) setAzureEnv() {
 	}
 }
 
-func (r *Runner) setVSphereEnv() {
+func (r *Runner) setVSphereEnv() error {
 	for _, env := range []string{
 		envVSphereServer,
 		envVSphereUser,
 		envVSpherePassword,
 		envRedHatSubscriptionManagerUser,
 		envRedHatSubscriptionManagerPassword,
+		envVSphereSSHUserName,
+		envVSphereSSHPassword,
 	} {
 		value, found := os.LookupEnv(env)
 		if found {
 			r.env[env] = value
 		}
 	}
-}
 
-func (r *Runner) setGCPEnv() error {
-	path, found := os.LookupEnv(envGCPApplicationCredentials)
-	if !found {
-		// return early if env is not set, may be using a different provider
-		return nil
+	if err := r.mountFileEnv(envVsphereSSHPrivatekeyFile, ""); err != nil {
+		return fmt.Errorf("unable to mount ssh private key file for vsphere provider: %w", err)
 	}
-	if fi, err := os.Stat(path); err == nil {
-		if fi.IsDir() {
-			return fmt.Errorf("env %s must be set to a file", envGCPApplicationCredentials)
-		}
-		r.env[envGCPApplicationCredentials] = path
-		// bind to exact same path
-		r.addBindVolume(path, path)
-	} else if os.IsNotExist(err) {
-		return fmt.Errorf("env %s ise set, but file %s does not exist", envGCPApplicationCredentials, path)
-	} else {
-		return fmt.Errorf("could not determine if %q exists: %w", path, err)
-	}
-
 	return nil
 }
 
-// awsCABundle will return the path to a custom AWS CA bundle from AWS_CA_BUNDLE env var.
-func awsCABundleFromEnv() (string, error) {
-	caBundle := os.Getenv(envAWSCABundle)
-	if caBundle == "" {
-		return caBundle, nil
-	}
+func (r *Runner) setGCPEnv() error {
+	return r.mountFileEnv(envGCPApplicationCredentials, "")
+}
 
-	fi, err := os.Stat(caBundle)
+// mountFileEnv mounts absolute path to the file assigned by the environment variable.
+// if the path to mount to the container is not provided, the absolute path of the host will be mounted to container.
+func (r *Runner) mountFileEnv(envName string, containerPath string) error {
+	filePath, found := os.LookupEnv(envName)
+	if !found {
+		return nil
+	}
+	fi, err := os.Stat(filePath)
 	if err != nil {
-		return "", errors2.Wrap(err, "could not determine if file exists")
+		if os.IsNotExist(err) {
+			return fmt.Errorf("env %s is set, but file %s does not exist", envName, filePath)
+		}
+		return fmt.Errorf("could not determine if file %q assigned to %s environment variable exists: %w", filePath, envName, err)
 	}
 
 	if fi.IsDir() {
-		return "", ENvError(fmt.Sprintf("env %s must be set to a file", envAWSCABundle))
+		return fmt.Errorf("env %s must be set to a file", envName)
 	}
 
-	caBundle, err = filepath.Abs(caBundle)
+	absFilePath, err := filepath.Abs(filePath)
 	if err != nil {
-		return "", errors2.Wrap(err, fmt.Sprintf("could not determine the absolute path for %q", caBundle))
+		return fmt.Errorf("could not determine the absolute path for %s assigned to %s environment variable : %w", filePath, envName, err)
 	}
 
-	return caBundle, nil
+	if containerPath == "" {
+		containerPath = absFilePath
+	}
+
+	r.env[envName] = containerPath
+	r.addBindVolume(absFilePath, containerPath)
+	return nil
 }
 
 func (r *Runner) addBindVolume(source, target string) {
@@ -409,6 +390,35 @@ func (r *Runner) setGroupMapping() error {
 	return os.WriteFile(filePath, []byte(content), 0o644)
 }
 
+// Mask the ssh config from the host. The ssh config format on OSX is
+// slightly different than that in Linux, which will cause Ansible to
+// fail sometimes.
+func (r *Runner) maskSSHConfig() error {
+	_, err := os.Stat(r.usr.HomeDir + "/.ssh/config")
+	if err != nil {
+		if os.IsNotExist(err) {
+			// ignore if the ~/.ssh/config file is not found
+			return nil
+		}
+		return err
+	}
+
+	f, ferr := os.Create(filepath.Join(r.tempDir, "ssh_config"))
+	if ferr != nil {
+		return ferr
+	}
+	defer f.Close()
+
+	// Make sure that that the file is only `rw` by the user.
+	if ferr := f.Chmod(os.FileMode(0o600)); ferr != nil {
+		return ferr
+	}
+
+	r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+"/.ssh/config")
+
+	return nil
+}
+
 func (r *Runner) Run(args []string) error {
 	// Get the Konvoy image version for marker file
 	var err error
@@ -452,22 +462,9 @@ func (r *Runner) Run(args []string) error {
 		return err
 	}
 
-	// Mask the ssh config from the host. The ssh config format on OSX is
-	// slightly different than that in Linux, which will cause Ansible to
-	// fail sometimes.
-	if _, err = os.Stat(r.usr.HomeDir + "/.ssh/config"); err == nil {
-		f, ferr := os.Create(filepath.Join(r.tempDir, "ssh_config"))
-		if ferr != nil {
-			return ferr
-		}
-
-		// Make sure that that the file is only `rw` by the user.
-		if ferr := f.Chmod(os.FileMode(0o600)); ferr != nil {
-			return ferr
-		}
-		f.Close()
-
-		r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+"/.ssh/config")
+	err = r.maskSSHConfig()
+	if err != nil {
+		return err
 	}
 
 	// Mask the ssh known_hosts file from the host.
@@ -483,7 +480,10 @@ func (r *Runner) Run(args []string) error {
 		return err
 	}
 	r.setAzureEnv()
-	r.setVSphereEnv()
+	err = r.setVSphereEnv()
+	if err != nil {
+		return err
+	}
 	err = r.setGCPEnv()
 	if err != nil {
 		return err
