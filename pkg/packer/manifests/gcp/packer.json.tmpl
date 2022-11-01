@@ -152,13 +152,13 @@
       "type": "shell",
       "remote_folder":"{{user `remote_folder`}}",
       "inline": [
-        "mkdir -p ~/.goss-dir"
+        "mkdir -p {{user `remote_folder` }}/.goss-dir"
       ]
     },
     {
         "type": "file",
         "source": "/usr/local/bin/goss",
-        "destination": "~/.goss-dir/goss",
+        "destination": "{{user `remote_folder` }}/.goss-dir/goss",
         "direction": "upload",
         "max_retries": 10
     },
@@ -169,7 +169,7 @@
       "goss_file": "{{user `goss_entry_file`}}",
       "inspect": "{{user `goss_inspect_mode`}}",
       "skip_install": true,
-      "download_path": "~/.goss-dir/goss",
+      "download_path": "{{user `remote_folder` }}/.goss-dir/goss",
       "type": "goss",
       "tests": [
         "{{user `goss_tests_dir`}}"
@@ -196,7 +196,7 @@
       "type": "shell",
       "remote_folder":"{{user `remote_folder`}}",
       "inline": [
-        "rm -r  ~/.goss-dir"
+        "rm -r  {{user `remote_folder` }}/.goss-dir"
       ]
     }
   ],
