@@ -27,7 +27,7 @@
     "plan_image_publisher": "",
     "plan_image_sku": "",
     "private_virtual_network_with_public_ip": "",
-    "remote_folder": "",
+    "remote_folder": "/tmp",
     "resource_group_name": "dkp",
     "shared_image_gallery_name": "dkp",
     "shared_image_gallery_image_version": "0.0.{{timestamp}}",
@@ -178,6 +178,7 @@
       "user": "{{user `ssh_username`}}",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'",
+        "ANSIBLE_REMOTE_TEMP='{{user `remote_folder` }}/.ansible/'"
       ],
       "extra_arguments": [
         "--extra-vars",

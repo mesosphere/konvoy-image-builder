@@ -14,7 +14,7 @@
     "network": "",
     "project_id": "",
     "region": "",
-    "remote_folder": "",
+    "remote_folder": "/tmp",
     "zone": "{{ user `region` }}-a",
     "disk_size": "80",
     "disk_type": "pd-standard"
@@ -141,6 +141,7 @@
       "user": "{{user `ssh_username`}}",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'",
+        "ANSIBLE_REMOTE_TEMP='{{user `remote_folder` }}/.ansible/'"
       ],
       "extra_arguments": [
         "--extra-vars",
