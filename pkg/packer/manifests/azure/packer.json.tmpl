@@ -27,6 +27,7 @@
     "plan_image_publisher": "",
     "plan_image_sku": "",
     "private_virtual_network_with_public_ip": "",
+    "remote_folder": "/tmp",
     "resource_group_name": "dkp",
     "shared_image_gallery_name": "dkp",
     "shared_image_gallery_image_version": "0.0.{{timestamp}}",
@@ -98,6 +99,7 @@
   "provisioners": [
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
@@ -115,6 +117,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
@@ -129,6 +132,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
@@ -143,6 +147,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "BUILD_NAME={{ user `build_name`}}"
       ],
@@ -151,6 +156,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "BUILD_NAME={{build_name}}"
       ],
@@ -159,6 +165,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "BUILD_NAME={{build_name}}"
       ],
@@ -171,7 +178,7 @@
       "user": "{{user `ssh_username`}}",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'",
-        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+        "ANSIBLE_REMOTE_TEMP='{{user `remote_folder` }}/.ansible/'"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -180,14 +187,15 @@
     },
      {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "inline": [
-        "mkdir -p /tmp/.goss-dir"
+        "mkdir -p {{user `remote_folder` }}/.goss-dir"
       ]
     },
     {
         "type": "file",
         "source": "/usr/local/bin/goss",
-        "destination": "/tmp/.goss-dir/goss",
+        "destination": "{{user `remote_folder` }}/.goss-dir/goss",
         "direction": "upload",
         "max_retries": 10
     },
@@ -198,7 +206,7 @@
       "goss_file": "{{user `goss_entry_file`}}",
       "inspect": "{{user `goss_inspect_mode`}}",
       "skip_install": true,
-      "download_path": "/tmp/.goss-dir/goss",
+      "download_path": "{{user `remote_folder` }}/.goss-dir/goss",
       "type": "goss",
       "tests": [
         "{{user `goss_tests_dir`}}"
@@ -223,8 +231,9 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "inline": [
-        "rm -r  /tmp/.goss-dir"
+        "rm -r  {{user `remote_folder` }}/.goss-dir"
       ]
     }
   ],
