@@ -43,13 +43,6 @@ platforms:
     instance_type: p2.xlarge
     spot_price: false
     ssh_user: ec2-user
-  - name: konvoyimage-rhel8.2-${USER:-ci}-${HOSTNAME:-local}
-    image_search_name: "RHEL-8.2.0*2020*-x86_64-*"
-    image_search_owner: "309956199498"
-    region: us-east-1
-    instance_type: p2.xlarge
-    spot_price: false
-    ssh_user: ec2-user
   - name: konvoyimage-rhel8.4-${USER:-ci}-${HOSTNAME:-local}
     image_search_name: "RHEL-8.4.0_HVM-*"
     image_search_owner: "309956199498"

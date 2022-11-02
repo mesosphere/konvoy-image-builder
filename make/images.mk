@@ -58,7 +58,7 @@ os_distro_os_release = $(subst oracle,ol,$(subst redhat,rhel,$(1)))
 image_dir = $(subst aws,ami,$(call provider, $(1)))
 
 # NOTE(jkoelker) Extract the file from the last part (same as `cut -d- -f2-`)
-#                and squashes major and minor, e.g 7.9 -> 79, 8.2 -> 82
+#                and squashes major and minor, e.g 7.9 -> 79, 8.4 -> 84
 image_file = $(subst .,,$(subst $(SPACE),-,$(wordlist 2, 3, $(subst -,$(SPACE),$(1)))))
 
 azure_vm_size = --instance-type Standard_B2ms
@@ -395,23 +395,6 @@ rhel79-ova-fips:
 .PHONY: rhel79-ova-fips-offline
 rhel79-ova-fips-offline:
 	$(MAKE) ova-rhel-7.9_offline-fips
-
-# RHEL 8.2 AWS
-.PHONY: rhel82
-rhel82:
-	$(MAKE) build-aws-rhel-8.2
-
-.PHONY: rhel82-nvidia
-rhel82-nvidia:
-	$(MAKE) aws-rhel-8.2_nvidia
-
-.PHONY: rhel82-fips
-rhel82-fips:
-	$(MAKE) aws-rhel-8.2_fips
-
-.PHONY: rhel82-fips-offline
-rhel82-fips-offline:
-	$(MAKE) aws-rhel-8.2_offline-fips
 
 # RHEL 8.4 AWS
 .PHONY: rhel84
