@@ -1,7 +1,8 @@
 download_images: true
 
 packer:
-  ami_filter_name: "RHEL-7.9*-x86_64-*"
+  # Use an AMI with the supported kernel version 3.10.0-1160.66.1.el7.x86_64
+  ami_filter_name: "RHEL-7.9_HVM-20220512-x86_64-*"
   ami_filter_owners: "309956199498"
   distribution: "RHEL"
   distribution_version: "7.9"
