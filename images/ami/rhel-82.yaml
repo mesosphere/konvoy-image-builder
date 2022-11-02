@@ -9,7 +9,6 @@ packer:
   ssh_username: "ec2-user"
   root_device_name: "/dev/sda1"
   volume_size: "15"
-  remote_folder: "/home/ec2-user"
 
 build_name: "rhel-8.2"
 packer_builder_type: "amazon"
