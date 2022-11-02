@@ -23,12 +23,10 @@ ci.e2e.build.all: ci.e2e.build.oracle-8
 ci.e2e.build.all: ci.e2e.build.flatcar
 ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
-ci.e2e.build.all: e2e.build.rhel-8.2-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.6-offline
 ci.e2e.build.all: ci.e2e.build.rhel-8.4-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8.6-nvidia
-ci.e2e.build.all: ci.e2e.build.rhel-8-fips
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8.4-ova
@@ -48,8 +46,6 @@ e2e.build.centos-7-offline-nvidia: centos79-offline-nvidia infra.aws.destroy
 e2e.build.rhel-7.9-offline-fips: rhel79-fips-offline infra.aws.destroy
 
 e2e.build.rhel-7.9-offline-nvidia: rhel79-offline-nvidia infra.aws.destroy
-
-e2e.build.rhel-8.2-offline-fips: rhel82-fips-offline infra.aws.destroy
 
 e2e.build.rhel-8.4-offline-fips: rhel84-fips-offline infra.aws.destroy
 
@@ -76,8 +72,6 @@ e2e.build.flatcar: flatcar
 e2e.build.centos-7-nvidia: centos7-nvidia
 
 e2e.build.sles-15-nvidia: sles15-nvidia
-
-e2e.build.rhel-8-fips: rhel82-fips
 
 e2e.build.rhel-8.4-nvidia: rhel84-nvidia
 
