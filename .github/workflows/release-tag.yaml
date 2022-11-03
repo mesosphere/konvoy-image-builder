@@ -141,6 +141,7 @@ jobs:
           tag: "${{ github.ref_name }}"
           artifacts: konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64.tar.gz,konvoy-image-builder_${{ github.ref_name }}_checksums.txt
           replacesArtifacts: true
+          generateReleaseNotes: true
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           artifactErrorsFailBuild: true
           allowUpdates: true
