@@ -17,6 +17,7 @@
     "kms_key_id": "",
     "manifest_output": "manifest.json",
     "python_path": "",
+    "remote_folder": "/tmp",
     "skip_profile_validation": "false",
     "snapshot_groups": "all",
     "snapshot_users": "",
@@ -95,6 +96,7 @@
   "provisioners": [
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
@@ -112,6 +114,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
@@ -126,6 +129,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "HTTP_PROXY={{user `http_proxy`}}",
         "http_proxy={{user `http_proxy`}}",
@@ -140,6 +144,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "BUILD_NAME={{ user `build_name`}}"
       ],
@@ -148,6 +153,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "BUILD_NAME={{build_name}}"
       ],
@@ -156,6 +162,7 @@
     },
     {
       "type": "shell",
+      "remote_folder":"{{user `remote_folder`}}",
       "environment_vars": [
         "BUILD_NAME={{build_name}}"
       ],
@@ -168,7 +175,7 @@
       "user": "{{user `ssh_username`}}",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
-        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+        "ANSIBLE_REMOTE_TEMP='{{user `remote_folder` }}/.ansible/'"
       ],
       "extra_arguments": [
         "--extra-vars",
