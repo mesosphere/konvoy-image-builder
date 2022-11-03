@@ -22,7 +22,19 @@ INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
 
 export CGO_ENABLED=0
-export GO_VERSION := $(shell grep -oP '^(go )\K(\d+.\d+)$$' go.mod)
+# find go version from go.mod file. sed -n "s|^go\s*\(\S*\).*/\1|p" go.mod
+# -n     suppress printing
+# s      substitute
+# |      deliminater
+# ^go    anything before 'go' and match 'go'
+# \s*    any white space character (space)
+# \(     start capture group
+# \S*    capture any non-white space character (word)
+# \)     end capture group
+# .*    anything after the capture group
+# \1     substitute everything with the 1st capture group
+# p      print it
+export GO_VERSION := $(shell sed -n "s|^go\s*\(\S*\).*|\1|p" go.mod)
 GOLANG_IMAGE := golang:$(GO_VERSION)
 
 export CI ?= no
@@ -404,9 +416,9 @@ define print-target
 endef
 
 release-bundle-GOOS:
-	$(MAKE) make docker GOOS=$(GOOS) WHAT="go build -tags EMBED_DOCKER_IMAGE \
-		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o '$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/konvoy-image' $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go"
+	GOOS=$(GOOS) go build -tags EMBED_DOCKER_IMAGE \
+		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
+		-o "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/konvoy-image" $(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/main.go
 	cp -a "$(REPO_ROOT_DIR)/ansible" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
 	cp -a "$(REPO_ROOT_DIR)/goss" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
 	cp -a "$(REPO_ROOT_DIR)/images" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
