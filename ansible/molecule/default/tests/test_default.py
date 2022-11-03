@@ -84,6 +84,7 @@ def test_kubelet_kubectl_installed(host):
 
     flatcar: skip no packages
     """
+    distro = host.system_info.distribution
     if distro == "flatcar":
         pytest.skip("no packages on flatcar")
 
@@ -96,6 +97,7 @@ def test_kubeadm_installed(host):
 
     flatcar: skip no packages
     """
+    distro = host.system_info.distribution
     if distro == "flatcar":
         pytest.skip("no packages on flatcar")
 
