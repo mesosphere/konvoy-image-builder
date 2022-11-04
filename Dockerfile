@@ -8,6 +8,7 @@ FROM alpine:3.15.4
 
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
+ENV PACKER_PLUGIN_PATH=/opt/packer/plugins
 
 COPY requirements.txt /tmp/
 # NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
@@ -27,7 +28,8 @@ COPY --from=devkit /usr/local/bin/goss /usr/local/bin/
 COPY --from=devkit /usr/local/bin/mindthegap /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer-provisioner-goss /usr/local/bin/
-COPY --from=devkit /root/.config/packer/plugins/ /root/.config/packer/plugins/
+COPY --from=devkit /usr/local/bin/govc /usr/local/bin/
+COPY --from=devkit /root/.config/packer/plugins/ ${PACKER_PLUGIN_PATH}
 COPY bin/konvoy-image /usr/local/bin
 COPY images /root/images
 COPY ansible /root/ansible

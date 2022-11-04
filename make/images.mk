@@ -17,6 +17,8 @@ ARTIFACTS_DIR ?= artifacts/
 CONTAINERD_URL ?= https://packages.d2iq.com/dkp/containerd
 NVIDIA_URL ?= https://download.nvidia.com/XFree86/Linux-x86_64
 
+KONVOY_IMAGE_BIN ?= ./bin/konvoy-image-wrapper
+
 NVIDIA_DRIVER_VERSION ?= $(shell \
 	grep -E -e "nvidia_driver_version:" ansible/group_vars/all/defaults.yaml | \
 	cut -d\" -f2 \
@@ -104,12 +106,11 @@ azure-build-image-cleanup: ;
 
 # NOTE(jkoelker) The common build target every other target ends up calling.
 .PHONY: build-image
-build-image: build
+build-image: $(KONVOY_IMAGE_BIN)
 build-image: $(IMAGE)
 build-image: ## Build an image on a provider
-	./bin/konvoy-image build $(subst ova,,$(PROVIDER)) $(IMAGE) \
+	$(KONVOY_IMAGE_BIN) build $(subst ova,,$(PROVIDER)) $(IMAGE) \
 	--dry-run=$(BUILD_DRY_RUN) \
-	--packer-on-error abort \
 	-v ${VERBOSITY} \
 	$(if $(ADDITIONAL_OVERRIDES),--overrides=$(ADDITIONAL_OVERRIDES)) \
 	$(call vm_size,$(PROVIDER),$(ADDITIONAL_ARGS)) \
@@ -150,11 +151,11 @@ build-%:
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix= download-images-bundle
-	$(MAKE) devkit.run WHAT="make build-$* \
+	$(MAKE) build-$* \
 		BUILD_DRY_RUN=$(BUILD_DRY_RUN) \
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
-		ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-$(call provider, $*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)$(ADDITIONAL_OVERRIDES))"
+		ADDITIONAL_OVERRIDES=overrides/offline.yaml,packer-$(call provider, $*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)$(ADDITIONAL_OVERRIDES))
 
 .PHONY: %_offline-fips
 %_offline-fips:
@@ -168,11 +169,11 @@ build-%:
 		download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) download-images-bundle bundle_suffix=$$( if [ $$(echo "$(DEFAULT_KUBERNETES_VERSION_SEMVER)" | cut -f2 -d.) -lt 24 ];then echo "_fips"; else echo "-fips";fi )
-	$(MAKE) devkit.run WHAT="make $*_fips \
+	$(MAKE) $*_fips \
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS=\"$(ADDITIONAL_ARGS)\" \
-		ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+		ADDITIONAL_OVERRIDES=overrides/offline-fips.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: %_offline-nvidia
 %_offline-nvidia:
@@ -186,11 +187,11 @@ build-%:
 	$(MAKE) download-nvidia-runfile
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) download-images-bundle
-	$(MAKE) devkit.run WHAT="make build-$* \
+	$(MAKE) make build-$* \
 		BUILD_DRY_RUN=${BUILD_DRY_RUN} \
 		VERBOSITY=$(VERBOSITY) \
 		ADDITIONAL_ARGS="--instance-type=g4dn.2xlarge$(if $(ADDITIONAL_ARGS),$(SPACE)$(ADDITIONAL_ARGS))" \
-		ADDITIONAL_OVERRIDES=overrides/offline.yaml,overrides/offline-nvidia.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})"
+		ADDITIONAL_OVERRIDES=overrides/offline.yaml,overrides/offline-nvidia.yaml,packer-$(call provider,$*)-offline-override.yaml$(if $(ADDITIONAL_OVERRIDES),$(COMMA)${ADDITIONAL_OVERRIDES})
 
 .PHONY: %_nvidia
 %_nvidia:

@@ -34,7 +34,7 @@ ci.e2e.build.all: ci.e2e.build.rhel-7.9-ova
 
 # Run an E2E test in its own devkit container.
 ci.e2e.build.%:
-	make devkit.run WHAT="make e2e.build.$* ADDITIONAL_OVERRIDES=$(ADDITIONAL_OVERRIDES) VERBOSITY=$(VERBOSITY) ADDITIONAL_ARGS=$(ADDITIONAL_ARGS)"
+	$(MAKE) e2e.build.$* ADDITIONAL_OVERRIDES=$(ADDITIONAL_OVERRIDES) VERBOSITY=$(VERBOSITY) ADDITIONAL_ARGS=$(ADDITIONAL_ARGS)
 
 # AWS
 e2e.build.centos-7: centos7
