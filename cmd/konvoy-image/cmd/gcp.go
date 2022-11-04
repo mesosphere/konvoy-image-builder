@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
@@ -15,11 +12,6 @@ var (
 	gcpUse     = "gcp <image.yaml>"
 )
 
-const (
-	//nolint:gosec // environment var set by user
-	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
-)
-
 func NewGCPBuildCmd() *cobra.Command {
 	flags := &buildCLIFlags{}
 	cmd := &cobra.Command{
@@ -27,21 +19,6 @@ func NewGCPBuildCmd() *cobra.Command {
 		Short:   "build and provision gcp images",
 		Example: gcpExample,
 		Args:    cobra.ExactArgs(1),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			filePath, found := os.LookupEnv(envGCPApplicationCredentials)
-			if !found {
-				return fmt.Errorf("envornment variable %s is not set", envGCPApplicationCredentials)
-			}
-			_, err := os.Stat(filePath)
-			if err != nil {
-				return fmt.Errorf(
-					"could not determine if file %q assigned to %s environment variable exists: %w",
-					filePath,
-					envGCPApplicationCredentials,
-					err)
-			}
-			return nil
-		},
 		Run: func(cmd *cobra.Command, args []string) {
 			runBuild(args[0], flags)
 		},

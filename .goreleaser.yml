@@ -65,7 +65,6 @@ builds:
 
 dockers:
   - dockerfile: Dockerfile.devkit
-    id: docker-devkit
     image_templates:
       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
     build_flag_templates:
@@ -86,7 +85,6 @@ dockers:
       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}'
     ids:
       - konvoy-image
-      - docker-devkit
     # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
     #                was just build and is local, it will not be found.
     build_flag_templates:

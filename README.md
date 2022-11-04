@@ -102,11 +102,25 @@ make build
 
 ### Building the Wrapper
 
-To build the wrapper for testing.
+These are temporary instructions for building the wrapper for testing
 
 ```sh
-make build-wrapper
+make build.snapshot
 ```
-creates `./bin/konvoy-image-wrapper` binary for testing using konvoy image wrapper.
+
+Replace image tag with the version created by go releaser
+
+```sh
+docker save mesosphere/konvoy-image-builder:v1.0.0-alpha1-SNAPSHOT-e590962 \
+ | gzip -c - > cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+```
+
+Build the wrapper
+
+```sh
+go build -tags EMBED_DOCKER_IMAGE \
+ -ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=v1.0.0-alpha1-SNAPSHOT-e590962" \
+ -o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
+```
 
 For further development, see the [Dev Docs](docs/dev).

@@ -22,20 +22,6 @@ INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
 
 export CGO_ENABLED=0
-# find go version from go.mod file. sed -n "s|^go\s*\(\S*\).*/\1|p" go.mod
-# -n     suppress printing
-# s      substitute
-# |      deliminater
-# ^go    anything before 'go' and match 'go'
-# \s*    any white space character (space)
-# \(     start capture group
-# \S*    capture any non-white space character (word)
-# \)     end capture group
-# .*    anything after the capture group
-# \1     substitute everything with the 1st capture group
-# p      print it
-export GO_VERSION := $(shell sed -n "s|^go\s*\(\S*\).*|\1|p" go.mod)
-GOLANG_IMAGE := golang:$(GO_VERSION)
 
 export CI ?= no
 ifeq ($(CI),yes)
@@ -192,7 +178,7 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
-$(DOCKER_PHONY_FILE): konvoy-image-linux
+$(DOCKER_PHONY_FILE): bin/konvoy-image
 $(DOCKER_PHONY_FILE): Dockerfile
 	docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
@@ -246,17 +232,6 @@ generate: ## go generate
 	$(call print-target)
 	go generate ./...
 
-.PHONEY: docker
-docker:
-	docker run \
-	--rm \
-	$(DOCKER_ULIMIT_ARGS) \
-	--volume $(REPO_ROOT_DIR):/build \
-	--workdir /build \
-	--env GOOS \
-	$(GOLANG_IMAGE) \
-	/bin/bash -c "$(WHAT)"
-
 bin/konvoy-image: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image: $(REPO_ROOT_DIR)/pkg
@@ -265,18 +240,14 @@ bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image:
 	$(call print-target)
 	go build \
-		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
+		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
 		-o ./bin/konvoy-image ./cmd/konvoy-image/main.go
 
-konvoy-image-linux:
-	$(MAKE) docker GOOS=linux WHAT="make bin/konvoy-image"
-
-bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
-bin/konvoy-image-wrapper: 
+bin/konvoy-image-wrapper:
 	$(call print-target)
-	$(MAKE) docker WHAT="go build \
-		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go"
+	go build \
+		-ldflags="-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)" \
+		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 
 dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/cmd
 dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
@@ -290,9 +261,6 @@ dist/konvoy-image_linux_amd64/konvoy-image:
 .PHONY: build
 build: bin/konvoy-image
 build: ## go build
-
-.PHONY: build-wrapper
-build-wrapper: bin/konvoy-image-wrapper
 
 .PHONY: docs
 docs: build
@@ -430,7 +398,6 @@ cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
 	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
-release-bundle:
 	$(MAKE) GOOS=linux release-bundle-GOOS
 	$(MAKE) GOOS=windows release-bundle-GOOS
 	$(MAKE) GOOS=darwin release-bundle-GOOS
