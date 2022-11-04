@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.24.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.24.0...v1.24.1) (2022-11-04)
+
+
+### Features
+
+* adding make targets needed for offline nvidia rhel8.6 ([#544](https://github.com/mesosphere/konvoy-image-builder/issues/544)) ([7f9516c](https://github.com/mesosphere/konvoy-image-builder/commit/7f9516ca7ec23598200a520286feca37f04f09eb))
+
+
+### Bug Fixes
+
+* add image_name and kubernetes_version to all infrastructure's output manifest.yaml ([#545](https://github.com/mesosphere/konvoy-image-builder/issues/545)) ([9152ffb](https://github.com/mesosphere/konvoy-image-builder/commit/9152ffbb623fec5c586edda685c571c1d039b928))
+* Can not specify custom Packer directory  ([#559](https://github.com/mesosphere/konvoy-image-builder/issues/559)) ([949886c](https://github.com/mesosphere/konvoy-image-builder/commit/949886c8535a932d395d7a94b51d60bbbc4f6a5a))
+* fips.configure default value ([#547](https://github.com/mesosphere/konvoy-image-builder/issues/547)) ([a7b3e9b](https://github.com/mesosphere/konvoy-image-builder/commit/a7b3e9becdd039ebc7fe246abb9120ce1a09cb99))
+* set feature flag for cloud-init to ignore errors ([#550](https://github.com/mesosphere/konvoy-image-builder/issues/550)) ([b20f671](https://github.com/mesosphere/konvoy-image-builder/commit/b20f67114f2bdb4b817a27f399b29f27f5245959))
+* use environment variables to authenticate with base vsphere template ([#552](https://github.com/mesosphere/konvoy-image-builder/issues/552)) ([9688d4f](https://github.com/mesosphere/konvoy-image-builder/commit/9688d4f2b24d4851d0396ab02a5a12868efabedb))
+
+
+### Miscellaneous
+
+* release 1.24.1 ([#558](https://github.com/mesosphere/konvoy-image-builder/issues/558)) ([1734a69](https://github.com/mesosphere/konvoy-image-builder/commit/1734a696f05aed0cba8575b2113d227b5fde4065))
+
 ## [1.24.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.23.1...v1.24.0) (2022-10-18)
 
 
