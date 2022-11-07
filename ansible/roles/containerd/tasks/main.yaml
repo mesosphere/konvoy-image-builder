@@ -3,6 +3,7 @@
   file:
     path: "/etc/systemd/system/containerd.service.d"
     state: directory
+  when: http_proxy is defined or https_proxy is defined or no_proxy is defined or ansible_os_family == "Flatcar"
 
 - name: Create containerd max files
   template:
