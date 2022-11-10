@@ -32,7 +32,7 @@ For example, [CentOS also provides an image](https://wiki.centos.org/Cloud/AWS) 
 Once you select the source AMI that you want, you can declare that when running your build command:
 
 ```bash
-./konvoy-image build path/to/ami/centos-79.yaml --source-ami ami-0123456789
+konvoy-image build aws --source-ami ami-0123456789 path/to/ami/centos-79.yaml
 ```
 
 Alternatively, if you want to add it to your yaml file, or are making your own file, you can do that as well.
