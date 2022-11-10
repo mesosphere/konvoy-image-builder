@@ -1,5 +1,4 @@
-# Using custom source AMIs for creating AWS Machine Images.
-
+# Using custom source AMIs for creating AWS Machine Images
 
 ## Prerequisites
 - AWS account
