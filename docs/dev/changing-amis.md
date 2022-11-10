@@ -30,8 +30,14 @@ If this is the case, you will want to edit, or create your own, yaml file that l
 
 For example, [CentOS also provides an image](https://wiki.centos.org/Cloud/AWS) on the [AWS marketplace](https://aws.amazon.com/marketplace/pp/prodview-foff247vr2zfw) which you can subscribe to for free.
 
-If you do that, you just need to add that AMI ID into the `source_ami` in the yaml file.
-The `ami_filter_name` and `ami_filter_owners` will be ignored, but their values are deleted in the below yaml:
+Once you select the source AMI that you want, you can declare that when running your build command:
+
+```bash
+./konvoy-image build path/to/ami/centos-79.yaml --source-ami ami-0123456789
+```
+
+Alternatively, if you want to add it to your yaml file, or are making your own file, you can do that as well.
+You just need to add that AMI ID into the `source_ami` in the yaml file:
 
 ```yaml
 download_images: true
