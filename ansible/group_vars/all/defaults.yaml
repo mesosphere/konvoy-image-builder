@@ -26,8 +26,7 @@ package_versions:
   kubenode: "{{ kubernetes_version }}"
 
 # variable used for seeding images
-k8s_image_registry: "k8s.gcr.io"
-coredns_image_registry_repository: "k8s.gcr.io/coredns/coredns"
+k8s_image_registry: "registry.k8s.io"
 control_plane_images: []
 
 aws_images: []

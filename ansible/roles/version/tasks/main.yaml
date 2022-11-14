@@ -44,7 +44,7 @@
   register: system_containerd_config_default_cmd
 - name: Set containerd pause image name fact
   set_fact:
-      # If match is found, evaluates to a list, e.g., ["k8s.gcr.io/pause:3.6"]. Otherwise, evaluates to an empty string.
+      # If match is found, evaluates to a list, e.g., ["registry.k8s.io/pause:3.6"]. Otherwise, evaluates to an empty string.
       containerd_sandbox_image: "{{ system_containerd_config_default_cmd.stdout | regex_search('sandbox_image = \"(?P<name>.*)\"', '\\g<name>') }}"
 
 # NOTE Create a list for easy concatenation.
