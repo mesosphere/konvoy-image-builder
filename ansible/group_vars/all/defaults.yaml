@@ -5,7 +5,7 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 kubernetes_version: "1.24.6"
 
-containerd_version: "1.4.13"
+containerd_version: "1.6.10"
 kubernetes_cni_version: "0.9.1"
 crictl_version: "1.22.0"
 kubernetes_semver: "v{{ kubernetes_version }}"
