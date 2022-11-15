@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.24.1...v1.24.2) (2022-11-14)
+
+
+### Bug Fixes
+
+* use new centos 7.9 base AMI ([#573](https://github.com/mesosphere/konvoy-image-builder/issues/573)) ([c987aa2](https://github.com/mesosphere/konvoy-image-builder/commit/c987aa23cf9523a762b9f89314f68fa26525827b))
+
 ## [1.24.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.24.0...v1.24.1) (2022-11-04)
 
 
