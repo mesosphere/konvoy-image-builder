@@ -298,6 +298,10 @@ flatcar-nvidia-azure:
 oracle79:
 	$(MAKE) build-aws-oracle-7.9
 
+.PHONY: oracle79-fips
+oracle79-fips:
+	$(MAKE) aws-oracle-7.9_fips
+
 # old make targets to map to new ones
 .PHONY: oracle7
 oracle7: oracle79
