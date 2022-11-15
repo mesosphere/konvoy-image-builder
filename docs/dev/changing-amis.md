@@ -27,7 +27,7 @@ At times, a particular upstream AMI may not be available in your region, or some
 
 If this is the case, you will want to edit, or create your own, yaml file that looks up based on the `source_ami` field.
 
-For example, [CentOS also provides an image](https://wiki.centos.org/Cloud/AWS) on the [AWS marketplace](https://aws.amazon.com/marketplace/pp/prodview-foff247vr2zfw) which you can subscribe to for free.
+For example, [CentOS also provides an image](https://wiki.centos.org/Cloud/AWS) on the AWS marketplace, or one can select other images that are otherwise depracated.
 
 Once you select the source AMI that you want, you can declare that when running your build command:
 
