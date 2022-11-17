@@ -27,6 +27,8 @@ package_versions:
 
 # variable used for seeding images
 k8s_image_registry: "registry.k8s.io"
+# the CoreDNS image is not rebuilt for FIPS and should always be pulled from the default registry
+k8s_image_registry_for_coredns: "registry.k8s.io"
 control_plane_images: []
 
 aws_images: []

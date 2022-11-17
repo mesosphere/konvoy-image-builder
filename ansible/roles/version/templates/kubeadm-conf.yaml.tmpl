@@ -2,7 +2,7 @@
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 dns:
-  imageRepository: {{ k8s_image_registry }}
+  imageRepository: {{ k8s_image_registry_for_coredns }}
 etcd:
   local:
     imageRepository: {{ k8s_image_registry }}
