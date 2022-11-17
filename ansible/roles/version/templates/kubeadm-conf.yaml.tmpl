@@ -6,6 +6,6 @@ dns:
 etcd:
   local:
     imageRepository: {{ k8s_image_registry }}
-    imageTag: {{ hardcoded_etcd_fips_version }}
+    imageTag: {{ etcd_version }}
 imageRepository: {{ k8s_image_registry }}
 kubernetesVersion: {{ kubeadm_version }}
