@@ -8,11 +8,36 @@
   set_fact:
     kubeadm_version: "{{ kubeadm_version_out.stdout | trim }}"
 
-# TODO(dkoshkin) remove this hardcoded version when additional images are built for FIPS
-# TODO(dkoshkin) remove this hardcoded version when etcd v3.5.x is stable https://github.com/kubernetes/kubeadm/issues/2676 
-- name: set hardcoded etcd image
+# list the kubeadm images with the default config first
+# this is only needed to get the etcd version
+- name: determine etcd image
+  shell: kubeadm config images list
+  register: kubernetes_kubeadm_images_with_default_config
+
+- name: set etcd image
   set_fact:
-    hardcoded_etcd_fips_version:  "{{ 'v3.4.13_fips.0' if 'fips' in kubeadm_version else '3.4.13-0' }}"
+    etcd_version:  "{{
+      kubernetes_kubeadm_images_with_default_config.stdout_lines |
+      select('match', '.*/etcd:.*') | first |
+      split(':') | last
+    }}"
+  when: '"fips" not in kubeadm_version'
+
+
+# the default etcd image is like: 3.5.5-0
+# but the FIPS image is v3.5.5_fips.0
+# add a 'v' prefix
+# regex_replace "-0" with an empty character
+# add a "fips.0" suffix
+- name: set FIPS etcd image
+  set_fact:
+    etcd_version:  "v{{
+      kubernetes_kubeadm_images_with_default_config.stdout_lines |
+      select('match', '.*/etcd:.*') | first |
+      split(':') | last |
+      regex_replace('-[^-]+$', '')
+    }}_fips.0"
+  when: '"fips" in kubeadm_version'
 
 - name: copy kubeadm config
   template:
@@ -44,7 +69,7 @@
   register: system_containerd_config_default_cmd
 - name: Set containerd pause image name fact
   set_fact:
-      # If match is found, evaluates to a list, e.g., ["k8s.gcr.io/pause:3.6"]. Otherwise, evaluates to an empty string.
+      # If match is found, evaluates to a list, e.g., ["registry.k8s.io/pause:3.6"]. Otherwise, evaluates to an empty string.
       containerd_sandbox_image: "{{ system_containerd_config_default_cmd.stdout | regex_search('sandbox_image = \"(?P<name>.*)\"', '\\g<name>') }}"
 
 # NOTE Create a list for easy concatenation.

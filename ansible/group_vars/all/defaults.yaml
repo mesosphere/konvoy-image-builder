@@ -3,9 +3,9 @@ python_path: ""
 
 # This is also in images/common.yaml as that's where the go code expects it to be.
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
-kubernetes_version: "1.24.6"
+kubernetes_version: "1.25.4"
 
-containerd_version: "1.4.13"
+containerd_version: "1.6.10"
 kubernetes_cni_version: "0.9.1"
 crictl_version: "1.22.0"
 kubernetes_semver: "v{{ kubernetes_version }}"
@@ -26,8 +26,9 @@ package_versions:
   kubenode: "{{ kubernetes_version }}"
 
 # variable used for seeding images
-k8s_image_registry: "k8s.gcr.io"
-coredns_image_registry_repository: "k8s.gcr.io/coredns/coredns"
+k8s_image_registry: "registry.k8s.io"
+# the CoreDNS image is not rebuilt for FIPS and should always be pulled from the default registry
+k8s_image_registry_for_coredns: "registry.k8s.io"
 control_plane_images: []
 
 aws_images: []
