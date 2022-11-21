@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.25.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.24.2...v1.25.0) (2022-11-21)
+
+
+### Features
+
+* upgrade kubernetes version to 1.25.4 ([#579](https://github.com/mesosphere/konvoy-image-builder/issues/579)) ([6c98f94](https://github.com/mesosphere/konvoy-image-builder/commit/6c98f941ea37def9aac8ab85abd7df5e3b70ca63))
+
+
+### Bug Fixes
+
+* add oracle7 fips target ([#581](https://github.com/mesosphere/konvoy-image-builder/issues/581)) ([adb8c47](https://github.com/mesosphere/konvoy-image-builder/commit/adb8c474531a0142d91de6e38ab21fa4a9328d42))
+
 ## [1.24.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.24.1...v1.24.2) (2022-11-14)
 
 
