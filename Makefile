@@ -393,9 +393,9 @@ diff: ## git diff
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
 .PHONY: release
-release: ## goreleaser --rm-dist
+release: ## goreleaser --rm-dist --debug
 	$(call print-target)
-	goreleaser --parallelism=1 --rm-dist
+	goreleaser --parallelism=1 --rm-dist --debug
 
 .PHONY: release-snapshot
 release-snapshot: ## goreleaser --snapshot --rm-dist
