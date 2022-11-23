@@ -13,7 +13,8 @@ You can view an example of that with the provided `centos-79.yaml` snippet below
 download_images: true
 
 packer:
-  ami_filter_name: "CentOS 7.9.2009 x86_64"
+  ami_filter_name: "CentOS Linux 7"
+ 
   ami_filter_owners: "125523088429"
   distribution: "CentOS"
   distribution_version: "7.9"
