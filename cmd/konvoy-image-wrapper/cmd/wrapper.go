@@ -275,7 +275,7 @@ func (r *Runner) setupSSHAgent() {
 	value, found := os.LookupEnv("SSH_AUTH_SOCK")
 	if found {
 		r.env["SSH_AUTH_SOCK"] = value
-		r.addBindVolume(value, value)
+		r.addBindVolume(value, value, "readonly")
 	}
 	value, found = os.LookupEnv("SSH_AGENT_PID")
 	if found {
