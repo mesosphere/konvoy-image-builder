@@ -3,7 +3,10 @@ package packer
 import (
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 
 	"github.com/pkg/errors"
 )
@@ -81,12 +84,24 @@ func (r *CLIRunner) Build(manifest string, flags BuildFlags) (*exec.Cmd, error) 
 
 //nolint:gosec // private function, should not be abused
 func (r *CLIRunner) run(args ...string) (*exec.Cmd, error) {
-	c := exec.Command(r.Path, args...)
-	c.Stdout = r.Out
-	c.Stderr = r.OutErr
-	err := c.Run()
+	cmd := exec.Command(r.Path, args...)
+	cmd.Stdout = r.Out
+	cmd.Stderr = r.OutErr
+
+	c := make(chan os.Signal, 1)
+	defer close(c)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(c)
+	go func() {
+		for sig := range c {
+			if signalErr := cmd.Process.Signal(sig); signalErr != nil {
+				fmt.Fprintf(cmd.Stderr, "failed to relay signal %s to packer: %v\n", sig.String(), signalErr)
+			}
+		}
+	}()
+	err := cmd.Run()
 	if err != nil {
-		return c, fmt.Errorf("error running command: %w", err)
+		return cmd, fmt.Errorf("error running command: %w", err)
 	}
-	return c, nil
+	return cmd, nil
 }
