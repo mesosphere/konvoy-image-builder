@@ -44,3 +44,26 @@
   loop:
     - ctr
     - containerd
+
+# Workaround for issue that affects the kernel used by RHEL 7.9, CentOS 7.9, and Oracle Linux 7.9
+# For issue, see https://bugzilla.redhat.com/show_bug.cgi?id=1441737.
+# Solution adapted from https://github.com/kubernetes-sigs/kubespray/blob/999586a110eed72914358a1b5bd182df514e755b/roles/kubernetes/preinstall/tasks/0080-system-configurations.yml#L90-L106.
+- name: Check if we need to set fs.may_detach_mounts
+  stat:
+    # The parameter is present only on affected kernels.
+    path: /proc/sys/fs/may_detach_mounts
+    get_attributes: no
+    get_checksum: no
+    get_mime: no
+  register: fs_may_detach_mounts
+  ignore_errors: true
+
+- name: Set fs.may_detach_mounts if needed
+  sysctl:
+    sysctl_file: "/etc/sysctl.d/fs-may_detach_mounts.conf"
+    name: fs.may_detach_mounts
+    value: 1
+    state: present
+    reload: yes
+  #  If the parameter is present, it must be set to 1.
+  when: fs_may_detach_mounts.stat.exists | d(false)
