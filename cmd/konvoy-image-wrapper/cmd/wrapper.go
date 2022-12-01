@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	terminal "golang.org/x/term"
@@ -79,9 +80,10 @@ type Runner struct {
 }
 
 type volume struct {
-	kind   string
-	source string
-	target string
+	kind        string
+	source      string
+	target      string
+	bindOptions []string
 }
 
 func NewRunner() *Runner {
@@ -150,6 +152,11 @@ func (r *Runner) setAWSEnv() error {
 		}
 	}
 
+	_, found := os.LookupEnv(envAWSCredentialsFile)
+	if !found {
+		// fall-back to default location for aws credentials file
+		os.Setenv(envAWSCredentialsFile, filepath.Join(r.usr.HomeDir, ".aws", "credentials"))
+	}
 	if err := r.mountFileEnv(envAWSCredentialsFile, filepath.Join(r.homeDir, ".aws", "credentials")); err != nil {
 		return fmt.Errorf("unable to mount AWS credenttials file: %w", err)
 	}
@@ -236,15 +243,16 @@ func (r *Runner) mountFileEnv(envName string, containerPath string) error {
 	}
 
 	r.env[envName] = containerPath
-	r.addBindVolume(absFilePath, containerPath)
+	r.addBindVolume(absFilePath, containerPath, "readonly")
 	return nil
 }
 
-func (r *Runner) addBindVolume(source, target string) {
+func (r *Runner) addBindVolume(source, target string, options ...string) {
 	r.volumes = append(r.volumes, volume{
-		kind:   "bind",
-		source: source,
-		target: target,
+		kind:        "bind",
+		source:      source,
+		target:      target,
+		bindOptions: options,
 	})
 }
 
@@ -267,7 +275,7 @@ func (r *Runner) setupSSHAgent() {
 	value, found := os.LookupEnv("SSH_AUTH_SOCK")
 	if found {
 		r.env["SSH_AUTH_SOCK"] = value
-		r.addBindVolume(value, value)
+		r.addBindVolume(value, value, "readonly")
 	}
 	value, found = os.LookupEnv("SSH_AGENT_PID")
 	if found {
@@ -288,8 +296,7 @@ func (r *Runner) dockerRun(args []string) error {
 
 	if runtime.GOOS != windows {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
-
-		r.addBindVolume(r.homeDir, r.homeDir)
+		r.addBindVolume(r.tempDir, r.homeDir)
 	}
 
 	for _, gid := range r.supplementaryGroupIDs {
@@ -308,7 +315,14 @@ func (r *Runner) dockerRun(args []string) error {
 	}
 
 	for _, v := range r.volumes {
-		cmd.Args = append(cmd.Args, "--mount", "type="+v.kind+",source="+v.source+",target="+v.target)
+		bindOptions := ""
+		if len(v.bindOptions) > 0 {
+			bindOptions = fmt.Sprintf(",%s", strings.Join(v.bindOptions, ","))
+		}
+		cmd.Args = append(
+			cmd.Args,
+			"--mount",
+			"type="+v.kind+",source="+v.source+",target="+v.target+bindOptions)
 	}
 
 	cmd.Args = append(cmd.Args, image.Tag())
