@@ -19,13 +19,10 @@ import (
 )
 
 var (
-	buildOSEnvVar            = "BUILD_OS"
-	buildConfigurationEnvVar = "BUILD_CONFIG"
-	buildInfraEnvVar         = "BUILD_INFRA"
-	wrapperCmd               = "bin/konvoy-image-wrapper"
-	baseURL                  = "https://downloads.d2iq.com/dkp"
-	containerdURL            = "https://packages.d2iq.com/dkp/containerd"
-	nvidiaURL                = "https://download.nvidia.com/XFree86/Linux-x86_64"
+	wrapperCmd    = "bin/konvoy-image-wrapper"
+	baseURL       = "https://downloads.d2iq.com/dkp"
+	containerdURL = "https://packages.d2iq.com/dkp/containerd"
+	nvidiaURL     = "https://download.nvidia.com/XFree86/Linux-x86_64"
 )
 
 var (
@@ -71,12 +68,20 @@ var (
 	oldImageFormatVersion = 24
 )
 
+var (
+	dryRunFlag         = "--dry-run"
+	p2Instance         = "p2.xlarge"
+	g4dnInstance       = "g4dn.2xlarge"
+	azureGPUInstance   = "Standard_NC6s_v3"
+	azureBuildInstance = "Standard_B2ms"
+)
+
 func BuildWrapper() error {
 	return sh.RunV("make", "build-wrapper")
 }
 
 // Runs E2e for images.
-func RunE2e(buildOS, buildConfig, buildInfra string) error {
+func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	mg.Deps(BuildWrapper)
 	err := validateBuildOS(buildOS)
 	if err != nil {
@@ -119,6 +124,9 @@ func RunE2e(buildOS, buildConfig, buildInfra string) error {
 		if err != nil {
 			return fmt.Errorf("failed to read kubernetes version %w", err)
 		}
+		if err := os.MkdirAll(path.Join("artifacts", "images"), 0775); err != nil {
+			return fmt.Errorf("failed to create artifacts/images err %w", err)
+		}
 		switch buildConfig {
 		case offline, offlineNvidia:
 			if err := fetchOSBundle(buildOS, kubeVersion, false); err != nil {
@@ -149,6 +157,14 @@ func RunE2e(buildOS, buildConfig, buildInfra string) error {
 	}
 	args := []string{"build", buildPath}
 	args = append(args, overrideFlagForCmd...)
+	if dryRun {
+		args = append(args, dryRunFlag)
+	}
+	vmMachine := getVMForBuild(buildInfra, buildConfig)
+	if vmMachine != "" {
+		args = append(args, fmt.Sprintf("--instance-type=%s", vmMachine))
+	}
+	fmt.Println("Running %s with args %v", wrapperCmd, args)
 	return sh.RunV(wrapperCmd, args...)
 }
 
@@ -160,7 +176,7 @@ func Clean() {
 
 func validateBuildOS(buildOS string) error {
 	if buildOS == "" {
-		return fmt.Errorf("no buildOS found using %s", buildOSEnvVar)
+		return fmt.Errorf("no buildOS found using %s", buildOS)
 	}
 	found := false
 	for _, valid := range validOS {
@@ -170,14 +186,14 @@ func validateBuildOS(buildOS string) error {
 		}
 	}
 	if !found {
-		return fmt.Errorf("buildOS %s is invalid must be one of %v", buildOSEnvVar, validOS)
+		return fmt.Errorf("buildOS %s is invalid must be one of %v", buildOS, validOS)
 	}
 	return nil
 }
 
 func validateBuildConfig(buildConfig string) error {
 	if buildConfig == "" {
-		return fmt.Errorf("no buildConfig found using %s", buildConfigurationEnvVar)
+		return fmt.Errorf("no buildConfig found using %s", buildConfig)
 	}
 	found := false
 	for _, valid := range validBuildConfig {
@@ -187,14 +203,14 @@ func validateBuildConfig(buildConfig string) error {
 		}
 	}
 	if !found {
-		return fmt.Errorf("buildConfiguration %s is invalid must be one of %v", buildConfigurationEnvVar, validBuildConfig)
+		return fmt.Errorf("buildConfig %s is invalid must be one of %v", buildConfig, validBuildConfig)
 	}
 	return nil
 }
 
 func validateBuildInfra(buildInfra string) error {
 	if buildInfra == "" {
-		return fmt.Errorf("no buildInfra found using %s", buildInfraEnvVar)
+		return fmt.Errorf("no buildInfra found using %s", buildInfra)
 	}
 	found := false
 	for _, valid := range validInfra {
@@ -204,7 +220,7 @@ func validateBuildInfra(buildInfra string) error {
 		}
 	}
 	if !found {
-		return fmt.Errorf("buildInfra %s is invalid must be one of %v", buildInfraEnvVar, validInfra)
+		return fmt.Errorf("buildInfra %s is invalid must be one of %v", buildInfra, validInfra)
 	}
 	return nil
 
@@ -298,9 +314,6 @@ func fetchOSBundle(osName, kubernetesVersion string, fips bool) error {
 	}
 	defer resp.Body.Close()
 	outFile := path.Join("artifacts", airgappedBundlePath)
-	if err := os.MkdirAll("artifacts", 0775); err != nil {
-		return fmt.Errorf("failed to make artifacts dir %w", err)
-	}
 	out, err := os.Create(outFile)
 	if err != nil {
 		return fmt.Errorf("failed to create file %w", err)
@@ -314,7 +327,7 @@ func fetchImageBundle(kubernetesVersion string, fips bool) error {
 	fetchClient := http.DefaultClient
 	u, err := url.Parse(baseURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to parse url %w", err)
 	}
 	imageBundleName := fmt.Sprintf("kubernetes-images-%s-d2iq.1", kubernetesVersion)
 	v := semver.New(kubernetesVersion)
@@ -330,22 +343,19 @@ func fetchImageBundle(kubernetesVersion string, fips bool) error {
 	u.Path = path.Join(u.Path, "airgapped",
 		"kubernetes-images",
 		imageBundleName)
-	fmt.Println("Downloading artifact from ", u.String())
+	fmt.Println("Downloading image bundle from ", u.String())
 	resp, err := fetchClient.Do(&http.Request{
 		Method: http.MethodGet,
 		URL:    u,
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get image bundle %w", err)
 	}
 	defer resp.Body.Close()
 	outFile := path.Join("artifacts", "images", imageBundleName)
-	if err := os.MkdirAll(path.Join("artifacts", "images"), 0775); err != nil {
-		return err
-	}
 	out, err := os.Create(outFile)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create file %w", err)
 	}
 	defer out.Close()
 	_, err = io.Copy(out, resp.Body)
@@ -355,7 +365,7 @@ func fetchImageBundle(kubernetesVersion string, fips bool) error {
 func fetchContainerd(osName string, fips bool) error {
 	bytes, err := os.ReadFile(path.Join("ansible", "group_vars", "all", "defaults.yaml"))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read file %w", err)
 	}
 	var config map[string]interface{}
 	if err = yaml.Unmarshal(bytes, &config); err != nil {
@@ -368,7 +378,7 @@ func fetchContainerd(osName string, fips bool) error {
 	fetchClient := http.DefaultClient
 	u, err := url.Parse(containerdURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to parse URL %w", err)
 	}
 	osInfo := strings.Split(osName, " ")
 	osDist := osInfo[0]
@@ -392,9 +402,6 @@ func fetchContainerd(osName string, fips bool) error {
 	}
 	defer resp.Body.Close()
 	outFile := path.Join("artifacts", containerdPath)
-	if err := os.MkdirAll("artifacts", 0775); err != nil {
-		return fmt.Errorf("failed to create artifacts dir %w", err)
-	}
 	out, err := os.Create(outFile)
 	if err != nil {
 		return fmt.Errorf("failed to create file %w", err)
@@ -425,15 +432,15 @@ func fetchNvidiaRunFile() error {
 	runFile := fmt.Sprintf("NVIDIA-Linux-x86_64-%s.run", nvidiaRunfileVersion)
 	u.Path = path.Join(u.Path, nvidiaRunfileVersion, runFile)
 	fmt.Println("Downloading artifact from ", u.String())
-	resp, err := fetchClient.Do(&http.Request{})
+	resp, err := fetchClient.Do(&http.Request{
+		URL:    u,
+		Method: http.MethodGet,
+	})
 	if err != nil {
 		return fmt.Errorf("failed to download runfile %w", err)
 	}
 	defer resp.Body.Close()
 	outFile := path.Join("artifacts", runFile)
-	if err := os.MkdirAll("artifacts", 0775); err != nil {
-		return fmt.Errorf("failed to make artifacts dir %w", err)
-	}
 	out, err := os.Create(outFile)
 	if err != nil {
 		return fmt.Errorf("failed to create file %w", err)
@@ -441,4 +448,28 @@ func fetchNvidiaRunFile() error {
 	defer out.Close()
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+func getVMForBuild(buildInfra, buildConfig string) string {
+	switch buildInfra {
+	case aws:
+		switch buildConfig {
+		case offlineNvidia:
+			return p2Instance
+		case nvidia:
+			return g4dnInstance
+		default:
+			return ""
+		}
+	case azure:
+		switch buildConfig {
+		case nvidia:
+			return azureGPUInstance
+		default:
+			return azureBuildInstance
+
+		}
+	default:
+		return ""
+	}
 }
