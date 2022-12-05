@@ -124,34 +124,23 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		if err != nil {
 			return fmt.Errorf("failed to read kubernetes version %w", err)
 		}
+
+		// Fetch artifacts
 		if err := os.MkdirAll(path.Join("artifacts", "images"), 0775); err != nil {
 			return fmt.Errorf("failed to create artifacts/images err %w", err)
 		}
-		switch buildConfig {
-		case offline, offlineNvidia:
-			if err := fetchOSBundle(buildOS, kubeVersion, false); err != nil {
-				return fmt.Errorf("failed to fetch OS bundle %w", err)
-			}
-			if err := fetchImageBundle(kubeVersion, false); err != nil {
-				return fmt.Errorf("failed to fetch Image bundle %w", err)
-			}
-			if err := fetchContainerd(buildOS, false); err != nil {
-				return fmt.Errorf("failed to fetch containerd %w", err)
-			}
-			if buildConfig == offlineNvidia {
-				if err := fetchNvidiaRunFile(); err != nil {
-					return fmt.Errorf("failed to fetch nvidiaRunFile %w", err)
-				}
-			}
-		case offlineFIPS:
-			if err := fetchOSBundle(buildOS, kubeVersion, false); err != nil {
-				return fmt.Errorf("failed to fetch OS bundle %w", err)
-			}
-			if err := fetchImageBundle(kubeVersion, false); err != nil {
-				return fmt.Errorf("failed to fetch Image bundle %w", err)
-			}
-			if err := fetchContainerd(buildOS, false); err != nil {
-				return fmt.Errorf("failed to fetch containerd %w", err)
+		if err := fetchOSBundle(buildOS, kubeVersion, false); err != nil {
+			return fmt.Errorf("failed to fetch OS bundle %w", err)
+		}
+		if err := fetchImageBundle(kubeVersion, false); err != nil {
+			return fmt.Errorf("failed to fetch Image bundle %w", err)
+		}
+		if err := fetchContainerd(buildOS, false); err != nil {
+			return fmt.Errorf("failed to fetch containerd %w", err)
+		}
+		if buildConfig == offlineNvidia {
+			if err := fetchNvidiaRunFile(); err != nil {
+				return fmt.Errorf("failed to fetch nvidiaRunFile %w", err)
 			}
 		}
 	}
