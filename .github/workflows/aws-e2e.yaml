@@ -99,6 +99,9 @@ jobs:
       - name: Create secrets file for docker build
         run: echo "${{ secrets.MESOSPHERECI_USER_TOKEN }}" >> github-token.txt
 
+      - name: setup buildkit
+        uses: docker/setup-buildx-action@v2
+
       - name: Run Mage
         uses: magefile/mage-action@v2
         with:
