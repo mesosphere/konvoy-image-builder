@@ -153,7 +153,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	if vmMachine != "" {
 		args = append(args, fmt.Sprintf("--instance-type=%s", vmMachine))
 	}
-	fmt.Println("Running %s with args %v", wrapperCmd, args)
+	fmt.Printf("Running %s with args %v\n", wrapperCmd, args)
 	return sh.RunV(wrapperCmd, args...)
 }
 
