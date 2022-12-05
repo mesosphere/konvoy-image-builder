@@ -107,7 +107,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		fullOverride := fmt.Sprintf("--overrides=%s", infraOverride)
 		overrideFlagForCmd = append(overrideFlagForCmd, fullOverride)
 
-		//TODO: @faiq - move this to mage
+		// TODO: @faiq - move this to mage
 		if err := sh.RunV("make", infraOverride); err != nil {
 			return fmt.Errorf("failed to create offline infra with override %s %v", infraOverride, err)
 		}
@@ -116,7 +116,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		// image bundle
 		// nvidia
 		// containerd
-		//TODO: @faiq - move this to mage
+		// TODO: @faiq - move this to mage
 		if err := sh.RunV("make", "download-pip-packages"); err != nil {
 			return fmt.Errorf("failed to download pip packages %v", err)
 		}
@@ -223,7 +223,6 @@ func validateBuildInfra(buildInfra string) error {
 		return fmt.Errorf("buildInfra %s is invalid must be one of %v", buildInfra, validInfra)
 	}
 	return nil
-
 }
 
 func getBuildPath(buildOS, buildInfra string) string {
