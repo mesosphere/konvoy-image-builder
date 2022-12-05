@@ -8,6 +8,8 @@
 permissions:
   contents: read
   id-token: write
+env:
+  PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 name: AWS
 jobs:
   default:
