@@ -1,0 +1,103 @@
+'on':
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - '*'
+permissions:
+  contents: read
+  id-token: write
+name: AWS
+jobs:
+  default:
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        os:
+        - "centos 7.9"
+        - "rhel 7.9"
+        - "rhel 8.4"
+        - "rhel 8.6"
+        - "sles 15"
+        - "oracle 7.9"
+        - "flatcar"
+        - "ubuntu 18.04"
+        - "ubuntu 20.04"
+        buildConfig:
+        - "basic"
+        - "fips"
+        - "nvidia"
+        - "offline"
+        - "offline-fips"
+        - "offline-nvidia"
+        exclude:
+        # we only support basic
+        - os: flatcar
+          buildConfig: nvidia
+        - os: flatcar
+          buildConfig: fips
+        - os: flatcar
+          buildConfig: offline-fips
+        - os: flatcar
+          buildConfig: offline-nvidia
+        - os: flatcar
+          buildConfig: offline
+        # we only support basic
+        - os: "ubuntu 18.04"
+          buildConfig: nvidia
+        - os: "ubuntu 18.04"
+          buildConfig: fips
+        - os: "ubuntu 18.04"
+          buildConfig: offline-fips
+        - os: "ubuntu 18.04"
+          buildConfig: offline-nvidia
+        - os: "ubuntu 18.04"
+          buildConfig: offline
+        # we only support gpu
+        - os: "ubuntu 20.04"
+          buildConfig: fips
+        - os: "ubuntu 20.04"
+          buildConfig: offline-fips
+        - os: "ubuntu 20.04"
+          buildConfig: offline-nvidia
+        - os: "ubuntu 20.04"
+          buildConfig: offline
+        # we only support gpu
+        - os: "sles 15"
+          buildConfig: fips
+        - os: "sles 15"
+          buildConfig: offline-fips
+        - os: "sles 15"
+          buildConfig: offline-nvidia
+        - os: "sles 15"
+          buildConfig: offline
+        # we only support fips
+        # https://docs.d2iq.com/dkp/2.4/supported-infrastructure-operating-systems
+        - os: "oracle 7.9"
+          buildConfig: offline-fips
+        - os: "oracle 7.9"
+          buildConfig: offline-nvidia
+        - os: "oracle 7.9"
+          buildConfig: nvidia
+        - os: "oracle 7.9"
+          buildConfig: offline
+    runs-on: self-hosted
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.0'
+
+      - name: Run Mage
+        uses: magefile/mage-action@v2
+        with:
+          version: latest
+          args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws true
