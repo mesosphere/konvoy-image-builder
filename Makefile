@@ -180,7 +180,8 @@ include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
-	docker build \
+	DOCKER_BUILDKIT=1 docker build \
+		--secret id=githubtoken,src=github-token.txt \
 		--build-arg USER_ID=$(UID) \
 		--build-arg GROUP_ID=$(GID) \
 		--build-arg USER_NAME=$(USER_NAME) \
