@@ -109,6 +109,12 @@ jobs:
       - name: setup buildkit
         uses: docker/setup-buildx-action@v2
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/konvoy-image-builder
+          aws-region: us-west-2
+
       - name: Run Mage
         uses: magefile/mage-action@v2
         with:
