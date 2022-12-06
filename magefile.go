@@ -126,16 +126,17 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		}
 
 		// Fetch artifacts
+		isFips := buildConfig == offlineFIPS
 		if err := os.MkdirAll(path.Join("artifacts", "images"), 0775); err != nil {
 			return fmt.Errorf("failed to create artifacts/images err %w", err)
 		}
-		if err := fetchOSBundle(buildOS, kubeVersion, false); err != nil {
+		if err := fetchOSBundle(buildOS, kubeVersion, isFips); err != nil {
 			return fmt.Errorf("failed to fetch OS bundle %w", err)
 		}
-		if err := fetchImageBundle(kubeVersion, false); err != nil {
+		if err := fetchImageBundle(kubeVersion, isFips); err != nil {
 			return fmt.Errorf("failed to fetch Image bundle %w", err)
 		}
-		if err := fetchContainerd(buildOS, false); err != nil {
+		if err := fetchContainerd(buildOS, isFips); err != nil {
 			return fmt.Errorf("failed to fetch containerd %w", err)
 		}
 		if buildConfig == offlineNvidia {
