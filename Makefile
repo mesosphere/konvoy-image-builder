@@ -196,10 +196,6 @@ include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
-ifneq ($(strip $(GITHUB_ACTION)),)
-export DOCKER_BUILDKIT = 1
-endif
-
 BUILD_FLAGS := \
 		--build-arg USER_ID=$(UID) \
 		--build-arg GROUP_ID=$(GID) \
