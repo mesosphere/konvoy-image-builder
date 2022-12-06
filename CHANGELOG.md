@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.25.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.25.0...v1.25.1) (2022-12-01)
+
+
+### Bug Fixes
+
+* Enable fs.may_detach_mounts kernel parameter on RHEL 7.9, and variants ([4e246ae](https://github.com/mesosphere/konvoy-image-builder/commit/4e246aeff9f76d98afd6cf171ab8737d57e753e5))
+* propogate signals to packer sub command ([#593](https://github.com/mesosphere/konvoy-image-builder/issues/593)) ([788f745](https://github.com/mesosphere/konvoy-image-builder/commit/788f745925ff7b21fc0a976d16e460fdfbcf6cb8))
+* remove host user's home directory mount from the KIB wrapper container  ([#589](https://github.com/mesosphere/konvoy-image-builder/issues/589)) ([6abcd18](https://github.com/mesosphere/konvoy-image-builder/commit/6abcd187ede4a8b535846658b45b67e88534a5fc))
+
 ## [1.25.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.24.2...v1.25.0) (2022-11-21)
 
 
