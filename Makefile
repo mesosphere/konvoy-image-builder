@@ -214,7 +214,7 @@ ifneq ($(strip $(GITHUB_ACTION)),)
 endif
 
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
-		docker build \
+		docker buildx build \
 		$(BUILD_FLAGS) \
 		--tag "$(DOCKER_DEVKIT_IMG)" \
 		$(REPO_ROOT_DIR) \
