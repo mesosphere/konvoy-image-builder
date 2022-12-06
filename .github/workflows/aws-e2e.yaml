@@ -17,9 +17,9 @@ jobs:
       matrix:
         os:
         - "centos 7.9"
-        - "rhel 7.9"
-        - "rhel 8.4"
-        - "rhel 8.6"
+        - "redhat 7.9"
+        - "redhat 8.4"
+        - "redhat 8.6"
         - "sles 15"
         - "oracle 7.9"
         - "flatcar"
@@ -117,5 +117,5 @@ jobs:
         with:
           version: latest
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws true
-        env: 
+        env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}

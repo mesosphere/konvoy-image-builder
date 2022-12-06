@@ -35,9 +35,9 @@ var (
 
 	validOS = []string{
 		"centos 7.9",
-		"rhel 7.9",
-		"rhel 8.4",
-		"rhel 8.6",
+		"redhat 7.9",
+		"redhat 8.4",
+		"redhat 8.6",
 		"sles 15",
 		"oracle 7.9",
 		"flatcar",
@@ -117,7 +117,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		// nvidia
 		// containerd
 		// TODO: @faiq - move this to mage
-		if err := sh.RunV("make", "download-pip-packages"); err != nil {
+		if err := sh.RunV("make", "pip-packages-artifacts"); err != nil {
 			return fmt.Errorf("failed to download pip packages %v", err)
 		}
 		kubeVersion, err := getKubernetesVerisonForBuild()
@@ -220,6 +220,7 @@ func getBuildPath(buildOS, buildInfra string) string {
 	formattedOS = strings.TrimPrefix(formattedOS, " ")
 	formattedOS = strings.Replace(formattedOS, " ", "-", 1)
 	formattedOS = strings.Replace(formattedOS, ".", "", 1)
+	formattedOS = strings.Replace(formattedOS, "redhat", "rhel", 1)
 
 	fileForOS := fmt.Sprintf("%s.yaml", formattedOS)
 
