@@ -1,10 +1,14 @@
 ---
 - name: check if versionlock exists
   command: zypper locks -s
+  environment:
+    # The systemd `guestregister` service runs on boot. It runs a python script that, in turn, runs zypper. Because the
+    # service is of type "oneshot," it is not easy to tell whether the service has already run; it is "inactive" both
+    # before and after it runs. Instead, let's allow the service 60 seconds to finish, and release the lock.
+    ZYPP_LOCK_TIMEOUT: 60
   register: versionlocklist
   args:
     warn: false
-  ignore_errors: true
   changed_when: false
 
 - name: export versionlocklist
