@@ -135,9 +135,8 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
 # place it in /usr/share/ansible/collections, the container will be run with a different user
 RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
 
-RUN --mount=type=secret,id=githubtoken export GITHUB_TOKEN=$(cat /run/secrets/githubtoken)
 # hadolint ignore=DL3059
-RUN packer plugins install github.com/hashicorp/googlecompute ">=1.0.0" \
+RUN --mount=type=secret,id=githubtoken GITHUB_TOKEN=$(cat /run/secrets/githubtoken) packer plugins install github.com/hashicorp/googlecompute ">=1.0.0" \
     && packer plugins install github.com/hashicorp/azure ">=1.3.1"
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
