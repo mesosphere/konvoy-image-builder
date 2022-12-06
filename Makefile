@@ -173,12 +173,6 @@ ifneq ($(shell command -v docker),)
 	endif
 endif
 
-include make/ci.mk
-include make/images.mk
-include hack/pip-packages/Makefile
-include test/infra/aws/Makefile
-include test/infra/vsphere/Makefile
-
 # envsubst
 # ---------------------------------------------------------------------
 export ENVSUBST_VERSION ?= v1.2.0
@@ -194,6 +188,13 @@ $(ENVSUBST_ASSETS)/envsubst:
 	mkdir -p $(ENVSUBST_ASSETS)
 	curl -Lf $(ENVSUBST_URL) -o $(ENVSUBST_ASSETS)/envsubst
 	chmod +x $(ENVSUBST_ASSETS)/envsubst
+
+
+include make/ci.mk
+include make/images.mk
+include hack/pip-packages/Makefile
+include test/infra/aws/Makefile
+include test/infra/vsphere/Makefile
 
 ifneq ($(strip $(GITHUB_ACTION)),)
 export DOCKER_BUILDKIT = 1
