@@ -13,7 +13,7 @@ require (
 	github.com/magefile/mage v1.14.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/pointerstructure v1.2.1
-	github.com/onrik/logrus v0.9.0
+	github.com/onrik/logrus v0.10.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.24.0
 	github.com/pkg/errors v0.9.1
@@ -42,9 +42,8 @@ require (
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/tidwall/gjson v1.8.1 // indirect
-	golang.org/x/crypto v0.0.0-20220511200225-c6db032c6c88 // indirect
-	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/crypto v0.3.0 // indirect
+	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
