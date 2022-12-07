@@ -34,7 +34,7 @@ export CGO_ENABLED=0
 # .*    anything after the capture group
 # \1     substitute everything with the 1st capture group
 # p      print it
-export GO_VERSION := $(shell sed -n "s|^go\s*\(\S*\).*|\1|p" go.mod)
+export GO_VERSION := $(shell cat go.mod | grep "go " -m 1 | cut -d " " -f 2)
 GOLANG_IMAGE := golang:$(GO_VERSION)
 
 export CI ?= no
