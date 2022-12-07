@@ -8,7 +8,7 @@
 permissions:
   contents: read
   id-token: write
-name: AWS
+name: E2E  Tests - Build AWS AMI
 jobs:
   rune2e:
     strategy:
