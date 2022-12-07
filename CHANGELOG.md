@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.25.1...v1.25.2) (2022-12-07)
+
+
+### Bug Fixes
+
+* dont ipv6 forward if you dont have ipv6 forwarding file  ([#598](https://github.com/mesosphere/konvoy-image-builder/issues/598)) ([40f9809](https://github.com/mesosphere/konvoy-image-builder/commit/40f98090cf885f10fc3fa772b987c7947ee2826c))
+
 ## [1.25.1](https://github.com/mesosphere/konvoy-image-builder/compare/v1.25.0...v1.25.1) (2022-12-01)
 
 
