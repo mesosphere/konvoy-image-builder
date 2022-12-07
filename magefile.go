@@ -250,7 +250,7 @@ func getOverridesFromBuildConfig(buildConfig string) []string {
 	case offline:
 		return []string{"offline.yaml"}
 	case offlineFIPS:
-		return []string{"fips.yaml", "offline.yaml"}
+		return []string{"offline-fips.yaml"}
 	case offlineNvidia:
 		return []string{"offline.yaml", "offline-nvidia.yaml"}
 	}
