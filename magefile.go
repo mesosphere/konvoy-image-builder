@@ -111,6 +111,13 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		if err := sh.RunV("make", infraOverride); err != nil {
 			return fmt.Errorf("failed to create offline infra with override %s %v", infraOverride, err)
 		}
+
+		defer func() {
+			// TODO: @faiq - move this to mage
+			if err := sh.RunV("make", "infra.aws.destroy"); err != nil {
+				fmt.Printf("failed to delete offline infra %v\n", err)
+			}
+		}()
 		// we need to fetch the proper os-bundle
 		// pip packages
 		// image bundle
@@ -376,6 +383,7 @@ func fetchContainerd(osName string, fips bool) error {
 	osMajorMinor := strings.Split(osInfo[1], ".")
 	osMajor := osMajorMinor[0]
 	osMinor := osMajorMinor[1]
+	osMajor = strings.Replace(osMajor, "redhat", "rhel", 1)
 	containerdPath := fmt.Sprintf("containerd-%s-d2iq.1-%s-%s.%s-x86_64", containerdVersion, osDist, osMajor, osMinor)
 	if fips {
 		containerdPath = containerdPath + "_fips"
