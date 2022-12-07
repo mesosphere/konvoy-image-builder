@@ -44,6 +44,17 @@
   when:
     - ipv6.stat.exists
 
+- name: "check if ipv6 is disabled from all"
+  lineinfile:
+    dest: /proc/sys/net/ipv6/conf/all/disable_ipv6"
+    line: "1"
+    state: present
+  become: yes
+  check_mode: yes
+  register: ipv6DisabledAll
+  when:
+    - ipv6.stat.exists
+
 - name: set net.ipv6.conf.all.forwarding to 1
   sysctl:
     name: net.ipv6.conf.all.forwarding
@@ -54,6 +65,7 @@
   when:
     - ipv6.stat.exists
     - ipv6Disabled is not changed
+    - ipv6DisabledAll is not changed
 
 - name: Check if iptables service exists
   command: systemctl cat iptables
