@@ -27,10 +27,12 @@ RUN apk add --no-cache \
     && rm -rf /root/.cache
 
 ARG BUILDARCH
-COPY --from=devkit /usr/local/bin/goss /usr/local/bin/goss
+COPY --from=devkit /usr/local/bin/goss-amd64 /usr/local/bin/goss
 COPY --from=devkit /usr/local/bin/packer-${BUILDARCH} /usr/local/bin/packer
 COPY --from=devkit /usr/local/bin/packer-provisioner-goss-${BUILDARCH} /usr/local/bin/packer-provisioner-goss
-COPY konvoy-image /usr/local/bin
+COPY --from=devkit /usr/local/bin/govc /usr/local/bin/
+COPY --from=devkit /root/.config/packer/plugins/ ${PACKER_PLUGIN_PATH}
+COPY bin/konvoy-image /usr/local/bin
 COPY images /root/images
 COPY ansible /root/ansible
 COPY packer /root/packer

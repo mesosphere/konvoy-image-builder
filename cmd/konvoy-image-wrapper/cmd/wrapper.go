@@ -331,7 +331,11 @@ func (r *Runner) dockerRun(args []string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	return cmd.Run()
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("cmd failed %w", err)
+	}
+	return nil
 }
 
 // checkDockerVersion checks whether the docker version is greater than then
@@ -478,14 +482,14 @@ func (r *Runner) Run(args []string) error {
 	// This also look for supplementary group IDs to set.
 	err = r.setUserAndGroups()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set groups %w", err)
 	}
 
 	// Current dir on the host is used for working dir in the container,
 	// which will become the default cluster name.
 	r.workingDir, err = os.Getwd()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get wd %w", err)
 	}
 	r.addBindVolume(r.workingDir, containerWorkingDir)
 
@@ -493,7 +497,7 @@ func (r *Runner) Run(args []string) error {
 	// eg. /etc/passwd, /etc/group, etc.
 	r.tempDir, err = os.MkdirTemp(r.workingDir, ".konvoy-image-tmp")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to make temp %w", err)
 	}
 	defer os.RemoveAll(r.tempDir)
 
@@ -501,45 +505,45 @@ func (r *Runner) Run(args []string) error {
 	// gid on the host can be properly resolved in the container too.
 	err = r.setUserMapping()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set user mapping %w", err)
 	}
 	err = r.setGroupMapping()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set group mapping %w", err)
 	}
 
 	err = r.maskSSHConfig()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set mask ssh config %w", err)
 	}
 
 	err = r.maskSSHKnownHosts()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set mask ssh known_hosts %w", err)
 	}
 
 	err = r.setAWSEnv()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set aws env %w", err)
 	}
 	r.setAzureEnv()
 	err = r.setVSphereEnv()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set vshpere env %w", err)
 	}
 	err = r.setGCPEnv()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set gcp env %w", err)
 	}
 
 	err = r.setHTTPProxyEnv()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to set http proxy env %w", err)
 	}
 
 	err = image.LoadImage()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load image %w", err)
 	}
 
 	r.setAnsibleHostKeyChecking()

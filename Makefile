@@ -229,7 +229,13 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
 $(DOCKER_PHONY_FILE): Dockerfile
-	touch $(DOCKER_PHONY_FILE)
+	docker buildx build \
+		--file $(REPO_ROOT_DIR)/Dockerfile \
+		--platform linux/$(ARCH) \
+		--tag "$(DOCKER_IMG)" \
+		--load \
+		$(REPO_ROOT_DIR) \
+	&& touch $(DOCKER_PHONY_FILE)
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
