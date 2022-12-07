@@ -118,4 +118,4 @@ jobs:
           version: latest
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws true
         env:
-          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
