@@ -221,6 +221,7 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		--tag "$(DOCKER_DEVKIT_IMG)" \
 		--load \
 		--platform linux/$(GOARCH) \
+		--platform linux/$(ARCH) \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
@@ -286,7 +287,8 @@ docker:
 	$(GOLANG_IMAGE) \
 	/bin/bash -c "$(WHAT)"
 
-GOARCH = $(shell go env GOARCH)
+ARCH := $(shell uname -m)
+ARCH := $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
 
 bin/konvoy-image: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
@@ -295,26 +297,26 @@ bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image:
 	$(call print-target)
-	$(MAKE) dist/konvoy-image_linux_$(GOARCH)/konvoy-image
+	$(MAKE) dist/konvoy-image_linux_$(ARCH)/konvoy-image
 	mkdir -p bin
-	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
+	ln -sf ../dist/konvoy-image_linux_$(ARCH)/konvoy-image bin/konvoy-image
 
 konvoy-image-linux:
 	$(MAKE) docker GOOS=linux WHAT="make bin/konvoy-image"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
-bin/konvoy-image-wrapper: 
+bin/konvoy-image-wrapper:
 	$(call print-target)
 	$(MAKE) docker WHAT="go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go"
 
-dist/konvoy-image_linux_$(GOARCH)/konvoy-image: $(REPO_ROOT_DIR)/cmd
-dist/konvoy-image_linux_$(GOARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
-dist/konvoy-image_linux_$(GOARCH)/konvoy-image: $(REPO_ROOT_DIR)/pkg
-dist/konvoy-image_linux_$(GOARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
-dist/konvoy-image_linux_$(GOARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
-dist/konvoy-image_linux_$(GOARCH)/konvoy-image:
+dist/konvoy-image_linux_$(ARCH)/konvoy-image: $(REPO_ROOT_DIR)/cmd
+dist/konvoy-image_linux_$(ARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
+dist/konvoy-image_linux_$(ARCH)/konvoy-image: $(REPO_ROOT_DIR)/pkg
+dist/konvoy-image_linux_$(ARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
+dist/konvoy-image_linux_$(ARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+dist/konvoy-image_linux_$(ARCH)/konvoy-image:
 	$(call print-target)
 	goreleaser build --snapshot --rm-dist --id konvoy-image --single-target
 
