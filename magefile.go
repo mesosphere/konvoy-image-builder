@@ -383,7 +383,7 @@ func fetchContainerd(osName string, fips bool) error {
 	osMajorMinor := strings.Split(osInfo[1], ".")
 	osMajor := osMajorMinor[0]
 	osMinor := osMajorMinor[1]
-	osMajor = strings.Replace(osMajor, "redhat", "rhel", 1)
+	osDist = strings.Replace(osDist, "redhat", "rhel", 1)
 	containerdPath := fmt.Sprintf("containerd-%s-d2iq.1-%s-%s.%s-x86_64", containerdVersion, osDist, osMajor, osMinor)
 	if fips {
 		containerdPath = containerdPath + "_fips"
