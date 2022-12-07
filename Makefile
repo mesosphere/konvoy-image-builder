@@ -202,6 +202,7 @@ BUILD_FLAGS := \
 		--build-arg USER_NAME=$(USER_NAME) \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
+		--build-arg BUILDARCH=$(ARCH) \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
