@@ -227,7 +227,10 @@ func getBuildPath(buildOS, buildInfra string) string {
 	formattedOS = strings.TrimPrefix(formattedOS, " ")
 	formattedOS = strings.Replace(formattedOS, " ", "-", 1)
 	formattedOS = strings.Replace(formattedOS, ".", "", 1)
+
 	formattedOS = strings.Replace(formattedOS, "redhat", "rhel", 1)
+	formattedOS = strings.Replace(formattedOS, "1804", "18", 1)
+	formattedOS = strings.Replace(formattedOS, "2004", "20", 1)
 
 	fileForOS := fmt.Sprintf("%s.yaml", formattedOS)
 
