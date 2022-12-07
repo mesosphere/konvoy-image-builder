@@ -111,12 +111,12 @@ RUN apk add --no-cache \
 
 # hadolint ignore=DL4006
 RUN  curl -Lf https://github.com/mesosphere/mindthegap/releases/download/v"${MINDTHEGAP_VERSION}"/mindthegap_v"${MINDTHEGAP_VERSION}"_linux_amd64.tar.gz |tar xzf - -C /usr/local/bin
-ARG GOSS_VERSION=v0.3.16
-RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
-RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${VERSION}/goss-linux-arm64" -o /usr/local/bin/goss-arm64
+ARG GOSS_VERSION=v0.3.18
+RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
+RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-arm64" -o /usr/local/bin/goss-arm64
 RUN chmod +rx /usr/local/bin/goss-amd64 /usr/local/bin/goss-arm64
 ARG BUILDARCH
-RUN ln -s /usr/local/bin/goss-${BUILDARCH}} /usr/local/bin/goss
+RUN ln -s /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
 COPY --from=packer-amd64 /bin/packer /usr/local/bin/packer-amd64
 COPY --from=packer-arm64 /bin/packer /usr/local/bin/packer-arm64
 COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
