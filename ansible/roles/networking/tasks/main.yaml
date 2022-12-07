@@ -28,6 +28,22 @@
     state: present
     reload: yes
 
+- name: stat ipv6 in proc/sys/net
+  stat:
+    path: /proc/sys/net/ipv6
+  register: ipv6
+
+- name: "check if ipv6 is disabled"
+  lineinfile:
+    dest: /proc/sys/net/ipv6/conf/default/disable_ipv6
+    line: "1"
+    state: present
+  become: yes
+  check_mode: yes
+  register: ipv6Disabled
+  when:
+    - ipv6.stat.exists
+
 - name: set net.ipv6.conf.all.forwarding to 1
   sysctl:
     name: net.ipv6.conf.all.forwarding
@@ -35,6 +51,9 @@
     sysctl_file: /etc/sysctl.d/ipv6-forwarding.conf
     state: present
     reload: yes
+  when:
+    - ipv6.stat.exists
+    - ipv6Disabled is not changed
 
 - name: Check if iptables service exists
   command: systemctl cat iptables
