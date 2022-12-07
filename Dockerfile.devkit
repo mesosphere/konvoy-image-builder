@@ -18,8 +18,8 @@ RUN mkdir -p /tools
 RUN apk add --no-cache \
         p7zip
 
-ARG PACKER_GOSS_VERSION=3.0.3
-ARG PACKER_GOSS_SHA265=1994069f78d44a76d463b76fef42c7e4ab412df14703a51643642ecdefa2c029
+ARG PACKER_GOSS_VERSION=3.1.4
+ARG PACKER_GOSS_SHA265=28da34afdc8bac0a6be64f36d66aaf3095584782ddc6d66147b7da28f56ca5f4
 ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
 ARG PACKER_GOSS_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
 ARG PACKER_GOSS_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_FILE}"
@@ -135,9 +135,8 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
 # place it in /usr/share/ansible/collections, the container will be run with a different user
 RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
 
-
 # hadolint ignore=DL3059
-RUN packer plugins install github.com/hashicorp/googlecompute ">=1.0.0" \
+RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN=$(cat /run/secrets/githubtoken) packer plugins install github.com/hashicorp/googlecompute ">=1.0.0" \
     && packer plugins install github.com/hashicorp/azure ">=1.3.1"
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.

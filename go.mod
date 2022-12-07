@@ -10,6 +10,7 @@ require (
 	github.com/brianvoe/gofakeit/v6 v6.19.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/imdario/mergo v0.3.13
+	github.com/magefile/mage v1.14.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/pointerstructure v1.2.1
 	github.com/onrik/logrus v0.9.0
