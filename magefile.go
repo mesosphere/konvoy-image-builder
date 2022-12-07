@@ -334,7 +334,7 @@ func fetchImageBundle(kubernetesVersion string, fips bool) error {
 		ext = ".tar.gz"
 	}
 	if fips {
-		imageBundleName = imageBundleName + "_fips"
+		imageBundleName = imageBundleName + "-fips"
 	}
 	imageBundleName = imageBundleName + ext
 	u.Path = path.Join(u.Path, "airgapped",
