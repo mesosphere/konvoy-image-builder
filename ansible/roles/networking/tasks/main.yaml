@@ -28,6 +28,11 @@
     state: present
     reload: yes
 
+- name: stat ipv6 in proc/sys/net
+  stat:
+    path: /proc/sys/net/ipv6/conf/all/forwarding
+  register: ipv6forwarding
+
 - name: set net.ipv6.conf.all.forwarding to 1
   sysctl:
     name: net.ipv6.conf.all.forwarding
@@ -35,6 +40,8 @@
     sysctl_file: /etc/sysctl.d/ipv6-forwarding.conf
     state: present
     reload: yes
+  when:
+    - ipv6forwarding.stat.exists
 
 - name: Check if iptables service exists
   command: systemctl cat iptables
