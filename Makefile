@@ -207,7 +207,9 @@ BUILD_FLAGS := \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
 
-BUILD_FLAGS := $(BUILD_FLAGS) $(SECRET_FLAG)
+ifneq ($(strip $(GITHUB_ACTION)),)
+	BUILD_FLAGS := $(BUILD_FLAGS) $(SECRET_FLAG)
+endif
 
 github-token.txt:
 	echo $(GITHUB_TOKEN) >> github-token.txt
