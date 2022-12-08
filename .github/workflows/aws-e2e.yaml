@@ -116,3 +116,6 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: sleep
+        run: sleep 30m
