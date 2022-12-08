@@ -30,7 +30,7 @@ ARG BUILDARCH
 # COPY --from=devkit /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
 # # we copy this to remote hosts to execute mindthegap so its always amd64
 # COPY --from=devkit /usr/local/bin/mindthegap /usr/local/bin/
-# COPY --from=devkit /usr/local/bin/packer-${BUILDARCH} /usr/local/bin/packer
+COPY --from=devkit /usr/local/bin/packer-${BUILDARCH} /usr/local/bin/packer
 # COPY --from=devkit /usr/local/bin/packer-provisioner-goss-${BUILDARCH} /usr/local/bin/packer-provisioner-goss
 # COPY --from=devkit /usr/local/bin/govc /usr/local/bin/
 # COPY --from=devkit /root/.config/packer/plugins/ ${PACKER_PLUGIN_PATH}
