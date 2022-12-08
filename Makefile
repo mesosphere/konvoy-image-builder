@@ -213,9 +213,7 @@ github-token.txt:
 	echo $(GITHUB_TOKEN) >> github-token.txt
 
 
-ifneq ($(strip $(GITHUB_ACTION)),)
 $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
-endif
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		docker buildx build \
 		$(BUILD_FLAGS) \
