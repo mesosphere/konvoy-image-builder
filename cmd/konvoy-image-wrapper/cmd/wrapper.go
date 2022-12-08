@@ -256,15 +256,13 @@ func (r *Runner) addBindVolume(source, target string, options ...string) {
 	})
 }
 
-func (r *Runner) setHTTPProxyEnv() error {
+func (r *Runner) setHTTPProxyEnv() {
 	for _, env := range []string{envHTTPSProxy, envHTTPProxy, envNoProxy} {
 		value, found := os.LookupEnv(env)
 		if found {
 			r.env[env] = value
 		}
 	}
-
-	return nil
 }
 
 func (r *Runner) setAnsibleHostKeyChecking() {
@@ -536,10 +534,7 @@ func (r *Runner) Run(args []string) error {
 		return fmt.Errorf("failed to set gcp env %w", err)
 	}
 
-	err = r.setHTTPProxyEnv()
-	if err != nil {
-		return fmt.Errorf("failed to set http proxy env %w", err)
-	}
+	r.setHTTPProxyEnv()
 
 	err = image.LoadImage()
 	if err != nil {
