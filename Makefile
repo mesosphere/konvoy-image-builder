@@ -36,6 +36,8 @@ export CGO_ENABLED=0
 # p      print it
 export GO_VERSION := $(shell cat go.mod | grep "go " -m 1 | cut -d " " -f 2)
 GOLANG_IMAGE := golang:$(GO_VERSION)
+ARCH := $(shell uname -m)
+BUILDARCH ?= $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
 
 export CI ?= no
 ifeq ($(CI),yes)
@@ -293,8 +295,6 @@ docker:
 	$(GOLANG_IMAGE) \
 	/bin/bash -c "$(WHAT)"
 
-ARCH := $(shell uname -m)
-BUILDARCH ?= $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
 
 bin/konvoy-image: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
