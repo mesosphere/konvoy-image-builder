@@ -28,6 +28,9 @@ jobs:
           username: mesosphereci
           password: ${{ secrets.DOCKER_PASS }}
 
+      - name: Set up QEMU for arm64 image builds
+        uses: docker/setup-qemu-action@v2
+
       - name: Release
         run:  make release
         env:
