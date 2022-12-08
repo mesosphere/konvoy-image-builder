@@ -234,7 +234,6 @@ $(DOCKER_PHONY_FILE): Dockerfile
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--platform linux/$(BUILDARCH) \
 		--tag "$(DOCKER_IMG)" \
-		--load \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_PHONY_FILE)
 

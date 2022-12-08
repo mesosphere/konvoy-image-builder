@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1.4
-
 ARG BASE=mesosphere/konvoy-image-builder:latest-devkit
 # NOTE(jkoelker) Ignore "Always tag the version of an image explicitly"
 # hadolint ignore=DL3006
