@@ -1,70 +1,70 @@
 FROM --platform=linux/amd64 hashicorp/packer:1.8.4 as packer-amd64
 FROM --platform=linux/arm64 hashicorp/packer:1.8.4 as packer-arm64
-FROM golangci/golangci-lint:v1.49.0-alpine as golangci-lint
-FROM goreleaser/goreleaser:v1.13.0 as goreleaser
-FROM docker:20.10 as docker
-FROM vmware/govc:v0.29.0 as govc
+# FROM golangci/golangci-lint:v1.49.0-alpine as golangci-lint
+# FROM goreleaser/goreleaser:v1.13.0 as goreleaser
+# FROM docker:20.10 as docker
+# FROM vmware/govc:v0.29.0 as govc
 
-FROM golang:1.19.0-alpine3.15 as builder
+# FROM golang:1.19.0-alpine3.15 as builder
 
-# NOTE(jkoelker) since this is a multistage build we
-#                can have an explosion at the layer
-#                factory to help with caching
+# # NOTE(jkoelker) since this is a multistage build we
+# #                can have an explosion at the layer
+# #                factory to help with caching
 
-RUN mkdir -p /tools
+# RUN mkdir -p /tools
 
-# NOTE(jkoelker) Ignore "Multiple consecutive `RUN` | Pin versions in apk add."
-# hadolint ignore=DL3059,DL3018
-RUN apk add --no-cache \
-        curl \
-        p7zip
+# # NOTE(jkoelker) Ignore "Multiple consecutive `RUN` | Pin versions in apk add."
+# # hadolint ignore=DL3059,DL3018
+# RUN apk add --no-cache \
+#         curl \
+#         p7zip
 
-ARG PACKER_GOSS_VERSION=3.1.4
-ARG PACKER_GOSS_AMD64_SHA256=28da34afdc8bac0a6be64f36d66aaf3095584782ddc6d66147b7da28f56ca5f4
-ARG PACKER_GOSS_ARM64_SHA256=6ca4dfd0a696b065727b9e530cd0a7773f684da6e78b8ad3c1de5070714ebbba
-ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
-ARG PACKER_GOSS_AMD64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
-ARG PACKER_GOSS_ARM64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-arm64.tar.gz"
-ARG PACKER_GOSS_AMD64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_AMD64_FILE}"
-ARG PACKER_GOSS_ARM64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_ARM64_FILE}"
-RUN printf "%s  %s\n%s  %s\n" "${PACKER_GOSS_AMD64_SHA256}" /tmp/"${PACKER_GOSS_AMD64_FILE}" \
-                            "${PACKER_GOSS_ARM64_SHA256}" /tmp/"${PACKER_GOSS_ARM64_FILE}" > "/tmp/packer-goss.sha256"
-RUN curl -fsSLo "/tmp/${PACKER_GOSS_AMD64_FILE}" "${PACKER_GOSS_AMD64_URL}"
-RUN curl -fsSLo "/tmp/${PACKER_GOSS_ARM64_FILE}" "${PACKER_GOSS_ARM64_URL}"
-RUN sha256sum -c "/tmp/packer-goss.sha256"
-RUN tar --extract \
-        --file "/tmp/${PACKER_GOSS_AMD64_FILE}" \
-        --directory /tools
-RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-amd64
-RUN tar --extract \
-        --file "/tmp/${PACKER_GOSS_ARM64_FILE}" \
-        --directory /tools
-RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-arm64
-ARG BUILDARCH
-RUN ln -s /tools/packer-provisioner-goss-${BUILDARCH} /tools/packer-provisioner-goss
+# ARG PACKER_GOSS_VERSION=3.1.4
+# ARG PACKER_GOSS_AMD64_SHA256=28da34afdc8bac0a6be64f36d66aaf3095584782ddc6d66147b7da28f56ca5f4
+# ARG PACKER_GOSS_ARM64_SHA256=6ca4dfd0a696b065727b9e530cd0a7773f684da6e78b8ad3c1de5070714ebbba
+# ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
+# ARG PACKER_GOSS_AMD64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
+# ARG PACKER_GOSS_ARM64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-arm64.tar.gz"
+# ARG PACKER_GOSS_AMD64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_AMD64_FILE}"
+# ARG PACKER_GOSS_ARM64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_ARM64_FILE}"
+# RUN printf "%s  %s\n%s  %s\n" "${PACKER_GOSS_AMD64_SHA256}" /tmp/"${PACKER_GOSS_AMD64_FILE}" \
+#                             "${PACKER_GOSS_ARM64_SHA256}" /tmp/"${PACKER_GOSS_ARM64_FILE}" > "/tmp/packer-goss.sha256"
+# RUN curl -fsSLo "/tmp/${PACKER_GOSS_AMD64_FILE}" "${PACKER_GOSS_AMD64_URL}"
+# RUN curl -fsSLo "/tmp/${PACKER_GOSS_ARM64_FILE}" "${PACKER_GOSS_ARM64_URL}"
+# RUN sha256sum -c "/tmp/packer-goss.sha256"
+# RUN tar --extract \
+#         --file "/tmp/${PACKER_GOSS_AMD64_FILE}" \
+#         --directory /tools
+# RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-amd64
+# RUN tar --extract \
+#         --file "/tmp/${PACKER_GOSS_ARM64_FILE}" \
+#         --directory /tools
+# RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-arm64
+# ARG BUILDARCH
+# RUN ln -s /tools/packer-provisioner-goss-${BUILDARCH} /tools/packer-provisioner-goss
 
-ARG GO_ACC_VERSION=0.2.6
-# TODO(jkoelker) migrate to binary release for next release:
-#                https://github.com/ory/go-acc/pull/23
-RUN go install "github.com/ory/go-acc@v${GO_ACC_VERSION}" \
-    && mv /go/bin/go-acc /tools
+# ARG GO_ACC_VERSION=0.2.6
+# # TODO(jkoelker) migrate to binary release for next release:
+# #                https://github.com/ory/go-acc/pull/23
+# RUN go install "github.com/ory/go-acc@v${GO_ACC_VERSION}" \
+#     && mv /go/bin/go-acc /tools
 
-ARG GOCOVER_COBERTURA_VERSION=1.1.0
-ARG GOCOVER_COBERTURA_SHA265=bd4cb244f88b2eee22a868dccb88433cc303d11ffa29e1cae3e772caada1b615
-ARG GOCOVER_COBERTURA_REPO="https://github.com/boumenot/gocover-cobertura"
-ARG GOCOVER_COBERTURA_FILE="gocover-cobertura.linux.x64.7z"
-ARG GOCOVER_COBERTURA_URL="${GOCOVER_COBERTURA_REPO}/releases/download/v${GOCOVER_COBERTURA_VERSION}/${GOCOVER_COBERTURA_FILE}"
-RUN wget \
-        --no-verbose \
-        --output-document="/tmp/${GOCOVER_COBERTURA_FILE}" \
-        "${GOCOVER_COBERTURA_URL}" \
-    && echo "${GOCOVER_COBERTURA_SHA265}  /tmp/${GOCOVER_COBERTURA_FILE}" \
-        > "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
-    && sha256sum -c "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
-    && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
-    && chmod +x /tools/gocover-cobertura
+# ARG GOCOVER_COBERTURA_VERSION=1.1.0
+# ARG GOCOVER_COBERTURA_SHA265=bd4cb244f88b2eee22a868dccb88433cc303d11ffa29e1cae3e772caada1b615
+# ARG GOCOVER_COBERTURA_REPO="https://github.com/boumenot/gocover-cobertura"
+# ARG GOCOVER_COBERTURA_FILE="gocover-cobertura.linux.x64.7z"
+# ARG GOCOVER_COBERTURA_URL="${GOCOVER_COBERTURA_REPO}/releases/download/v${GOCOVER_COBERTURA_VERSION}/${GOCOVER_COBERTURA_FILE}"
+# RUN wget \
+#         --no-verbose \
+#         --output-document="/tmp/${GOCOVER_COBERTURA_FILE}" \
+#         "${GOCOVER_COBERTURA_URL}" \
+#     && echo "${GOCOVER_COBERTURA_SHA265}  /tmp/${GOCOVER_COBERTURA_FILE}" \
+#         > "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
+#     && sha256sum -c "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
+#     && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
+#     && chmod +x /tools/gocover-cobertura
 
-# NOTE(jkoelker) From here we care about layers
+# # NOTE(jkoelker) From here we care about layers
 FROM golang:1.19.0-alpine3.15
 
 ARG ANSIBLE_VERSION=6.3.0
@@ -79,49 +79,49 @@ ARG GROUP_ID=0
 ARG DOCKER_GID=0
 ARG MINDTHEGAP_VERSION=1.0.0
 
-COPY requirements.txt /tmp/
-COPY requirements-devkit.txt /tmp/
-# NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
-# hadolint ignore=DL3013,DL3018
-RUN apk add --no-cache \
-        bash \
-        curl \
-        git \
-        gcc \
-        jq \
-        libc6-compat \
-        linux-headers \
-        musl-dev \
-        make \
-        openssl \
-        openssh-client \
-        python3 \
-        python3-dev \
-        gettext \
-        py3-pynacl \
-        py3-pip \
-    && pip3 install --no-cache-dir --upgrade pip wheel \
-    && pip3 install --no-cache-dir \
-        --requirement /tmp/requirements.txt \
-        --requirement /tmp/requirements-devkit.txt \
-    && rm -rf \
-        /root/.cache
+# COPY requirements.txt /tmp/
+# COPY requirements-devkit.txt /tmp/
+# # NOTE(jkoelker) Ignore "Pin versions in [pip | apk add]"
+# # hadolint ignore=DL3013,DL3018
+# RUN apk add --no-cache \
+#         bash \
+#         curl \
+#         git \
+#         gcc \
+#         jq \
+#         libc6-compat \
+#         linux-headers \
+#         musl-dev \
+#         make \
+#         openssl \
+#         openssh-client \
+#         python3 \
+#         python3-dev \
+#         gettext \
+#         py3-pynacl \
+#         py3-pip \
+#     && pip3 install --no-cache-dir --upgrade pip wheel \
+#     && pip3 install --no-cache-dir \
+#         --requirement /tmp/requirements.txt \
+#         --requirement /tmp/requirements-devkit.txt \
+#     && rm -rf \
+#         /root/.cache
 
-# hadolint ignore=DL4006
-RUN  curl -Lf https://github.com/mesosphere/mindthegap/releases/download/v"${MINDTHEGAP_VERSION}"/mindthegap_v"${MINDTHEGAP_VERSION}"_linux_amd64.tar.gz |tar xzf - -C /usr/local/bin
-ARG GOSS_VERSION=v0.3.18
-RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
-RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-arm64" -o /usr/local/bin/goss-arm64
-RUN chmod +rx /usr/local/bin/goss-amd64 /usr/local/bin/goss-arm64
-ARG BUILDARCH
-RUN ln -s /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
-COPY --from=packer-amd64 /bin/packer /usr/local/bin/packer-amd64
-COPY --from=packer-arm64 /bin/packer /usr/local/bin/packer-arm64
-COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
-COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
-COPY --from=docker /usr/local/bin/docker /usr/local/bin/
-COPY --from=govc /govc /usr/local/bin/
-COPY --from=builder /tools /usr/local/bin
+# # hadolint ignore=DL4006
+# RUN  curl -Lf https://github.com/mesosphere/mindthegap/releases/download/v"${MINDTHEGAP_VERSION}"/mindthegap_v"${MINDTHEGAP_VERSION}"_linux_amd64.tar.gz |tar xzf - -C /usr/local/bin
+# ARG GOSS_VERSION=v0.3.18
+# RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
+# RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-arm64" -o /usr/local/bin/goss-arm64
+# RUN chmod +rx /usr/local/bin/goss-amd64 /usr/local/bin/goss-arm64
+# ARG BUILDARCH
+# RUN ln -s /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
+# COPY --from=packer-amd64 /bin/packer /usr/local/bin/packer-amd64
+# COPY --from=packer-arm64 /bin/packer /usr/local/bin/packer-arm64
+# COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
+# COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
+# COPY --from=docker /usr/local/bin/docker /usr/local/bin/
+# COPY --from=govc /govc /usr/local/bin/
+# COPY --from=builder /tools /usr/local/bin
 RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
     || addgroup -S -g "${GROUP_ID}" "${GROUP_NAME}"
 
@@ -145,11 +145,11 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
 
 # this is needed for containerd tar
 # place it in /usr/share/ansible/collections, the container will be run with a different user
-RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
+#RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
 
 # hadolint ignore=DL3059
-RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN=$(cat /run/secrets/githubtoken) packer-${BUILDARCH} plugins install github.com/hashicorp/googlecompute ">=1.0.0" \
-    && packer-${BUILDARCH} plugins install github.com/hashicorp/azure ">=1.3.1"
+#RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN=$(cat /run/secrets/githubtoken) packer-${BUILDARCH} plugins install github.com/hashicorp/googlecompute ">=1.0.0" \
+#    && packer-${BUILDARCH} plugins install github.com/hashicorp/azure ">=1.3.1"
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
 CMD ["/bin/bash"]
