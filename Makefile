@@ -223,10 +223,11 @@ github-token.txt:
 buildx:
 buildx:
 	 docker buildx create --driver=docker-container --use
+	 docker run --privileged --rm tonistiigi/binfmt --install all
 
 
 $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
-$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst 
+$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		docker buildx build \
 		$(BUILD_FLAGS) \
 		$(REPO_ROOT_DIR) \
@@ -241,7 +242,7 @@ $(DOCKER_PHONY_FILE): Dockerfile
 		--platform linux/$(BUILDARCH) \
 		--tag=$(DOCKER_IMG) \
 		$(REPO_ROOT_DIR) \
-	&& touch $(DOCKER_PHONY_FILE) 
+	&& touch $(DOCKER_PHONY_FILE)
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
