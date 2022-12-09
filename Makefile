@@ -206,7 +206,7 @@ BUILD_FLAGS := \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
 		--build-arg BUILDARCH=$(BUILDARCH) \
 		--platform linux/$(BUILDARCH) \
-		--output=type="docker" \
+		--output="type=docker,push=false,name=$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
@@ -223,9 +223,8 @@ $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		docker buildx build \
 		$(BUILD_FLAGS) \
-		--tag "$(DOCKER_DEVKIT_IMG)" \
 		$(REPO_ROOT_DIR) \
-	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
+	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE)
 
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
