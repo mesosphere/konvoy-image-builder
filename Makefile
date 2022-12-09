@@ -230,7 +230,7 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		docker buildx build \
 		$(BUILD_FLAGS) \
 		$(REPO_ROOT_DIR) \
-	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE)
+	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
 $(DOCKER_PHONY_FILE): buildx
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
@@ -241,7 +241,7 @@ $(DOCKER_PHONY_FILE): Dockerfile
 		--platform linux/$(BUILDARCH) \
 		--output="type=docker,push=false,name=docker.io/$(DOCKER_IMG),dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
-	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_PHONY_FILE)
+	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_PHONY_FILE) 
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
