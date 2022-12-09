@@ -4,6 +4,7 @@ ARG BASE=mesosphere/konvoy-image-builder:latest-devkit
 FROM ${BASE} as devkit
 
 ARG TARGETPLATFORM
+# hadolint ignore=DL3029
 FROM --platform=${TARGETPLATFORM} alpine:3.15.4
 
 ENV ANSIBLE_PATH=/usr
