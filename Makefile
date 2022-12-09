@@ -206,7 +206,7 @@ BUILD_FLAGS := \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
 		--build-arg BUILDARCH=$(BUILDARCH) \
 		--platform linux/$(BUILDARCH) \
-		--output="type=docker,push=false,name=$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
+		--output="type=docker,push=false,name=docker.io/$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
@@ -239,7 +239,7 @@ $(DOCKER_PHONY_FILE): Dockerfile
 	docker buildx build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--platform linux/$(BUILDARCH) \
-		--output="type=docker,push=false,name=$(DOCKER_IMG),dest=/tmp/img.tar" \
+		--output="type=docker,push=false,name=docker.io/$(DOCKER_IMG),dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
 	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_PHONY_FILE)
 
