@@ -219,22 +219,29 @@ github-token.txt:
 	echo $(GITHUB_TOKEN) >> github-token.txt
 
 
-$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
-$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
+.PHONY: buildx
+buildx:
+buildx:
+	 docker buildx create --driver=docker-container --use
+
+
+$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
+$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst 
 		docker buildx build \
 		$(BUILD_FLAGS) \
 		$(REPO_ROOT_DIR) \
 	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE)
 
+$(DOCKER_PHONY_FILE): buildx
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
 $(DOCKER_PHONY_FILE): Dockerfile
 	docker buildx build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--platform linux/$(BUILDARCH) \
-		--tag "$(DOCKER_IMG)" \
+		--output="type=docker,push=false,name=$(DOCKER_IMG),dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
-	&& touch $(DOCKER_PHONY_FILE)
+	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_PHONY_FILE)
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
