@@ -1,4 +1,5 @@
-ARG BASE=mesosphere/konvoy-image-builder:latest-devkit
+ARG BUILDARCH
+ARG BASE=mesosphere/konvoy-image-builder:latest-devkit-${BUILDARCH}
 # NOTE(jkoelker) Ignore "Always tag the version of an image explicitly"
 # hadolint ignore=DL3006
 FROM ${BASE} as devkit
@@ -25,7 +26,6 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
-ARG BUILDARCH
 # we copy this to remote hosts to execute GOSS
 COPY --from=devkit /usr/local/bin/goss-amd64 /usr/local/bin/goss-amd64
 COPY --from=devkit /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss

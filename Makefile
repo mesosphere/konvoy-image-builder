@@ -57,7 +57,7 @@ endif
 export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)
 export DOCKER_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_IMG)' | tr '/:' '.')
 
-export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit
+export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit-$(BUILDARCH)
 export DOCKER_DEVKIT_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_DEVKIT_IMG)' | tr '/:' '.')
 export DOCKER_DEVKIT_GO_ENV_ARGS ?= \
 	--env GOCACHE=/kib/.cache/go-build \
