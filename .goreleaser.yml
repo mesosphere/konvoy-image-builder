@@ -60,6 +60,7 @@ builds:
       - windows
     goarch:
       - amd64
+      - arm64
     hooks:
       pre:
         - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
