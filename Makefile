@@ -236,12 +236,12 @@ $(DOCKER_PHONY_FILE): buildx
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
 $(DOCKER_PHONY_FILE): Dockerfile
-	docker buildx build \
+	DOCKER_BUILDKIT=1 docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--platform linux/$(BUILDARCH) \
-		--output="type=docker,push=false,name=docker.io/$(DOCKER_IMG),dest=/tmp/img.tar" \
+		--tag=$(DOCKER_IMG) \
 		$(REPO_ROOT_DIR) \
-	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_PHONY_FILE) 
+	&& touch $(DOCKER_PHONY_FILE) 
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
