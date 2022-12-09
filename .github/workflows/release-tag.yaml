@@ -28,6 +28,9 @@ jobs:
           username: mesosphereci
           password: ${{ secrets.DOCKER_PASS }}
 
+      - name: setup buildkit
+        uses: docker/setup-buildx-action@v2
+
       - name: Release
         run: make release
         env:
