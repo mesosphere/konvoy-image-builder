@@ -28,18 +28,6 @@ jobs:
           username: mesosphereci
           password: ${{ secrets.DOCKER_PASS }}
 
-      - name: Devkit
-        run: make devkit
-        env:
-          DOCKER_CLI_EXPERIMENTAL: "enabled"
-
-      - name: Devkit arm64
-        run: make devkit BUILDARCH=arm64
-        env:
-          DOCKER_CLI_EXPERIMENTAL: "enabled"
-          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-
       - name: Release
         run: make release
         env:
