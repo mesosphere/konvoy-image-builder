@@ -441,12 +441,12 @@ diff: ## git diff
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
 .PHONY: release
-release: ## goreleaser --rm-dist --debug
+release: devkit
 	$(call print-target)
 	goreleaser --parallelism=1 --rm-dist --debug
 
 .PHONY: release-snapshot
-release-snapshot: ## goreleaser --snapshot --rm-dist
+release-snapshot: devkit
 	$(call print-target)
 	goreleaser release --snapshot --skip-publish --rm-dist
 
