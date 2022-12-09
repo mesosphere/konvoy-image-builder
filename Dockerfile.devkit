@@ -1,4 +1,6 @@
+# hadolint ignore=DL3029
 FROM --platform=linux/amd64 hashicorp/packer:1.8.4 as packer-amd64
+# hadolint ignore=DL3029
 FROM --platform=linux/arm64 hashicorp/packer:1.8.4 as packer-arm64
 FROM golangci/golangci-lint:v1.49.0-alpine as golangci-lint
 FROM goreleaser/goreleaser:v1.13.0 as goreleaser
@@ -54,6 +56,8 @@ ARG GOCOVER_COBERTURA_SHA265=bd4cb244f88b2eee22a868dccb88433cc303d11ffa29e1cae3e
 ARG GOCOVER_COBERTURA_REPO="https://github.com/boumenot/gocover-cobertura"
 ARG GOCOVER_COBERTURA_FILE="gocover-cobertura.linux.x64.7z"
 ARG GOCOVER_COBERTURA_URL="${GOCOVER_COBERTURA_REPO}/releases/download/v${GOCOVER_COBERTURA_VERSION}/${GOCOVER_COBERTURA_FILE}"
+
+# hadolint ignore=DL4001
 RUN wget \
         --no-verbose \
         --output-document="/tmp/${GOCOVER_COBERTURA_FILE}" \
