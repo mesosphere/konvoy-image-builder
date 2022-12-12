@@ -222,8 +222,8 @@ github-token.txt:
 .PHONY: buildx
 buildx:
 buildx:
-	 docker buildx create --driver=docker-container --use
-	 docker run --privileged --rm tonistiigi/binfmt --install all
+	 docker buildx create --driver=docker-container --use --name=konvoy-image-builder || true
+	 docker run --privileged --rm tonistiigi/binfmt --install all || true
 
 
 $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
@@ -285,6 +285,7 @@ clean: ## remove files created during build
 	rm -f flatcar-version.yaml
 	rm -f $(COVERAGE)*
 	docker image rm $(DOCKER_DEVKIT_IMG) || echo "image already removed"
+	docker buildx rm konvoy-image-builder || echo "image already removed"
 
 .PHONY: generate
 generate: ## go generate
@@ -430,8 +431,9 @@ build.snapshot:
 	#                `Dockerfile`. Unfortunatly goreleaser forbids
 	#                copying the dist folder into the temporary folder
 	#                that it uses as its docker build context ;(.
+	# NOTE (faiq): does anyone use this target?
 	mkdir -p bin
-	cp dist/konvoy-image_linux_amd64_v1/konvoy-image bin/konvoy-image
+	cp dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image bin/konvoy-image
 	goreleaser --parallelism=1 --skip-publish --snapshot --rm-dist
 
 .PHONY: diff
@@ -443,16 +445,16 @@ diff: ## git diff
 .PHONY: release
 release:
 	$(call print-target)
-	$(MAKE) devkit
+	$(MAKE) devkit BUILDARCH=amd64
 	$(MAKE) devkit BUILDARCH=arm64
 	goreleaser --parallelism=1 --rm-dist --debug --snapshot
 
 .PHONY: release-snapshot
 release-snapshot: devkit
 	$(call print-target)
-	$(MAKE) devkit
+	$(MAKE) devkit BUILDARCH=amd64
 	$(MAKE) devkit BUILDARCH=arm64
-	goreleaser release --snapshot --skip-publish --rm-dist
+	goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches

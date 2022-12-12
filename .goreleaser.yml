@@ -57,7 +57,6 @@ builds:
     goos:
       - darwin
       - linux
-      - windows
     goarch:
       - amd64
       - arm64
@@ -67,7 +66,6 @@ builds:
 
 dockers:
   - dockerfile: Dockerfile
-    use: buildx
     image_templates:
       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-amd64'
     ids:
@@ -75,13 +73,14 @@ dockers:
     # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
     #                was just build and is local, it will not be found.
     build_flag_templates:
-      - '--build-arg=BASE=mesosphere/konvoy-image-builder:latest-devkit'
+      - '--build-arg=BASE=mesosphere/konvoy-image-builder:latest-devkit-amd64'
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.name={{ .ProjectName }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
+      - "--build-arg=BUILDARCH=amd64"
     skip_push: false
     extra_files:
       - bin
@@ -91,7 +90,6 @@ dockers:
       - requirements.txt
 
   - dockerfile: Dockerfile
-    use: buildx
     image_templates:
       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-arm64'
     ids:
@@ -106,6 +104,7 @@ dockers:
       - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/arm64"
+      - "--build-arg=BUILDARCH=arm64"
     skip_push: false
     extra_files:
       - bin
