@@ -3,7 +3,7 @@ FROM --platform=linux/amd64 hashicorp/packer:1.8.4 as packer-amd64
 # hadolint ignore=DL3029
 FROM --platform=linux/arm64 hashicorp/packer:1.8.4 as packer-arm64
 FROM golangci/golangci-lint:v1.49.0-alpine as golangci-lint
-FROM goreleaser/goreleaser:v1.13.0 as goreleaser
+FROM goreleaser/goreleaser:v1.13.1 as goreleaser
 FROM docker:20.10 as docker
 FROM vmware/govc:v0.29.0 as govc
 
