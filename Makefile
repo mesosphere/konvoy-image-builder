@@ -34,8 +34,10 @@ export CGO_ENABLED=0
 # .*    anything after the capture group
 # \1     substitute everything with the 1st capture group
 # p      print it
-export GO_VERSION := $(shell sed -n "s|^go\s*\(\S*\).*|\1|p" go.mod)
+export GO_VERSION := $(shell cat go.mod | grep "go " -m 1 | cut -d " " -f 2)
 GOLANG_IMAGE := golang:$(GO_VERSION)
+ARCH := $(shell uname -m)
+BUILDARCH ?= $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
 
 export CI ?= no
 ifeq ($(CI),yes)
@@ -55,7 +57,7 @@ endif
 export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)
 export DOCKER_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_IMG)' | tr '/:' '.')
 
-export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit
+export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit-$(BUILDARCH)
 export DOCKER_DEVKIT_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_DEVKIT_IMG)' | tr '/:' '.')
 export DOCKER_DEVKIT_GO_ENV_ARGS ?= \
 	--env GOCACHE=/kib/.cache/go-build \
@@ -202,6 +204,9 @@ BUILD_FLAGS := \
 		--build-arg USER_NAME=$(USER_NAME) \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
+		--build-arg BUILDARCH=$(BUILDARCH) \
+		--platform linux/$(BUILDARCH) \
+		--output="type=docker,push=false,name=docker.io/$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
@@ -214,23 +219,29 @@ github-token.txt:
 	echo $(GITHUB_TOKEN) >> github-token.txt
 
 
-ifneq ($(strip $(GITHUB_ACTION)),)
-$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
-endif
+.PHONY: buildx
+buildx:
+buildx:
+	 docker buildx create --driver=docker-container --use --name=konvoy-image-builder || true
+	 docker run --privileged --rm tonistiigi/binfmt --install all || true
+
+
+$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		docker buildx build \
 		$(BUILD_FLAGS) \
-		--tag "$(DOCKER_DEVKIT_IMG)" \
-		--load \
 		$(REPO_ROOT_DIR) \
-	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
+	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
+$(DOCKER_PHONY_FILE): buildx
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
 $(DOCKER_PHONY_FILE): Dockerfile
-	docker build \
+	DOCKER_BUILDKIT=1 docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
-		--tag "$(DOCKER_IMG)" \
+		--build-arg BUILDARCH=$(BUILDARCH) \
+		--platform linux/$(BUILDARCH) \
+		--tag=$(DOCKER_IMG) \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_PHONY_FILE)
 
@@ -274,6 +285,7 @@ clean: ## remove files created during build
 	rm -f flatcar-version.yaml
 	rm -f $(COVERAGE)*
 	docker image rm $(DOCKER_DEVKIT_IMG) || echo "image already removed"
+	docker buildx rm konvoy-image-builder || echo "image already removed"
 
 .PHONY: generate
 generate: ## go generate
@@ -291,6 +303,7 @@ docker:
 	$(GOLANG_IMAGE) \
 	/bin/bash -c "$(WHAT)"
 
+
 bin/konvoy-image: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image: $(REPO_ROOT_DIR)/pkg
@@ -300,24 +313,26 @@ bin/konvoy-image:
 	$(call print-target)
 	go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./bin/konvoy-image ./cmd/konvoy-image/main.go
+		-o ./dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image ./cmd/konvoy-image/main.go
+	mkdir -p bin
+	ln -sf ../dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image bin/konvoy-image
 
 konvoy-image-linux:
 	$(MAKE) docker GOOS=linux WHAT="make bin/konvoy-image"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
-bin/konvoy-image-wrapper: 
+bin/konvoy-image-wrapper:
 	$(call print-target)
 	$(MAKE) docker WHAT="go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go"
 
-dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/cmd
-dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
-dist/konvoy-image_linux_amd64/konvoy-image: $(REPO_ROOT_DIR)/pkg
-dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
-dist/konvoy-image_linux_amd64/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
-dist/konvoy-image_linux_amd64/konvoy-image:
+dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(REPO_ROOT_DIR)/cmd
+dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
+dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(REPO_ROOT_DIR)/pkg
+dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
+dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image:
 	$(call print-target)
 	goreleaser build --snapshot --rm-dist --id konvoy-image --single-target
 
@@ -416,8 +431,9 @@ build.snapshot:
 	#                `Dockerfile`. Unfortunatly goreleaser forbids
 	#                copying the dist folder into the temporary folder
 	#                that it uses as its docker build context ;(.
+	# NOTE (faiq): does anyone use this target?
 	mkdir -p bin
-	cp dist/konvoy-image_linux_amd64_v1/konvoy-image bin/konvoy-image
+	cp dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image bin/konvoy-image
 	goreleaser --parallelism=1 --skip-publish --snapshot --rm-dist
 
 .PHONY: diff
@@ -427,14 +443,18 @@ diff: ## git diff
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
 .PHONY: release
-release: ## goreleaser --rm-dist --debug
+release:
 	$(call print-target)
-	goreleaser --parallelism=1 --rm-dist --debug
+	$(MAKE) devkit BUILDARCH=amd64
+	$(MAKE) devkit BUILDARCH=arm64
+	goreleaser --parallelism=1 --rm-dist --debug --snapshot
 
 .PHONY: release-snapshot
-release-snapshot: ## goreleaser --snapshot --rm-dist
+release-snapshot: devkit
 	$(call print-target)
-	goreleaser release --snapshot --skip-publish --rm-dist
+	$(MAKE) devkit BUILDARCH=amd64
+	$(MAKE) devkit BUILDARCH=arm64
+	goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches

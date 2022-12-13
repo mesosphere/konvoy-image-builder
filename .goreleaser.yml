@@ -32,6 +32,7 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
 
   - main: ./cmd/konvoy-image-wrapper/main.go
     id: konvoy-image-wrapper
@@ -56,47 +57,30 @@ builds:
     goos:
       - darwin
       - linux
-      - windows
     goarch:
       - amd64
+      - arm64
     hooks:
       pre:
         - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 
 dockers:
-  - dockerfile: Dockerfile.devkit
-    id: docker-devkit
-    image_templates:
-      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
-    build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
-      - "--label=org.opencontainers.image.source={{ .GitURL }}"
-      - "--platform=linux/amd64"
-    skip_push: true
-    extra_files:
-      - requirements.txt
-      - requirements-devkit.txt
-
   - dockerfile: Dockerfile
     image_templates:
-      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}'
+      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-amd64'
     ids:
       - konvoy-image
-      - docker-devkit
     # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
     #                was just build and is local, it will not be found.
     build_flag_templates:
-      - '--build-arg=BASE=mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
+      - '--build-arg=BASE=mesosphere/konvoy-image-builder:latest-devkit-amd64'
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.name={{ .ProjectName }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
+      - "--build-arg=BUILDARCH=amd64"
     skip_push: false
     extra_files:
       - bin
@@ -104,6 +88,29 @@ dockers:
       - ansible
       - packer
       - requirements.txt
+
+  - dockerfile: Dockerfile
+    image_templates:
+      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-arm64'
+    ids:
+      - konvoy-image
+    # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
+    #                was just build and is local, it will not be found.
+    build_flag_templates:
+      - '--build-arg=BASE=mesosphere/konvoy-image-builder:latest-devkit-arm64'
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--platform=linux/arm64"
+      - "--build-arg=BUILDARCH=arm64"
+    skip_push: false
+    extra_files:
+      - bin
+      - images
+      - ansible
+      - packer
 
 archives:
   - id: konvoy-image-bundle
