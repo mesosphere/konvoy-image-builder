@@ -246,6 +246,7 @@ $(DOCKER_PHONY_FILE): Dockerfile
 	&& touch $(DOCKER_PHONY_FILE)
 
 .PHONY: devkit
+devkit:
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 
 WHAT ?= bash
@@ -445,16 +446,18 @@ diff: ## git diff
 .PHONY: release
 release:
 	$(call print-target)
-	$(MAKE) devkit BUILDARCH=amd64
-	$(MAKE) devkit BUILDARCH=arm64
-	goreleaser --parallelism=1 --rm-dist --debug --snapshot
+	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
+	make devkit BUILDARCH=arm64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-arm64
+	make devkit BUILDARCH=amd64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-amd64
+	DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --debug --snapshot
 
 .PHONY: release-snapshot
-release-snapshot: devkit
+release-snapshot:
 	$(call print-target)
-	$(MAKE) devkit BUILDARCH=amd64
-	$(MAKE) devkit BUILDARCH=arm64
-	goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
+	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
+	make devkit BUILDARCH=arm64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-arm64
+	make devkit BUILDARCH=amd64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-amd64
+	DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches

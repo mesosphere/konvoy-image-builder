@@ -111,6 +111,7 @@ dockers:
       - images
       - ansible
       - packer
+      - requirements.txt
 
 archives:
   - id: konvoy-image-bundle
