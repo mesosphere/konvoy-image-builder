@@ -233,6 +233,11 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		$(REPO_ROOT_DIR) \
 	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
+BUILDARCHV := ""
+ifeq ($(BUILDARCH), "amd64")
+	BUILDARCHV = "_v1"
+endif
+
 $(DOCKER_PHONY_FILE): buildx
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
@@ -240,6 +245,7 @@ $(DOCKER_PHONY_FILE): Dockerfile
 	DOCKER_BUILDKIT=1 docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--build-arg BUILDARCH=$(BUILDARCH) \
+		--build-arg BUILDARCHV=$(BUILDARCHV) \
 		--platform linux/$(BUILDARCH) \
 		--tag=$(DOCKER_IMG) \
 		$(REPO_ROOT_DIR) \

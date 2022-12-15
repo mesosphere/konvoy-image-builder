@@ -81,6 +81,7 @@ dockers:
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
       - "--build-arg=BUILDARCH=amd64"
+      - "--build-arg=BUILDARCHV=_v1"
     skip_push: false
     extra_files:
       - bin
@@ -88,6 +89,7 @@ dockers:
       - ansible
       - packer
       - requirements.txt
+      - dist
 
   - dockerfile: Dockerfile
     image_templates:
@@ -112,6 +114,7 @@ dockers:
       - ansible
       - packer
       - requirements.txt
+      - dist
 
 archives:
   - id: konvoy-image-bundle
