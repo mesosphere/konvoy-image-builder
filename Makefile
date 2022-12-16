@@ -324,6 +324,7 @@ bin/konvoy-image:
 		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
 	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
+	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image-$(GOARCH)
 
 konvoy-image-linux:
 	$(MAKE) docker GOOS=linux GOARCH=$(GOARCH) WHAT="make bin/konvoy-image"
@@ -450,21 +451,22 @@ diff: ## git diff
 	git diff --exit-code
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
+devkit-amd64: export BUILDARCH=amd64
+devkit-arm64: export BUILDARCH=arm64
+devkit-%:
+	$(MAKE) devkit
+
 .PHONY: release
-release:
+release: devkit-amd64 devkit-arm64
 	$(call print-target)
-	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
-	make devkit BUILDARCH=arm64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-arm64
-	make devkit BUILDARCH=amd64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-amd64
 	DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --debug --snapshot
 
 .PHONY: release-snapshot
-release-snapshot:
+release-snapshot: devkit-amd64 devkit-arm64
 	$(call print-target)
-	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
-	make devkit BUILDARCH=arm64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-arm64
-	make devkit BUILDARCH=amd64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-amd64
 	DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
+
+release-docker: $(DOCKER_PHONY_FILE)
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches
