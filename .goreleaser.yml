@@ -89,7 +89,6 @@ dockers:
       - ansible
       - packer
       - requirements.txt
-      - dist
 
   - dockerfile: Dockerfile
     image_templates:
@@ -114,7 +113,6 @@ dockers:
       - ansible
       - packer
       - requirements.txt
-      - dist
 
 archives:
   - id: konvoy-image-bundle

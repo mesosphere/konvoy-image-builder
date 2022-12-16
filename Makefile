@@ -307,6 +307,7 @@ docker:
 	--volume $(REPO_ROOT_DIR):/build \
 	--workdir /build \
 	--env GOOS \
+	--env GOARCH \
 	$(GOLANG_IMAGE) \
 	/bin/bash -c "$(WHAT)"
 
@@ -320,12 +321,12 @@ bin/konvoy-image:
 	$(call print-target)
 	go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image ./cmd/konvoy-image/main.go
+		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
-	ln -sf ../dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image bin/konvoy-image
+	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
 
 konvoy-image-linux:
-	$(MAKE) docker GOOS=linux WHAT="make bin/konvoy-image"
+	$(MAKE) docker GOOS=linux GOARCH=$(GOARCH) WHAT="make bin/konvoy-image"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:
