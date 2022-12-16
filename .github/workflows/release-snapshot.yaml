@@ -1,0 +1,25 @@
+'on':
+  pull_request:
+    branches:
+    - 'faiq/release-fixes'
+
+jobs:
+  lint:
+    name: Lint code base
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 'v1.18'
+          check-latest: true
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Release
+        run: make release-snapshot
+        env:
+          DOCKER_CLI_EXPERIMENTAL: "enabled"
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
