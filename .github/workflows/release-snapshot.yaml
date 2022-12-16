@@ -1,11 +1,11 @@
 'on':
   pull_request:
     branches:
-    - 'faiq/release-fixes'
+    - '*'
 
 jobs:
-  lint:
-    name: Lint code base
+  release-snap:
+    name: release-snap
     runs-on: ubuntu-latest
 
     steps:
