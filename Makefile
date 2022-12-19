@@ -255,6 +255,12 @@ devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 docker-build:
 docker-build: $(DOCKER_PHONY_FILE)
 
+.PHONY: docker-push
+docker-push:
+docker-push: docker-build
+	docker push $(DOCKER_IMG)
+
+
 WHAT ?= bash
 
 .PHONY: devkit.run
@@ -328,7 +334,7 @@ bin/konvoy-image:
 	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
 
 konvoy-image-linux:
-	$(MAKE) docker GOOS=linux GOARCH=$(GOARCH) WHAT="make bin/konvoy-image"
+	$(MAKE) devkit.run GOOS=linux GOARCH=$(GOARCH) WHAT="make bin/konvoy-image"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:
@@ -453,21 +459,26 @@ diff: ## git diff
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
 .PHONY: release
-release: BUILDARCH=amd64
-release: docker-build
-release: BUILDARCH=arm64
-release: docker-build
-	$(call print-target)
+release:
 	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
+	$(call print-target)
+	BUILDARCH=amd64 make docker-push
+	BUILDARCH=arm64 make docker-push
 	DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --debug --snapshot
+	docker manifest create \
+		$(DOCKER_REPOSITORY):$(REPO_REV) \
+		--amend $(DOCKER_REPOSITORY):$(REPO_REV)-arm64 \
+		--amend $(DOCKER_REPOSITORY):$(REPO_REV)-amd64
+	DOCKER_BUILDKIT=1 docker manifest push $(DOCKER_REPOSITORY):$(REPO_REV)
 
 .PHONY: release-snapshot
-release-snapshot: BUILDARCH=amd64
-release-snapshot: docker-build
-release-snapshot: BUILDARCH=arm64
-release-snapshot: docker-build
+release-snapshot:
+release-snapshot:
 	$(call print-target)
+	BUILDARCH=amd64 make docker-build
+	BUILDARCH=arm64 make docker-build
 	DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
+
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches
@@ -499,5 +510,4 @@ cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 release-bundle:
 	$(MAKE) GOOS=linux release-bundle-GOOS
-	$(MAKE) GOOS=windows release-bundle-GOOS
 	$(MAKE) GOOS=darwin release-bundle-GOOS
