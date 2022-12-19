@@ -327,7 +327,7 @@ bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image:
 	$(call print-target)
-	go build \
+	GOARCH=$(GOARCH) GOOS=$(GOOS) go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
