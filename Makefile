@@ -312,8 +312,6 @@ docker:
 	$(DOCKER_ULIMIT_ARGS) \
 	--volume $(REPO_ROOT_DIR):/build \
 	--workdir /build \
-	--user $(UID):$(GID) \
-	--group-add $(DOCKER_SOCKET_GID) \
 	--env GOOS \
 	--env GOARCH \
 	$(GOLANG_IMAGE) \
@@ -339,9 +337,10 @@ konvoy-image-linux:
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:
 	$(call print-target)
-	$(MAKE) devkit.run WHAT="go build \
+	$(MAKE) docker WHAT="go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go"
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
 
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(REPO_ROOT_DIR)/cmd
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
