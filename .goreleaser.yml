@@ -62,57 +62,7 @@ builds:
       - arm64
     hooks:
       pre:
-        - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
-
-dockers:
-  - dockerfile: Dockerfile
-    image_templates:
-      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-amd64'
-    ids:
-      - konvoy-image
-    # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
-    #                was just build and is local, it will not be found.
-    build_flag_templates:
-      - '--build-arg=BASE=mesosphere/konvoy-image-builder:latest-devkit-amd64'
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
-      - "--label=org.opencontainers.image.source={{ .GitURL }}"
-      - "--platform=linux/amd64"
-      - "--build-arg=BUILDARCH=amd64"
-      - "--build-arg=BUILDARCHV=_v1"
-    skip_push: false
-    extra_files:
-      - bin
-      - images
-      - ansible
-      - packer
-      - requirements.txt
-
-  - dockerfile: Dockerfile
-    image_templates:
-      - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-arm64'
-    ids:
-      - konvoy-image
-    # NOTE(jkoelker) Exclude `--pull` from the build flags, since the devkit
-    #                was just build and is local, it will not be found.
-    build_flag_templates:
-      - '--build-arg=BASE=mesosphere/konvoy-image-builder:latest-devkit-arm64'
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - '--label=org.opencontainers.image.version=v{{trimprefix .Version "v"}}'
-      - "--label=org.opencontainers.image.source={{ .GitURL }}"
-      - "--platform=linux/arm64"
-      - "--build-arg=BUILDARCH=arm64"
-    skip_push: false
-    extra_files:
-      - bin
-      - images
-      - ansible
-      - packer
-      - requirements.txt
+        - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz  DOCKER_DEVKIT_DEFAULT_ARGS="--rm"
 
 archives:
   - id: konvoy-image-bundle

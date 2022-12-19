@@ -54,7 +54,7 @@ else
 export DOCKER_SOCKET_GID ?= $(shell stat -c %g $(DOCKER_SOCKET))
 endif
 
-export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)
+export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
 export DOCKER_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_IMG)' | tr '/:' '.')
 
 export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit-$(BUILDARCH)
@@ -62,7 +62,9 @@ export DOCKER_DEVKIT_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_DEVKIT_IMG)' |
 export DOCKER_DEVKIT_GO_ENV_ARGS ?= \
 	--env GOCACHE=/kib/.cache/go-build \
 	--env GOMODCACHE=/kib/.cache/go-mod \
-	--env GOLANGCI_LINT_CACHE=/kib/.cache/golangci-lint
+	--env GOLANGCI_LINT_CACHE=/kib/.cache/golangci-lint \
+	--env GOOS \
+	--env GOARCH  \
 
 export DOCKER_DEVKIT_ENV_ARGS ?= \
 	--env CI \
@@ -233,11 +235,6 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		$(REPO_ROOT_DIR) \
 	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
-BUILDARCHV := ""
-ifeq ($(BUILDARCH), "amd64")
-	BUILDARCHV = "_v1"
-endif
-
 $(DOCKER_PHONY_FILE): buildx
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
@@ -245,7 +242,6 @@ $(DOCKER_PHONY_FILE): Dockerfile
 	DOCKER_BUILDKIT=1 docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--build-arg BUILDARCH=$(BUILDARCH) \
-		--build-arg BUILDARCHV=$(BUILDARCHV) \
 		--platform linux/$(BUILDARCH) \
 		--tag=$(DOCKER_IMG) \
 		$(REPO_ROOT_DIR) \
@@ -254,6 +250,10 @@ $(DOCKER_PHONY_FILE): Dockerfile
 .PHONY: devkit
 devkit:
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
+
+.PHONY: docker-build
+docker-build:
+docker-build: $(DOCKER_PHONY_FILE)
 
 WHAT ?= bash
 
@@ -306,6 +306,8 @@ docker:
 	$(DOCKER_ULIMIT_ARGS) \
 	--volume $(REPO_ROOT_DIR):/build \
 	--workdir /build \
+	--user $(UID):$(GID) \
+	--group-add $(DOCKER_SOCKET_GID) \
 	--env GOOS \
 	--env GOARCH \
 	$(GOLANG_IMAGE) \
@@ -451,19 +453,20 @@ diff: ## git diff
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
 .PHONY: release
-release:
+release: BUILDARCH=amd64
+release: docker-build
+release: BUILDARCH=arm64
+release: docker-build
 	$(call print-target)
 	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
-	make devkit BUILDARCH=arm64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-arm64
-	make devkit BUILDARCH=amd64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-amd64
 	DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --debug --snapshot
 
 .PHONY: release-snapshot
-release-snapshot:
+release-snapshot: BUILDARCH=amd64
+release-snapshot: docker-build
+release-snapshot: BUILDARCH=arm64
+release-snapshot: docker-build
 	$(call print-target)
-	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
-	make devkit BUILDARCH=arm64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-arm64
-	make devkit BUILDARCH=amd64 DOCKER_DEVKIT_IMG=$(DOCKER_REPOSITORY):latest-devkit-amd64
 	DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
 
 .PHONY: go-clean

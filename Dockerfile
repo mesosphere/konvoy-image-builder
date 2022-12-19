@@ -27,7 +27,6 @@ RUN apk add --no-cache \
     && rm -rf /root/.cache
 
 ARG BUILDARCH
-ARG BUILDARCHV
 # we copy this to remote hosts to execute GOSS
 COPY --from=devkit /usr/local/bin/goss-amd64 /usr/local/bin/goss-amd64
 COPY --from=devkit /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
