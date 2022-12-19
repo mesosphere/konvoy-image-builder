@@ -459,11 +459,13 @@ diff: ## git diff
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
 .PHONY: release
-release:
+release: BUILDARCH=amd64
+release: docker-push
+release: BUILDARCH=arm64
+release: docker-push
+	$(call print-target)
 	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
 	$(call print-target)
-	BUILDARCH=amd64 make docker-push
-	BUILDARCH=arm64 make docker-push
 	DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --debug --snapshot
 	docker manifest create \
 		$(DOCKER_REPOSITORY):$(REPO_REV) \
@@ -472,11 +474,11 @@ release:
 	DOCKER_BUILDKIT=1 docker manifest push $(DOCKER_REPOSITORY):$(REPO_REV)
 
 .PHONY: release-snapshot
-release-snapshot:
-release-snapshot:
+release-snapshot: BUILDARCH=amd64
+release-snapshot: docker-build
+release-snapshot: BUILDARCH=arm64
+release-snapshot: docker-build
 	$(call print-target)
-	BUILDARCH=amd64 make docker-build
-	BUILDARCH=arm64 make docker-build
 	DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
 
 
