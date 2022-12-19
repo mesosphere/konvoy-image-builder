@@ -333,7 +333,7 @@ konvoy-image-linux:
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:
 	$(call print-target)
-	$(MAKE) docker WHAT="go build \
+	$(MAKE) devkit.run WHAT="go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go"
 
