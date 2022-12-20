@@ -37,7 +37,13 @@ export CGO_ENABLED=0
 export GO_VERSION := $(shell cat go.mod | grep "go " -m 1 | cut -d " " -f 2)
 GOLANG_IMAGE := golang:$(GO_VERSION)
 ARCH := $(shell uname -m)
+
 BUILDARCH ?= $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
+ifneq ($(GOARCH),)
+ifneq ($(BUILDARCH),$(GOARCH))
+  $(error "$(BUILDARCH) and $(GOARCH) must be set as the same")
+endif
+endif
 
 export CI ?= no
 ifeq ($(CI),yes)
@@ -63,8 +69,6 @@ export DOCKER_DEVKIT_GO_ENV_ARGS ?= \
 	--env GOCACHE=/kib/.cache/go-build \
 	--env GOMODCACHE=/kib/.cache/go-mod \
 	--env GOLANGCI_LINT_CACHE=/kib/.cache/golangci-lint \
-	--env GOOS \
-	--env GOARCH  \
 
 export DOCKER_DEVKIT_ENV_ARGS ?= \
 	--env CI \
@@ -250,14 +254,24 @@ $(DOCKER_PHONY_FILE): Dockerfile
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 
-.PHONY: docker-build
-docker-build:
-docker-build: $(DOCKER_PHONY_FILE)
+.PHONY: docker-build-amd64
+docker-build-amd64:
+	echo $(DOCKER_IMG)
+	echo $(DOCKER_PHONY_FILE)
+	$(MAKE) $(DOCKER_PHONY_FILE)  BUILDARCH=amd64 ARCH=amd64
+
+.PHONY: docker-build-arm64
+docker-build-arm64:
+docker-build-arm64:
+	echo $(DOCKER_IMG)
+	echo $(DOCKER_PHONY_FILE)
+	$(MAKE) $(DOCKER_PHONY_FILE) BUILDARCH=arm64 ARCH=arm64
 
 .PHONY: docker-push
 docker-push:
-docker-push: docker-build
-	docker push $(DOCKER_IMG)
+docker-push:
+	docker push $(DOCKER_REPOSITORY):$(REPO_REV)-arm64 
+	docker push $(DOCKER_REPOSITORY):$(REPO_REV)-amd64
 
 
 WHAT ?= bash
@@ -331,7 +345,7 @@ bin/konvoy-image:
 	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
 
 konvoy-image-linux:
-	$(MAKE) devkit.run GOOS=linux GOARCH=$(GOARCH) WHAT="make bin/konvoy-image"
+	$(MAKE) docker GOOS=linux GOARCH=$(GOARCH) WHAT="make bin/konvoy-image"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:

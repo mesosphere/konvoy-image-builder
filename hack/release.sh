@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o errexit -o pipefail
+set -o errexit -o pipefail -x
 
 function usage() {
   echo "usage: $0 \\"
@@ -7,11 +7,10 @@ function usage() {
 }
 
 function main () {
-  make docker-build BUILDARCH=arm64
-  make docker-build BUILDARCH=amd64
+  make docker-build-amd64 BUILDARCH=amd64 GOARCH=amd64
+  make docker-build-arm64 BUILDARCH=arm64 GOARCH=arm64
   if ${push}; then
-    make docker-push BUILDARCH=arm64
-    make docker-push BUILDARCH=amd64
+    make docker-push
     make push-manifest
 	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --debug --snapshot
     exit 0
@@ -19,6 +18,7 @@ function main () {
 	DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
 }
 
+push=false
 
 while [ "$1" != "" ]; do
   case $1 in
