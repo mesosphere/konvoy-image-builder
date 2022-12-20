@@ -262,7 +262,7 @@ devkit-amd64: buildx github-token.txt
 
 .PHONY: docker-build-amd64
 docker-build-amd64: BUILDARCH=amd64
-docker-build-amd64: devkit-amd64 konvoy-image-linux
+docker-build-amd64: devkit-amd64 konvoy-image-amd64
 	DOCKER_BUILDKIT=1 docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--build-arg BUILDARCH=$(BUILDARCH) \
@@ -272,7 +272,7 @@ docker-build-amd64: devkit-amd64 konvoy-image-linux
 
 .PHONY: docker-devkit-build-arm64
 docker-build-arm64: BUILDARCH=arm64
-docker-build-arm64: devkit-arm64 konvoy-image-linux
+docker-build-arm64: devkit-arm64 konvoy-image-arm64
 	DOCKER_BUILDKIT=1 docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--build-arg BUILDARCH=$(BUILDARCH) \
@@ -357,8 +357,40 @@ bin/konvoy-image:
 	mkdir -p bin
 	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
 
+bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/cmd
+bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
+bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/pkg
+bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
+bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+bin/konvoy-image-amd64:
+	$(call print-target)
+	GOARCH=$(BUILDARCH) GOOS=$(GOOS) go build \
+		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
+		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
+	mkdir -p bin
+	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image-amd64
+
+bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/cmd
+bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
+bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/pkg
+bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
+bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+bin/konvoy-image-arm64:
+	$(call print-target)
+	GOARCH=$(BUILDARCH) GOOS=$(GOOS) go build \
+		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
+		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
+	mkdir -p bin
+	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image-arm64
+
 konvoy-image-linux:
 	$(MAKE) docker GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image"
+
+konvoy-image-amd64:
+	$(MAKE) docker GOOS=linux GOARCH=amd64 WHAT="make bin/konvoy-image-amd64"
+
+konvoy-image-arm64:
+	$(MAKE) docker GOOS=linux GOARCH=arm64 WHAT="make bin/konvoy-image-arm64"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:

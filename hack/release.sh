@@ -9,9 +9,7 @@ function usage() {
 function main () {
   # make does not respect that this file could be built with a different arch
   # we remove it before each docker build to force it to rebuild
-  rm -rf bin/konvoy-image
   make docker-build-amd64
-  rm -rf bin/konvoy-image
   make docker-build-arm64
   if ${push}; then
     make docker-push
