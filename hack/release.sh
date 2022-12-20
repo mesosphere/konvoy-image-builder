@@ -7,8 +7,12 @@ function usage() {
 }
 
 function main () {
-  make docker-build-amd64 BUILDARCH=amd64 GOARCH=amd64
-  make docker-build-arm64 BUILDARCH=arm64 GOARCH=arm64
+  # make does not respect that this file could be built with a different arch
+  # we remove it before each docker build to force it to rebuild
+  rm -rf bin/konvoy-image
+  make docker-build-amd64
+  rm -rf bin/konvoy-image
+  make docker-build-arm64
   if ${push}; then
     make docker-push
     make push-manifest
