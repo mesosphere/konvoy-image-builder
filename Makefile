@@ -385,6 +385,7 @@ bin/konvoy-image-arm64:
 
 konvoy-image-linux:
 	$(MAKE) docker GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image"
+	$(MAKE) docker GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image-$(BUILDARCH)"
 
 konvoy-image-amd64:
 	$(MAKE) docker GOOS=linux GOARCH=amd64 WHAT="make bin/konvoy-image-amd64"
