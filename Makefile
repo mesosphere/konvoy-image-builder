@@ -246,6 +246,7 @@ devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 devkit-arm64:
 devkit-arm64: buildx github-token.txt
 		docker buildx build \
+		--no-cache \
 		$(BUILD_FLAGS) \
 		--output="type=docker,push=false,name=docker.io/$(DOCKER_REPOSITORY):latest-devkit-arm64,dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
@@ -255,6 +256,7 @@ devkit-arm64: buildx github-token.txt
 devkit-amd64:
 devkit-amd64: buildx github-token.txt
 		docker buildx build \
+		--no-cache \
 		$(BUILD_FLAGS) \
 		--output="type=docker,push=false,name=docker.io/$(DOCKER_REPOSITORY):latest-devkit-amd64,dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
