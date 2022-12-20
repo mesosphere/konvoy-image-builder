@@ -214,6 +214,11 @@ buildx:
 	 docker buildx create --driver=docker-container --use --name=konvoy-image-builder || true
 	 docker run --privileged --rm tonistiigi/binfmt --install all || true
 
+.PHONY: buildx-arm64
+buildx-arm64:
+buildx-arm64:
+	 docker buildx create --driver=docker-container --use --name=konvoy-image-builder-arm64 --platform linux/arm64
+	 docker run --privileged --rm tonistiigi/binfmt --install all || true
 
 $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
@@ -244,23 +249,23 @@ devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 
 .PHONY: devkit-arm64
 devkit-arm64:
-devkit-arm64: buildx github-token.txt
+devkit-arm64: github-token.txt buildx-arm64
 		docker buildx build \
-		--no-cache \
+		-t docker.io/$(DOCKER_REPOSITORY):latest-devkit-arm64 \
 		$(BUILD_FLAGS) \
-		--output="type=docker,push=false,name=docker.io/$(DOCKER_REPOSITORY):latest-devkit-arm64,dest=/tmp/img.tar" \
+		--output="type=docker,push=false,dest=img.tar" \
 		$(REPO_ROOT_DIR) \
-	&& docker load --input /tmp/img.tar && rm /tmp/img.tar
+	&& docker load --input img.tar && rm img.tar
 
 .PHONY: devkit-amd64
 devkit-amd64:
 devkit-amd64: buildx github-token.txt
 		docker buildx build \
-		--no-cache \
+		-t docker.io/$(DOCKER_REPOSITORY):latest-devkit-amd64 \
 		$(BUILD_FLAGS) \
-		--output="type=docker,push=false,name=docker.io/$(DOCKER_REPOSITORY):latest-devkit-amd64,dest=/tmp/img.tar" \
+		--output="type=docker,push=false,dest=img.tar" \
 		$(REPO_ROOT_DIR) \
-	&& docker load --input /tmp/img.tar && rm /tmp/img.tar
+	&& docker load --input img.tar && rm img.tar
 
 .PHONY: docker-build-amd64
 docker-build-amd64: BUILDARCH=amd64
