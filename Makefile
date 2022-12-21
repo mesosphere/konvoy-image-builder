@@ -165,6 +165,17 @@ else
 	export GIT_TREE_STATE :=
 endif
 
+# NOTE(jkoelker) Abuse ifeq and the junk variable to proxy docker image state
+#                to the target file
+ifneq ($(shell command -v docker),)
+	ifeq ($(shell docker image ls --quiet "$(DOCKER_DEVKIT_IMG)"),)
+		export junk := $(shell rm -rf $(DOCKER_DEVKIT_PHONY_FILE))
+	endif
+	ifeq ($(shell docker image ls --quiet "$(DOCKER_IMG)"),)
+		export junk := $(shell rm -rf $(DOCKER_PHONY_FILE))
+	endif
+endif
+
 # envsubst
 # ---------------------------------------------------------------------
 export ENVSUBST_VERSION ?= v1.2.0
@@ -214,11 +225,6 @@ buildx:
 	 docker buildx create --driver=docker-container --use --name=konvoy-image-builder || true
 	 docker run --privileged --rm tonistiigi/binfmt --install all || true
 
-.PHONY: buildx-arm64
-buildx-arm64:
-buildx-arm64:
-	 docker buildx create --driver=docker-container --use --name=konvoy-image-builder-arm64 --platform linux/arm64
-	 docker run --privileged --rm tonistiigi/binfmt --install all || true
 
 $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
@@ -242,30 +248,28 @@ $(DOCKER_PHONY_FILE): Dockerfile
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
-		docker buildx build \
-		$(BUILD_FLAGS) \
-		$(REPO_ROOT_DIR) \
-	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
+# we need to push these devkit images up when we do releases because local dockers 
+# are unable to do buildx builds the refer to another platform as the base
+# these targets should only be used for release purposes `make devkit` creates 
+# the appropriate devkit image for your system
 .PHONY: devkit-arm64
 devkit-arm64:
-devkit-arm64: github-token.txt buildx-arm64
+devkit-arm64: github-token.txt
 		docker buildx build \
-		-t docker.io/$(DOCKER_REPOSITORY):latest-devkit-arm64 \
+		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-arm64 \
 		$(BUILD_FLAGS) \
-		--output="type=docker,push=false,dest=img.tar" \
+		--output="push=true" \
 		$(REPO_ROOT_DIR) \
-	&& docker load --input img.tar && rm img.tar
 
 .PHONY: devkit-amd64
 devkit-amd64:
 devkit-amd64: buildx github-token.txt
 		docker buildx build \
-		-t docker.io/$(DOCKER_REPOSITORY):latest-devkit-amd64 \
+		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
 		$(BUILD_FLAGS) \
-		--output="type=docker,push=false,dest=img.tar" \
+		--output="push=true" \
 		$(REPO_ROOT_DIR) \
-	&& docker load --input img.tar && rm img.tar
 
 .PHONY: docker-build-amd64
 docker-build-amd64: BUILDARCH=amd64
@@ -274,24 +278,22 @@ docker-build-amd64: devkit-amd64 konvoy-image-amd64
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--build-arg BUILDARCH=$(BUILDARCH) \
 		--platform linux/$(BUILDARCH) \
+		--build-arg BASE=docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
 		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-amd64 \
+		--push \
 		$(REPO_ROOT_DIR)
 
 .PHONY: docker-devkit-build-arm64
 docker-build-arm64: BUILDARCH=arm64
 docker-build-arm64: devkit-arm64 konvoy-image-arm64
-	DOCKER_BUILDKIT=1 docker build \
+	docker buildx build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
-		--build-arg BUILDARCH=$(BUILDARCH) \
-		--platform linux/$(BUILDARCH) \
+		--build-arg BUILDARCH=arm64 \
+		--platform linux/arm64 \
+		--build-arg BASE=docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-arm64 \
 		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-arm64 \
+		--push \
 		$(REPO_ROOT_DIR)
-
-.PHONY: docker-push
-docker-push:
-docker-push:
-	docker push $(DOCKER_REPOSITORY):$(REPO_REV)-arm64
-	docker push $(DOCKER_REPOSITORY):$(REPO_REV)-amd64
 
 
 WHAT ?= bash
@@ -568,7 +570,11 @@ release-bundle-GOOS:
 	cp -a "$(REPO_ROOT_DIR)/packer" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
 	tar -C "$(REPO_ROOT_DIR)/dist/bundle" -czf "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS).tar.gz" "konvoy-image-bundle-$(REPO_REV)_$(GOOS)"
 
-cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
+cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: docker-build-$(BUILDARCH)
+	# we need to build the appropriate image for the bundle we're creating
+	# followed by saving it as just image name so that we can put in the release tar
+	# the docker iamges are published before this by hack/release.sh, making this safe.
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-arm64 $(DOCKER_IMG)
 	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz

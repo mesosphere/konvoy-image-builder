@@ -7,26 +7,24 @@ function usage() {
 }
 
 function main () {
-  # make does not respect that this file could be built with a different arch
-  # we remove it before each docker build to force it to rebuild
-  make docker-build-amd64
-  make docker-build-arm64
-  if ${push}; then
-    make docker-push
-    make push-manifest
-	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --debug --snapshot
+  if  [ "${push}" = false ]; then
+	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --snapshot
     exit 0
   fi
-	DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
+  make docker-build-amd64
+  make docker-build-arm64
+  make push-manifest
+  DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
+  exit 0
 }
 
-push=false
+push="false"
 
 while [ "$1" != "" ]; do
   case $1 in
   -push | --push)
     shift
-    push=true
+    push="true"
     ;;
   -h | --help)
     usage

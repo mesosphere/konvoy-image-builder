@@ -62,7 +62,7 @@ builds:
       - arm64
     hooks:
       pre:
-        - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz  DOCKER_DEVKIT_DEFAULT_ARGS="--rm"
+        - make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz  DOCKER_DEVKIT_DEFAULT_ARGS="--rm" BUILDARCH={{.Arch }}
 
 archives:
   - id: konvoy-image-bundle
