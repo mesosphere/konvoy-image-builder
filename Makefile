@@ -6,7 +6,7 @@ OS := $(shell uname -s)
 INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
+export REPO_ROOT_DIR := $(patsubst %/,%,$(dir $(root_mkfile_path)))
 export REPO_REV ?= $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
 
 UID ?= $(shell id -u)
