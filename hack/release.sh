@@ -8,7 +8,7 @@ function usage() {
 
 function main () {
   if  [ "${push}" = false ]; then
-	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --snapshot --timeout=2h
+	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --snapshot --timeout=2h --debug
     exit 0
   fi
   make docker-build-amd64

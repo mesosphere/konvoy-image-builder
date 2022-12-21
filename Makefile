@@ -575,10 +575,10 @@ release-bundle-GOOS:
 cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: docker-build-$(BUILDARCH)
 	# we need to build the appropriate image for the bundle we're creating
 	# followed by saving it as just image name so that we can put in the release tar
-	# the docker iamges are published before this by hack/release.sh, making this safe.
+	# the docker images are published before this by hack/release.sh, making this safe.
 	docker pull $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
-	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_IMG)
-	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
+	docker save $(DOCKER_REPOSITORY):$(REPO_REV) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 release-bundle:
