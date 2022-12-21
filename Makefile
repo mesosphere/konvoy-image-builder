@@ -259,7 +259,7 @@ devkit-arm64: github-token.txt
 		docker buildx build \
 		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-arm64 \
 		$(BUILD_FLAGS) \
-		--output="push=true" \
+		--output="type=docker,push=true" \
 		$(REPO_ROOT_DIR) \
 
 .PHONY: devkit-amd64
@@ -268,7 +268,7 @@ devkit-amd64: buildx github-token.txt
 		docker buildx build \
 		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
 		$(BUILD_FLAGS) \
-		--output="push=true" \
+		--output="type=docker,push=true" \
 		$(REPO_ROOT_DIR) \
 
 .PHONY: docker-build-amd64
