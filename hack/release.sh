@@ -8,13 +8,13 @@ function usage() {
 
 function main () {
   if  [ "${push}" = false ]; then
-	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --snapshot
+	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --snapshot --timeout=2h
     exit 0
   fi
   make docker-build-amd64
   make docker-build-arm64
   make push-manifest
-  DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
+  DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1 --timeout=2h
   exit 0
 }
 
