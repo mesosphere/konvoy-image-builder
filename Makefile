@@ -284,7 +284,7 @@ docker-build-amd64: devkit-amd64 konvoy-image-amd64
 		--push \
 		$(REPO_ROOT_DIR)
 
-.PHONY: docker-devkit-build-arm64
+.PHONY: docker-build-arm64
 docker-build-arm64: BUILDARCH=arm64
 docker-build-arm64: devkit-arm64 konvoy-image-arm64
 	docker buildx build \
