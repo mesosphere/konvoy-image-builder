@@ -274,7 +274,7 @@ devkit-amd64: buildx github-token.txt
 .PHONY: docker-build-amd64
 docker-build-amd64: BUILDARCH=amd64
 docker-build-amd64: devkit-amd64 konvoy-image-amd64
-	DOCKER_BUILDKIT=1 docker build \
+	docker buildx build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--build-arg BUILDARCH=$(BUILDARCH) \
 		--platform linux/$(BUILDARCH) \
@@ -576,7 +576,8 @@ cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: docker-build-$(BUILD
 	# we need to build the appropriate image for the bundle we're creating
 	# followed by saving it as just image name so that we can put in the release tar
 	# the docker iamges are published before this by hack/release.sh, making this safe.
-	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-arm64 $(DOCKER_IMG)
+	docker pull $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_IMG)
 	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
