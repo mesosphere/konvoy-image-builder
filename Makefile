@@ -258,18 +258,34 @@ devkit-arm64:
 devkit-arm64: github-token.txt
 		docker buildx build \
 		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-arm64 \
-		$(BUILD_FLAGS) \
+		--build-arg USER_ID=$(UID) \
+		--build-arg GROUP_ID=$(GID) \
+		--build-arg USER_NAME=$(USER_NAME) \
+		--build-arg GROUP_NAME=$(GROUP_NAME) \
+		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
+		--build-arg BUILDARCH=arm64 \
+		--platform linux/arm64 \
+		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+		--secret id=githubtoken,src=github-token.txt \
 		--push \
-		$(REPO_ROOT_DIR) \
+		$(REPO_ROOT_DIR)
 
 .PHONY: devkit-amd64
 devkit-amd64:
 devkit-amd64: buildx github-token.txt
 		docker buildx build \
 		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
-		$(BUILD_FLAGS) \
+		--build-arg USER_ID=$(UID) \
+		--build-arg GROUP_ID=$(GID) \
+		--build-arg USER_NAME=$(USER_NAME) \
+		--build-arg GROUP_NAME=$(GROUP_NAME) \
+		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
+		--build-arg BUILDARCH=amd64 \
+		--platform linux/amd64 \
+		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+		--secret id=githubtoken,src=github-token.txt \
 		--push \
-		$(REPO_ROOT_DIR) \
+		$(REPO_ROOT_DIR)
 
 .PHONY: docker-build-amd64
 docker-build-amd64: BUILDARCH=amd64
