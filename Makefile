@@ -411,14 +411,14 @@ bin/konvoy-image-arm64:
 	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image-arm64
 
 konvoy-image-linux:
-	$(MAKE) docker GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image"
-	$(MAKE) docker GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image-$(BUILDARCH)"
+	$(MAKE) devkit.run GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image"
+	$(MAKE) devkit.run GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image-$(BUILDARCH)"
 
 konvoy-image-amd64:
-	$(MAKE) docker GOOS=linux GOARCH=amd64 WHAT="make bin/konvoy-image-amd64"
+	$(MAKE) devkit.run GOOS=linux GOARCH=amd64 WHAT="make bin/konvoy-image-amd64"
 
 konvoy-image-arm64:
-	$(MAKE) docker GOOS=linux GOARCH=arm64 WHAT="make bin/konvoy-image-arm64"
+	$(MAKE) devkit.run GOOS=linux GOARCH=arm64 WHAT="make bin/konvoy-image-arm64"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:
@@ -549,7 +549,7 @@ push-manifest:
 		$(DOCKER_REPOSITORY):$(REPO_REV) \
 		--amend $(DOCKER_REPOSITORY):$(REPO_REV)-arm64 \
 		--amend $(DOCKER_REPOSITORY):$(REPO_REV)-amd64
-	DOCKER_BUILDKIT=1 docker manifest push $(DOCKER_REPOSITORY):$(REPO_REV)
+	docker manifest push $(DOCKER_REPOSITORY):$(REPO_REV)
 
 .PHONY: release
 release: 
