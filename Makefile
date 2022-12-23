@@ -292,8 +292,8 @@ docker-build-amd64: BUILDARCH=amd64
 docker-build-amd64: devkit-amd64 konvoy-image-amd64
 	docker buildx build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
-		--build-arg BUILDARCH=$(BUILDARCH) \
-		--platform linux/$(BUILDARCH) \
+		--build-arg BUILDARCH=amd64 \
+		--platform linux/amd64 \
 		--build-arg BASE=docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
 		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-amd64 \
 		--pull \
@@ -391,11 +391,11 @@ bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image-amd64:
 	$(call print-target)
-	GOARCH=$(BUILDARCH) GOOS=$(GOOS) go build \
+	GOARCH=amd64 GOOS=$(GOOS) go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
+		-o ./dist/konvoy-image_linux_amd64/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
-	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image-amd64
+	ln -sf ../dist/konvoy-image_linux_amd64/konvoy-image bin/konvoy-image-amd64
 
 bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
@@ -404,11 +404,11 @@ bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image-arm64:
 	$(call print-target)
-	GOARCH=$(BUILDARCH) GOOS=$(GOOS) go build \
+	GOARCH=arm64 GOOS=$(GOOS) go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
+		-o ./dist/konvoy-image_linux_arm64/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
-	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image-arm64
+	ln -sf ../dist/konvoy-image_linux_arm64/konvoy-image bin/konvoy-image-arm64
 
 konvoy-image-linux:
 	$(MAKE) devkit.run GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image"
