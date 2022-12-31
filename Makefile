@@ -287,6 +287,7 @@ devkit.run: devkit
 # based on BUILDARCH, build arm64 or amd64 compatible wrapper image
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): Dockerfile
+	$(call print-target)
 	$(MAKE) bin/konvoy-image GOOS=linux BUILDARCH=$(BUILDARCH)
 	DOCKER_BUILDKIT=1 docker buildx build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
@@ -297,6 +298,10 @@ $(DOCKER_PHONY_FILE): Dockerfile
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_PHONY_FILE)
 
+.PHONY: build-wrapper-image
+build-wrapper-image:
+	$(call print-target)
+	$(MAKE) $(DOCKER_PHONY_FILE)
 # builds konvoy-image-wrapper without go tag 'EMBED_DOCKER_IMAGE_arm64 or EMBED_DOCKER_IMAGE_amd64' to build wrapper without embedding. 
 # this enables local testing faster.
 # .goreleaser.yml file embeds the docker image using  EMBED_DOCKER_IMAGE_arm64 and EMBED_DOCKER_IMAGE_amd64 flags when releasing artifacts
@@ -321,8 +326,15 @@ cmd/konvoy-image-wrapper/image/konvoy-image-builder_linux_$(BUILDARCH).tar.gz: $
 ##########################
 # Relese Targets
 ##########################
+
+.PHONY: push-wrapper-image
+push-wrapper-image: build-wrapper-image
+	$(call print-target)
+	docker push $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
+
 .PHONY: push-manifest
 push-manifest:
+	$(call print-target)
 	docker manifest create \
 		$(DOCKER_REPOSITORY):$(REPO_REV) \
 		--amend $(DOCKER_REPOSITORY):$(REPO_REV)-arm64 \
@@ -332,6 +344,9 @@ push-manifest:
 .PHONY: release
 release:
 	$(call print-target)
+# set --parallelism=1 because the goreleaser pre executes hook will run pre execute hook
+# cmd/konvoy-image-wrapper/image/konvoy-image-builder_linux_amd64.tar.gz in parallel for each linux, darwin and windows binary.
+# this can corrupt content of the file.
 	goreleaser --parallelism=1 --rm-dist --debug --snapshot --parallelism=1
 
 .PHONY: release-snapshot

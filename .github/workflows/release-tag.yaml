@@ -36,7 +36,15 @@ jobs:
         env:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-
+      
+      - name: Release konvoy-image container images to dockerhub
+        run: |
+          BUILDARCH=arm64 make push-wrapper-image
+          BUILDARCH=amd64 make push-wrapper-image
+          make push-manifest
+        env:
+          DOCKER_CLI_EXPERIMENTAL: "enabled"
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }
   bump-kib:
     runs-on: ubuntu-latest
     steps:
