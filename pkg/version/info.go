@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/coreos/go-semver/semver"
@@ -36,7 +37,7 @@ func Print(program string) string {
 		"branch":     branch,
 		"commitDate": commitDate,
 		"goVersion":  goVersion,
-		"platform":   runtime.GOOS + "/" + runtime.GOARCH,
+		"platform":   findSetting("GOOS", runtime.GOOS) + "/" + findSetting("GOARCH", runtime.GOARCH),
 	}
 	t := template.Must(template.New("version").Parse(`
 	{{.program}}, version {{.version}} (branch: {{.branch}}, revision: {{.revision}})
@@ -68,4 +69,20 @@ func Version() string {
 
 func Semver() *semver.Version {
 	return semver.New(fmt.Sprintf("%s.%s.%s", major, minor, patch))
+}
+
+// findSetting attempts to find settings value from binary. These settings are embedded in binary at build time.
+// if the settings is not found or attmpt to get buildinfo fails, return defaultValue back
+// more info: https://pkg.go.dev/runtime/debug#BuildInfo
+func findSetting(setting string, defaultValue string) string {
+	buildInfo, ok := debug.ReadBuildInfo()
+	if !ok {
+		return defaultValue
+	}
+	for _, s := range buildInfo.Settings {
+		if s.Key == setting {
+			return s.Value
+		}
+	}
+	return defaultValue
 }

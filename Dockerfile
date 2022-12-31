@@ -36,7 +36,7 @@ COPY --from=devkit /usr/local/bin/packer-${BUILDARCH} /usr/local/bin/packer
 COPY --from=devkit /usr/local/bin/packer-provisioner-goss-${BUILDARCH} /usr/local/bin/packer-provisioner-goss
 COPY --from=devkit /usr/local/bin/govc /usr/local/bin/
 COPY --from=devkit /root/.config/packer/plugins/ ${PACKER_PLUGIN_PATH}
-COPY bin/konvoy-image-${BUILDARCH} /usr/local/bin/konvoy-image
+COPY bin/konvoy-image_linux_${BUILDARCH} /usr/local/bin/konvoy-image
 COPY images /root/images
 COPY ansible /root/ansible
 COPY packer /root/packer

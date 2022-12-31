@@ -1,5 +1,5 @@
-//go:build !EMBED_DOCKER_IMAGE
-// +build !EMBED_DOCKER_IMAGE
+//go:build !EMBED_DOCKER_IMAGE_amd64 && !EMBED_DOCKER_IMAGE_arm64
+// +build !EMBED_DOCKER_IMAGE_amd64,!EMBED_DOCKER_IMAGE_arm64
 
 package image
 
