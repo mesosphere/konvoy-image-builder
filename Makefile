@@ -355,7 +355,7 @@ release-snapshot:
 # set --parallelism=1 because the goreleaser pre executes hook will run pre execute hook
 # cmd/konvoy-image-wrapper/image/konvoy-image-builder_linux_amd64.tar.gz in parallel for each linux, darwin and windows binary.
 # this can corrupt content of the file.
-	goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1 --debug
+	goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
 
 ##########################
 # docs targets
