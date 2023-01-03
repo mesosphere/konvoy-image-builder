@@ -6,8 +6,8 @@ OS := $(shell uname -s)
 INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-export REPO_ROOT_DIR := $(dir $(root_mkfile_path))
-export REPO_REV := $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
+export REPO_ROOT_DIR := $(patsubst %/,%,$(dir $(root_mkfile_path)))
+export REPO_REV ?= $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
 
 UID ?= $(shell id -u)
 GID ?= $(shell id -g)
@@ -37,6 +37,7 @@ export CGO_ENABLED=0
 export GO_VERSION := $(shell cat go.mod | grep "go " -m 1 | cut -d " " -f 2)
 GOLANG_IMAGE := golang:$(GO_VERSION)
 ARCH := $(shell uname -m)
+
 BUILDARCH ?= $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
 
 export CI ?= no
@@ -54,7 +55,7 @@ else
 export DOCKER_SOCKET_GID ?= $(shell stat -c %g $(DOCKER_SOCKET))
 endif
 
-export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)
+export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
 export DOCKER_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_IMG)' | tr '/:' '.')
 
 export DOCKER_DEVKIT_IMG ?= $(DOCKER_REPOSITORY):latest-devkit-$(BUILDARCH)
@@ -62,7 +63,7 @@ export DOCKER_DEVKIT_PHONY_FILE ?= .docker-$(shell echo '$(DOCKER_DEVKIT_IMG)' |
 export DOCKER_DEVKIT_GO_ENV_ARGS ?= \
 	--env GOCACHE=/kib/.cache/go-build \
 	--env GOMODCACHE=/kib/.cache/go-mod \
-	--env GOLANGCI_LINT_CACHE=/kib/.cache/golangci-lint
+	--env GOLANGCI_LINT_CACHE=/kib/.cache/golangci-lint \
 
 export DOCKER_DEVKIT_ENV_ARGS ?= \
 	--env CI \
@@ -206,7 +207,6 @@ BUILD_FLAGS := \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
 		--build-arg BUILDARCH=$(BUILDARCH) \
 		--platform linux/$(BUILDARCH) \
-		--output="type=docker,push=false,name=docker.io/$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
@@ -230,6 +230,7 @@ $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 		docker buildx build \
 		$(BUILD_FLAGS) \
+		--output="type=docker,push=false,name=docker.io/$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
 	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
@@ -247,6 +248,71 @@ $(DOCKER_PHONY_FILE): Dockerfile
 
 .PHONY: devkit
 devkit: $(DOCKER_DEVKIT_PHONY_FILE)
+
+# we need to push these devkit images up when we do releases because local dockers 
+# are unable to do buildx builds the refer to another platform as the base
+# these targets should only be used for release purposes `make devkit` creates 
+# the appropriate devkit image for your system
+.PHONY: devkit-arm64
+devkit-arm64:
+devkit-arm64: github-token.txt
+		docker buildx build \
+		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-arm64 \
+		--build-arg USER_ID=$(UID) \
+		--build-arg GROUP_ID=$(GID) \
+		--build-arg USER_NAME=$(USER_NAME) \
+		--build-arg GROUP_NAME=$(GROUP_NAME) \
+		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
+		--build-arg BUILDARCH=arm64 \
+		--platform linux/arm64 \
+		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+		--secret id=githubtoken,src=github-token.txt \
+		--push \
+		$(REPO_ROOT_DIR)
+
+.PHONY: devkit-amd64
+devkit-amd64:
+devkit-amd64: buildx github-token.txt
+		docker buildx build \
+		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
+		--build-arg USER_ID=$(UID) \
+		--build-arg GROUP_ID=$(GID) \
+		--build-arg USER_NAME=$(USER_NAME) \
+		--build-arg GROUP_NAME=$(GROUP_NAME) \
+		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
+		--build-arg BUILDARCH=amd64 \
+		--platform linux/amd64 \
+		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+		--secret id=githubtoken,src=github-token.txt \
+		--push \
+		$(REPO_ROOT_DIR)
+
+.PHONY: docker-build-amd64
+docker-build-amd64: BUILDARCH=amd64
+docker-build-amd64: devkit-amd64 konvoy-image-amd64
+	docker buildx build \
+		--file $(REPO_ROOT_DIR)/Dockerfile \
+		--build-arg BUILDARCH=amd64 \
+		--platform linux/amd64 \
+		--build-arg BASE=docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
+		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-amd64 \
+		--pull \
+		--push \
+		$(REPO_ROOT_DIR)
+
+.PHONY: docker-build-arm64
+docker-build-arm64: BUILDARCH=arm64
+docker-build-arm64: devkit-arm64 konvoy-image-arm64
+	docker buildx build \
+		--file $(REPO_ROOT_DIR)/Dockerfile \
+		--build-arg BUILDARCH=arm64 \
+		--platform linux/arm64 \
+		--build-arg BASE=docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-arm64 \
+		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-arm64 \
+		--pull \
+		--push \
+		$(REPO_ROOT_DIR)
+
 
 WHAT ?= bash
 
@@ -300,6 +366,7 @@ docker:
 	--volume $(REPO_ROOT_DIR):/build \
 	--workdir /build \
 	--env GOOS \
+	--env BUILDARCH \
 	$(GOLANG_IMAGE) \
 	/bin/bash -c "$(WHAT)"
 
@@ -311,14 +378,47 @@ bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image:
 	$(call print-target)
-	go build \
+	GOARCH=$(BUILDARCH) GOOS=$(GOOS) go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image ./cmd/konvoy-image/main.go
+		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
-	ln -sf ../dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image bin/konvoy-image
+	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
+
+bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/cmd
+bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
+bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/pkg
+bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
+bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+bin/konvoy-image-amd64:
+	$(call print-target)
+	GOARCH=amd64 GOOS=$(GOOS) go build \
+		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
+		-o ./dist/konvoy-image_linux_amd64/konvoy-image ./cmd/konvoy-image/main.go
+	mkdir -p bin
+	ln -sf ../dist/konvoy-image_linux_amd64/konvoy-image bin/konvoy-image-amd64
+
+bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/cmd
+bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
+bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/pkg
+bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
+bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+bin/konvoy-image-arm64:
+	$(call print-target)
+	GOARCH=arm64 GOOS=$(GOOS) go build \
+		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
+		-o ./dist/konvoy-image_linux_arm64/konvoy-image ./cmd/konvoy-image/main.go
+	mkdir -p bin
+	ln -sf ../dist/konvoy-image_linux_arm64/konvoy-image bin/konvoy-image-arm64
 
 konvoy-image-linux:
-	$(MAKE) docker GOOS=linux WHAT="make bin/konvoy-image"
+	$(MAKE) devkit.run GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image"
+	$(MAKE) devkit.run GOOS=linux GOARCH=$(BUILDARCH) WHAT="make bin/konvoy-image-$(BUILDARCH)"
+
+konvoy-image-amd64:
+	$(MAKE) devkit.run GOOS=linux GOARCH=amd64 WHAT="make bin/konvoy-image-amd64"
+
+konvoy-image-arm64:
+	$(MAKE) devkit.run GOOS=linux GOARCH=arm64 WHAT="make bin/konvoy-image-arm64"
 
 bin/konvoy-image-wrapper: $(DOCKER_PHONY_FILE)
 bin/konvoy-image-wrapper:
@@ -326,6 +426,7 @@ bin/konvoy-image-wrapper:
 	$(MAKE) docker WHAT="go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
 		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go"
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
 
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(REPO_ROOT_DIR)/cmd
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
@@ -442,19 +543,26 @@ diff: ## git diff
 	git diff --exit-code
 	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
+.PHONY: push-manifest
+push-manifest:
+	docker manifest create \
+		$(DOCKER_REPOSITORY):$(REPO_REV) \
+		--amend $(DOCKER_REPOSITORY):$(REPO_REV)-arm64 \
+		--amend $(DOCKER_REPOSITORY):$(REPO_REV)-amd64
+	docker manifest push $(DOCKER_REPOSITORY):$(REPO_REV)
+
 .PHONY: release
-release:
+release: 
+release: 
+	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
 	$(call print-target)
-	$(MAKE) devkit BUILDARCH=amd64
-	$(MAKE) devkit BUILDARCH=arm64
-	goreleaser --parallelism=1 --rm-dist --debug --snapshot
+	./hack/release.sh --push
 
 .PHONY: release-snapshot
-release-snapshot: devkit
+release-snapshot:
+release-snapshot:
 	$(call print-target)
-	$(MAKE) devkit BUILDARCH=amd64
-	$(MAKE) devkit BUILDARCH=arm64
-	goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1
+	./hack/release.sh
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches
@@ -480,11 +588,15 @@ release-bundle-GOOS:
 	cp -a "$(REPO_ROOT_DIR)/packer" "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS)/"
 	tar -C "$(REPO_ROOT_DIR)/dist/bundle" -czf "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS).tar.gz" "konvoy-image-bundle-$(REPO_REV)_$(GOOS)"
 
-cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
-	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
+cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: docker-build-$(BUILDARCH)
+	# we need to build the appropriate image for the bundle we're creating
+	# followed by saving it as just image name so that we can put in the release tar
+	# the docker images are published before this by hack/release.sh, making this safe.
+	docker pull $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
+	docker save $(DOCKER_REPOSITORY):$(REPO_REV) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
 release-bundle:
 	$(MAKE) GOOS=linux release-bundle-GOOS
-	$(MAKE) GOOS=windows release-bundle-GOOS
 	$(MAKE) GOOS=darwin release-bundle-GOOS
