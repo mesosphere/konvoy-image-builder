@@ -24,7 +24,7 @@ COMMA:=,
 export CGO_ENABLED=0
 export GO_VERSION := $(shell cat go.mod | grep "go " -m 1 | cut -d " " -f 2)
 GOLANG_IMAGE := golang:$(GO_VERSION)
-#export GOOS ?= linux
+GOOS ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 ARCH := $(shell uname -m)
 
 BUILDARCH ?= $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
@@ -154,17 +154,6 @@ else
 	export GIT_TREE_STATE :=
 endif
 
-# NOTE(jkoelker) Abuse ifeq and the junk variable to proxy docker image state
-#                to the target file
-ifneq ($(shell command -v docker),)
-	ifeq ($(shell docker image ls --quiet "$(DOCKER_DEVKIT_IMG)"),)
-		export junk := $(shell rm -rf $(DOCKER_DEVKIT_PHONY_FILE))
-	endif
-	ifeq ($(shell docker image ls --quiet "$(DOCKER_ARCH_IMG)"),)
-		export junk := $(shell rm -rf $(DOCKER_PHONY_FILE))
-	endif
-endif
-
 # envsubst
 # ---------------------------------------------------------------------
 export ENVSUBST_VERSION ?= v1.2.0
@@ -220,9 +209,9 @@ bin/konvoy-image_$(GOOS)_$(BUILDARCH): $(shell find $(REPO_ROOT_DIR)/pkg -type f
 bin/konvoy-image_$(GOOS)_$(BUILDARCH): $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 bin/konvoy-image_$(GOOS)_$(BUILDARCH):
 	$(call print-target)
-	$(MAKE) docker GOOS=$(GOOS) GOARCH=$(BUILDARCH) WHAT="go build \
+	GOOS=$(GOOS) GOARCH=$(BUILDARCH) go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./bin/konvoy-image_$(GOOS)_$(BUILDARCH) ./cmd/konvoy-image/main.go"
+		-o ./bin/konvoy-image_$(GOOS)_$(BUILDARCH) ./cmd/konvoy-image/main.go
 
 # create konvoy-image binary for current OS and architecture
 bin/konvoy-image: bin/konvoy-image_$(GOOS)_$(BUILDARCH)
