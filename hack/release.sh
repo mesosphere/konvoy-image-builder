@@ -16,7 +16,7 @@ function main () {
   make docker-build-amd64
   make docker-build-arm64
   make push-manifest
-  DOCKER_BUILDKIT=1 goreleaser release --snapshot --skip-publish --rm-dist --parallelism=1 --timeout=2h
+  DOCKER_BUILDKIT=1 goreleaser release --rm-dist --parallelism=1 --timeout=2h
   exit 0
 }
 
