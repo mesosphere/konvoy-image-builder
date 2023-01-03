@@ -21,3 +21,12 @@
   register: ctr_images_pull
   failed_when: ctr_images_pull.rc != 0
   changed_when: true
+
+# When upgrading control-plane Nodes on FIPS clusters the previous kubeadm config has 'dns.imageRepository: k8s.gcr.io'
+# Then when 'kubeadm join' runs on the new control-plane Node it incorrectly tries to pull the wrong coredns image, and fails with:
+# [ERROR ImagePull]: failed to pull image k8s.gcr.io/coredns:v1.9.3
+#
+# Retag the coredns image
+- name: retag coredns image
+  command: ctr --address {{ containerd_cri_socket }} --namespace k8s.io image tag {{ image_name }} k8s.gcr.io/coredns:{{ image_name | split(':') | last }}
+  when: "k8s_image_registry_for_coredns + '/coredns/coredns' in image_name"
