@@ -255,7 +255,7 @@ devkit: $(DOCKER_DEVKIT_PHONY_FILE)
 # the appropriate devkit image for your system
 .PHONY: devkit-arm64
 devkit-arm64:
-devkit-arm64: github-token.txt
+devkit-arm64: buildx github-token.txt
 		docker buildx build \
 		-t docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-arm64 \
 		--build-arg USER_ID=$(UID) \
