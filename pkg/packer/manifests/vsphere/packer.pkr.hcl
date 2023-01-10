@@ -137,12 +137,14 @@ variable "ssh_agent_auth" {
 
 variable "ssh_password" {
   type    = string
-  default = ""
+  default = env("SSH_PASSWORD")
+  sensitive = true
 }
 
 variable "ssh_private_key_file" {
   type    = string
-  default = ""
+  default = env("SSH_PRIVATE_KEY_FILE")
+  sensitive = true
 }
 
 variable "ssh_timeout" {
@@ -152,7 +154,7 @@ variable "ssh_timeout" {
 
 variable "ssh_username" {
   type    = string
-  default = ""
+  default = env("SSH_USERNAME")
 }
 
 variable "vcenter_server" {
