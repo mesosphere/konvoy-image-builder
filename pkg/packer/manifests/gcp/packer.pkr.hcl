@@ -166,7 +166,6 @@ variable "existing_ansible_ssh_args" {
   default = ""
 }
 
-<<<<<<< HEAD
 variable "goss_binary" {
   type = string
   default = "/usr/local/bin/goss"
@@ -218,8 +217,6 @@ variable "dry_run" {
   default = false
 }
 
-=======
->>>>>>> 620745e (feat: gcp to hcl)
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
@@ -228,18 +225,12 @@ locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 # Read the documentation for locals blocks here:
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
 locals {
-<<<<<<< HEAD
   ansible_extra_vars   = "${var.ansible_extra_vars}"
   build_timestamp      = local.timestamp
   zone                 = "${var.region}-a"
   generated_image_name = "konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
   # clean_resource_name https://github.com/hashicorp/packer-plugin-googlecompute/blob/81d8d5a740c0d7fb0b02be93133ac17a11557f34/builder/googlecompute/template_funcs.go#L20
   image_name           = regex_replace(lower(local.generated_image_name), "[^-a-z]", "-")
-=======
-  ansible_extra_vars = "${var.ansible_extra_vars}"
-  build_timestamp    = local.timestamp
-  zone               = "${var.region}-a"
->>>>>>> 620745e (feat: gcp to hcl)
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -263,11 +254,7 @@ source "googlecompute" "kib_image" {
     kubernetes_cni_version = lower(regex_replace(var.kubernetes_cni_version, "[.: ,]+", "-"))
     kubernetes_version     = lower(regex_replace(var.kubernetes_full_version, "[.: ,]+", "-"))
   }
-<<<<<<< HEAD
   image_name                  = local.image_name
-=======
-  image_name                  = replace("konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}", ".", "-")
->>>>>>> 620745e (feat: gcp to hcl)
   network                     = var.network
   project_id                  = var.project_id
   region                      = var.region
@@ -277,11 +264,8 @@ source "googlecompute" "kib_image" {
   ssh_username                = var.ssh_username
   wait_to_add_ssh_keys        = "20s"
   zone                        = local.zone
-<<<<<<< HEAD
 
   skip_create_image = var.dry_run
-=======
->>>>>>> 620745e (feat: gcp to hcl)
 }
 
 # a build block invokes sources and runs provisioning steps on them. The
@@ -332,7 +316,6 @@ build {
     user             = "${var.ssh_username}"
   }
 
-<<<<<<< HEAD
   provisioner "shell" {
     inline = ["mkdir -p /tmp/.goss-dir"]
   }
@@ -377,8 +360,6 @@ build {
     inline = ["rm -r  /tmp/.goss-dir"]
   }
 
-=======
->>>>>>> 620745e (feat: gcp to hcl)
   post-processor "manifest" {
     custom_data = {
       containerd_version     = "${var.containerd_version}"

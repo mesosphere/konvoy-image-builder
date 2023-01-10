@@ -243,7 +243,6 @@ variable "virtual_network_subnet_name" {
   default = ""
 }
 
-<<<<<<< HEAD
 variable "goss_binary" {
   type = string
   default = "/usr/local/bin/goss"
@@ -294,8 +293,6 @@ variable "dry_run" {
   type    = bool
   default = false
 }
-=======
->>>>>>> e81d91a (feat: translate azure deployment to hcl)
 
 
 # "timestamp" template function replacement
@@ -309,12 +306,9 @@ locals {
   build_timestamp                    = "${local.timestamp}"
   shared_image_gallery_image_version = formatdate("YYYY.MM.DDhhmmss", timestamp())
   gallery_image_locations = split(",", var.gallery_image_locations)
-<<<<<<< HEAD
   generated_managed_image_name = "${var.gallery_image_name}-${local.build_timestamp}"
   # clean_resource_name https://github.com/hashicorp/packer-plugin-azure/blob/a56b4569b8e71781cbe56bd09cd0cdc7419e4d48/builder/azure/common/template_funcs.go#L23
   managed_image_name = trimsuffix(local.generated_managed_image_name, "-_.")
-=======
->>>>>>> e81d91a (feat: translate azure deployment to hcl)
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -345,11 +339,7 @@ source "azure-arm" "kib_image" {
   image_sku                         = var.distribution_version
   image_version                     = var.image_version
   location                          = length(local.gallery_image_locations) > 0 ? element(local.gallery_image_locations, 0) : "westus"
-<<<<<<< HEAD
   managed_image_name                = local.managed_image_name
-=======
-  managed_image_name                = "${var.gallery_image_name}-${local.build_timestamp}"
->>>>>>> e81d91a (feat: translate azure deployment to hcl)
   managed_image_resource_group_name = var.resource_group_name
   os_type                           = "Linux"
   plan_info {
@@ -373,11 +363,8 @@ source "azure-arm" "kib_image" {
   virtual_network_resource_group_name = var.virtual_network_resource_group_name
   virtual_network_subnet_name         = var.virtual_network_subnet_name
   vm_size                             = var.vm_size
-<<<<<<< HEAD
 
   skip_create_image = var.dry_run
-=======
->>>>>>> e81d91a (feat: translate azure deployment to hcl)
 }
 
 # a build block invokes sources and runs provisioning steps on them. The
@@ -428,7 +415,6 @@ build {
     user             = "${var.ssh_username}"
   }
 
-<<<<<<< HEAD
   provisioner "shell" {
     inline = ["mkdir -p /tmp/.goss-dir"]
   }
@@ -473,8 +459,6 @@ build {
     inline = ["rm -r  /tmp/.goss-dir"]
   }
 
-=======
->>>>>>> e81d91a (feat: translate azure deployment to hcl)
   post-processor "manifest" {
     custom_data = {
       containerd_version     = "${var.containerd_version}"
