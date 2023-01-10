@@ -476,6 +476,7 @@ build {
       distribution_version   = "${var.distribution_version}"
       kubernetes_cni_version = "${var.kubernetes_cni_semver}"
       kubernetes_version     = "${var.kubernetes_full_version}"
+      compute_gallery_image_id = "/subscriptions/${var.subscription_id}}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Compute/galleries/${var.shared_image_gallery_name}/images/${var.gallery_image_name}/versions/${locals.shared_image_gallery_image_version}"
     }
     output = "${var.manifest_output}"
   }
