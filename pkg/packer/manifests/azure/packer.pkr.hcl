@@ -299,6 +299,15 @@ variable "remote_folder" {
   default = "/tmp"
 }
 
+variable "location" {
+  type = string
+  default = "westus"
+}
+
+variable "gallery_image_sku" {
+  type = string
+}
+
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
@@ -342,7 +351,7 @@ source "azure-arm" "kib_image" {
   image_publisher                   = var.image_publisher
   image_sku                         = var.distribution_version
   image_version                     = var.image_version
-  location                          = length(local.gallery_image_locations) > 0 ? element(local.gallery_image_locations, 0) : "westus"
+  location                          = length(local.gallery_image_locations) > 0 ? element(local.gallery_image_locations, 0) : var.location
   managed_image_name                = local.managed_image_name
   managed_image_resource_group_name = var.resource_group_name
   os_type                           = "Linux"
@@ -476,7 +485,7 @@ build {
       distribution_version   = "${var.distribution_version}"
       kubernetes_cni_version = "${var.kubernetes_cni_semver}"
       kubernetes_version     = "${var.kubernetes_full_version}"
-      compute_gallery_image_id = "/subscriptions/${var.subscription_id}}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Compute/galleries/${var.shared_image_gallery_name}/images/${var.gallery_image_name}/versions/${locals.shared_image_gallery_image_version}"
+      compute_gallery_image_id = "/subscriptions/${var.subscription_id}}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Compute/galleries/${var.shared_image_gallery_name}/images/${var.gallery_image_name}/versions/${local.shared_image_gallery_image_version}"
     }
     output = "${var.manifest_output}"
   }
