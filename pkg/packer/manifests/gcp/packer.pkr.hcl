@@ -236,7 +236,7 @@ locals {
   zone                 = "${var.region}-a"
   generated_image_name = "konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
   # clean_resource_name https://github.com/hashicorp/packer-plugin-googlecompute/blob/81d8d5a740c0d7fb0b02be93133ac17a11557f34/builder/googlecompute/template_funcs.go#L20
-  image_name           = regex_replace(lower(local.generated_image_name), "[^-a-z]", "-")
+  image_name           = regex_replace(lower(local.generated_image_name), "[^-a-z0-9]", "-")
 }
 
 # source blocks are generated from your builders; a source can be referenced in
