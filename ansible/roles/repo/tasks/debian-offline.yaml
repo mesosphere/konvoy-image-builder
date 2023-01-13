@@ -1,0 +1,23 @@
+---
+  # disable all other repos and force all installs to use the offline repo
+  # otherwise installing packages will fail when trying to update cache of the public repos
+  - name: find existing repo files
+    find:
+      depth: 1
+      paths:
+        - /etc/apt
+        - /etc/apt/sources.list.d
+      patterns: '*.list'
+      excludes: 'offline.list'
+    register: repo_files
+
+  - name: disable repos
+    command: "mv {{ item.path }} {{ item.path }}.disabled"
+    loop: "{{ repo_files.files }}"
+
+  - name: add offline repository
+    apt_repository:
+      repo: 'deb [trusted=yes] file:{{ offline.os_packages_remote_filesystem_repo_path }} /'
+      filename: offline
+    retries: 3
+    delay: 3

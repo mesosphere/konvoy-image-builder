@@ -1,5 +1,5 @@
 ---
-- name: install apt-transport-https remote deb package
+- name: install apt-transport-https deb package
   apt:
     name: apt-transport-https
     state: latest
@@ -38,7 +38,7 @@
     - kubectl
 
 
-- name: install kubelet remote deb package
+- name: install kubelet deb package
   apt:
     name: kubelet={{ package_versions.kubernetes_deb }}
     state: present
@@ -48,7 +48,7 @@
   retries: 3
   delay: 3
 
-- name: install kubectl remote deb package
+- name: install kubectl deb package
   apt:
     name: kubectl={{ package_versions.kubernetes_deb }}
     state: present

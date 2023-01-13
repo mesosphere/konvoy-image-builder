@@ -7,7 +7,7 @@
     - remove_version_hold.rc != 100  # package does not exist
 
 # remove previous install with KIB through an OS package
-- name: remove containerd.io remote deb package
+- name: remove containerd.io deb package
   apt:
     name: containerd.io
     state: absent
