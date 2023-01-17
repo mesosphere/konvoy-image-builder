@@ -27,6 +27,7 @@
 # [ERROR ImagePull]: failed to pull image k8s.gcr.io/coredns:v1.9.3
 #
 # Retag the coredns image
+# Use --force flag to force retag when already exists
 - name: retag coredns image
-  command: ctr --address {{ containerd_cri_socket }} --namespace k8s.io image tag {{ image_name }} k8s.gcr.io/coredns:{{ image_name | split(':') | last }}
+  command: ctr --address {{ containerd_cri_socket }} --namespace k8s.io image tag --force {{ image_name }} k8s.gcr.io/coredns:{{ image_name | split(':') | last }}
   when: "k8s_image_registry_for_coredns + '/coredns/coredns' in image_name"
