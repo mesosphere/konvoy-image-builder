@@ -10,7 +10,7 @@ jobs:
   rune2e:
     strategy:
       fail-fast: false
-      max-parallel: 10
+      max-parallel: 40
       matrix:
         os:
         - "centos 7.9"
