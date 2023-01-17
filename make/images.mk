@@ -142,13 +142,13 @@ build-%:
 %_offline:
 	# NOTE(jkoelker) Fail fast if offline is not supported for provider
 	$(MAKE) devkit.run WHAT="make packer-$(call provider,$*)-offline-override.yaml"
-	$(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
-		os_distribution_major_version=$(call major_version,$(call version,$*)) \
-		os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
-		os_distribution_major_minor_version=$(call version,$*) \
-		os_distribution_arch=x86_64 \
-		bundle_suffix= \
-		download-os-packages-bundle
+# $(MAKE) os_distribution=$(call os_distro,$(call distro,$*)) \
+# 	os_distribution_major_version=$(call major_version,$(call version,$*)) \
+# 	os_distribution_os_release=$(call os_distro_os_release,$(call distro,$*)) \
+# 	os_distribution_major_minor_version=$(call version,$*) \
+# 	os_distribution_arch=x86_64 \
+# 	bundle_suffix= \
+# 	download-os-packages-bundle
 	$(MAKE) pip-packages-artifacts
 	$(MAKE) bundle_suffix= download-images-bundle
 	$(MAKE) build-$* \
@@ -442,6 +442,10 @@ rhel86-fips-offline:
 .PHONY: rhel86-offline-nvidia
 rhel86-offline-nvidia:
 	$(MAKE) aws-rhel-8.6_offline-nvidia
+
+.PHONY: rocky91-offline
+rocky91-offline:
+	$(MAKE) aws-rocky-9.1_offline
 
 # RHEL 8 Azure
 .PHONY: rhel84-azure

@@ -25,6 +25,7 @@ ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.6-offline
+ci.e2e.build.all: e2e.build.rocky-9.1-offline
 ci.e2e.build.all: ci.e2e.build.rhel-8.4-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8.6-nvidia
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
@@ -78,6 +79,8 @@ e2e.build.rhel-8.4-nvidia: rhel84-nvidia
 e2e.build.rhel-8.6: rhel86
 
 e2e.build.rhel-8.6-offline: rhel86-offline infra.aws.destroy
+
+e2e.build.rocky-9.1-offline: rocky91-offline infra.aws.destroy
 
 e2e.build.rhel-8.6-nvidia: rhel86-nvidia
 
