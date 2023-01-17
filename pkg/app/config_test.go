@@ -250,7 +250,9 @@ func TestGenPackerVars(t *testing.T) {
 }
 
 func TestMergeUserArgs(t *testing.T) {
-	config := app.Config{}
+	config := app.Config{
+		"packer": map[interface{}]interface{}{},
+	}
 	userArgs := app.UserArgs{
 		ClusterArgs: app.ClusterArgs{
 			ContainerdVersion: gofakeit.Word(),
