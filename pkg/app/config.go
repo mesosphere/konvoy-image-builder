@@ -380,6 +380,10 @@ func MergeUserArgs(config Config, userArgs UserArgs) error {
 		return fmt.Errorf("failed to set %s: %w", ContainerdVersionKey, err)
 	}
 
+	if err := config.Set(PackerDryRun, userArgs.DryRun); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerDryRun, err)
+	}
+
 	if userArgs.Amazon != nil {
 		if err := MergeAmazonUserArgs(config, userArgs.Amazon); err != nil {
 			return fmt.Errorf("failed to set amazon args: %w", err)

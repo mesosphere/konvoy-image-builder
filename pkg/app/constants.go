@@ -22,6 +22,8 @@ const (
 	KubernetesFullVersionKey   = "kubernetes_full_version"
 	KubernetesBuildMetadataKey = "kubernetes_build_metadata"
 
+	PackerDryRun = "/packer/dry_run"
+
 	PackerAMIGroupsPath     = "/packer/ami_groups"
 	PackerAMIRegionsPath    = "/packer/ami_regions"
 	PackerAMIUsersPath      = "/packer/ami_users"

@@ -96,10 +96,7 @@ func azureCredentials(config Config) (*azure.Credentials, error) {
 		return nil, fmt.Errorf("failed to get tenant id: %w", err)
 	}
 
-	endpoint, err := config.GetWithError(PackerAzureCloudEndpointPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get cloud endpoint: %w", err)
-	}
+	endpoint := config.Get(PackerAzureCloudEndpointPath)
 	var cloudConfig cloud.Configuration
 	switch endpoint {
 	case string(AzureCloudEndpointChina):

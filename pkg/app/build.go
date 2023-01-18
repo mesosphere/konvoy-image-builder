@@ -15,7 +15,7 @@ import (
 
 const (
 	ansibleVarsFilename      = "ansible_vars.yaml"
-	manifestFileName         = "packer.json"
+	manifestFileName         = "packer.pkr.hcl"
 	runDirectorySuffixLength = 5
 )
 
@@ -46,6 +46,9 @@ type ClusterArgs struct {
 }
 
 type UserArgs struct {
+	// set dry-run packer variable
+	DryRun bool
+
 	ClusterArgs
 
 	Amazon *AmazonArgs
