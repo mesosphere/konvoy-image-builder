@@ -300,8 +300,7 @@ func GenPackerVars(config Config, extraVarsPath string) ([]byte, error) {
 					m := make(map[string]interface{})
 					for _, e := range reflectOfV.MapKeys() {
 						if subKey, ok := e.Interface().(string); ok {
-							subVal := reflectOfV.MapIndex(e).Interface()
-							m[subKey] = subVal
+							m[subKey] = reflectOfV.MapIndex(e).Interface()
 						}
 					}
 					p[key] = m
