@@ -295,18 +295,17 @@ func GenPackerVars(config Config, extraVarsPath string) ([]byte, error) {
 			case []string:
 				p[key] = strings.Join(v, ",")
 			default:
-				if reflect.ValueOf(v).Kind() == reflect.Map {
+				reflectOfV := reflect.ValueOf(v)
+				if reflectOfV.Kind() == reflect.Map {
 					m := make(map[string]interface{})
-					reflectOfV := reflect.ValueOf(v)
 					for _, e := range reflectOfV.MapKeys() {
 						if subKey, ok := e.Interface().(string); ok {
-							subVal := reflect.ValueOf(v).MapIndex(e).Interface()
+							subVal := reflectOfV.MapIndex(e).Interface()
 							m[subKey] = subVal
 						}
 					}
 					p[key] = m
 					break
-
 				}
 				p[key] = fmt.Sprintf("%v", v)
 			}
