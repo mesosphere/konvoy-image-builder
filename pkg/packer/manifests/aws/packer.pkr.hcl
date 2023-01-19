@@ -302,6 +302,12 @@ variable "remote_folder" {
   default = "/tmp"
 }
 
+variable "run_tags" {
+  type    = map(string)
+  default = null
+}
+
+
 # The amazon-ami data block is generated from your amazon builder source_ami_filter; a data
 # from this block can be referenced in source and locals blocks.
 # Read the documentation for data blocks here:
@@ -399,6 +405,7 @@ source "amazon-ebs" "kib_image" {
     source_ami             = local.source_ami
   }
   vpc_id = var.vpc_id
+  run_tags = var.run_tags
 
   skip_create_ami = var.dry_run
 }
