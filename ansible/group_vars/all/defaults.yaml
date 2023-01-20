@@ -3,12 +3,27 @@ python_path: ""
 
 # This is also in images/common.yaml as that's where the go code expects it to be.
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
+#
+# IMPORTANT When you update kubernetes_version, also update crictl_version.
 kubernetes_version: "1.25.4"
-
-containerd_version: "1.6.10"
-kubernetes_cni_version: "0.9.1"
-crictl_version: "1.22.0"
 kubernetes_semver: "v{{ kubernetes_version }}"
+
+kubernetes_cni_version: "0.9.1"
+
+# The crictl CLI is released as part of the http://sigs.k8s.io/cri-tools project.
+# The project release closely follows the Kubernetes release cycle, and uses a
+# nearly identical version scheme.
+# IMPORTANT When you update crictl_version, also update crictl_sha256.
+crictl_version: "1.22.0"
+
+# On flatcar Linux, we install crictl from a release artifact, not a system package.
+# The url points to the linux/amd64 release artifact.
+crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
+# The sha256 sum verifies the integrity of the release artifact.
+crictl_sha256: 45e0556c42616af60ebe93bf4691056338b3ea0001c0201a6a8ff8b1dbc0652a
+
+# Containerd container runtime version.
+containerd_version: "1.6.10"
 
 # NOTE(jkoelker) `nvidia_cuda_version` is set via an override, it is listed
 #                empty here for documentation.
@@ -42,8 +57,6 @@ kubernetes_http_source: https://storage.googleapis.com/kubernetes-release/releas
 kubernetes_cni_semver: v{{ kubernetes_cni_version }}
 kubernetes_cni_http_checksum: sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
 kubernetes_cni_http_source: https://github.com/containernetworking/plugins/releases/download
-crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
-crictl_sha256: 45e0556c42616af60ebe93bf4691056338b3ea0001c0201a6a8ff8b1dbc0652a
 containerd_cri_socket: /run/containerd/containerd.sock
 flatcar_containerd_cri_socket: /run/docker/libcontainerd/docker-containerd.sock
 systemd_prefix: /usr/lib/systemd/site-packages
