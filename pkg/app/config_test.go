@@ -194,6 +194,9 @@ func TestGenPackerVars(t *testing.T) {
 			"stringer": packerStringer,
 			"nil":      nil,
 			"default":  packerDefault,
+			"run_tags": map[string]interface{}{
+				"my_cool": "tag",
+			},
 		},
 		app.KubernetesFullVersionKey: k8sFullVersion,
 		"gpu": map[interface{}]interface{}{
@@ -246,6 +249,10 @@ func TestGenPackerVars(t *testing.T) {
 
 	if assert.Contains(t, packer, app.AnsibleExtraVarsKey) {
 		assert.Equal(t, fmt.Sprintf("@%s", extraVarsPath), packer[app.AnsibleExtraVarsKey])
+	}
+
+	if assert.Contains(t, packer, "run_tags") {
+		assert.Equal(t, map[string]interface{}{"my_cool": "tag"}, packer["run_tags"])
 	}
 }
 
