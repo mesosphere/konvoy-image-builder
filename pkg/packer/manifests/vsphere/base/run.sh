@@ -10,5 +10,9 @@ fi
 
 cat "${SSH_PUBLIC_KEY_FILE}" > "${SCRIPT_DIR}"/linux/authorized_keys
 
-packer build -var-file "${SCRIPT_DIR}"/rhel-"${BASE_OS}"-base.json -var-file "${SCRIPT_DIR}"/vsphere-base.json -on-error=abort "${SCRIPT_DIR}"/packer-base.json
+PACKER_FILE=packer-base.json
+if [[ "${BASE_OS}" == ubuntu* ]]; then
+  PACKER_FILE=packer-ubuntu-base.json
+fi
 
+packer build -var-file "${SCRIPT_DIR}"/"${BASE_OS}"-base.json -var-file "${SCRIPT_DIR}"/vsphere-base.json -on-error=abort "${SCRIPT_DIR}"/"${PACKER_FILE}"

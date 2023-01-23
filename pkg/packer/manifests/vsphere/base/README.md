@@ -1,7 +1,9 @@
 # Build Base OS image using packer
-This document outlines process to create bast image template from RedHat DVD ISO file
+
+This document outlines process to create bast image template from a DVD ISO file
 
 ## Prerequisites
+
 - Hashicorp Packer: Please download it for your operating system
 - Access to vSphere: Make sure you have network access to vSphere.
 - vSphere credentials exported:
@@ -11,13 +13,32 @@ export VSPHERE_USERNAME="<USERNAME>"
 export VSPHERE_PASSWORD="<PASSWORD>"
 export VSPHERE_SERVER="VSPHERE_SERVER_URL>"
 ```
-- RedHat subscription: visit [RedHat Developer site](https://developers.redhat.com/) to register
+- RedHat subscription: visit [RedHat Developer site](https://developers.redhat.com/) to register (to build RHEL OVAs)
 
-## Build base image
-Following steps builds creates base OS vsphere templates
+## Build base RHEL image
+
+Following steps creates base OS vsphere templates
 
 1. Download DVD ISO from RedHat [download site](https://developers.redhat.com/products/rhel/download) for RHEL 7.9
 you must login to redhat in order to download the DVD ISO file.
+
+1. create .env file using .env.sample and configure required parameters
+```bash
+    cp .env.sample .env
+```
+
+2. Replace the `<CHANGE-ME>` placeholder in `linux/ubuntu/http/base/preseed.cfg` with the public SSH to use in the base.
+3. Run packer with configured parameters
+
+```bash
+./run.sh
+```
+
+## Build base Ubuntu image
+
+Following steps creates base OS vsphere templates
+
+1. Download [DVD ISO from Ubuntu](https://cdimage.ubuntu.com/ubuntu-legacy-server/releases/20.04/release/ubuntu-20.04.1-legacy-server-amd64.iso).
 
 1. create .env file using .env.sample and configure required parameters
 ```bash
@@ -28,9 +49,10 @@ you must login to redhat in order to download the DVD ISO file.
 
 ```bash
 ./run.sh
-
 ```
+
 ## How it works
+
 The base image template is created from the RedHat DVD ISO file. The DVD ISO file has minimum core packages avaialble in it.
 The packer vsphere-iso build will perform following steps
 1. Creates a VM in vSphere and mounts the DVD ISO (`/dev/sr0`) and kickstart files (`/dev/sr1`) as cdrom drives. The kickstart files are mounted from `./linux/rhel/<version>/ks.cfg`
@@ -49,6 +71,7 @@ The VMs created with the template can only be accessed using the correosponding 
 
 
 ## References
+
 - [Kickstart syntax reference](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/sect-kickstart-syntax)
 - [Centos community kickstart files](https://github.com/CentOS/Community-Kickstarts)
 
