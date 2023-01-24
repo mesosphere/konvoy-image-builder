@@ -72,3 +72,10 @@
     - ansible_distribution == 'RedHat'
     - "packer_builder_type not in ['amazon']"
     - not offline_mode_enabled
+
+- name: remove proxy settings if set http_proxy is present
+  lineinfile:
+    path: /etc/yum.conf
+    line: "proxy={{ http_proxy }} #set by KIB"
+    state: absent
+  when: http_proxy is defined or https_proxy is defined

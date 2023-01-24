@@ -12,6 +12,20 @@
     - lookup('env', 'RHSM_PASS') | length > 0
     - ansible_distribution == 'RedHat'
 
+- name: create proxy file
+  file:
+    path: /etc/yum.conf
+    state: touch
+  when: http_proxy is defined or https_proxy is defined
+
+- name: modify proxy settings if http_proxy is present
+  lineinfile:
+    path: /etc/yum.conf
+    line: "proxy={{ http_proxy }} #set by KIB"
+    state: present
+  when: http_proxy is defined or https_proxy is defined
+
+
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
 # Alma linux's extra repository symlinks epel repository rpms. https://wiki.almalinux.org/repos/AlmaLinux.html
