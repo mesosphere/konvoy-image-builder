@@ -1,6 +1,6 @@
 ---
 - name: remove versionlock for containerd
-  command: yum versionlock delete containerd.io
+  command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} delete containerd.io
   args:
     warn: false
   ignore_errors: true

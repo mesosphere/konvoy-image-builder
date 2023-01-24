@@ -64,7 +64,7 @@
     - versionlock_plugin_enabled
 
 - name: check if versionlock exists
-  command: yum versionlock list
+  command: yum versionlock list {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }}
   register: versionlocklist
   args:
     warn: false

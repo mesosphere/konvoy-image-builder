@@ -51,7 +51,7 @@
     - ansible_distribution_major_version == '8'
 
 - name: remove versionlock for kubelet and kubectl packages
-  command: yum versionlock delete {{ item }}
+  command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} delete {{ item }}
   with_items:
     - kubelet
     - kubectl
@@ -90,7 +90,7 @@
   delay: 3
 
 - name: add versionlock for kubelet and kubectl packages
-  command: yum versionlock add {{ item }}
+  command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add {{ item }}
   with_items:
     - kubelet
     - kubectl
