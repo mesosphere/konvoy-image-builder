@@ -26,11 +26,6 @@
         "type": "vsphere-iso",
         "CPUs": "{{user `cpu`}}",
         "RAM": "{{user `memory`}}",
-        "boot_command": [
-          "<esc><wait><esc><wait><f6><wait><esc><wait>",
-          "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
-          "<enter><wait>"
-        ],
         "boot_wait": "{{user `boot_wait`}}",
         "cluster": "{{user `cluster`}}",
         "communicator": "ssh",
@@ -44,7 +39,6 @@
         "folder": "{{user `folder`}}",
         "guest_os_type": "{{user `vsphere_guest_os_type`}}",
         "host": "{{user `host`}}",
-        "http_directory": "{{ user `http_directory`}}",
         "insecure_connection": "{{user `insecure_connection`}}",
         "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
         "iso_urls": "{{user `iso_url`}}",

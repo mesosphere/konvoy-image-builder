@@ -27,8 +27,7 @@ you must login to redhat in order to download the DVD ISO file.
     cp .env.sample .env
 ```
 
-2. Replace the `<CHANGE-ME>` placeholder in `linux/ubuntu/http/base/preseed.cfg` with the public SSH to use in the base.
-3. Run packer with configured parameters
+1. Run packer with configured parameters
 
 ```bash
 ./run.sh
@@ -45,11 +44,42 @@ Following steps creates base OS vsphere templates
     cp .env.sample .env
 ```
 
-1. Run packer with configured parameters
+1. Run packer with configured parameters, wait for it to start the VM.
 
 ```bash
 ./run.sh
 ```
+
+2. Navigate to the vCenter console to perform the initial setup
+   * Create a `builder` user with a secure password that you will use for the initial ssh connection.
+   * Check to install Open SSH.
+   * Wait for the install to complete and "Reboot Now" the machine when prompted.
+
+3. SSH into the restarted VM with user `buider` and the password you create in the previous step. Run run the following steps (replacing the SSH public key placeholder with desired key):
+
+```bash
+sudo su 
+# don't require password for sudo
+echo 'builder ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/builder
+chmod 440 /etc/sudoers.d/builder
+# install open-vm-tools and then clean up apt cache
+apt-get update
+apt-get install open-vm-tools -y
+apt-get purge --auto-remove -y
+rm -rf /targe/var/lib/apt/lists/*
+# add an SSH public key
+mkdir -p /home/builder/.ssh/
+echo '<CHANGE_ME>' >> /home/builder/.ssh/authorized_keys
+chown -R builder:builder /home/builder/.ssh/
+chmod 644 /home/builder/.ssh/authorized_keys
+chmod 700 /home/builder/.ssh/
+rm -f /etc/udev/rules.d/70-persistent-net.rules
+shutdown -P now
+```
+
+4. In the vCenter console: right-click on the VM > Snapshots > Take Snapshot...
+
+5. In the vCenter console: right-click on the VM > Template > Convert to Template
 
 ## How it works
 
