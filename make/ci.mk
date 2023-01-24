@@ -82,6 +82,8 @@ e2e.build.rhel-8.6-offline: rhel86-offline infra.aws.destroy
 
 e2e.build.rocky-9.1-offline: rocky91-offline infra.aws.destroy
 
+e2e.build.rocky-9.1: rocky91
+
 e2e.build.rhel-8.6-nvidia: rhel86-nvidia
 
 # Azure
