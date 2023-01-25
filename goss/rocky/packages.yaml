@@ -1,0 +1,19 @@
+---
+package:
+  chrony:
+    installed: true
+
+  cri-tools:
+    installed: true
+
+  containerd.io:
+    installed: false
+
+  kubeadm:
+    installed: true
+
+  kubectl:
+    installed: true
+
+  kubelet:
+    installed: true
