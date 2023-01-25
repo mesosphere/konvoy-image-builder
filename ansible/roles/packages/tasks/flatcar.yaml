@@ -17,7 +17,7 @@
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.
 - include: crictl-url.yaml
-  when: crictl_version != system_crictl_version
+  when: crictl_version_flatcar != system_crictl_version
 
 - name: create kubelet systemd directory
   file:
