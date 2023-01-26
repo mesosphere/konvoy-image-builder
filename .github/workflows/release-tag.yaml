@@ -6,7 +6,7 @@ on:
 name: upload-release-artifacts
 jobs:
   release-artifacts:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,7 +28,7 @@ jobs:
           WHAT: make release
 
   bump-kib:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Setup Go
         uses: actions/setup-go@v3
