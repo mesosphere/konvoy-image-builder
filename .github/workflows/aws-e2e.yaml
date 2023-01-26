@@ -22,6 +22,7 @@ jobs:
         - "flatcar"
         - "ubuntu 18.04"
         - "ubuntu 20.04"
+        - "rocky 9.1"
         buildConfig:
         - "basic"
         - "fips"
@@ -80,6 +81,10 @@ jobs:
           buildConfig: nvidia
         - os: "oracle 7.9"
           buildConfig: offline
+        - os: "rocky 9.1"
+          buildConfig: nvidia
+        - os: "rocky 9.1"
+          buildConfig: offline-nvidia
     runs-on: self-hosted
     continue-on-error: true
     steps:

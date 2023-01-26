@@ -43,6 +43,7 @@ var (
 		"flatcar",
 		"ubuntu 18.04",
 		"ubuntu 20.04",
+		"rocky 9.1",
 	}
 
 	validBuildConfig = []string{

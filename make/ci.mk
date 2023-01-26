@@ -25,6 +25,7 @@ ci.e2e.build.all: e2e.build.centos-7-offline
 ci.e2e.build.all: e2e.build.rhel-7.9-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.4-offline-fips
 ci.e2e.build.all: e2e.build.rhel-8.6-offline
+ci.e2e.build.all: e2e.build.rocky-9.1-offline
 ci.e2e.build.all: ci.e2e.build.rhel-8.4-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8.6-nvidia
 ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
@@ -79,6 +80,12 @@ e2e.build.rhel-8.6: rhel86
 
 e2e.build.rhel-8.6-offline: rhel86-offline infra.aws.destroy
 
+e2e.build.rocky-9.1-offline: rocky91-offline infra.aws.destroy
+
+e2e.build.rocky-9.1-offline-fips: rocky91-fips-offline infra.aws.destroy
+
+e2e.build.rocky-9.1: rocky91
+
 e2e.build.rhel-8.6-nvidia: rhel86-nvidia
 
 # Azure
@@ -99,6 +106,8 @@ e2e.build.rhel-8-fips-azure: rhel8-fips-azure
 e2e.build.ubuntu-18-azure: ubuntu1804-azure
 
 e2e.build.ubuntu-20-azure: ubuntu2004-azure
+
+e2e.build.rocky-91-azure: rocky91-azure
 
 # vSphere
 e2e.build.rhel-8.4-ova: rhel84-ova

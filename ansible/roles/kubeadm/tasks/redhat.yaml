@@ -1,6 +1,6 @@
 ---
 - name: remove versionlock for kubeadm packages
-  command: yum versionlock delete kubeadm
+  command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} delete kubeadm
   args:
     warn: false
   ignore_errors: true
@@ -27,7 +27,7 @@
   delay: 3
 
 - name: add versionlock for kubeadm package
-  command: yum versionlock add kubeadm
+  command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add kubeadm
   args:
     warn: false
   register: command_result

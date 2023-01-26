@@ -443,6 +443,23 @@ rhel86-fips-offline:
 rhel86-offline-nvidia:
 	$(MAKE) aws-rhel-8.6_offline-nvidia
 
+# Rocky 9.1
+.PHONY: rocky91
+rocky91:
+	$(MAKE) build-aws-rocky-9.1
+
+.PHONY: rocky91-offline
+rocky91-offline:
+	$(MAKE) aws-rocky-9.1_offline
+
+.PHONY: rocky91-fips-offline
+rocky91-fips-offline:
+	$(MAKE) aws-rocky-9.1_offline-fips
+
+.PHONY: rocky91-azure
+rocky91-azure:
+	$(MAKE) build-azure-rocky-9.1
+
 # RHEL 8 Azure
 .PHONY: rhel84-azure
 rhel84-azure:
