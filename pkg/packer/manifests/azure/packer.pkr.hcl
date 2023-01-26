@@ -469,7 +469,7 @@ build {
     vars_inline = {
       ARCH     = "amd64"
       OS       = lower(var.distribution)
-      PROVIDER = "amazon"
+      PROVIDER = "azure"
     }
     version = var.goss_version
   }
