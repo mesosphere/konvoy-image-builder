@@ -5,6 +5,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
@@ -17,7 +18,7 @@ var (
 )
 
 func checkVSphereISOFlags(cmd *cobra.Command, args []string) error {
-	//credentials
+	// credentials
 	if vCenterServer, _ := cmd.Flags().GetString("vcenter-server"); vCenterServer == "" {
 		if vCenterServer = os.Getenv("VSPHERE_SERVER"); vCenterServer == "" {
 			return fmt.Errorf("vcenter-server or VSPHERE_SERVER required")
@@ -25,8 +26,8 @@ func checkVSphereISOFlags(cmd *cobra.Command, args []string) error {
 	}
 
 	if vSphereUser, _ := cmd.Flags().GetString("vsphere-user"); vSphereUser == "" {
-		if vSphereUser = os.Getenv("VSPHERE_USER"); vSphereUser == "" {
-			return fmt.Errorf("vsphere-user or VSPHERE_USER required")
+		if vSphereUser = os.Getenv("VSPHERE_USERNAME"); vSphereUser == "" {
+			return fmt.Errorf("vsphere-user or VSPHERE_USERNAME required")
 		}
 	}
 
@@ -86,7 +87,7 @@ func initGeneratevSphereISOFlags(fs *flag.FlagSet, generateFlags *generateCLIFla
 
 func initvSphereISOArgs(fs *flag.FlagSet, gFlags *generateCLIFlags) {
 	gFlags.userArgs.VSphereISO = &app.VSphereISOArgs{}
-	addvSphereISOArgs(fs, gFlags.userArgs.VSphereISO )
+	addvSphereISOArgs(fs, gFlags.userArgs.VSphereISO)
 }
 
 func addvSphereISOArgs(fs *flag.FlagSet, vSphereISOArgs *app.VSphereISOArgs) {

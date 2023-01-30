@@ -380,9 +380,9 @@ bin/konvoy-image:
 	$(call print-target)
 	GOARCH=$(BUILDARCH) GOOS=$(GOOS) go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)' \
-		-o ./dist/konvoy-image_linux_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
+		-o ./dist/konvoy-image_$(GOOS)_$(GOARCH)/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
-	ln -sf ../dist/konvoy-image_linux_$(GOARCH)/konvoy-image bin/konvoy-image
+	ln -sf ../dist/konvoy-image_$(GOOS)_$(GOARCH)/konvoy-image bin/konvoy-image
 
 bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)

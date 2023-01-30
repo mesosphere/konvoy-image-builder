@@ -22,7 +22,7 @@ packer {
       source = "github.com/ivoronin/sshkey"
     }
     vsphere = {
-      version = ">= 0.0.1"
+      version = ">= 1.0.8"
       source = "github.com/hashicorp/vsphere"
     }
     ansible = {
@@ -35,7 +35,7 @@ packer {
 
 variable "vsphere_user" {
   type    = string
-  default = "${env("VSPHERE_USER")}"
+  default = "${env("VSPHERE_USERNAME") == "" ? env("VSPHERE_USER") : env("VSPHERE_USERNAME") }"
 }
 
 variable "ansible_extra_vars" {
@@ -236,7 +236,7 @@ variable "os_display_name" {
 
 variable "goss_binary" {
   type = string
-  default = "/usr/local/bin/goss"
+  default = "/usr/local/bin/goss-amd64"
 }
 
 variable "goss_entry_file" {
@@ -283,6 +283,11 @@ variable "goss_version" {
 variable "dry_run" {
   type    = bool
   default = false
+}
+
+variable "remote_folder" {
+  type    = string
+  default = "/tmp"
 }
 
 # "timestamp" template function replacement
@@ -406,9 +411,7 @@ source "vsphere-iso" "kib" {
   }
 
   communicator                 = "ssh"
-  convert_to_template          = "true"
   cpu_cores                    = "${var.cpu_cores}"
-  create_snapshot              = "true"
   datacenter                   = "${var.datacenter}"
   resource_pool                = "${var.resource_pool}"
   datastore                    = "${var.datastore}"
@@ -441,38 +444,26 @@ build {
   sources = ["source.vsphere-iso.kib"]
 
   provisioner "ansible" {
-    ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'", "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"]
+    ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
     extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}"]
     playbook_file    = "./ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
 
   provisioner "shell" {
-    inline = ["mkdir -p /tmp/.goss-dir"]
+    inline = ["mkdir -p ${var.remote_folder}/.goss-dir"]
   }
 
   provisioner "file" {
-    destination = "/tmp/.goss-dir/goss"
-    direction   = "upload"
-    max_retries = "10"
-    source      = "/usr/local/bin/goss"
-  }
-
-  provisioner "shell" {
-    inline = ["mkdir -p /tmp/.goss-dir"]
-  }
-
-  provisioner "file" {
-    destination = "/tmp/.goss-dir/goss"
+    destination = "${var.remote_folder}/.goss-dir/goss"
     direction   = "upload"
     max_retries = "10"
     source      = var.goss_binary
   }
 
-
   provisioner "goss" {
     arch           = var.goss_arch
-    download_path  = "/tmp/.goss-dir/goss"
+    download_path  = "${var.remote_folder}/.goss-dir/goss"
     format         = var.goss_format
     format_options = var.goss_format_options
     goss_file      = var.goss_entry_file
@@ -499,7 +490,7 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["rm -r  /tmp/.goss-dir"]
+    inline = ["rm -r  ${var.remote_folder}/.goss-dir"]
   }
 
   post-processor "manifest" {
