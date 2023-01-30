@@ -1,0 +1,29 @@
+---
+download_images: true
+build_name: "rocky-9.1"
+packer_builder_type: "vsphere-iso"
+guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
+guestinfo_datasource_ref: "v1.4.0"
+guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasource_ref}}/install.sh"
+packer:
+  iso_url: "http://dl.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.1-20221214.1-x86_64-dvd.iso"
+  iso_checksum: "d490bac0fbc08b5621b8d5c861fb6e2ac0c46fa6b78cc3858d8594c56d65d5cb"
+  insecure_connection: "false"
+  vsphere_guest_os_type: "rocky91_64Guest"
+  guest_os_type: "rocky91-64"
+  distro_name: "rocky"
+  distro_version: "9"
+  # cluster: ""
+  # datacenter: ""
+  # datastore: ""
+  # folder: ""
+  # network: ""
+  # resource_pool: ""
+  # goss params
+  distro_name: "rocky"
+  distro_version: "9.1"
+# Use following overrides to select the authentication method that can be used with base template
+# ssh_username: ""
+# ssh_password: ""
+# ssh_private_key_file = "" #
+# ssh_agent_auth: false  # is set to true, ssh_password and ssh_private_key will be ignored
