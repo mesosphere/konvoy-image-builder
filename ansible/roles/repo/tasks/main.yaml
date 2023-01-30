@@ -13,4 +13,11 @@
   when: ansible_facts['os_family'] == "Suse"
 
 - include: debian.yaml
-  when: ansible_facts['os_family'] == "Debian"
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - not offline_mode_enabled
+
+- include: debian-offline.yaml
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - offline_mode_enabled

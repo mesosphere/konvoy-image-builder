@@ -9,7 +9,7 @@
 # The community-maintained kubeadm package installs the latest version of
 # cri-tools, which may be incompatible with the Kubernetes version.
 # Therefore, we install a version that we know to be compatible.
-- name: install cri-tools remote deb package
+- name: install cri-tools deb package
   shell: |
     apt-get install --force-yes --yes \
       cri-tools={{ critools_deb }}
@@ -25,7 +25,7 @@
 - name: add version hold for cri-tools package
   command: apt-mark hold cri-tools
 
-- name: install kubeadm remote deb package
+- name: install kubeadm deb package
   shell: |
     apt-get install --force-yes --yes \
       kubeadm={{ package_versions.kubernetes_deb }}

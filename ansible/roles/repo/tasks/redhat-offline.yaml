@@ -1,6 +1,6 @@
 ---
 - name: upload offline repository
   template:
-    src: offline.repo
+    src: rpm-offline.repo
     dest: /etc/yum.repos.d/offline.repo
   when: offline_mode_enabled
