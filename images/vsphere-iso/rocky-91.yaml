@@ -9,9 +9,9 @@ packer:
   iso_url: "http://dl.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.1-20221214.1-x86_64-dvd.iso"
   iso_checksum: "d490bac0fbc08b5621b8d5c861fb6e2ac0c46fa6b78cc3858d8594c56d65d5cb"
   insecure_connection: "false"
-  vsphere_guest_os_type: "rocky91_64Guest"
-  guest_os_type: "rocky91-64"
-  distro_name: "rocky"
+  vsphere_guest_os_type: "other4xLinux64Guest" # list of vsphere os type: https://vdc-repo.vmware.com/vmwb-repository/dcr-public/da47f910-60ac-438b-8b9b-6122f4d14524/16b7274a-bf8b-4b4c-a05e-746f2aa93c8c/doc/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html
+  guest_os_type: "rocky9-64"
+  distro_name: "rockylinux"
   distro_version: "9"
   # cluster: ""
   # datacenter: ""
