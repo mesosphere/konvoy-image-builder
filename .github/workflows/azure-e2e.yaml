@@ -13,7 +13,7 @@ jobs:
       max-parallel: 10
       matrix:
         os:
-        - "redhat 8.6"
+        - "redhat 8.4"
         - "ubuntu 20.04"
         buildConfig:
         - "basic"
