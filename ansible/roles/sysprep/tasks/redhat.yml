@@ -41,10 +41,17 @@
 - name: Remove yum package lists
   command: "{{ sysusr_prefix }}/bin/yum -y clean all"
 
-- name: Reset network interface IDs for RHEL 8.x and below
-  shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
-  when: ansible_distribution_major_version | int < 9
+- name: find network profiles at /etc/sysconfig/network-scripts/
+  find:
+    paths: "/etc/sysconfig/network-scripts/"
+    patterns: "ifcfg-*"
+    file_type: file
+  register: network_profiles_sysconfig
+  changed_when: false
 
+- name: Reset network interface IDs for RHEL at /etc/sysconfig/network-scripts/
+  shell: sed -i '/^\(HWADDR\|UUID\)=/d' "{{item}}"
+  with_items: "{{  network_profiles_sysconfig.files | map(attribute='path') | list }}"
 
 # NetworkManager stores new network profiles in keyfile format in the
 # /etc/NetworkManager/system-connections/ directory.
@@ -53,9 +60,17 @@
 # in this directory (/etc/sysconfig/network-scripts/). However, the ifcfg
 # format is deprecated. By default, NetworkManager no longer creates
 # new profiles in this format.
-- name: Reset network interface IDs for RHEL 9.x and above
-  shell: sed -i '/^\(uuid\)=/d' /etc/NetworkManager/system-connections/*.nmconnection
-  when: ansible_distribution_major_version | int >= 9
+- name: find network profiles at /etc/NetworkManager/system-connections
+  find:
+    paths: "/etc/NetworkManager/system-connections"
+    patterns: "*.nmconnection"
+    file_type: file
+  register: network_profiles_sys_connection
+  changed_when: false
+
+- name: Reset network interface IDs for RHEL at /etc/NetworkManager/system-connections/
+  shell: sed -i '/^\(uuid\)=/d' "{{item}}"
+  with_items: "{{  network_profiles_sys_connection.files | map(attribute='path') | list }}"
 
 - name: Remove the kickstart log
   file:
