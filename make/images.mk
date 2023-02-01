@@ -460,6 +460,13 @@ rocky91-fips-offline:
 rocky91-azure:
 	$(MAKE) build-azure-rocky-9.1
 
+.PHONY: rocky91-ova
+rocky91-ova:
+	$(MAKE) build-ova-rocky-9.1
+
+.PHONY: rocky91-ova-offline
+rocky91-ova-offline:
+	$(MAKE) ova-rocky-9.1_offline
 # RHEL 8 Azure
 .PHONY: rhel84-azure
 rhel84-azure:

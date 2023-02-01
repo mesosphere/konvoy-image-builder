@@ -32,6 +32,7 @@ ci.e2e.build.all: ci.e2e.build.centos-7-nvidia
 ci.e2e.build.all: ci.e2e.build.sles-15-nvidia
 ci.e2e.build.all: ci.e2e.build.rhel-8.4-ova
 ci.e2e.build.all: ci.e2e.build.rhel-7.9-ova
+ci.e2e.build.all: ci.e2e.build.rocky-9.1-ova
 
 # Run an E2E test in its own devkit container.
 ci.e2e.build.%:
@@ -115,6 +116,8 @@ e2e.build.rhel-8.4-ova: rhel84-ova
 e2e.build.rhel-7.9-ova: rhel79-ova
 
 e2e.build.rhel-8.6-ova: rhel86-ova
+
+e2e.build.rhel-8.6-ova: rocky91-ova
 
 # GCP
 e2e.build.centos-7.9-gcp: centos79-gcp
