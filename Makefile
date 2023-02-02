@@ -222,7 +222,7 @@ github-token.txt:
 .PHONY: buildx
 buildx:
 buildx:
-	 docker buildx create --use --name=konvoy-image-builder || true
+	 docker buildx create --driver=docker-container --use --name=konvoy-image-builder || true
 	 docker run --privileged --rm tonistiigi/binfmt --install all || true
 
 
