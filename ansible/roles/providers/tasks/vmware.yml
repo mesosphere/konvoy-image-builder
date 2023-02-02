@@ -35,7 +35,7 @@
     packages:
       - cloud-init
       - cloud-utils-growpart
-      - python2-pip
+      - "python{{ '3' if ansible_distribution_major_version|int >= 9 else '2'}}-pip"
   when: ansible_os_family == "RedHat"
 
 - name: Install cloud-init packages
