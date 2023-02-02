@@ -153,7 +153,10 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 			}
 		}
 	}
-	args := []string{"build", buildInfra, buildPath}
+	args := []string{"build"}
+	if buildInfra != ova {
+		args = append(args, buildInfra, buildPath)
+	}
 	args = append(args, overrideFlagForCmd...)
 	if dryRun {
 		args = append(args, dryRunFlag)
