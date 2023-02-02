@@ -267,7 +267,7 @@ func getInfraOverride(buildInfra string) string {
 	case aws:
 		return fmt.Sprintf(baseOfflineTemplate, aws)
 	case ova:
-		return fmt.Sprintf(baseOfflineTemplate, "vsphere")
+		return fmt.Sprintf(baseOfflineTemplate, ova)
 	}
 	return ""
 }
