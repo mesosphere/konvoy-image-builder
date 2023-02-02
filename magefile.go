@@ -153,7 +153,10 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 			}
 		}
 	}
-	args := []string{"build", buildPath}
+	args := []string{"build"}
+	if buildInfra != ova {
+		args = append(args, buildInfra, buildPath)
+	}
 	args = append(args, overrideFlagForCmd...)
 	if dryRun {
 		args = append(args, dryRunFlag)
@@ -230,9 +233,6 @@ func getBuildPath(buildOS, buildInfra string) string {
 	formattedOS = strings.Replace(formattedOS, ".", "", 1)
 
 	formattedOS = strings.Replace(formattedOS, "redhat", "rhel", 1)
-	formattedOS = strings.Replace(formattedOS, "1804", "18", 1)
-	formattedOS = strings.Replace(formattedOS, "2004", "20", 1)
-
 	fileForOS := fmt.Sprintf("%s.yaml", formattedOS)
 
 	infraDirForImage := buildInfra
