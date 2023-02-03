@@ -62,3 +62,4 @@ jobs:
           SSH_BASTION_USERNAME: ${{ secrets.SSH_BASTION_USERNAME }}
           VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
           VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
