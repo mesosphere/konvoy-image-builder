@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.0.0](https://github.com/mesosphere/konvoy-image-builder/compare/v1.25.2...v2.0.0) (2023-02-02)
+
+
+### Features
+
+* add support for creating Ubuntu 20.04 base OVA template ([8a6608c](https://github.com/mesosphere/konvoy-image-builder/commit/8a6608c602f4e10816f10930d721d65542f2882f))
+* allow submaps in images files  ([#630](https://github.com/mesosphere/konvoy-image-builder/issues/630)) ([09bbe5e](https://github.com/mesosphere/konvoy-image-builder/commit/09bbe5ed7c69bf31b4555958eb19bbad88f8bef6))
+* build rocky linux 9.1 images ([#637](https://github.com/mesosphere/konvoy-image-builder/issues/637)) ([579e620](https://github.com/mesosphere/konvoy-image-builder/commit/579e620a94f2017cff84f496e0141734edd6f038))
+* build vsphere template for rockylinux 9.1 ([#649](https://github.com/mesosphere/konvoy-image-builder/issues/649)) ([5908ed3](https://github.com/mesosphere/konvoy-image-builder/commit/5908ed34836a47d8c26e1a35a7a7bb8a38b97f13))
+* HCL instead of JSON packer templates  ([#507](https://github.com/mesosphere/konvoy-image-builder/issues/507)) ([0523fd2](https://github.com/mesosphere/konvoy-image-builder/commit/0523fd2c5e6e1ad1d4962f60a47039aa145a6e42))
+* Install specific cri-tools package on debian derivatives ([68200b1](https://github.com/mesosphere/konvoy-image-builder/commit/68200b1da283fc30e23ed24c6fdd1349dc06c348))
+* support building Ubuntu 20.04 with offline OS packages bundle ([#627](https://github.com/mesosphere/konvoy-image-builder/issues/627)) ([0e48add](https://github.com/mesosphere/konvoy-image-builder/commit/0e48add381fa8dff6466c1befd47101d7b2b23a4))
+* Upgrade cri-tools to v1.25.0 ([dc48e4b](https://github.com/mesosphere/konvoy-image-builder/commit/dc48e4b6e2e8c75ed93a5df19ade236babe32a8f))
+
+
+### Bug Fixes
+
+* use --force when retagging CoreDNS image ([#628](https://github.com/mesosphere/konvoy-image-builder/issues/628)) ([ee1a11e](https://github.com/mesosphere/konvoy-image-builder/commit/ee1a11ecb4b194a68bbb5b4db92b2478ebc3170a))
+* use new oracle 7.9 ami ([#626](https://github.com/mesosphere/konvoy-image-builder/issues/626)) ([0ca10dd](https://github.com/mesosphere/konvoy-image-builder/commit/0ca10dd86fe91644c223b308a9e02c99c99d9465))
+
+
+### ci
+
+* adds azure GHA test ([#648](https://github.com/mesosphere/konvoy-image-builder/issues/648)) ([ebb766d](https://github.com/mesosphere/konvoy-image-builder/commit/ebb766d20a73d090ca56913eac001fe3dd58197d))
+
 ## [1.25.2](https://github.com/mesosphere/konvoy-image-builder/compare/v1.25.1...v1.25.2) (2022-12-07)
 
 
