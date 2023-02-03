@@ -218,7 +218,6 @@ endif
 github-token.txt:
 	echo $(GITHUB_TOKEN) >> github-token.txt
 
-
 .PHONY: buildx
 buildx:
 buildx:
