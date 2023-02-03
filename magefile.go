@@ -108,7 +108,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		infraOverride := getInfraOverride(buildInfra)
 		fullOverride := fmt.Sprintf("--overrides=%s", infraOverride)
 		overrideFlagForCmd = append(overrideFlagForCmd, fullOverride)
-
+		fmt.Printf("making infraOverride %s \n", infraOverride)
 		// TODO: @faiq - move this to mage
 		if err := sh.RunV("make", infraOverride); err != nil {
 			return fmt.Errorf("failed to create offline infra with override %s %v", infraOverride, err)
@@ -116,8 +116,10 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 
 		defer func() {
 			// TODO: @faiq - move this to mage
-			if err := sh.RunV("make", "infra.aws.destroy"); err != nil {
-				fmt.Printf("failed to delete offline infra %v\n", err)
+			if buildInfra == aws {
+				if err := sh.RunV("make", "infra.aws.destroy"); err != nil {
+					fmt.Printf("failed to delete offline infra %v\n", err)
+				}
 			}
 		}()
 		// we need to fetch the proper os-bundle
