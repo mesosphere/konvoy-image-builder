@@ -18,8 +18,6 @@ jobs:
         - "ubuntu 20.04"
         - "rocky 9.1"
         buildConfig:
-        - "basic"
-        - "fips"
         - "offline"
         - "offline-fips"
         exclude:
