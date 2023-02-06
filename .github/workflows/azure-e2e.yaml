@@ -1,10 +1,12 @@
-'on':
+# Runs Azure tests when pull request opened, repopened or synchronized
+name: E2E Tests - Build Azure Image
+on:
   pull_request:
 
 permissions:
   contents: read
   id-token: write
-name: E2E  Tests - Build Azure Image
+
 jobs:
   rune2e:
     strategy:
@@ -18,7 +20,8 @@ jobs:
     runs-on: self-hosted
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -36,10 +39,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: setup buildkit
+      - name: Setup buildkit
         uses: docker/setup-buildx-action@v2
 
-      - name: Run Mage
+      - name: Run E2E test for {{ matrix.os }} with ${{ matrix.buildConfig }} configuration
         uses: magefile/mage-action@v2
         with:
           version: latest
