@@ -17,14 +17,14 @@ jobs:
   super-linter:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v3
+
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
           cache: true
-
-      - name: Checkout konvoy-image-builder repository
-        uses: actions/checkout@v3
 
       - name: Set environment Variables from Dotenv
         uses: c-py/action-dotenv-to-setenv@v4

@@ -42,7 +42,7 @@ jobs:
       - name: Setup buildkit
         uses: docker/setup-buildx-action@v2
 
-      - name: Run E2E test for {{ matrix.os }} with ${{ matrix.buildConfig }} configuration
+      - name: Run E2E test for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
         uses: magefile/mage-action@v2
         with:
           version: latest

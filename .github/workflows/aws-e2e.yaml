@@ -117,7 +117,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/konvoy-image-builder
           aws-region: us-west-2
 
-      - name: Run E2E test for {{ matrix.os }} with ${{ matrix.buildConfig }} configuration
+      - name: Run E2E test for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
         uses: magefile/mage-action@v2
         with:
           version: latest
