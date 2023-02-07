@@ -27,7 +27,7 @@ jobs:
           path: coverage.xml
 
       - name: Display the coverage metrics in a GitHub Pull Request comments
-        if: ${{ github.event.workflow_run.event == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' }}
         uses: 5monkeys/cobertura-action@v13
         with:
           path: coverage.xml
