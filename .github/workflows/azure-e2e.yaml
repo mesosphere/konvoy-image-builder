@@ -13,7 +13,6 @@ jobs:
       matrix:
         os:
         - "ubuntu 20.04"
-        - "ubuntu 18.04"
         - "rocky 9.1"
         buildConfig:
         - "basic"
