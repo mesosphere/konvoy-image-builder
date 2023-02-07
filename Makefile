@@ -266,6 +266,7 @@ devkit-arm64: buildx github-token.txt
 		--platform linux/arm64 \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 		--secret id=githubtoken,src=github-token.txt \
+		--provenance=false  \
 		--push \
 		$(REPO_ROOT_DIR)
 
@@ -283,6 +284,7 @@ devkit-amd64: buildx github-token.txt
 		--platform linux/amd64 \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 		--secret id=githubtoken,src=github-token.txt \
+		--provenance=false  \
 		--push \
 		$(REPO_ROOT_DIR)
 
@@ -296,6 +298,7 @@ docker-build-amd64: devkit-amd64 konvoy-image-amd64
 		--build-arg BASE=docker.io/$(DOCKER_REPOSITORY):$(REPO_REV)-devkit-amd64 \
 		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-amd64 \
 		--pull \
+		--provenance=false \
 		--push \
 		$(REPO_ROOT_DIR)
 
@@ -310,6 +313,7 @@ docker-build-arm64: devkit-arm64 konvoy-image-arm64
 		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-arm64 \
 		--pull \
 		--push \
+		--provenance=false  \
 		$(REPO_ROOT_DIR)
 
 
