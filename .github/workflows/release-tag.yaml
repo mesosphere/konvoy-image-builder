@@ -30,6 +30,12 @@ jobs:
 
       - name: setup buildkit
         uses: docker/setup-buildx-action@v2
+        with:
+          # Pinnning to specific version. The buildx version > v0.10.x fails to create multi-arch docker image manifest
+          # Executing `docker create manifest` command fails when using buildx > v0.10.x.
+          # The manifest file for arm64 build is generated with incorrect format causing failure in generating multiarch manifest
+          # Inspect manifest using: `docker manifest inspect <IMAGE_REF>`
+          version: v0.9.1
 
       - name: Release
         run: make release
