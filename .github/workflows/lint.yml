@@ -4,27 +4,29 @@ name: Lint
 # yamllint disable-line rule:truthy
 on:
   push:
+    tags:
+      - 'v*'
     branches:
       - main
   pull_request:
-    branches:
-      - main
+
+permissions:
+  contents: read
 
 jobs:
-  lint:
-    name: Lint code base
+  super-linter:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v3
+
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: 'v1.18'
-          check-latest: true
-      - name: Checkout code
-        uses: actions/checkout@v3
+          go-version-file: 'go.mod'
+          cache: true
 
-      - name: Environment Variables from Dotenv
+      - name: Set environment Variables from Dotenv
         uses: c-py/action-dotenv-to-setenv@v4
         with:
           env-file: .github/super-linter.env
@@ -45,3 +47,20 @@ jobs:
           VALIDATE_NATURAL_LANGUAGE: false
           # we use terraform to provision *test* infrastructure that is deleted
           VALIDATE_TERRAFORM_TFLINT: false
+  golangci-lint:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout konvoy-image-builder repository
+          uses: actions/checkout@v3
+
+        - name: Setup Go
+          uses: actions/setup-go@v3
+          with:
+            go-version-file: 'go.mod'
+            cache: true
+
+        - name: Run golangci lint
+          uses: golangci/golangci-lint-action@v3
+          with:
+            #version of golangci-lint to use with
+            version: latest

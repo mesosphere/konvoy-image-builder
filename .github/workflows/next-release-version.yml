@@ -1,10 +1,15 @@
 ---
-"on":
+# Determines next release version
+# release-please workflow analyzes commit messages in `main` branch since the last release
+# and determines type of release: breaking, feature or bugfix.
+# release-please will create a new PR or update an existing PR with release notes and next version bump.
+# NOTE: This workflow does not create actual release. It determines next release version and create/updates PR for review.
+on:
   push:
     branches:
       - main
 
-name: release-please
+name: Determine next release version
 jobs:
   release-please:
     runs-on: ubuntu-latest

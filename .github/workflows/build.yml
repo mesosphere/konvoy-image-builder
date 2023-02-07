@@ -6,22 +6,23 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
-    branches:
-      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v3
 
-      - name: Build
+      - name: Build konvoy-image binary
         run: make devkit.run
         env:
           WHAT: make build
 
-      - name: Check Docs
+      - name: Verify CLI documentation
         run: make devkit.run
         env:
           WHAT: make docs.check
