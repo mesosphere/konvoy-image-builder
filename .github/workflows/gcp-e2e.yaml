@@ -1,5 +1,5 @@
 # Runs Azure tests when pull request opened, repopened or synchronized
-name: E2E Tests - Build Azure Image
+name: E2E Tests - Build GCP Image
 on:
   pull_request:
     types: [labeled, synchronize]
