@@ -193,8 +193,6 @@ $(ENVSUBST_ASSETS)/envsubst:
 	chmod +x $(ENVSUBST_ASSETS)/envsubst
 
 
-include make/ci.mk
-include make/images.mk
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
