@@ -57,6 +57,13 @@ jobs:
       - name: Setup buildkit
         uses: docker/setup-buildx-action@v2
 
+      - name: Setup GOOGLE_APPLICATION_CREDENTIALS
+        run: |-
+          echo -n "${GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64}" | base64 --decode >> google-credentials.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json" >> $GITHUB_ENV
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_B64: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_BASE64 }}
+
       - name: Run E2E test for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
         uses: magefile/mage-action@v2
         with:
@@ -64,4 +71,3 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" gcp true
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
