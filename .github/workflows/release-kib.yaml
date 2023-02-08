@@ -45,7 +45,7 @@ jobs:
 
   bump-kib:
     runs-on: ubuntu-latest
-    needs: [release-to-github, sign-macos-binary]
+    needs: release-to-github
     steps:
       - name: Setup Go
         uses: actions/setup-go@v3
