@@ -44,9 +44,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
 
   bump-kib:
-    needs: [release-artifacts, sign-binary]
     runs-on: ubuntu-latest
-    needs: [release-to-github, sign-macos-binary]
+    needs: release-to-github
     steps:
       - name: Setup Go
         uses: actions/setup-go@v3
