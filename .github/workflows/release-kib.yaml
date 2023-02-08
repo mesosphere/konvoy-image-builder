@@ -5,8 +5,10 @@
 # - Bumps KIB version in mesosphere/cluster-api-provider-preprovisioned repository
 on:
   push:
-    tags:
-      - 'v*'
+    # tags:
+    #   - 'v*'
+    branches:
+      - "shalin/notarize-kib"
 
 name: Release konvoy-image-builder
 jobs:
