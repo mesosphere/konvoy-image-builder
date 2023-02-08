@@ -17,40 +17,28 @@ jobs:
         include:
           - os: "centos 7.9"
             buildConfig: "offline"
-            cloud_provider: aws
           - os: "centos 7.9"
             buildConfig: "offline-fips"
-            cloud_provider: aws
           - os: "redhat 7.9"
             buildConfig: "offline"
-            cloud_provider: aws
           - os: "redhat 7.9"
             buildConfig: "offline-fips"
-            cloud_provider: aws
           - os: "redhat 8.4"
             buildConfig: "offline"
-            cloud_provider: aws
           - os: "redhat 8.4"
             buildConfig: "offline-fips"
-            cloud_provider: aws
           - os: "redhat 8.6"
             buildConfig: "offline"
-            cloud_provider: aws
           - os: "redhat 8.6"
             buildConfig: "offline-fips"
-            cloud_provider: aws
           - os: "rocky 9.1"
             buildConfig: "offline"
-            cloud_provider: aws
           - os: "rocky 9.1"
             buildConfig: "offline-fips"
-            cloud_provider: aws
           - os: "sles 15"
             buildConfig: "basic"
-            cloud_provider: aws
           - os: "ubuntu 20.04"
             buildConfig: "nvidia"
-            cloud_provider: aws
 
     runs-on: self-hosted
     continue-on-error: true
@@ -89,10 +77,10 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/konvoy-image-builder
           aws-region: us-west-2
 
-      - name: Build Image ${{ matrix.os }} with ${{ matrix.buildConfig }} for ${{ matrix.cloud_provider }}
+      - name: Build Image ${{ matrix.os }} with ${{ matrix.buildConfig }} for aws
         uses: magefile/mage-action@v2
         with:
           version: latest
-          args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" "${{ matrix.cloud_provider }}" false
+          args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws false
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}

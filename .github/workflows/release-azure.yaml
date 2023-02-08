@@ -17,10 +17,8 @@ jobs:
         include:
           - os: "rocky 9.0"
             buildConfig: "basic"
-            cloud_provider: azure
           - os: "ubuntu 20.04"
             buildConfig: "basic"
-            cloud_provider: azure
 
     runs-on: self-hosted
     continue-on-error: true
@@ -53,11 +51,11 @@ jobs:
       - name: Setup buildkit
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Image ${{ matrix.os }} with ${{ matrix.buildConfig }} for ${{ matrix.cloud_provider }}
+      - name: Build Image ${{ matrix.os }} with ${{ matrix.buildConfig }} for Azure
         uses: magefile/mage-action@v2
         with:
           version: latest
-          args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" "${{ matrix.cloud_provider }}" false
+          args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" azure false
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           AZURE_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
