@@ -16,7 +16,7 @@ jobs:
       matrix:
         os:
         - "ubuntu 20.04"
-        - "rocky 9.1"
+        - "rocky 9.0"
         buildConfig:
         - "basic"
     runs-on: self-hosted
