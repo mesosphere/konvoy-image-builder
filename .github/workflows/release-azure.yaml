@@ -1,7 +1,7 @@
 on:
   push:
-    branch:
-      - 'faiq/release-image-on-tag'
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
