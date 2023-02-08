@@ -2,6 +2,7 @@
 name: E2E Tests - Build AWS AMI
 on:
   pull_request:
+    types: [labeled, synchronize]
 
 permissions:
   contents: read
@@ -88,6 +89,12 @@ jobs:
           buildConfig: offline-nvidia
     runs-on: self-hosted
     continue-on-error: true
+    if: |
+      github.event_name == 'pull_request' &&
+      (
+        (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
+        (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
+      )
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
