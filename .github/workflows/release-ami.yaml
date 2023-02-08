@@ -89,13 +89,6 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/konvoy-image-builder
           aws-region: us-west-2
 
-      - name: Setup GOOGLE_APPLICATION_CREDENTIALS
-        run: |-
-          echo -n "${GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64}" | base64 --decode >> google-credentials.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json" >> $GITHUB_ENV
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64 }}
-
       - name: Build Image ${{ matrix.os }} with ${{ matrix.buildConfig }} for ${{ matrix.cloud_provider }}
         uses: magefile/mage-action@v2
         with:
