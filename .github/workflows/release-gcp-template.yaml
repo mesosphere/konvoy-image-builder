@@ -2,8 +2,8 @@
 name: Build GCP image for Konvoy E2E tests
 on:
   push:
-    branch:
-      - 'shalin//build-ova-on-tags'
+    tags:
+      - 'v*'
 
 permissions:
   contents: read

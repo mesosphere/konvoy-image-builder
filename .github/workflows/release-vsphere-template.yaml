@@ -2,8 +2,8 @@
 name: Build vSphere templates for Konvoy E2E tests
 on:
   push:
-    branch:
-      - 'shalin//build-ova-on-tags'
+    tags:
+      - 'v*'
 
 jobs:
   build-e2e:
