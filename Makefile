@@ -41,10 +41,6 @@ ARCH := $(shell uname -m)
 BUILDARCH ?= $(shell echo $(ARCH) | sed 's/x86_64/amd64/g')
 
 export CI ?= no
-ifeq ($(CI),yes)
-export TEAMCITY_EXTRA_MOUNT ?= /teamcity
-export TEAMCITY_BUILD_ID ?= $(shell date +%s)
-endif
 
 
 export DOCKER_REPOSITORY ?= mesosphere/konvoy-image-builder
@@ -78,13 +74,8 @@ export DOCKER_DEVKIT_AWS_ARGS ?= \
 	--env AWS_DEFAULT_REGION \
 	--volume "$(HOME)/.aws":"/home/$(USER_NAME)/.aws"
 
-ifeq ($(strip $(TEAMCITY_EXTRA_MOUNT)),)
 DOCKER_GCP_CREDENTIALS_ARGS=--volume "$(HOME)/.gcloud":"/home/$(USER_NAME)/.gcloud" \
 	                             --env GOOGLE_APPLICATION_CREDENTIALS=/home/$(USER_NAME)/.gcloud/credentials.json
-else
-DOCKER_GCP_CREDENTIALS_ARGS=--volume $(TEAMCITY_EXTRA_MOUNT):$(TEAMCITY_EXTRA_MOUNT) \
-								 --env GOOGLE_APPLICATION_CREDENTIALS=$(TEAMCITY_EXTRA_MOUNT)/$(TEAMCITY_BUILD_ID)-credentials.json
-endif
 
 export DOCKER_DEVKIT_GCP_ARGS ?= \
 	$(DOCKER_GCP_CREDENTIALS_ARGS)
@@ -193,8 +184,6 @@ $(ENVSUBST_ASSETS)/envsubst:
 	chmod +x $(ENVSUBST_ASSETS)/envsubst
 
 
-include make/ci.mk
-include make/images.mk
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
