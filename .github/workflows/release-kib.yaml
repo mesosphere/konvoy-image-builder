@@ -4,6 +4,7 @@
 # - Signs mac-os binary and reuploads artifacts to the github release
 # - Bumps KIB version in mesosphere/cluster-api-provider-preprovisioned repository
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'

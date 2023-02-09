@@ -1,6 +1,7 @@
 # Runs vSphere tests when pull request opened, repopened or synchronized
 name: E2E Tests - Build Vsphere template
 on:
+  workflow_dispatch:
   pull_request:
     types: [labeled, synchronize]
 

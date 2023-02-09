@@ -1,6 +1,7 @@
 # Builds vSphere image template when a release tag is created
 name: Build vSphere templates for Konvoy E2E tests
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
