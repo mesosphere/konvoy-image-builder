@@ -1,15 +1,18 @@
 ---
+- set_fact:
+   rhsm_user: "{{ lookup('env', 'RHSM_USER' ) | ternary (lookup('env', 'RHSM_USER' ), rhsm_user) }}"
+
+- set_fact:
+   rhsm_password: "{{ lookup('env', 'RHSM_PASS' ) | ternary (lookup('env', 'RHSM_PASS' ), rhsm_password) }}"
 
 - name: RHEL subscription
   redhat_subscription:
     state: present
-    username: "{{ lookup('env', 'RHSM_USER') }}"
-    password: "{{ lookup('env', 'RHSM_PASS') }}"
+    username: "{{ rhsm_user }}"
+    password: "{{ rhsm_password }}"
     auto_attach: true
     force_register: true
   when:
-    - lookup('env', 'RHSM_USER') | length > 0
-    - lookup('env', 'RHSM_PASS') | length > 0
     - ansible_distribution == 'RedHat'
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.
