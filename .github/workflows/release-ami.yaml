@@ -21,6 +21,8 @@ jobs:
             buildConfig: "offline"
           - os: "centos 7.9"
             buildConfig: "offline-fips"
+          - os: "oracle 7.9"
+            buildConfig: "fips"
           - os: "redhat 7.9"
             buildConfig: "offline"
           - os: "redhat 7.9"
