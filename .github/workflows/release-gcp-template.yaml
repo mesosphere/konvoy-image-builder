@@ -1,6 +1,7 @@
 # Builds GCP image when a release tag is created
 name: Build GCP image for Konvoy E2E tests
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
