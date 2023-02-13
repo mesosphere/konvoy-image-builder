@@ -41,11 +41,13 @@
     - rhsm_org_id | length > 0
     - rhsm_activation_key | length > 0
 
+# we need rhel-8-base-eus-rpms for kernel headers to support gpus
 - name: RHEL subscription refresh
   shell: subscription-manager config --rhsm.manage_repos=1 && subscription-manager repos --enable=rhel-8-for-x86_64-baseos-eus-rpms && subscription-manager refresh && subscription-manager attach --auto
   when:
     - ansible_distribution == 'RedHat'
     - rhelorg != None or rheluser != None
+    - ansible_distribution_major_version == '8'
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
