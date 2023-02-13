@@ -41,9 +41,9 @@
     - rhsm_org_id | length > 0
     - rhsm_activation_key | length > 0
 
-# we need rhel-8-base-eus-rpms for kernel headers to support gpus
+# make sure rhsm can manage repos + refresh and attach if needed
 - name: RHEL subscription refresh
-  shell: subscription-manager config --rhsm.manage_repos=1 && subscription-manager repos --enable=rhel-8-for-x86_64-baseos-eus-rpms && subscription-manager refresh && subscription-manager attach --auto
+  shell: subscription-manager config --rhsm.manage_repos=1 && subscription-manager refresh && subscription-manager attach --auto
   when:
     - ansible_distribution == 'RedHat'
     - rhelorg != None or rheluser != None
