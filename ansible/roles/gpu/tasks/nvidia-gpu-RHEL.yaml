@@ -5,7 +5,7 @@
   when:
     - not offline_mode_enabled
 
-- name:
+- name: enable eus repository
   rhsm_repository:
     name: rhel-8-for-x86_64-baseos-eus-rpms
     state: enabled
