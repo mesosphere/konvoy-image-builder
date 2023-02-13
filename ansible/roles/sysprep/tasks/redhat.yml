@@ -95,8 +95,7 @@
     - name: clean local subscription data
       command: subscription-manager clean
   when:
-    - lookup('env', 'RHSM_USER') | length > 0
-    - lookup('env', 'RHSM_PASS') | length > 0
     - ansible_distribution == 'RedHat'
     - "packer_builder_type not in ['amazon']"
     - not offline_mode_enabled
+    - rhelorg != None or rheluser != None

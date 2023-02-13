@@ -53,10 +53,21 @@
           name: sysprep
         when: sysprep # make the finalize process skipable
     rescue:
-      - name: RHEL unsubscribe
-        redhat_subscription:
-          state: absent
+      - name: Remove RHEL subscription
+        block:
+          - name: Remove subscriptions
+            rhsm_repository:
+              name: '*'
+              state: disabled
+          - name: Unregister system
+            redhat_subscription:
+              state: absent
+          - name: clean local subscription data
+            command: subscription-manager clean
         when:
           - ansible_distribution == 'RedHat'
+          - "packer_builder_type not in ['amazon']"
+          - not offline_mode_enabled
+          - rhelorg != None or rheluser != None
 
   environment: "{{ default_env }}"
