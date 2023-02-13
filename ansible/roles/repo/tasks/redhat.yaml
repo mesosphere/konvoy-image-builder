@@ -45,7 +45,7 @@
   shell: subscription-manager config --rhsm.manage_repos=1 && subscription-manager repos --enable=rhel-8-for-x86_64-baseos-eus-rpms && subscription-manager refresh && subscription-manager attach --auto
   when:
     - ansible_distribution == 'RedHat'
-    - rhelorg.subscribed_pool_ids != None or rheluser.subscribed_pool_ids != None
+    - rhelorg != None or rheluser != None
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
