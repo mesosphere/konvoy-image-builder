@@ -1,17 +1,8 @@
 ---
 - set_fact:
    rhsm_user: "{{ lookup('env', 'RHSM_USER' ) | ternary (lookup('env', 'RHSM_USER' ), rhsm_user) }}"
-
-- set_fact:
    rhsm_password: "{{ lookup('env', 'RHSM_PASS' ) | ternary (lookup('env', 'RHSM_PASS' ), rhsm_password) }}"
-
-- set_fact:
    rhsm_activation_key: "{{ lookup('env', 'RHSM_ACTIVATION_KEY' ) | ternary (lookup('env', 'RHSM_ACTIVATION_KEY' ), rhsm_activation_key) }}"
-
-- set_fact:
-   rhsm_activation_key: "{{ lookup('env', 'RHSM_ACTIVATION_KEY' ) | ternary (lookup('env', 'RHSM_ACTIVATION_KEY' ), rhsm_activation_key) }}"
-
-- set_fact:
    rhsm_org_id: "{{ lookup('env', 'RHSM_ORG_ID' ) | ternary (lookup('env', 'RHSM_ORG_ID' ), rhsm_org_id) }}"
 
 - name: RHEL subscription using username and password
