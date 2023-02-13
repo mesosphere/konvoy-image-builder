@@ -64,3 +64,5 @@ offline:
 # subscription manager variables to be secret
 rhsm_user: ""
 rhsm_password: ""
+rhsm_activation_key: ""
+rhsm_org_id: ""
