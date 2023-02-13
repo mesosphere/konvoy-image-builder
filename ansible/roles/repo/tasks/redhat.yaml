@@ -42,7 +42,7 @@
     - rhsm_activation_key | length > 0
 
 - name: RHEL subscription refresh
-  shell: subscription-manager repos --enable=rhel-8-for-x86_64-baseos-eus-rpms && subscription-manager refresh && subscription-manager attach --auto
+  shell: subscription-manager config --rhsm.manage_repos=1 && subscription-manager repos --enable=rhel-8-for-x86_64-baseos-eus-rpms && subscription-manager refresh && subscription-manager attach --auto
   when:
     - ansible_distribution == 'RedHat'
     - rhelorg.subscribed_pool_ids != None or rheluser.subscribed_pool_ids != None
