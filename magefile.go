@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/coreos/go-semver/semver"
@@ -19,10 +20,11 @@ import (
 )
 
 var (
-	wrapperCmd    = "bin/konvoy-image-wrapper"
-	baseURL       = "https://downloads.d2iq.com/dkp"
-	containerdURL = "https://packages.d2iq.com/dkp/containerd"
-	nvidiaURL     = "https://download.nvidia.com/XFree86/Linux-x86_64"
+	wrapperCmd      = "bin/konvoy-image-wrapper"
+	baseURL         = "https://downloads.d2iq.com/dkp"
+	containerdURL   = "https://packages.d2iq.com/dkp/containerd"
+	nvidiaURL       = "https://download.nvidia.com/XFree86/Linux-x86_64"
+	overrideDirName = "overrides"
 )
 
 var (
@@ -101,9 +103,10 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	featureOverrides := getOverridesFromBuildConfig(buildConfig)
 	overrideFlagForCmd := make([]string, 0, len(featureOverrides))
 	for _, override := range featureOverrides {
-		fullOverride := fmt.Sprintf("--overrides=overrides/%s", override)
+		fullOverride := fmt.Sprintf("--overrides=%s/%s", overrideDirName, override)
 		overrideFlagForCmd = append(overrideFlagForCmd, fullOverride)
 	}
+
 	// we need these extra overrides always for ova
 	if buildConfig == offline || buildConfig == offlineNvidia || buildConfig == offlineFIPS || buildInfra == ova {
 		infraOverride := getInfraOverride(buildInfra)
@@ -162,10 +165,20 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		args = append(args, buildInfra)
 	}
 	args = append(args, buildPath)
-	args = append(args, overrideFlagForCmd...)
+	// skip creating image
 	if dryRun {
 		args = append(args, dryRunFlag)
+	} else {
+		releaseOverrideFile, err := getReleaseOverride(buildConfig)
+		if err != nil {
+			return fmt.Errorf("failed to create release override file: %w", err)
+		}
+		overrideFlagForCmd = append(
+			overrideFlagForCmd,
+			fmt.Sprintf("--overrides=%s/%s", overrideDirName, releaseOverrideFile))
 	}
+	args = append(args, overrideFlagForCmd...)
+
 	vmMachine := getVMForBuild(buildInfra, buildConfig)
 	if vmMachine != "" {
 		args = append(args, fmt.Sprintf("--instance-type=%s", vmMachine))
@@ -268,6 +281,35 @@ func getOverridesFromBuildConfig(buildConfig string) []string {
 		return []string{"offline.yaml", "offline-nvidia.yaml"}
 	}
 	return nil
+}
+
+// getReleaseOverride creates temporary release override file
+// The release override file contains metadata about build name that
+// get appended to the final image artifact.
+// The konvoy e2e tests uses the released image by
+// locating the image with kubernetes version and build metadata in the image name
+func getReleaseOverride(buildConfig string) (string, error) {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("error finding current directory: %w", err)
+	}
+	buildNameExtra := "-release"
+	switch buildConfig {
+	case fips, offlineFIPS:
+		// "-fips-release"
+		buildNameExtra = fmt.Sprintf("-fips%s", buildNameExtra)
+	case nvidia, offlineNvidia:
+		// "-nvidia-release"
+		buildNameExtra = fmt.Sprintf("-nvidia%s", buildNameExtra)
+	}
+
+	releaseFile := "release.yaml"
+	releaseOverride := filepath.Join(currentDir, overrideDirName, releaseFile)
+	content := []byte(fmt.Sprintf("---\nbuild_name_extra: %s\n", buildNameExtra))
+	if err := os.WriteFile(releaseOverride, content, 0o644); err != nil {
+		return "", fmt.Errorf("error creating release override file: %w", err)
+	}
+	return releaseFile, nil
 }
 
 func getInfraOverride(buildInfra string) string {
