@@ -1,17 +1,4 @@
 ---
-- name: RHEL subscription
-  redhat_subscription:
-    release: "{{ ansible_distribution_version }}"
-  when:
-    - not offline_mode_enabled
-
-- name: enable eus repository
-  rhsm_repository:
-    name: rhel-8-for-x86_64-baseos-eus-rpms
-    state: enabled
-  when:
-    - not offline_mode_enabled
-
 - name: install kernel {{ hostvars[inventory_hostname].ansible_kernel }} headers and devel
   yum:
     name:

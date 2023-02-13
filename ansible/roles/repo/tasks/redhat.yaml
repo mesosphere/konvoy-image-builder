@@ -5,15 +5,47 @@
 - set_fact:
    rhsm_password: "{{ lookup('env', 'RHSM_PASS' ) | ternary (lookup('env', 'RHSM_PASS' ), rhsm_password) }}"
 
-- name: RHEL subscription
+- set_fact:
+   rhsm_activation_key: "{{ lookup('env', 'RHSM_ACTIVATION_KEY' ) | ternary (lookup('env', 'RHSM_ACTIVATION_KEY' ), rhsm_activation_key) }}"
+
+- set_fact:
+   rhsm_activation_key: "{{ lookup('env', 'RHSM_ACTIVATION_KEY' ) | ternary (lookup('env', 'RHSM_ACTIVATION_KEY' ), rhsm_activation_key) }}"
+
+- set_fact:
+   rhsm_org_id: "{{ lookup('env', 'RHSM_ORG_ID' ) | ternary (lookup('env', 'RHSM_ORG_ID' ), rhsm_org_id) }}"
+
+- name: RHEL subscription using username and password
   redhat_subscription:
     state: present
     username: "{{ rhsm_user }}"
     password: "{{ rhsm_password }}"
     auto_attach: true
     force_register: true
+    release: "{{ ansible_distribution_version }}"
+  register: rheluser
   when:
     - ansible_distribution == 'RedHat'
+    - rhsm_user | length > 0
+    - rhsm_password | length > 0
+
+- name: RHEL subscription using org_id and activationkey
+  redhat_subscription:
+    state: present
+    org_id: "{{ rhsm_org_id }}"
+    activationkey: "{{ rhsm_activation_key }}"
+    force_register: true
+    release: "{{ ansible_distribution_version }}"
+  register: rhelorg
+  when:
+    - ansible_distribution == 'RedHat'
+    - rhsm_org_id | length > 0
+    - rhsm_activation_key | length > 0
+
+- name: RHEL subscription refresh
+  shell: subscription-manager repos --enable=rhel-8-for-x86_64-baseos-eus-rpms && subscription-manager refresh && subscription-manager attach --auto
+  when:
+    - ansible_distribution == 'RedHat'
+    - rhelorg.subscribed_pool_ids != None or rheluser.subscribed_pool_ids != None
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.
 # AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
