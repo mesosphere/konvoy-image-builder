@@ -60,3 +60,9 @@ offline:
   os_packages_local_bundle_file: "{{ os_packages_local_bundle_file }}"
   os_packages_remote_bundle_path: "{{ os_packages_remote_bundle_path }}"
   os_packages_remote_filesystem_repo_path: "{{ os_packages_remote_bundle_path }}/offline-repo/"
+
+# subscription manager variables to be secret
+rhsm_user: ""
+rhsm_password: ""
+rhsm_activation_key: ""
+rhsm_org_id: ""

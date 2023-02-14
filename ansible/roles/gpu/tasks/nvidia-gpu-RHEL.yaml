@@ -1,4 +1,9 @@
 ---
+- name: enable RHEL 8 repos
+  shell: subscription-manager repos --enable=rhel-8-for-x86_64-baseos-eus-rpms 
+  when:
+    - rhelorg != None or rheluser != None
+    - ansible_distribution_major_version == '8'
 
 - name: install kernel {{ hostvars[inventory_hostname].ansible_kernel }} headers and devel
   yum:
