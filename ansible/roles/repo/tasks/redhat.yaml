@@ -41,6 +41,28 @@
   when:
     - ansible_distribution_major_version == '8'
 
+# The epel repo files installed from alma linux contain variable "$releasever".
+# This variable may not get properly replaced in all environments.
+# Replace it with the minor version "8" (similar to what upstream does).
+# see https://access.redhat.com/discussions/5473561?page=2
+- name: find epel-release repo files
+  find:
+    depth: 1
+    paths: /etc/yum.repos.d
+    patterns: 'epel*.repo'
+  register: epel_repo_files
+  when:
+    - ansible_distribution_major_version == '8'
+
+- name: set $releasever variables in epel-release repo files
+  replace:
+    path: "{{ item.path }}"
+    regexp: '\$releasever'
+    replace: '8'
+  loop: "{{ epel_repo_files.files }}"
+  when:
+    - ansible_distribution_major_version == '8'
+
 - name: add epel gpg key for centos 7
   rpm_key:
     state: present
