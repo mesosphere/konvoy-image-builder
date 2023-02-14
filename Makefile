@@ -22,18 +22,6 @@ INVENTORY_FILE ?= $(REPO_ROOT_DIR)/inventory.yaml
 COMMA:=,
 
 export CGO_ENABLED=0
-# find go version from go.mod file. sed -n "s|^go\s*\(\S*\).*/\1|p" go.mod
-# -n     suppress printing
-# s      substitute
-# |      deliminater
-# ^go    anything before 'go' and match 'go'
-# \s*    any white space character (space)
-# \(     start capture group
-# \S*    capture any non-white space character (word)
-# \)     end capture group
-# .*    anything after the capture group
-# \1     substitute everything with the 1st capture group
-# p      print it
 export GO_VERSION := $(shell cat go.mod | grep "go " -m 1 | cut -d " " -f 2)
 GOLANG_IMAGE := golang:$(GO_VERSION)
 ARCH := $(shell uname -m)
