@@ -49,8 +49,10 @@
   register: network_profiles_sysconfig
   changed_when: false
 
+# HWADDR|UUID are needed for CentoOS7 and RHEL
+# IPADDR|GATEWAY|DNS1 are also needed for Oracle7
 - name: Reset network interface IDs for RHEL at /etc/sysconfig/network-scripts/
-  shell: sed -i '/^\(HWADDR\|UUID\)=/d' "{{item}}"
+  shell: sed -i '/^\(HWADDR\|UUID\|IPADDR\|GATEWAY\|DNS1\)=/d' "{{item}}"
   with_items: "{{  network_profiles_sysconfig.files | map(attribute='path') | list }}"
 
 # NetworkManager stores new network profiles in keyfile format in the
@@ -60,6 +62,11 @@
 # in this directory (/etc/sysconfig/network-scripts/). However, the ifcfg
 # format is deprecated. By default, NetworkManager no longer creates
 # new profiles in this format.
+#
+# We needed to also remove IPADDR,GATEWAY,DNS1 in the previous task.
+# This task may need similar changes but we did not want to make those changes without having an environment to test in
+# See the following docs for a list of available config options:
+# https://developer-old.gnome.org/NetworkManager/stable/nm-settings-keyfile.html#:~:text=The%20keyfile%20plugin%20is%20the,NetworkManager%2Fsystem%2Dconnections%2F%20
 - name: find network profiles at /etc/NetworkManager/system-connections
   find:
     paths: "/etc/NetworkManager/system-connections"
