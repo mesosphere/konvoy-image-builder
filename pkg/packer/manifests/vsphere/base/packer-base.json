@@ -5,7 +5,7 @@
         "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
         "cluster": "",
         "datastore": "",
-        "disk_size": "20480",
+        "disk_size": "81920",
         "export_manifest": "none",
         "folder": "",
         "guest_os_type": null,
