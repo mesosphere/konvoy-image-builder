@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.0.0...v2.1.0) (2023-02-15)
+
+
+### Features
+
+* update Containerd to 1.6.17 ([#678](https://github.com/mesosphere/konvoy-image-builder/issues/678)) ([c02ecff](https://github.com/mesosphere/konvoy-image-builder/commit/c02ecff5e944401d7b80293803990332d0490941))
+
+
+### Bug Fixes
+
+* epel repos not working with some RHEL images ([#676](https://github.com/mesosphere/konvoy-image-builder/issues/676)) ([aae136a](https://github.com/mesosphere/konvoy-image-builder/commit/aae136ace042646242d40207a6f09b2f57ee26f5))
+* netwmanager config for OracleLinux 7 ([#682](https://github.com/mesosphere/konvoy-image-builder/issues/682)) ([c765083](https://github.com/mesosphere/konvoy-image-builder/commit/c76508303c7bbc90b92bfd40049f62beb00ca941))
+* set default OVA disk size to 80GB ([#683](https://github.com/mesosphere/konvoy-image-builder/issues/683)) ([b1c3bc8](https://github.com/mesosphere/konvoy-image-builder/commit/b1c3bc874c9e59f8455771e6d8a4854ba713eaf2))
+* use subscription manager to get kernel headers ([#675](https://github.com/mesosphere/konvoy-image-builder/issues/675)) ([ce0b0c8](https://github.com/mesosphere/konvoy-image-builder/commit/ce0b0c8982bafd0fd837b53ed83d28e4bd329190))
+
 ## [2.0.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.0.0...v2.0.0) (2023-02-08)
 
 
