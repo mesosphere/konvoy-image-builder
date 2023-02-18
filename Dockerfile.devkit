@@ -110,6 +110,14 @@ RUN apk add --no-cache \
         --requirement /tmp/requirements-devkit.txt \
     && rm -rf \
         /root/.cache
+RUN mkdir -p /usr/share/ansible/collections \
+    && ansible-galaxy \
+    collection install \
+    community.general \
+    ansible.netcommon \
+    ansible.posix \
+    ansible.utils \
+    -p /usr/share/ansible/collections
 
 # hadolint ignore=DL4006
 RUN  curl -Lf https://github.com/mesosphere/mindthegap/releases/download/v"${MINDTHEGAP_VERSION}"/mindthegap_v"${MINDTHEGAP_VERSION}"_linux_amd64.tar.gz |tar xzf - -C /usr/local/bin
@@ -146,10 +154,6 @@ RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
             && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
         rm -rf /tmp/docker.group*; \
     fi
-
-# this is needed for containerd tar
-# place it in /usr/share/ansible/collections, the container will be run with a different user
-RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
 
 # hadolint ignore=DL3059
 RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN="$(cat /run/secrets/githubtoken)" export PACKER_GITHUB_API_TOKEN && \
