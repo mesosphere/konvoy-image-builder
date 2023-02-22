@@ -83,3 +83,4 @@ jobs:
           VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
+          VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
