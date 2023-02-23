@@ -16,6 +16,7 @@
   get_url:
     url: https://sdk.cloud.google.com/
     dest: /tmp/install-gcloud.sh
+    force: true
     mode: 0700
 
 - name: Clean existing gcloud SDK content & directory
