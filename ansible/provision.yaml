@@ -52,7 +52,7 @@
       - import_role:
           name: sysprep
         when: sysprep # make the finalize process skipable
-    rescue:
+    always:
       - name: Remove RHEL subscription
         block:
           - name: Remove subscriptions
