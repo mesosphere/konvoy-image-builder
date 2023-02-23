@@ -25,6 +25,7 @@ RUN apk add --no-cache \
         py3-wheel \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
+# Managing the below ansible dependencies is covered in docs/dev/ansible-modules.md
 RUN mkdir -p /usr/share/ansible/collections \
     && ansible-galaxy \
     collection install \
