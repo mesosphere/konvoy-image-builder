@@ -20,6 +20,7 @@
     url: https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution }}/x86_64/cuda-{{ distribution }}.pin
     dest: /etc/apt/preferences.d/cuda-repository-pin-600
     mode: '0644'
+    force: true
   retries: 3
   delay: 3
 
@@ -66,6 +67,7 @@
     url: https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list
     dest: /etc/apt/sources.list.d/nvidia-docker.list
     mode: '0644'
+    force: true
   retries: 3
   delay: 3
 

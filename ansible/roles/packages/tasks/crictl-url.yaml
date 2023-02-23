@@ -7,6 +7,7 @@
     checksum: "sha256:{{ crictl_sha256 }}"
     dest: /tmp/crictl.tar.gz
     mode: 0600
+    force: true
 
 - name: Create "{{ sysusrlocal_prefix }}/bin" directory
   changed_when: False

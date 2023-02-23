@@ -39,6 +39,7 @@
     url: "{{ nvidia_runfile_installer_url }}"
     dest: "{{ runfile_dir.path }}/{{ nvidia_runfile_installer }}"
     mode: 0755
+    force: true
   retries: 3
   delay: 3
 
