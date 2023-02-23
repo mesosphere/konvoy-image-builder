@@ -11,8 +11,14 @@ fi
 cat "${SSH_PUBLIC_KEY_FILE}" > "${SCRIPT_DIR}"/linux/authorized_keys
 
 PACKER_FILE=packer-base.json
+OS_VARS_FILE_ARG="-var-file=${SCRIPT_DIR}/${BASE_OS}-base.json -var-file=${SCRIPT_DIR}/vsphere-base.json"
 if [[ "${BASE_OS}" == ubuntu* ]]; then
   PACKER_FILE=packer-ubuntu-base.json
 fi
 
-packer build -var-file "${SCRIPT_DIR}"/"${BASE_OS}"-base.json -var-file "${SCRIPT_DIR}"/vsphere-base.json -on-error=abort "${SCRIPT_DIR}"/"${PACKER_FILE}"
+if [[ "${BASE_OS}" == rocky* ]]; then
+  PACKER_FILE=rockylinux.pkr.hcl
+  OS_VARS_FILE_ARG="-var-file=${SCRIPT_DIR}/${BASE_OS}-base.pkrvars.hcl"
+fi
+
+packer build ${OS_VARS_FILE_ARG}  -on-error=abort "${SCRIPT_DIR}"/"${PACKER_FILE}"

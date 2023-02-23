@@ -14,7 +14,7 @@ variable "vsphere_user" {
 
 variable "cluster" {
   type    = string
-  default = ""
+  default = env("VSPHERE_CLUSTER")
 }
 
 variable "cpu" {
@@ -29,7 +29,7 @@ variable "cpu_cores" {
 
 variable "datastore" {
   type    = string
-  default = ""
+  default = env("VSPHERE_DATASTORE")
 }
 
 
@@ -74,12 +74,12 @@ variable "insecure_connection" {
 
 variable "iso_url" {
   type    = string
-  default = ""
+  default = env("ISO_URL")
 }
 
 variable "iso_checksum" {
   type    = string
-  default = "none"
+  default = env("ISO_SHA256_CHECKSUM")
 }
 
 variable "memory" {
@@ -99,7 +99,7 @@ variable "ssh_timeout" {
 
 variable "ssh_username" {
   type    = string
-  default = ""
+  default = env("SSH_USERNAME")
 }
 
 variable "vcenter_server" {
@@ -117,16 +117,20 @@ variable "vsphere_password" {
   default = "${env("VSPHERE_PASSWORD")}"
 }
 
-variable "network" {}
+variable "network" {
+  default = env("VSPHERE_NETWORK")
+}
 variable "resource_pool" {
-  default = null
+  default = env("VSPHERE_RESOURCE_POOL")
 }
 
 variable "build_name" {
   default = "rockylinux-base"
 }
 
-variable "datacenter" {}
+variable "datacenter" {
+  default=env("VSPHERE_DATACENTER")
+}
 
 variable "distro_arch" {
   default = ""
@@ -145,12 +149,12 @@ variable "os_iso_path" {
 
 variable "private_key_path" {
   type    = string
-  default = ""
+  default = env("SSH_PRIVATE_KEY_FILE")
 }
 
 variable "public_key_contents" {
   type    = string
-  default = ""
+  default = env("SSH_PUBLIC_KEY_CONTENTS")
 }
 # "timestamp" template function replacement
 locals {
@@ -207,7 +211,7 @@ source "vsphere-iso" "base-template" {
   ssh_username                 = "${var.ssh_username}"
   username                     = "${var.vsphere_user}"
   vcenter_server               = "${var.vcenter_server}"
-  vm_name                      = "base-base-9.1"
+  vm_name                      = "base-rocky-9.1"
 
   create_snapshot     = true
   convert_to_template = true
