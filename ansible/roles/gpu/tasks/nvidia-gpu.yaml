@@ -52,6 +52,7 @@
   get_url:
     url: "{{ nvidia_runfile_installer_url }}"
     dest: "{{ nvidia_remote_bundle_path }}/{{ nvidia_runfile_installer }}"
+    force: true
     mode: 711
   when:
    - not offline_mode_enabled

@@ -31,6 +31,7 @@
       checksum: "{{ kubernetes_cni_http_checksum }}"
       dest: /tmp/cni.tar.gz
       mode: 0755
+      force: true
       owner: root
       group: root
 
