@@ -20,6 +20,7 @@
     url: "{{ containerd_base_url }}/{{ containerd_tar_file }}"
     dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
     mode: 0600
+    force: true
   when:
     - not containerd_tar_file_exists.stat.exists
 
