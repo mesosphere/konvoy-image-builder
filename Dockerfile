@@ -25,6 +25,15 @@ RUN apk add --no-cache \
         py3-wheel \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
+# Managing the below ansible dependencies is covered in docs/dev/ansible-modules.md
+RUN mkdir -p /usr/share/ansible/collections \
+    && ansible-galaxy \
+    collection install \
+    community.general \
+    ansible.netcommon \
+    ansible.posix \
+    ansible.utils \
+    -p /usr/share/ansible/collections
 
 ARG BUILDARCH
 # we copy this to remote hosts to execute GOSS
@@ -40,10 +49,6 @@ COPY bin/konvoy-image-${BUILDARCH} /usr/local/bin/konvoy-image
 COPY images /root/images
 COPY ansible /root/ansible
 COPY packer /root/packer
-
-# this is needed for containerd tar
-# place it in /usr/share/ansible/collections, the container will be run with a different user
-RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
 
 WORKDIR /root
 ENTRYPOINT ["/usr/local/bin/konvoy-image"]

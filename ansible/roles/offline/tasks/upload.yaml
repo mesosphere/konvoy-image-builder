@@ -10,9 +10,12 @@
 
 - name: Set containerd_tar_file
   set_fact:
-    # we need os_release.ID because d2iqs containerd tars are released with using /etc/os-release for determining OS
-    # distribution_version is used instead of an os_release fact because centos 7 does not include minor version
-    # in VERSION_ID and ansible_distribution_version does get the minor version
+    # Notes
+    # 1. Containerd artifact filenames use the ID value in /etc/os-release. Because this value is not available in
+    # the builtin ansible_facts, we use a module to populate this value into os_release.ID.
+    # 2. Containerd artifact filenames use the major and minor OS version. On CentOS 7, the minor version is not
+    # available in the VERSION_ID value in /etc/os-release. Instead, we use ansible_distribution_version, which contains
+    # the major and minor version for every OS.
     containerd_tar_file: "containerd-{{ containerd_version }}-d2iq.1-{{ os_release.ID }}-{{ ansible_distribution_version }}-{{ ansible_architecture }}{{ '_fips' if fips.enabled else '' }}.tar.gz"
 
 - block:
