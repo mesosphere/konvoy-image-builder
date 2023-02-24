@@ -89,7 +89,7 @@ jobs:
         - os: "rocky 9.1"
           buildConfig: offline-nvidia
     runs-on: self-hosted
-    continue-on-error: true
+    continue-on-error: false
     if: |
       github.event_name == 'pull_request' &&
       (

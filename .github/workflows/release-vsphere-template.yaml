@@ -22,7 +22,7 @@ jobs:
           - os: "rocky 9.1"
             buildConfig: "offline"
     runs-on: self-hosted
-    continue-on-error: true
+    continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
