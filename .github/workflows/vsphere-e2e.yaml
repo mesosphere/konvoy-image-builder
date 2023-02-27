@@ -19,8 +19,6 @@ jobs:
         - "redhat 7.9"
         - "redhat 8.4"
         - "redhat 8.6"
-        - "ubuntu 20.04"
-        - "rocky 9.1"
         buildConfig:
         - "offline"
         - "offline-fips"
@@ -84,4 +82,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
           VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
-          VSPHERE_DATACENTER: dc1

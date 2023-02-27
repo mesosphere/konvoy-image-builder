@@ -37,6 +37,8 @@ jobs:
             buildConfig: "offline-fips"
           - os: "rocky 9.1"
             buildConfig: "offline"
+          - os: "rocky 9.1"
+            buildConfig: "offline-fips"
           - os: "sles 15"
             buildConfig: "basic"
           - os: "ubuntu 20.04"

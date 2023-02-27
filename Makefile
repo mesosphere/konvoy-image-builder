@@ -155,6 +155,9 @@ ifneq ($(shell command -v docker),)
 	endif
 endif
 
+include make/ci.mk
+include make/images.mk
+
 # envsubst
 # ---------------------------------------------------------------------
 export ENVSUBST_VERSION ?= v1.2.0
@@ -171,10 +174,12 @@ $(ENVSUBST_ASSETS)/envsubst:
 	curl -Lf $(ENVSUBST_URL) -o $(ENVSUBST_ASSETS)/envsubst
 	chmod +x $(ENVSUBST_ASSETS)/envsubst
 
-
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
+
+github-token.txt:
+	echo $(GITHUB_TOKEN) >> github-token.txt
 
 BUILD_FLAGS := \
 		--build-arg USER_ID=$(UID) \
@@ -183,7 +188,7 @@ BUILD_FLAGS := \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
 		--build-arg BUILDARCH=$(BUILDARCH) \
-		--platform linux/$(BUILDARCH) \
+		--tag "$(DOCKER_DEVKIT_IMG)" \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
@@ -192,21 +197,10 @@ ifneq ($(strip $(GITHUB_ACTION)),)
 	BUILD_FLAGS := $(BUILD_FLAGS) $(SECRET_FLAG)
 endif
 
-github-token.txt:
-	echo $(GITHUB_TOKEN) >> github-token.txt
-
-.PHONY: buildx
-buildx:
-buildx:
-	 docker buildx create --use --name=konvoy-image-builder || true
-	 docker run --privileged --rm tonistiigi/binfmt --install all || true
-
-
-$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt buildx
+$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
-		docker buildx build \
+	DOCKER_BUILDKIT=1 docker build \
 		$(BUILD_FLAGS) \
-		--output="type=docker,push=false,name=docker.io/$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
 	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
