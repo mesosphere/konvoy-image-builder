@@ -433,7 +433,7 @@ release: ## goreleaser --rm-dist
 .PHONY: release-snapshot
 release-snapshot: ## goreleaser --snapshot --rm-dist
 	$(call print-target)
-	goreleaser release --snapshot --skip-publish --rm-dist
+	goreleaser release --snapshot --skip-publish --rm-dist --debug
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches
