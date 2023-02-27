@@ -433,7 +433,7 @@ release: ## goreleaser --rm-dist
 .PHONY: release-snapshot
 release-snapshot: ## goreleaser --snapshot --rm-dist
 	$(call print-target)
-	goreleaser release --snapshot --skip-publish --rm-dist --debug
+	goreleaser release --snapshot --skip-publish --rm-dist  --debug
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches
@@ -460,6 +460,7 @@ release-bundle-GOOS:
 	tar -C "$(REPO_ROOT_DIR)/dist/bundle" -czf "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS).tar.gz" "konvoy-image-bundle-$(REPO_REV)_$(GOOS)"
 
 cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
+	docker images
 	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
