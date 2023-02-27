@@ -524,7 +524,7 @@ release:
 release: 
 	# we need to redefine DOCKER_DEVKIT_IMG because its only evaluated once in the makefile
 	$(call print-target)
-	./hack/release.sh --push
+	goreleaser --parallelism=1 --rm-dist --debug
 
 .PHONY: release-snapshot
 release-snapshot:
