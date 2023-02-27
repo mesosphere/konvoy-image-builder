@@ -217,7 +217,7 @@ endif
 
 $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
-	docker build \
+	DOCKER_BUILDKIT=1 docker build \
 		$(BUILD_FLAGS) \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
