@@ -161,8 +161,6 @@ locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
 
-data "sshkey" "install" {}
-
 source "vsphere-iso" "base-template" {
   CPUs                         = var.cpu
   RAM                          = var.memory
