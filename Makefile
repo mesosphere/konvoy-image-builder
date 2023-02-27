@@ -175,11 +175,28 @@ endif
 
 include make/ci.mk
 include make/images.mk
+
+# envsubst
+# ---------------------------------------------------------------------
+export ENVSUBST_VERSION ?= v1.2.0
+export ENVSUBST_URL = https://github.com/a8m/envsubst/releases/download/$(ENVSUBST_VERSION)/envsubst-$(shell uname -s)-$(shell uname -m)
+export ENVSUBST_ASSETS ?= $(CURDIR)/.local/envsubst/${ENVSUBST_VERSION}
+
+.PHONY: install-envsubst
+install-envsubst: ## install envsubst binary
+install-envsubst: $(ENVSUBST_ASSETS)/envsubst
+
+$(ENVSUBST_ASSETS)/envsubst:
+	$(call print-target,install-envsubst)
+	mkdir -p $(ENVSUBST_ASSETS)
+	curl -Lf $(ENVSUBST_URL) -o $(ENVSUBST_ASSETS)/envsubst
+	chmod +x $(ENVSUBST_ASSETS)/envsubst
+
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
-$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
+$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 	docker build \
 		--build-arg USER_ID=$(UID) \
 		--build-arg GROUP_ID=$(GID) \
