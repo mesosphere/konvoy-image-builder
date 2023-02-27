@@ -44,6 +44,11 @@ jobs:
       - name: Setup buildkit
         uses: docker/setup-buildx-action@v2
 
+      - name: create docker image file
+        run: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
+        env:
+          DOCKER_CLI_EXPERIMENTAL: "enabled"
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
       - name: Release
         run: make release
         env:
