@@ -3,14 +3,23 @@
 # - Creates github release
 # - Signs mac-os binary and reuploads artifacts to the github release
 # - Bumps KIB version in mesosphere/cluster-api-provider-preprovisioned repository
+---
+# Create konvoy-image-builder release when a tag is created.
+# - Creates github release
+# - Signs mac-os binary and reuploads artifacts to the github release
+# - Bumps KIB version in mesosphere/cluster-api-provider-preprovisioned repository
 on:
   workflow_dispatch:
   push:
     tags:
       - 'v*'
+      - 'v*'
 
 name: Release konvoy-image-builder
+name: Release konvoy-image-builder
 jobs:
+  release-to-github:
+    runs-on: self-hosted
   release-to-github:
     runs-on: self-hosted
     steps:
@@ -22,6 +31,8 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
+          go-version-file: 'go.mod'
+          cache: true
           go-version-file: 'go.mod'
           cache: true
 
@@ -38,7 +49,11 @@ jobs:
       - name: Setup buildkit
         uses: docker/setup-buildx-action@v2
 
+      - name: Setup buildkit
+        uses: docker/setup-buildx-action@v2
+
       - name: Release
+        run: make release
         run: make release
         env:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
@@ -47,7 +62,9 @@ jobs:
   bump-kib:
     runs-on: ubuntu-latest
     needs: release-to-github
+    needs: release-to-github
     steps:
+      - name: Checkout mesosphere/cluster-api-provider-preprovisioned repository
       - name: Checkout mesosphere/cluster-api-provider-preprovisioned repository
         uses: actions/checkout@v3
         with:
@@ -56,15 +73,23 @@ jobs:
           path: cluster-api-provider-preprovisioned
           fetch-depth: 0
 
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'cluster-api-provider-preprovisioned/go.mod'
+          cache: true
+
       - name: Track default github workspace as safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+      - name: Update Konvoy-image-builder version in mesosphere/cluster-api-provider-preprovisioned repository
       - name: Update Konvoy-image-builder version in mesosphere/cluster-api-provider-preprovisioned repository
         run: make update-kib
         working-directory: cluster-api-provider-preprovisioned
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
 
+      - name: Create Pull Request in mesosphere/cluster-api-provider-preprovisioned for Konvoy-image-builder version update
       - name: Create Pull Request in mesosphere/cluster-api-provider-preprovisioned for Konvoy-image-builder version update
         uses: peter-evans/create-pull-request@v4
         with:
@@ -77,16 +102,20 @@ jobs:
 
   sign-macos-binary:
     needs: release-to-github
+  sign-macos-binary:
+    needs: release-to-github
     runs-on: macos-latest
     env:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
     steps:
+      - name: Checkout konvoy-image-builder repository
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
         with:
           ref: main
           fetch-depth: 0
 
+      - uses: dsaltares/fetch-gh-release-asset@1.1.0
       - uses: dsaltares/fetch-gh-release-asset@1.1.0
         with:
           version: "tags/${{ github.ref_name }}"
@@ -137,6 +166,7 @@ jobs:
           security delete-keychain "${{ env.KEYCHAIN }}".keychain
 
       - name: Get checksum file
+        uses: dsaltares/fetch-gh-release-asset@1.1.0
         uses: dsaltares/fetch-gh-release-asset@1.1.0
         with:
           version: "tags/${{ github.ref_name }}"
