@@ -196,15 +196,29 @@ include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
-$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
-	docker build \
+github-token.txt:
+	echo $(GITHUB_TOKEN) >> github-token.txt
+
+BUILD_FLAGS := \
 		--build-arg USER_ID=$(UID) \
 		--build-arg GROUP_ID=$(GID) \
 		--build-arg USER_NAME=$(USER_NAME) \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
-		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+		--build-arg BUILDARCH=$(BUILDARCH) \
 		--tag "$(DOCKER_DEVKIT_IMG)" \
+		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+
+SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
+
+ifneq ($(strip $(GITHUB_ACTION)),)
+	BUILD_FLAGS := $(BUILD_FLAGS) $(SECRET_FLAG)
+endif
+
+$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
+$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
+	docker build \
+		$(BUILD_FLAGS) \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
