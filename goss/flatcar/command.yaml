@@ -1,0 +1,11 @@
+command:
+  version:
+    exit-status: 0
+    exec: "kubeadm version -o short"
+    # update this when we change kubernetes version to `
+    stdout:
+      - v1.25.4
+    stderr: []
+    timeout: 10000 # in milliseconds
+    skip: false
+
