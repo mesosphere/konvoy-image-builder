@@ -175,19 +175,50 @@ endif
 
 include make/ci.mk
 include make/images.mk
+
+# envsubst
+# ---------------------------------------------------------------------
+export ENVSUBST_VERSION ?= v1.2.0
+export ENVSUBST_URL = https://github.com/a8m/envsubst/releases/download/$(ENVSUBST_VERSION)/envsubst-$(shell uname -s)-$(shell uname -m)
+export ENVSUBST_ASSETS ?= $(CURDIR)/.local/envsubst/${ENVSUBST_VERSION}
+
+.PHONY: install-envsubst
+install-envsubst: ## install envsubst binary
+install-envsubst: $(ENVSUBST_ASSETS)/envsubst
+
+$(ENVSUBST_ASSETS)/envsubst:
+	$(call print-target,install-envsubst)
+	mkdir -p $(ENVSUBST_ASSETS)
+	curl -Lf $(ENVSUBST_URL) -o $(ENVSUBST_ASSETS)/envsubst
+	chmod +x $(ENVSUBST_ASSETS)/envsubst
+
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
-$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
-	docker build \
+github-token.txt:
+	echo $(GITHUB_TOKEN) >> github-token.txt
+
+BUILD_FLAGS := \
 		--build-arg USER_ID=$(UID) \
 		--build-arg GROUP_ID=$(GID) \
 		--build-arg USER_NAME=$(USER_NAME) \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
-		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+		--build-arg BUILDARCH=$(BUILDARCH) \
 		--tag "$(DOCKER_DEVKIT_IMG)" \
+		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
+
+SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
+
+ifneq ($(strip $(GITHUB_ACTION)),)
+	BUILD_FLAGS := $(BUILD_FLAGS) $(SECRET_FLAG)
+endif
+
+$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
+$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
+	DOCKER_BUILDKIT=1 docker build \
+		$(BUILD_FLAGS) \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
