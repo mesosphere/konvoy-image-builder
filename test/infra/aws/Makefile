@@ -37,7 +37,7 @@ infra.aws.create: install-terraform infra.aws.init
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/aws plan
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/aws apply -auto-approve
 
-packer-aws-offline-override.yaml: infra.aws.create
+packer-aws-offline-override.yaml: infra.aws.create install-envsubst
 	@$(TEST_INFRA_STATE_DIR)/aws/export.sh $@
 
 .PHONY: infra.aws.destroy
