@@ -227,7 +227,7 @@ $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
 $(DOCKER_PHONY_FILE): Dockerfile
-	DOCKER_BUILDKIT=1 docker build \
+	docker build \
 		--file $(REPO_ROOT_DIR)/Dockerfile \
 		--tag "$(DOCKER_IMG)" \
 		$(REPO_ROOT_DIR) \
