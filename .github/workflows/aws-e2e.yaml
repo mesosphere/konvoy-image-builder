@@ -114,7 +114,7 @@ jobs:
         with:
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
-      
+
       - name: Login to D2iQ's Mirror Registry
         uses: docker/login-action@v2
         with:
@@ -140,3 +140,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           RHSM_USER: ${{ secrets.RHSM_USER }}
           RHSM_PASS: ${{ secrets.RHSM_PASS }}
+
+      - name: Run make destroy to clean up failed tests
+        if: ${{ always() }}
+        run: make infra.aws.destroy || true
