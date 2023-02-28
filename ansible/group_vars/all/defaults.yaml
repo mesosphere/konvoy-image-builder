@@ -58,7 +58,7 @@ aws_images: []
 
 extra_images: []
 
-containerd_supplementary_images: ["docker.io/mesosphere/toml-merge:v0.1.0"]
+containerd_supplementary_images: ["ghcr.io/mesosphere/toml-merge:v0.2.0", "ghcr.io/mesosphere/dynamic-credential-provider:v0.2.0"]
 
 containerd_base_url: https://packages.d2iq.com/dkp/containerd
 kubernetes_http_source: https://dl.k8s.io/release
