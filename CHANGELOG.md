@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.1.0...v2.2.0) (2023-02-27)
+
+
+### Features
+
+* Install only required ansible collections  ([#684](https://github.com/mesosphere/konvoy-image-builder/issues/684)) ([2127691](https://github.com/mesosphere/konvoy-image-builder/commit/2127691d3db07eaa25be7219e89fa2d2e5f12913))
+
+
+### Bug Fixes
+
+* set force = true and update k8s http source ([#692](https://github.com/mesosphere/konvoy-image-builder/issues/692)) ([98bad43](https://github.com/mesosphere/konvoy-image-builder/commit/98bad437cc5e73ef4b145a3a7e9c50fc434a3cba))
+* Use always section instead of rescue to remove RHEL subscription ([#690](https://github.com/mesosphere/konvoy-image-builder/issues/690)) ([3729abe](https://github.com/mesosphere/konvoy-image-builder/commit/3729abe32c4eb07ba27ba6b29d87cc637d2128db))
+
 ## [2.1.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.0.0...v2.1.0) (2023-02-15)
 
 
