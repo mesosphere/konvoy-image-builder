@@ -45,7 +45,7 @@ jobs:
           password: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Release
-        run: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz && make release-snapshot
+        run: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz && make release
         env:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
