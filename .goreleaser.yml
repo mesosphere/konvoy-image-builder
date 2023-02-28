@@ -66,6 +66,7 @@ builds:
 dockers:
   - dockerfile: Dockerfile.devkit
     id: docker-devkit
+    use: buildx
     image_templates:
       - 'mesosphere/konvoy-image-builder:v{{ trimprefix .Version "v" }}-devkit'
     build_flag_templates:

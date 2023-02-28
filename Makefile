@@ -207,6 +207,7 @@ BUILD_FLAGS := \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
 		--build-arg BUILDARCH=$(BUILDARCH) \
 		--tag "$(DOCKER_DEVKIT_IMG)" \
+		--platform linux/amd64 \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
 
 SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
@@ -217,10 +218,11 @@ endif
 
 $(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
 $(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
-	DOCKER_BUILDKIT=1 docker build \
+	docker buildx build \
 		$(BUILD_FLAGS) \
+		--output="type=docker,push=false,name=docker.io/$(DOCKER_DEVKIT_IMG),dest=/tmp/img.tar" \
 		$(REPO_ROOT_DIR) \
-	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
+	&& docker load --input /tmp/img.tar && rm /tmp/img.tar && touch $(DOCKER_DEVKIT_PHONY_FILE) && docker images
 
 $(DOCKER_PHONY_FILE): $(DOCKER_DEVKIT_PHONY_FILE)
 $(DOCKER_PHONY_FILE): konvoy-image-linux
@@ -431,7 +433,7 @@ release: ## goreleaser --rm-dist
 .PHONY: release-snapshot
 release-snapshot: ## goreleaser --snapshot --rm-dist
 	$(call print-target)
-	goreleaser release --snapshot --skip-publish --rm-dist
+	goreleaser release --snapshot --skip-publish --rm-dist  --parallelism=1
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches
@@ -458,6 +460,7 @@ release-bundle-GOOS:
 	tar -C "$(REPO_ROOT_DIR)/dist/bundle" -czf "$(REPO_ROOT_DIR)/dist/bundle/konvoy-image-bundle-$(REPO_REV)_$(GOOS).tar.gz" "konvoy-image-bundle-$(REPO_REV)_$(GOOS)"
 
 cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: $(DOCKER_PHONY_FILE)
+	docker images
 	docker save $(DOCKER_IMG) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 release-bundle: cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
