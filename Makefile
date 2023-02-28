@@ -196,29 +196,15 @@ include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
-github-token.txt:
-	echo $(GITHUB_TOKEN) >> github-token.txt
-
-BUILD_FLAGS := \
+$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit
+	docker build \
 		--build-arg USER_ID=$(UID) \
 		--build-arg GROUP_ID=$(GID) \
 		--build-arg USER_NAME=$(USER_NAME) \
 		--build-arg GROUP_NAME=$(GROUP_NAME) \
 		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
-		--build-arg BUILDARCH=$(BUILDARCH) \
 		--tag "$(DOCKER_DEVKIT_IMG)" \
 		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
-
-SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
-
-ifneq ($(strip $(GITHUB_ACTION)),)
-	BUILD_FLAGS := $(BUILD_FLAGS) $(SECRET_FLAG)
-endif
-
-$(DOCKER_DEVKIT_PHONY_FILE): github-token.txt
-$(DOCKER_DEVKIT_PHONY_FILE): Dockerfile.devkit install-envsubst
-	DOCKER_BUILDKIT=1 docker build \
-		$(BUILD_FLAGS) \
 		$(REPO_ROOT_DIR) \
 	&& touch $(DOCKER_DEVKIT_PHONY_FILE)
 
@@ -426,12 +412,12 @@ diff: ## git diff
 .PHONY: release
 release: ## goreleaser --rm-dist
 	$(call print-target)
-	goreleaser --parallelism=1 --rm-dist --debug
+	goreleaser --parallelism=1 --rm-dist
 
 .PHONY: release-snapshot
 release-snapshot: ## goreleaser --snapshot --rm-dist
 	$(call print-target)
-	goreleaser release --snapshot --skip-publish --rm-dist
+	goreleaser release --parallelism=1 --snapshot --skip-publish --rm-dist
 
 .PHONY: go-clean
 go-clean: ## go clean build, test and modules caches
