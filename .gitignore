@@ -69,6 +69,5 @@ packer-custom-vpc-override.yaml
 packer-vsphere-airgap.yaml
 vsphere-tests.pem
 authorized_keys
+.local/
 github-token.txt
-.local
-/overrides/release.yaml
