@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.0...v2.2.1) (2023-03-01)
+
+
+### Bug Fixes
+
+* fallback to ansible_user_id when using root user ([#701](https://github.com/mesosphere/konvoy-image-builder/issues/701)) ([6ae7883](https://github.com/mesosphere/konvoy-image-builder/commit/6ae7883031c7caca58db47974571001d056594fc))
+* skip subscribing ([#704](https://github.com/mesosphere/konvoy-image-builder/issues/704)) ([2520a2c](https://github.com/mesosphere/konvoy-image-builder/commit/2520a2c59cf9cc5f9c1cbe76e87d0d2a24bc4a35))
+
 ## [2.2.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.1.0...v2.2.0) (2023-02-27)
 
 
