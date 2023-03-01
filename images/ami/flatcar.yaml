@@ -4,8 +4,8 @@ packer:
   # Selectors for source AMI:
   ami_filter_name: "Flatcar*stable*"
   ami_filter_owners: "075585003325"
-  # Flatcar-3033.2.0 LTS
-  source_ami: "ami-0e7e21b47b0e90b22" 
+  # Flatcar-lts-3033.3.7-hvm
+  source_ami: "ami-0f9a215a1195261ca" 
   # Tags applied to generated AMI:
   distribution: "Flatcar"
   distribution_version: "Stable"
