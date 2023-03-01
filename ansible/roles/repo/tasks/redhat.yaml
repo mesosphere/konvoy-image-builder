@@ -37,7 +37,7 @@
     msg: "WARN: Your system is not using subscription manager fetching packages such as kernel-headers might fail"
   when:
     - ansible_distribution == 'RedHat'
-    - rhelorg != None or rheluser != None
+    - rhelorg.subscribed_pool is not defined and rheluser.subscribed_pool is not defined
     - ansible_distribution_major_version == '8'
 
 # make sure rhsm can manage repos + refresh and attach if needed
@@ -45,7 +45,7 @@
   shell: subscription-manager config --rhsm.manage_repos=1 && subscription-manager refresh && subscription-manager attach --auto
   when:
     - ansible_distribution == 'RedHat'
-    - rhelorg != None or rheluser != None
+    - rhelorg.subscribed_pool is defined or rheluser.subscribed_pool is defined
     - ansible_distribution_major_version == '8'
 
 # The AppStream repo for Centos 8 is not available from centos mirror list.
