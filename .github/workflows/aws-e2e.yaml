@@ -85,6 +85,10 @@ jobs:
         - os: "oracle 7.9"
           buildConfig: offline
         - os: "rocky 9.1"
+          buildConfig: fips
+        - os: "rocky 9.1"
+          buildConfig: offline-fips
+        - os: "rocky 9.1"
           buildConfig: nvidia
         - os: "rocky 9.1"
           buildConfig: offline-nvidia
