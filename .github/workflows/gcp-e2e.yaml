@@ -10,6 +10,16 @@ permissions:
   id-token: write
 
 jobs:
+  build-devkit-image:
+    if: |
+      github.event_name == 'pull_request' &&
+      (
+        (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
+        (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
+      )
+    uses: ./.github/workflows/build-devkit-image.yaml
+    secrets: inherit
+
   rune2e:
     strategy:
       fail-fast: false
@@ -29,6 +39,7 @@ jobs:
         (github.event.action == 'labeled' &&  (github.event.label.name == 'runs-e2e-tests' || github.event.label.name == 'runs-gcp-tests')) ||
         (github.event.action == 'synchronize' && (contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests') ||  contains(github.event.pull_request.labels.*.name, 'runs-gcp-tests')))
       )
+    needs: build-devkit-image
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
