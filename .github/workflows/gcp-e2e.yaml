@@ -16,7 +16,8 @@ jobs:
       (
         (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
         (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
-      )
+      )||
+      contains(fromJson('["schedule", "workflow_call", "workflow_dispatch"]'), github.event_name)
     uses: ./.github/workflows/build-devkit-image.yaml
     secrets: inherit
 
@@ -38,7 +39,8 @@ jobs:
       (
         (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
         (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
-      )
+      )||
+      contains(fromJson('["schedule", "workflow_call", "workflow_dispatch"]'), github.event_name)
     needs: build-devkit-image
     steps:
       - name: Checkout konvoy-image-builder repository
