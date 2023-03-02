@@ -485,7 +485,7 @@ super-lint-shell: ## open a shell in the super-linter container
 .PHONY: test
 test: ## go test with race detector and code coverage
 	$(call print-target)
-	CGO_ENABLED=1 go-acc --covermode=atomic --output=$(COVERAGE).out --ignore=e2e ./... -- -race -short -v
+	CGO_ENABLED=1 go test $(shell go list ./... | grep -v e2e) -- -race -short -v  
 
 .PHONY: integration-test
 integration-test: ## go test with race detector for integration tests

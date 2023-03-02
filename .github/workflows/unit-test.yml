@@ -21,8 +21,5 @@ jobs:
           go-version-file: 'go.mod'
           cache: true
 
-      - name: install go-acc dependency
-        run: go install github.com/ory/go-acc@v0.2.8
-
       - name: Run Unit Tests
         run: make test
