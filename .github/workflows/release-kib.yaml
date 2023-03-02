@@ -56,12 +56,6 @@ jobs:
           path: cluster-api-provider-preprovisioned
           fetch-depth: 0
 
-      - name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-          go-version-file: 'cluster-api-provider-preprovisioned/go.mod'
-          cache: true
-
       - name: Track default github workspace as safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
