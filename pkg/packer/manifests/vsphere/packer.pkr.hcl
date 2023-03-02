@@ -479,7 +479,7 @@ build {
     strip_path = true
   }
   post-processor "shell-local" {
-    inline = [ "if ${var.dry_run}; then echo 'destroying VM ${local.vm_name}'; govc vm.destroy -dc=${var.vsphere_datacenter} ${local.vm_name}; fi"]
+    inline = [ "if ${var.dry_run}; then echo 'destroying VM ${local.vm_name} with command: govc vm.destroy -dc=${var.vsphere_datacenter} ${local.vm_name}'; govc vm.destroy -dc=${var.vsphere_datacenter} ${local.vm_name}; fi"]
     environment_vars =[
         "GOVC_URL=${var.vcenter_server}",
         "GOVC_USERNAME=${var.vsphere_username}",
