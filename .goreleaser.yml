@@ -65,7 +65,7 @@ builds:
         - cmd: make cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz
           output: true
           env:
-            - DOCKER_DEVKIT_DEFAULT_ARGS="--rm"
+            - REPO_REV=v{{trimprefix .Version "v"}}
             - BUILDARCH={{.Arch }}
 
 archives:
