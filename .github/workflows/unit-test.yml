@@ -15,21 +15,14 @@ jobs:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
 
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: install go-acc dependency
+        run: go install github.com/ory/go-acc@v0.2.8
+
       - name: Run Unit Tests
-        run: make devkit.run
-        env:
-          WHAT: make test
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage
-          path: coverage.xml
-
-      - name: Display the coverage metrics in a GitHub Pull Request comments
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: 5monkeys/cobertura-action@v13
-        with:
-          path: coverage.xml
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          minimum_coverage: 75
+        run: make test
