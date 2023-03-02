@@ -187,7 +187,7 @@ buildx:
 ###### Devkit container image
 DEVKIT_IMAGE_DOCKERFILE ?= Dockerfile.devkit
 DEVKIT_IMAGE_NAME ?= mesosphere/konvoy-image-builder-devkit
-DEVKIT_IMAGE_TAG ?= $(shell cat ${DEVKIT_IMAGE_DOCKERFILE}  | sha256sum | cut -d" " -f 1)
+DEVKIT_IMAGE_TAG ?= $(shell cat ${DEVKIT_IMAGE_DOCKERFILE} requirements.txt requirements-devkit.txt  | sha256sum | cut -d" " -f 1)
 
 .PHONY: devkit-image
 ## first tries to pull an image, if doesn't exist build and push the image
