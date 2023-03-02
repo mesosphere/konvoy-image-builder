@@ -17,12 +17,14 @@ jobs:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
 
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
       - name: Build konvoy-image binary
-        run: make devkit.run
-        env:
-          WHAT: make build
+        run: make build
 
       - name: Verify CLI documentation
-        run: make devkit.run
-        env:
-          WHAT: make docs.check
+        run: make docs.check

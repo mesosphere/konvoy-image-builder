@@ -45,29 +45,6 @@ RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-arm64
 ARG BUILDARCH
 RUN ln -s /tools/packer-provisioner-goss-${BUILDARCH} /tools/packer-provisioner-goss
 
-ARG GO_ACC_VERSION=0.2.6
-# TODO(jkoelker) migrate to binary release for next release:
-#                https://github.com/ory/go-acc/pull/23
-RUN go install "github.com/ory/go-acc@v${GO_ACC_VERSION}" \
-    && mv /go/bin/go-acc /tools
-
-ARG GOCOVER_COBERTURA_VERSION=1.1.0
-ARG GOCOVER_COBERTURA_SHA265=bd4cb244f88b2eee22a868dccb88433cc303d11ffa29e1cae3e772caada1b615
-ARG GOCOVER_COBERTURA_REPO="https://github.com/boumenot/gocover-cobertura"
-ARG GOCOVER_COBERTURA_FILE="gocover-cobertura.linux.x64.7z"
-ARG GOCOVER_COBERTURA_URL="${GOCOVER_COBERTURA_REPO}/releases/download/v${GOCOVER_COBERTURA_VERSION}/${GOCOVER_COBERTURA_FILE}"
-
-# hadolint ignore=DL4001
-RUN wget \
-        --no-verbose \
-        --output-document="/tmp/${GOCOVER_COBERTURA_FILE}" \
-        "${GOCOVER_COBERTURA_URL}" \
-    && echo "${GOCOVER_COBERTURA_SHA265}  /tmp/${GOCOVER_COBERTURA_FILE}" \
-        > "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
-    && sha256sum -c "/tmp/${GOCOVER_COBERTURA_FILE}.sha256" \
-    && 7z e -o/tools "/tmp/${GOCOVER_COBERTURA_FILE}" \
-    && chmod +x /tools/gocover-cobertura
-
 # NOTE(jkoelker) From here we care about layers
 FROM golang:1.19.3-alpine3.15
 
