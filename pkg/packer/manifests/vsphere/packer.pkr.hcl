@@ -176,6 +176,11 @@ variable "vsphere_username" {
   default = "${env("VSPHERE_USERNAME") == "" ? env("VSPHERE_USER") : env("VSPHERE_USERNAME") }"
 }
 
+variable "vsphere_datacenter" {
+  type = string
+  default = "${env("VSPHERE_DATACENTER")}"
+}
+
 variable "ssh_bastion_host" {
   type = string
   default = ""
@@ -474,7 +479,7 @@ build {
     strip_path = true
   }
   post-processor "shell-local" {
-    inline = [ "if ${var.dry_run}; then echo 'destroying VM ${local.vm_name}'; govc vm.destroy ${local.vm_name}; fi"]
+    inline = [ "if ${var.dry_run}; then echo 'destroying VM ${local.vm_name}'; govc vm.destroy -dc=${var.vsphere_datacenter} ${local.vm_name}; fi"]
     environment_vars =[
         "GOVC_URL=${var.vcenter_server}",
         "GOVC_USERNAME=${var.vsphere_username}",
