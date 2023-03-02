@@ -159,22 +159,6 @@ include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
 
-BUILD_FLAGS := \
-		--build-arg USER_ID=$(UID) \
-		--build-arg GROUP_ID=$(GID) \
-		--build-arg USER_NAME=$(USER_NAME) \
-		--build-arg GROUP_NAME=$(GROUP_NAME) \
-		--build-arg DOCKER_GID=$(DOCKER_SOCKET_GID) \
-		--build-arg BUILDARCH=$(BUILDARCH) \
-		--platform linux/$(BUILDARCH) \
-		--file $(REPO_ROOT_DIR)/Dockerfile.devkit \
-
-SECRET_FLAG := --secret id=githubtoken,src=github-token.txt
-
-ifneq ($(strip $(GITHUB_ACTION)),)
-	BUILD_FLAGS := $(BUILD_FLAGS) $(SECRET_FLAG)
-endif
-
 github-token.txt:
 	echo $(GITHUB_TOKEN) >> github-token.txt
 
@@ -214,7 +198,7 @@ devkit-image-build-push: github-token.txt buildx
 	--pull \
 	--push \
 	--build-arg BUILDARCH=$(BUILDARCH) \
-	$(if $(GITHUB_ACTION),--secret id=githubtoken$(COMMA)src=github-token.txt) \
+	--secret id=githubtoken,src=github-token.txt \
 	--provenance=false \
 	--platform linux/$(BUILDARCH) \
 	--file $(DEVKIT_IMAGE_DOCKERFILE) \
@@ -394,7 +378,7 @@ konvoy-image-arm64:
 
 bin/konvoy-image-wrapper: kib-image-build-$(BUILDARCH)
 	$(call print-target)
-	GOARCH=arm64 GOOS=$(GOOS) go build \
+	GOARCH=$(GOARCH) GOOS=$(GOOS) go build \
 		-ldflags='-X github.com/mesosphere/konvoy-image-builder/pkg/version.version=$(REPO_REV)-$(BUILDARCH)' \
 		-o ./bin/konvoy-image-wrapper ./cmd/konvoy-image-wrapper/main.go
 
