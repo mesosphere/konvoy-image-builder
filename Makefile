@@ -415,7 +415,7 @@ dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image:
 	$(call print-target)
-	goreleaser build --snapshot --rm-dist --id konvoy-image --single-target
+	goreleaser build --snapshot --clean --id konvoy-image --single-target
 
 .PHONY: build
 build: bin/konvoy-image
@@ -515,7 +515,7 @@ build.snapshot:
 	# NOTE (faiq): does anyone use this target?
 	mkdir -p bin
 	cp dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image bin/konvoy-image
-	goreleaser --parallelism=1 --skip-publish --snapshot --rm-dist
+	goreleaser --parallelism=1 --skip-publish --snapshot --clean
 
 .PHONY: diff
 diff: ## git diff

@@ -10,13 +10,13 @@ function main () {
   make devkit-arm64
   make devkit-amd64
   if  [ "${push}" = false ]; then
-	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --rm-dist --snapshot --timeout=2h
+	  DOCKER_BUILDKIT=1 goreleaser --parallelism=1 --clean --snapshot --timeout=2h
     exit 0
   fi
   make docker-build-amd64
   make docker-build-arm64
   make push-manifest
-  DOCKER_BUILDKIT=1 goreleaser release --rm-dist --parallelism=1 --timeout=2h
+  DOCKER_BUILDKIT=1 goreleaser release --clean --parallelism=1 --timeout=2h
   exit 0
 }
 
