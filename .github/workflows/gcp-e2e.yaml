@@ -10,17 +10,6 @@ permissions:
   id-token: write
 
 jobs:
-  build-devkit-image:
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
-        (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
-      )||
-      contains(fromJson('["schedule", "workflow_call", "workflow_dispatch"]'), github.event_name)
-    uses: ./.github/workflows/build-devkit-image.yaml
-    secrets: inherit
-
   rune2e:
     strategy:
       fail-fast: false
@@ -37,11 +26,9 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       (
-        (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
-        (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
-      )||
-      contains(fromJson('["schedule", "workflow_call", "workflow_dispatch"]'), github.event_name)
-    needs: build-devkit-image
+        (github.event.action == 'labeled' &&  (github.event.label.name == 'runs-e2e-tests' || github.event.label.name == 'runs-gcp-tests')) ||
+        (github.event.action == 'synchronize' && (contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests') ||  contains(github.event.pull_request.labels.*.name, 'runs-gcp-tests')))
+      )
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
