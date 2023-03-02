@@ -1,5 +1,5 @@
 ARG BUILDARCH
-ARG BASE=mesosphere/konvoy-image-builder:latest-devkit-${BUILDARCH}
+ARG BASE
 # NOTE(jkoelker) Ignore "Always tag the version of an image explicitly"
 # hadolint ignore=DL3006
 FROM ${BASE} as devkit
