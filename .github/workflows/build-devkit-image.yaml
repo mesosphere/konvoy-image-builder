@@ -10,7 +10,6 @@ on:
       - main
     tags:
       - 'v*'
-  pull_request:
 
 env:
   GITHUB_TOKEN: "${{ secrets.MESOSPHERECI_USER_TOKEN }}"
