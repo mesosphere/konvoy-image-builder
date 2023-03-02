@@ -155,6 +155,22 @@ $(ENVSUBST_ASSETS)/envsubst:
 	chmod +x $(ENVSUBST_ASSETS)/envsubst
 
 
+# go-acc
+# ---------------------------------------------------------------------
+export GOACC_VERSION ?= 0.2.7
+export GOACC_URL = https://github.com/ory/go-acc/releases/download/v$(GOACC_VERSION)/go-acc_$(GOACC_VERSION)_$(GOOS)_$(GOARCH).tar.gz
+export GOACC_ASSETS ?= $(CURDIR)/.local/envsubst/${GOACC_VERSION}
+
+.PHONY: install-go-acc
+install-go-acc: $(GOACC_ASSETS)/go-acc
+
+$(GOACC_ASSETS)/go-acc:
+	$(call print-target,install-go-acc)
+	mkdir -p $(GOACC_ASSETS)
+	curl -Lf $(GOACC_URL) | tar xzf - -C $(GOACC_ASSETS)
+	chmod +x $(GOACC_ASSETS)/go-acc
+
+
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile
@@ -474,13 +490,10 @@ super-lint-shell: ## open a shell in the super-linter container
 
 .PHONY: test
 test: ## go test with race detector and code coverage
+test: install-go-acc
 	$(call print-target)
-	CGO_ENABLED=1 go-acc --covermode=atomic --output=$(COVERAGE).out --ignore=e2e ./... -- -race -short -v
-ifneq ($(CI),)
-	gocover-cobertura -by-files < $(COVERAGE).out > $(COVERAGE).xml
-else
+	CGO_ENABLED=1 $(GOACC_ASSETS)/go-acc --covermode=atomic --output=$(COVERAGE).out --ignore=e2e ./... -- -race -short -v
 	go tool cover -html=$(COVERAGE).out -o $(COVERAGE).html
-endif
 
 
 .PHONY: integration-test
