@@ -39,22 +39,12 @@ See [`konvoy-image`](docs/cli/konvoy-image.md)
 
 ## Development
 
-### Devkit Container
+## Recommended Tools
 
-A devkit is provided to quickly allow usage and development. To build and
-launch the devkit run:
-
-```sh
-make devkit.run
-```
-
-By default, the `devkit.run` target will run a shell, to specify another
-command, set the `WHAT` variable. For example to run `make build` in the
-devkit run:
-
-```sh
-make devkit.run WHAT='make build'
-```
+* [Go](https://golang.org/doc/install)
+* [Docker](https://docs.docker.com/get-docker/)
+* [Docker Buildx](https://docs.docker.com/build/install-buildx/)
+* [goreleaser](https://goreleaser.com/install/)
 
 ### Linting
 
