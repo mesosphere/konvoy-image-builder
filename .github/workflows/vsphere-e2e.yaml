@@ -34,8 +34,8 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       (
-        (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
-        (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
+        (github.event.action == 'labeled' &&  (github.event.label.name == 'runs-e2e-tests' || github.event.label.name == 'runs-vsphere-tests')) ||
+        (github.event.action == 'synchronize' && (contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests') ||  contains(github.event.pull_request.labels.*.name, 'runs-vsphere-tests')))
       )
     steps:
       - uses: actions/checkout@v3
