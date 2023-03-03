@@ -51,6 +51,18 @@ const (
 	PackerGCPNetworkPath   = "/packer/network"
 	PackerGCPRegionPath    = "/packer/region"
 
+	PackerVSphereTemplatePath          = "/packer/template"
+	PackerVSphereClusterPath           = "/packer/cluster"
+	PackerVSphereHostPath              = "/packer/host"
+	PackerVSphereDatacenterPath        = "/packer/datacenter"
+	PackerVSphereDatastorePath         = "/packer/datastore"
+	PackerVSphereNetworkPath           = "/packer/network"
+	PackerVSphereFolderPath            = "/packer/folder"
+	PackerVSphereResourcePoolPath      = "/packer/resource_pool"
+	PackerVSphereSSHPrivateKeyFilePath = "/packer/ssh_private_key_file"
+	PackerVSphereSSHPublicKeyPath      = "/packer/ssh_public_key"
+	PackerVSphereSSHUserNamePath       = "/packer/ssh_username"
+
 	PackerGPUPath          = "/packer/gpu"
 	PackerGPUTypes         = "/packer/gpu_types"
 	PackerGPUNvidiaVersion = "/packer/gpu_nvidia_version"

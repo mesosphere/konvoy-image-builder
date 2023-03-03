@@ -48,9 +48,10 @@ type ClusterArgs struct {
 type UserArgs struct {
 	ClusterArgs
 
-	Amazon *AmazonArgs
-	Azure  *AzureArgs
-	GCP    *GCPArgs
+	Amazon  *AmazonArgs
+	Azure   *AzureArgs
+	GCP     *GCPArgs
+	VSphere *VSphereArgs
 
 	// ExtraVars provided to ansible
 	ExtraVars []string
