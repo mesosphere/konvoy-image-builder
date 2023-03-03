@@ -413,6 +413,12 @@ func MergeUserArgs(config Config, userArgs UserArgs) error {
 		}
 	}
 
+	if userArgs.VSphere != nil {
+		if err := MergeVSphereUserArgs(config, userArgs.VSphere); err != nil {
+			return fmt.Errorf("failed to set gcp args: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -589,6 +595,28 @@ func MergeGCPUserArgs(config Config, gcpArgs *GCPArgs) error {
 
 	if err := config.Set(PackerGCPRegionPath, gcpArgs.Region); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerGCPRegionPath, err)
+	}
+
+	return nil
+}
+
+func MergeVSphereUserArgs(config Config, vsphereArgs *VSphereArgs) error {
+	for path, value := range map[string]interface{}{
+		PackerVSphereTemplatePath:          vsphereArgs.Template,
+		PackerVSphereClusterPath:           vsphereArgs.Cluster,
+		PackerVSphereHostPath:              vsphereArgs.Host,
+		PackerVSphereDatacenterPath:        vsphereArgs.Datacenter,
+		PackerVSphereDatastorePath:         vsphereArgs.Datastore,
+		PackerVSphereNetworkPath:           vsphereArgs.Network,
+		PackerVSphereFolderPath:            vsphereArgs.Folder,
+		PackerVSphereResourcePoolPath:      vsphereArgs.ResourcePool,
+		PackerVSphereSSHPrivateKeyFilePath: vsphereArgs.SSHPrivateKeyFile,
+		PackerVSphereSSHPublicKeyPath:      vsphereArgs.SSHPublicKey,
+		PackerVSphereSSHUserNamePath:       vsphereArgs.SSHUserName,
+	} {
+		if err := config.Set(path, value); err != nil {
+			return fmt.Errorf("failed to set %s: %w", path, err)
+		}
 	}
 
 	return nil
