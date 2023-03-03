@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.2...v2.2.3) (2023-03-03)
+
+
+### Bug Fixes
+
+* set correct compute_gallery_image_id ([#718](https://github.com/mesosphere/konvoy-image-builder/issues/718)) ([a369543](https://github.com/mesosphere/konvoy-image-builder/commit/a369543370c385f1ce027dafe80d34d6cb65e21f))
+
 ## [2.2.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.1...v2.2.2) (2023-03-03)
 
 
