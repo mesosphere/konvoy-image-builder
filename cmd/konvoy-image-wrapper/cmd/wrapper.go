@@ -39,14 +39,20 @@ const (
 
 	envAzureLocation = "AZURE_LOCATION"
 
-	envVSphereServer                     = "VSPHERE_SERVER"
-	envVSphereUser                       = "VSPHERE_USERNAME"
-	envVSpherePassword                   = "VSPHERE_PASSWORD"
-	envRedHatSubscriptionManagerUser     = "RHSM_USER"
-	envRedHatSubscriptionManagerPassword = "RHSM_PASS"
-	envVSphereSSHUserName                = "SSH_USERNAME"
-	envVSphereSSHPassword                = "SSH_PASSWORD"
-	envVsphereSSHPrivatekeyFile          = "SSH_PRIVATE_KEY_FILE"
+	envVSphereServer     = "VSPHERE_SERVER"
+	envVSphereUser       = "VSPHERE_USERNAME"
+	envVSpherePassword   = "VSPHERE_PASSWORD"
+	envVSphereDatacenter = "VSPHERE_DATACENTER"
+	envVsphereDatastore  = "VSPHERE_DATASTORE"
+
+	envRedHatSubscriptionManagerUser          = "RHSM_USER"
+	envRedHatSubscriptionManagerPassword      = "RHSM_PASS"
+	envRedHatSubscriptionManagerActivationKey = "RHSM_ACTIVATION_KEY"
+	envRedHatSubscriptionManagerOrgID         = "RHSM_ORG_ID"
+
+	envVSphereSSHUserName       = "SSH_USERNAME"
+	envVSphereSSHPassword       = "SSH_PASSWORD"
+	envVsphereSSHPrivatekeyFile = "SSH_PRIVATE_KEY_FILE"
 
 	//nolint:gosec // environment var set by user
 	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
@@ -61,7 +67,7 @@ const (
 
 var ErrEnv = errors.New("manifest not support")
 
-func ENvError(o string) error {
+func EnvError(o string) error {
 	return fmt.Errorf("%w: %s", ErrEnv, o)
 }
 
@@ -125,7 +131,7 @@ func (r *Runner) setUserAndGroups() error {
 	if err == nil {
 		gid, err := strconv.Atoi(dockerGroup.Gid)
 		if err != nil {
-			return ENvError(fmt.Sprintf("docker gid '%s' is not an int", dockerGroup.Gid))
+			return EnvError(fmt.Sprintf("docker gid '%s' is not an int", dockerGroup.Gid))
 		}
 		r.supplementaryGroupIDs = append(r.supplementaryGroupIDs, gid)
 	}
@@ -190,8 +196,12 @@ func (r *Runner) setVSphereEnv() error {
 		envVSphereServer,
 		envVSphereUser,
 		envVSpherePassword,
+		envVSphereDatacenter,
+		envVsphereDatastore,
 		envRedHatSubscriptionManagerUser,
 		envRedHatSubscriptionManagerPassword,
+		envRedHatSubscriptionManagerActivationKey,
+		envRedHatSubscriptionManagerOrgID,
 		envVSphereSSHUserName,
 		envVSphereSSHPassword,
 	} {
