@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.1...v2.2.2) (2023-03-03)
+
+
+### Bug Fixes
+
+* pass datacenter ([#710](https://github.com/mesosphere/konvoy-image-builder/issues/710)) ([eb54427](https://github.com/mesosphere/konvoy-image-builder/commit/eb544275526eb5f739f129e597dfaca0be8fb894))
+* set limitnofile ([#713](https://github.com/mesosphere/konvoy-image-builder/issues/713)) ([6477937](https://github.com/mesosphere/konvoy-image-builder/commit/64779374c0c993e92d65ef97898176053fbd405e))
+
 ## [2.2.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.0...v2.2.1) (2023-03-01)
 
 
