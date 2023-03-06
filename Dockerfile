@@ -21,6 +21,7 @@ RUN apk add --no-cache \
         py3-cryptography \
         py3-pip \
         py3-wheel \
+        xorriso \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
