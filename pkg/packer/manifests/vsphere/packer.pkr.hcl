@@ -431,6 +431,13 @@ source "vsphere-clone" "kib_image" {
   vm_name                      = local.vm_name
   resource_pool                = var.resource_pool
 
+  cd_label = "cidata"
+  cd_content = {
+    "/user-data"       = local.cloud_init,
+    "/user-data.txt"       = local.cloud_init,
+    "/meta-data"       = "",
+  }
+
   // try injecting cloud-init via guestinfo
   configuration_parameters = local.configuration_parameters
 
