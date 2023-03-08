@@ -4,48 +4,55 @@
     manager: auto
     strategy: first
 
+
+- name: remove lock install and lock kubeadm package
+  block:
+    - name: remove version hold for cri-tools package
+      command: apt-mark unhold cri-tools
+
+    # cri-tools version should be, approximately, the Kubernetes version.
+    # The community-maintained kubeadm package installs the latest version of
+    # cri-tools, which may be incompatible with the Kubernetes version.
+    # Therefore, we install a version that we know to be compatible.
+    - name: install cri-tools deb package
+      shell: |
+        apt-get install --force-yes --yes \
+          cri-tools={{ critools_deb }}
+      args:
+        warn: false
+      register: result
+      until: result is success
+      retries: 3
+      delay: 3
+
+    # Prevent kubeadm from installing a different cri-tools version by
+    # placing a hold on cri-tools before installing kubeadm.
+    - name: add version hold for cri-tools package
+      command: apt-mark hold cri-tools
+  when: "'cri-tools' not in ansible_facts.packages or
+         ('cri-tools' in ansible_facts.packages and
+          crictl_version not in
+            ansible_facts.packages['cri-tools'][0]['version'])"
+
 - name: remove lock install and lock kubeadm package
   block:
     - name: remove version hold for kubeadm packages
       command: apt-mark unhold kubeadm
 
-- name: remove version hold for cri-tools package
-  command: apt-mark unhold cri-tools
-
-# cri-tools version should be, approximately, the Kubernetes version.
-# The community-maintained kubeadm package installs the latest version of
-# cri-tools, which may be incompatible with the Kubernetes version.
-# Therefore, we install a version that we know to be compatible.
-- name: install cri-tools deb package
-  shell: |
-    apt-get install --force-yes --yes \
-      cri-tools={{ critools_deb }}
-  args:
-    warn: false
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
-
-# Prevent kubeadm from installing a different cri-tools version by
-# placing a hold on cri-tools before installing kubeadm.
-- name: add version hold for cri-tools package
-  command: apt-mark hold cri-tools
-
-- name: install kubeadm deb package
-  shell: |
-    apt-get install --force-yes --yes \
-      kubeadm={{ package_versions.kubernetes_deb }}
-  args:
-    warn: false
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+    - name: install kubeadm deb package
+      shell: |
+        apt-get install --force-yes --yes \
+          kubeadm={{ package_versions.kubernetes_deb }}
+      args:
+        warn: false
+      register: result
+      until: result is success
+      retries: 3
+      delay: 3
 
     - name: add version hold for kubeadm packages
       command: apt-mark hold kubeadm
   when: "'kubeadm' not in ansible_facts.packages or
          ('kubeadm' in ansible_facts.packages and
           kubernetes_version not in
-            ansible_facts.packages['kubelet'][0]['version'])"
+            ansible_facts.packages['kubeadm'][0]['version'])"
