@@ -14,6 +14,7 @@
 - name: determine etcd image
   shell: kubeadm config images list
   register: kubernetes_kubeadm_images_with_default_config
+  changed_when: false
 
 - name: set etcd image
   set_fact:
