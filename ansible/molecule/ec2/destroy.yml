@@ -26,7 +26,7 @@
       when: not molecule_instance_config_stat.stat.exists
 
     - name: Destroy molecule instances
-      ec2:
+      ec2_instance:
         state: absent
         instance_ids: "{{ item.instance_ids }}"
         region: "{{ item.region }}"
