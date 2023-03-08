@@ -8,8 +8,10 @@ import (
 )
 
 var (
-	vsphereExample = "vsphere --datacenter dc1 --cluster zone1 --datastore nfs-store1 --network public --template=d2iq-base-templates/d2iq-base-CentOS-7.9 images/ami/centos-79.yaml"
-	vsphereUse     = "vsphere <image.yaml>"
+	vsphereExample = "vsphere --datacenter dc1 --cluster zone1 --datastore nfs-store1 " +
+		"--network public --template=d2iq-base-templates/d2iq-base-CentOS-7.9 " +
+		"images/ami/centos-79.yaml"
+	vsphereUse = "vsphere <image.yaml>"
 )
 
 func NewVSphereBuildCmd() *cobra.Command {
@@ -98,7 +100,8 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.Network,
 		"network",
 		"",
-		"vSphere network to start KIB build; KIB expects DHCP on this network; Ensure the machine running KIB has access to this network (REQUIRED)",
+		"vSphere network to start KIB build; KIB expects DHCP on this network; "+
+			"Ensure the machine running KIB has access to this network (REQUIRED)",
 	)
 	fs.StringVar(
 		&vsphereArgs.Folder,
