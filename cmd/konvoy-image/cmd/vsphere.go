@@ -113,7 +113,7 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.ResourcePool,
 		"resource-pool",
 		"",
-		"vSphere resource pool to be used to build KIB image",
+		"vSphere resource pool to be used to build image template",
 	)
 
 	fs.StringVar(
