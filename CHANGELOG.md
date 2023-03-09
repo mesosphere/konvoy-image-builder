@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.3...v2.2.4) (2023-03-09)
+
+
+### Bug Fixes
+
+* allow building aws images using source_ami  ([#723](https://github.com/mesosphere/konvoy-image-builder/issues/723)) ([4e63f53](https://github.com/mesosphere/konvoy-image-builder/commit/4e63f532ddcb834c5ff83d18a032a99fbfe29d1b))
+
 ## [2.2.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.2...v2.2.3) (2023-03-03)
 
 
