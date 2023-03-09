@@ -5,7 +5,7 @@ import _ "embed"
 
 // PackerAmazon storage for AWS packer template.
 //
-//go:embed aws/packer.pkr.hcl
+//go:embed aws/packer.pkr.hcl.tmpl
 var PackerAmazon []byte
 
 // PackerAzure storage for Azurepacker template.
