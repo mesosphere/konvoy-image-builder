@@ -120,7 +120,7 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.ResourcePool,
 		"ssh-privatekey-file",
 		"",
-		"path to ssh private key which will be used to loginto the template",
+		"Path to ssh private key which will be used to log into the base image template",
 	)
 
 	fs.StringVar(
