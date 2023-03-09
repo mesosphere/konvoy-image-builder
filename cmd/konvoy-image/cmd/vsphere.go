@@ -127,7 +127,7 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.ResourcePool,
 		"ssh-publickey",
 		"",
-		"SSH public key which will be deployed using cloud-init. Ensure to set ssh-privatekey-file or load the private key into ssh-agent",
+		"Path to SSH public key which will be copied to the image template. Ensure to set ssh-privatekey-file or load the private key into ssh-agent",
 	)
 
 	fs.StringVar(
