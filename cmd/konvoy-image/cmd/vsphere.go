@@ -107,7 +107,7 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.Folder,
 		"folder",
 		"",
-		"deploy KIB image into this folder",
+		"vSphere folder to store the image template",
 	)
 	fs.StringVar(
 		&vsphereArgs.ResourcePool,
