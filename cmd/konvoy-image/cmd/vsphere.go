@@ -134,6 +134,6 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.SSHUserName,
 		"ssh-username",
 		"",
-		"Username to be used with the vSphere template",
+		"username to be used with the vSphere image template",
 	)
 }
