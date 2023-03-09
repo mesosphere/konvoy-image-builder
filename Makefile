@@ -355,7 +355,7 @@ bin/konvoy-image: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image: $(REPO_ROOT_DIR)/pkg
 bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
-bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+bin/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.hcl)
 bin/konvoy-image:
 	$(call print-target)
 	GOARCH=$(BUILDARCH) GOOS=$(GOOS) go build \
@@ -368,7 +368,7 @@ bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/pkg
 bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
-bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.hcl)
 bin/konvoy-image-amd64:
 	$(call print-target)
 	GOARCH=amd64 GOOS=$(GOOS) go build \
@@ -381,7 +381,7 @@ bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/pkg
 bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
-bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.hcl)
 bin/konvoy-image-arm64:
 	$(call print-target)
 	GOARCH=arm64 GOOS=$(GOOS) go build \
@@ -412,7 +412,7 @@ dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(REPO_ROOT_DIR)/cmd
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(REPO_ROOT_DIR)/pkg
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.go)
-dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.tmpl)
+dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image: $(shell find $(REPO_ROOT_DIR)/pkg -type f -name '*'.hcl)
 dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image:
 	$(call print-target)
 	goreleaser build --snapshot --clean --id konvoy-image --single-target
