@@ -100,8 +100,8 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.Network,
 		"network",
 		"",
-		"vSphere network to start KIB build; KIB expects DHCP on this network; "+
-			"Ensure the machine running KIB has access to this network (REQUIRED)",
+		"vSphere network used to build image template. "+
+			"Ensure the host running the command has access to this network (REQUIRED)",
 	)
 	fs.StringVar(
 		&vsphereArgs.Folder,
