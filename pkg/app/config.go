@@ -415,7 +415,7 @@ func MergeUserArgs(config Config, userArgs UserArgs) error {
 
 	if userArgs.VSphere != nil {
 		if err := MergeVSphereUserArgs(config, userArgs.VSphere); err != nil {
-			return fmt.Errorf("failed to set gcp args: %w", err)
+			return fmt.Errorf("failed to set vSphere args: %w", err)
 		}
 	}
 
