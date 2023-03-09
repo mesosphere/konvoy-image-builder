@@ -94,7 +94,7 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.Datastore,
 		"datastore",
 		"",
-		"datastore used to build and store the KIB image (REQUIRED)",
+		"vSphere datastore used to build and store the image template (REQUIRED)",
 	)
 	fs.StringVar(
 		&vsphereArgs.Network,
