@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    vsphere =  {
+    vsphere = {
       version = "1.15.0"
     }
   }
@@ -99,9 +99,9 @@ resource "vsphere_virtual_machine" "konvoy-e2e-bastion" {
   }
 
   disk {
-    label = "disk0"
-    datastore_id     = data.vsphere_datastore.datastore.id
-    size = 80
+    label        = "disk0"
+    datastore_id = data.vsphere_datastore.datastore.id
+    size         = 80
   }
 }
 

@@ -7,7 +7,7 @@ provider "aws" {
 }
 
 variable "aws_availability_zones" {
-  type        = list
+  type        = list(any)
   description = "Availability zones to be used"
   default     = ["us-west-2c"]
 }
@@ -19,7 +19,7 @@ variable "vpc_cidr" {
 
 variable "tags" {
   description = "Map of tags to add to all resources"
-  type        = map
+  type        = map(any)
   default     = {}
 }
 
@@ -86,6 +86,6 @@ output "public_subnets" {
   value = aws_subnet.konvoy_public.id
 }
 
-output  "security_group_id" {
+output "security_group_id" {
   value = aws_security_group.konvoy_ssh.id
 }
