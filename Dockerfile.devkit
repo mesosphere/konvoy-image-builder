@@ -4,7 +4,7 @@ FROM --platform=linux/amd64 hashicorp/packer:1.8.5 as packer-amd64
 FROM --platform=linux/arm64 hashicorp/packer:1.8.5 as packer-arm64
 FROM golangci/golangci-lint:v1.50.1-alpine as golangci-lint
 FROM goreleaser/goreleaser:v1.14.1 as goreleaser
-FROM docker:20.10 as docker
+FROM docker:23.0 as docker
 FROM vmware/govc:v0.29.0 as govc
 
 FROM golang:1.19.3-alpine3.15 as builder
