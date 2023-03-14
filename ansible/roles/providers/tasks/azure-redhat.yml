@@ -27,7 +27,7 @@
   when: ansible_distribution == "Rocky"
 
 - name: mkdir /dev/disk/azure
-  command: mkdir -p /dev/disk/azure
+  command: udevadm control --reload-rules && udevadm trigger && mkdir -p /dev/disk/azure
   when: ansible_distribution == "Rocky"
 
 - name: restart udev service
