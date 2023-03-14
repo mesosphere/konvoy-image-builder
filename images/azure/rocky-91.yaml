@@ -12,6 +12,6 @@ packer:
   plan_image_offer: "rockylinux-9" # offer
   plan_image_publisher: "erockyenterprisesoftwarefoundationinc1653071250513" # publisher
 
-build_name: "rocky-90-az"
+build_name: "rocky-91-az"
 packer_builder_type: "azure"
 python_path: ""
