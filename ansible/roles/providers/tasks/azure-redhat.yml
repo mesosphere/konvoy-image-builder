@@ -26,6 +26,10 @@
   command: unlink /dev/disk/azure
   when: ansible_distribution == "Rocky"
 
+- name: mkdir /dev/disk/azure
+  command: mkdir -p /dev/disk/azure
+  when: ansible_distribution == "Rocky"
+
 - name: restart udev service
   systemd:
     name: systemd-udevd
