@@ -22,6 +22,16 @@
     mode: 0644
   when: ansible_distribution == "Rocky"
 
+- name: unlink /dev/disk/azure
+  command: unlink /dev/disk/azure
+  when: ansible_distribution == "Rocky"
+
+- name: restart udev service
+  systemd:
+    name: systemd-udevd
+    state: restarted
+  when: ansible_distribution == "Rocky"
+
 - name: Add the yum repository for the azure cli
   yum_repository:
     name: azure_cli
