@@ -35,7 +35,7 @@ See [`konvoy-image`](docs/cli/konvoy-image.md)
 
 | aws-region | base-os  | ami-id                | image params                                           |
 |------------|----------|-----------------------|--------------------------------------------------------|
-| us-west-2  | centos 7 | ami-0bc38a003a647b084 | [`images/ami/centos-7.yaml`](images/ami/centos-7.yaml) |
+| us-west-2  | centos 7 | ami-0bc38a003a647b084 | [`images/ami/centos-79.yaml`](images/ami/centos-79.yaml) |
 
 ## Development
 
