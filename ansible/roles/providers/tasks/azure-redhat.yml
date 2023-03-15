@@ -24,6 +24,15 @@
     mode: 0644
   when: ansible_distribution == "Rocky"
 
+- name: expose cut utility to initramfs setup
+  shell: echo 'install_items+=" /usr/bin/cut "' > /etc/dracut.conf.d/cut.conf
+
+- name: refresh dracut
+  shell: dracut -f
+
+- name: unconditionally reboot the machine with all defaults
+  ansible.builtin.reboot:
+
 - name: Add the yum repository for the azure cli
   yum_repository:
     name: azure_cli
