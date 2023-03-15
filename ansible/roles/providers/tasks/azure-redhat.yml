@@ -15,6 +15,20 @@
 - name: import the Microsoft repository key
   command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
+- block:
+    # TODO: remove cut utility fix to initramfs after its been fixed upstream
+    # https://bugzilla.redhat.com/show_bug.cgi?id=2165042
+    - name: expose cut utility to initramfs setup
+      shell: echo 'install_items+=" /usr/bin/cut "' > /etc/dracut.conf.d/cut.conf
+
+    - name: refresh dracut
+      shell: dracut -f
+
+    - name: unconditionally reboot the machine with all defaults
+      ansible.builtin.reboot:
+  when: ansible_distribution_major_version|int >= 9
+
+
 - name: Add the yum repository for the azure cli
   yum_repository:
     name: azure_cli
