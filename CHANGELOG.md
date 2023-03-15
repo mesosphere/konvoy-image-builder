@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.4...v2.2.5) (2023-03-15)
+
+
+### Bug Fixes
+
+* set image_version 9.1 for Rocky on Azure  ([#735](https://github.com/mesosphere/konvoy-image-builder/issues/735)) ([811c046](https://github.com/mesosphere/konvoy-image-builder/commit/811c046e51c3b86e5c1702833ea3471971ecab98))
+
 ## [2.2.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.3...v2.2.4) (2023-03-09)
 
 
