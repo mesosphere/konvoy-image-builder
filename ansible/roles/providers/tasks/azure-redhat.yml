@@ -15,15 +15,8 @@
 - name: import the Microsoft repository key
   command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
-# TODO: remove custom udev rules when WALinuxAgent rpm >= 2.9.0.4 available for azure.
-# https://d2iq.atlassian.net/browse/D2IQ-96374 to track removal.
-- name: set udev rules for azure
-  template:
-    dest: /etc/udev/rules.d/66-azure-storage.rules
-    src:  etc/udev/rules.d/66-azure-storage.rules
-    mode: 0644
-  when: ansible_distribution == "Rocky"
-
+# TODO: remove cut utility fix to initramfs after its been fixed upstream
+# https://bugzilla.redhat.com/show_bug.cgi?id=2165042
 - name: expose cut utility to initramfs setup
   shell: echo 'install_items+=" /usr/bin/cut "' > /etc/dracut.conf.d/cut.conf
 
