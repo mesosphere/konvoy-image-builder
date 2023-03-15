@@ -15,25 +15,13 @@
 - name: import the Microsoft repository key
   command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
+# TODO: remove custom udev rules when WALinuxAgent rpm >= 2.9.0.4 available for azure.
+# https://d2iq.atlassian.net/browse/D2IQ-96374 to track removal.
 - name: set udev rules for azure
   template:
     dest: /etc/udev/rules.d/66-azure-storage.rules
     src:  etc/udev/rules.d/66-azure-storage.rules
     mode: 0644
-  when: ansible_distribution == "Rocky"
-
-- name: unlink /dev/disk/azure
-  command: unlink /dev/disk/azure
-  when: ansible_distribution == "Rocky"
-
-- name: mkdir /dev/disk/azure
-  command: udevadm control --reload-rules && udevadm trigger && mkdir -p /dev/disk/azure
-  when: ansible_distribution == "Rocky"
-
-- name: restart udev service
-  systemd:
-    name: systemd-udevd
-    state: restarted
   when: ansible_distribution == "Rocky"
 
 - name: Add the yum repository for the azure cli

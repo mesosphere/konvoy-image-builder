@@ -28,7 +28,7 @@ ENV{fabric_name}=="scsi0/lun2", GOTO="walinuxagent_end"
 
 # Create the symlinks.
 LABEL="wa_azure_names"
-ENV{DEVTYPE}=="disk", PROGRAM+="/bin/sh -c '[ -L /dev/disk/azure ] && unlink /dev/disk/azure'", SYMLINK+="disk/azure/$env{fabric_name}"
-ENV{DEVTYPE}=="partition", PROGRAM+="/bin/sh -c '[ -L /dev/disk/azure ] && unlink /dev/disk/azure'", SYMLINK+="disk/azure/$env{fabric_name}-part%n"
+ENV{DEVTYPE}=="disk", PROGRAM+="/bin/sh -c '[ -L /dev/disk/azure ] && unlink /dev/disk/azure || exit 0'", SYMLINK+="disk/azure/$env{fabric_name}"
+ENV{DEVTYPE}=="partition", PROGRAM+="/bin/sh -c '[ -L /dev/disk/azure ] && unlink /dev/disk/azure || exit 0'", SYMLINK+="disk/azure/$env{fabric_name}-part%n"
 
 LABEL="walinuxagent_end"
