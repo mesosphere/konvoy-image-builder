@@ -355,6 +355,7 @@ source "azure-arm" "kib_image" {
   managed_image_name                = local.managed_image_name
   managed_image_resource_group_name = var.resource_group_name
   os_type                           = "Linux"
+  os_disk_size_gb                   = 80
   plan_info {
     plan_name      = var.plan_image_sku
     plan_product   = var.plan_image_offer
