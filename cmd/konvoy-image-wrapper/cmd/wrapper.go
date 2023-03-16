@@ -289,7 +289,6 @@ func (r *Runner) setupSSHAgent() {
 }
 
 func (r *Runner) dockerRun(args []string) error {
-	//nolint:gosec // running docker is inherently insecure
 	cmd := exec.Command(
 		"docker", "run",
 		"--interactive",
