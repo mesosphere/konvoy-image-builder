@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.6](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.5...v2.2.6) (2023-03-17)
+
+
+### Bug Fixes
+
+* uses 80gb for all azure builds and removes extra ([#739](https://github.com/mesosphere/konvoy-image-builder/issues/739)) ([33d0a77](https://github.com/mesosphere/konvoy-image-builder/commit/33d0a77625cc3c7d15129d360944cf295ff17dc1))
+
 ## [2.2.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.4...v2.2.5) (2023-03-15)
 
 
