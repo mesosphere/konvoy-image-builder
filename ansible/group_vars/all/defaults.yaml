@@ -5,7 +5,7 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 #
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
-kubernetes_version: "1.25.4"
+kubernetes_version: "1.26.2"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 kubernetes_cni_version: "0.9.1"
