@@ -24,7 +24,7 @@
   register: result
   until: result is success
   retries: 5
-  delay: 3
+  delay: 6
 
 # Oracle Linux does not have 'tar' or 'gtar' installed
 - name: install tar rpm package
@@ -34,8 +34,8 @@
     update_cache: true
   register: result
   until: result is success
-  retries: 3
-  delay: 3
+  retries: 5
+  delay: 6
   when:
     - ansible_distribution == 'OracleLinux'
 
@@ -46,8 +46,8 @@
     key: "{{ docker_rpm_container_selinux_gpg_key_url }}"
   register: result
   until: result is success
-  retries: 3
-  delay: 3
+  retries: 5
+  delay: 6
   when:
     - ansible_distribution == 'RedHat'
     - ansible_distribution_major_version|int == 7
@@ -65,8 +65,8 @@
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
-  retries: 3
-  delay: 3
+  retries: 5
+  delay: 6
 
 - name: install libseccomp rpm package
   yum:
@@ -77,5 +77,5 @@
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
-  retries: 3
-  delay: 3
+  retries: 5
+  delay: 6
