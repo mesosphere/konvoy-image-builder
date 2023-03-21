@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
-	terminal "golang.org/x/term"
 
 	"github.com/mesosphere/konvoy-image-builder/cmd/konvoy-image-wrapper/image"
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
@@ -73,7 +72,6 @@ func EnvError(o string) error {
 
 type Runner struct {
 	version string
-	tty     bool
 
 	usr                   *user.User
 	usrGroup              *user.Group
@@ -99,7 +97,6 @@ func NewRunner() *Runner {
 	}
 
 	return &Runner{
-		tty:                   terminal.IsTerminal(int(os.Stdout.Fd())),
 		homeDir:               home,
 		supplementaryGroupIDs: []int{},
 		env:                   map[string]string{},
@@ -292,11 +289,10 @@ func (r *Runner) setupSSHAgent() {
 }
 
 func (r *Runner) dockerRun(args []string) error {
-	//nolint:gosec // running docker is inherently insecure
 	cmd := exec.Command(
 		"docker", "run",
 		"--interactive",
-		"--tty="+strconv.FormatBool(r.tty),
+		"--tty=false",
 		"--rm",
 		"--net=host",
 		"-w", containerWorkingDir,
@@ -335,7 +331,6 @@ func (r *Runner) dockerRun(args []string) error {
 
 	cmd.Args = append(cmd.Args, image.Tag())
 	cmd.Args = append(cmd.Args, args...)
-	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
