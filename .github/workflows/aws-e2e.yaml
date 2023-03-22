@@ -16,22 +16,10 @@ jobs:
       max-parallel: 10
       matrix:
         os:
-        - "centos 7.9"
         - "redhat 7.9"
         - "redhat 8.4"
         - "redhat 8.6"
-        - "sles 15"
-        - "oracle 7.9"
-        - "flatcar"
-        - "ubuntu 18.04"
-        - "ubuntu 20.04"
-        - "rocky 9.1"
         buildConfig:
-        - "basic"
-        - "fips"
-        - "nvidia"
-        - "offline"
-        - "offline-fips"
         - "offline-nvidia"
         exclude:
         # we only support basic
