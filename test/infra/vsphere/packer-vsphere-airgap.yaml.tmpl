@@ -11,9 +11,9 @@ packer:
   cluster: "zone1"
   datacenter: "dc1"
   datastore: "${VSPHERE_DATASTORE}"
-  folder: "d2iq-base-templates"
+  folder: "cluster-api"
   network: "Airgapped"
   resource_pool: "Users"
   # ssh authentication with base template VM.
-  ssh_username: "centos"
+  ssh_username: "builder"
   ssh_agent_auth: true
