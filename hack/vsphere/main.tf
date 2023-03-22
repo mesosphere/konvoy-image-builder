@@ -16,7 +16,7 @@ variable "datacenter_name" {
 
 variable "datastore_name" {
   description = "The datastore name"
-  default     = "ovh-nfs"
+  default     = "tmp-iscsi-ovh"
 }
 
 variable "resource_pool_name" {
@@ -36,13 +36,13 @@ variable "network_name_public" {
 
 variable "bastion_vm_template" {
   description = "The VM template name for the bastion machine"
-  default     = "kib-builder-template"
+  default     = "base-centos-7"
 }
 
 
 variable "root_user" {
   description = "The root user"
-  default     = "builder"
+  default     = "centos"
 }
 
 data "vsphere_datacenter" "dc" {
@@ -81,7 +81,7 @@ resource "vsphere_virtual_machine" "konvoy-e2e-bastion" {
 
   num_cpus = 4
   memory   = 6144
-  guest_id = "centos7_64Guest"
+  guest_id = "centos64Guest"
 
 
   network_interface {
