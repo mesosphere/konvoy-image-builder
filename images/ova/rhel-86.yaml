@@ -13,7 +13,7 @@ packer:
   insecure_connection: "false"
   network: ""
   resource_pool: ""
-  template: "base-rhel-8.6" # change default value with your base template name
+  template: "base-RHEL-86" # change default value with your base template name
   vsphere_guest_os_type: "rhel8_64Guest"
   guest_os_type: "rhel8-64"
   # goss params
