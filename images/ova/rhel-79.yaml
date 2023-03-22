@@ -13,7 +13,11 @@ packer:
   insecure_connection: "false"
   network: ""
   resource_pool: ""
+<<<<<<< HEAD
   template: "base-rhel-7"
+=======
+  template: "os-qualification-templates/d2iq-base-RHEL-79"
+>>>>>>> 9f81411... ci: update vsphere base template defaults (#752)
   vsphere_guest_os_type: "rhel7_64Guest"
   guest_os_type: "rhel7-64"
   # goss params
