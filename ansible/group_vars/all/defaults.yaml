@@ -5,7 +5,7 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 #
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
-kubernetes_version: "1.25.4"
+kubernetes_version: "1.26.3"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 kubernetes_cni_version: "0.9.1"
@@ -58,7 +58,7 @@ aws_images: []
 
 extra_images: []
 
-containerd_supplementary_images: ["docker.io/mesosphere/toml-merge:v0.1.0"]
+containerd_supplementary_images: ["ghcr.io/mesosphere/toml-merge:v0.2.0", "ghcr.io/mesosphere/dynamic-credential-provider:v0.2.0"]
 
 containerd_base_url: https://packages.d2iq.com/dkp/containerd
 kubernetes_http_source: https://dl.k8s.io/release
