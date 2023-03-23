@@ -364,10 +364,6 @@ func initPackerConfig(workDir, extraVarsPath string, config Config) error {
 	return nil
 }
 
-func isSourceAMIProvided(config Config) bool {
-	return config.Get(PackerSourceAMIPath) != ""
-}
-
 func loadYAML(path string) (Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
