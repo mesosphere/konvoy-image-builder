@@ -29,6 +29,8 @@ jobs:
           buildConfig: fips
         - os: "ubuntu 20.04"
           buildConfig: offline-fips
+        - os: "rocky 9.1"
+          buildConfig: offline-fips
     runs-on: self-hosted
     continue-on-error: false
     if: |
