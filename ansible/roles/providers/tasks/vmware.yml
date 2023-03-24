@@ -19,12 +19,12 @@
 
 - name: Set cloud-init version fact
   set_fact:
-    cloud_init_version: cloud_init_version_cmd.stdout
+    cloud_init_version: "cloud_init_version_cmd.stdout"
 
 # when cloud-init 21.3 or higher is installed to not touch it
 - name: Cloud-init patches for cloud-init versions <21.3
   include_tasks: vmware-cloudinit.yml
-  when: ( cloud_init_version == "" ) or (cloud_init_version is version('21.3', '<'))
+  when: ( cloud_init_version == "" ) or (str(cloud_init_version) is version('21.3', '<'))
 
 - name: Get a list of services
   service_facts:
