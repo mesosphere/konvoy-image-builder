@@ -16,7 +16,7 @@ fi
 # PYTHON_VERSION may be 2 or 3 and indicates which version of Python
 # is used by cloud-init. This variable is not set until PY_MOD_CLOUD_INIT
 # is resolved.
-CLOUD_INIT_PYTHON=$(head -1 $(command -v cloud-init || echo /dev/null)  | cut -c 3-)
+CLOUD_INIT_PYTHON=$(head -1 "$(command -v cloud-init || echo /dev/null)"  | cut -c 3-)
 echo "cloud-init python: ${CLOUD_INIT_PYTHON}"
 PYTHON_VERSION=$(${CLOUD_INIT_PYTHON} -c 'import sys;print(sys.version_info.major)' || echo "")
 
