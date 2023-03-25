@@ -13,6 +13,8 @@ jobs:
       max-parallel: 3
       matrix:
         include:
+          - os: "redhat 7.9"
+            buildConfig: "offline"
           - os: "redhat 8.4"
             buildConfig: "offline"
           - os: "redhat 8.4"
