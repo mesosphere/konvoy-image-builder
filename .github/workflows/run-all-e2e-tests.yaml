@@ -31,6 +31,8 @@ jobs:
     if: ${{ needs.set-global-conditions.outputs.runs_e2e_tests == 'true' }}
     uses: ./.github/workflows/build-devkit-image.yaml
     secrets: inherit
+    with:
+      run-tests: true
 
   gcp-e2e-tests:
     needs: [set-global-conditions, build-devkit-image]
@@ -45,15 +47,21 @@ jobs:
     if: ${{ needs.set-global-conditions.outputs.runs_e2e_tests == 'true' }}
     uses: ./.github/workflows/aws-e2e.yaml
     secrets: inherit
+    with:
+      run-tests: true
 
   vsphere-e2e-tests:
     needs: [set-global-conditions, build-devkit-image]
     if: ${{ needs.set-global-conditions.outputs.runs_e2e_tests == 'true' }}
     uses: ./.github/workflows/vsphere-e2e.yaml
     secrets: inherit
+    with:
+      run-tests: true
 
   azure-e2e-tests:
     needs: [set-global-conditions, build-devkit-image]
     if: ${{ needs.set-global-conditions.outputs.runs_e2e_tests == 'true' }}
     uses: ./.github/workflows/azure-e2e.yaml
     secrets: inherit
+    with:
+      run-tests: true

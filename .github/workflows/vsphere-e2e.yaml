@@ -2,7 +2,19 @@
 name: E2E Tests - Build Vsphere template
 on:
   workflow_dispatch:
+    inputs:
+      run-tests:
+        description: "Run all the tests"
+        type: boolean
+        default: false
+        required: false
   workflow_call:
+    inputs:
+      run-tests:
+        description: "Run all the tests"
+        type: boolean
+        default: false
+        required: false
   pull_request:
     types: [labeled, synchronize]
 
@@ -18,7 +30,7 @@ jobs:
         (github.event.action == 'labeled' &&  github.event.label.name == 'runs-vsphere-tests') ||
         (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-vsphere-tests'))
       ) ||
-      contains(fromJson('["workflow_dispatch", "workflow_call"]'), github.event_name)
+      inputs.run-tests == true
     strategy:
       fail-fast: false
       max-parallel: 3
