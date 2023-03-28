@@ -269,15 +269,17 @@ kib-image-build: devkit-image-$(BUILDARCH) konvoy-image-$(BUILDARCH)
 		--tag=$(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) \
 		$(REPO_ROOT_DIR)
 
-.PHONY: kib-image
+.PHONY: kib-image-push-amd64
 kib-image-push-amd64: kib-image-build-amd64
 	docker push $(DOCKER_REPOSITORY):$(REPO_REV)-amd64
 
+.PHONY: kib-image-push-arm64
 kib-image-push-arm64: kib-image-build-arm64
 	docker push $(DOCKER_REPOSITORY):$(REPO_REV)-arm64
 
 # The arch specific images must be pushed to docker registry in order to create manifest file.
 # A manifest file can not be created using locally cached images. see: https://github.com/docker/cli/issues/3350
+# TODO: Build and push multi arch image using single command: docker buildx build --platform linux/amd64,linux/arm64 --output=type=registry
 .PHONY: kib-image-push-manifest
 kib-image-push-manifest: kib-image-push-amd64 kib-image-push-arm64
 	docker manifest create \
@@ -338,6 +340,7 @@ bin/konvoy-image:
 	mkdir -p bin
 	ln -sf ../dist/konvoy-image_$(GOOS)_$(GOARCH)/konvoy-image bin/konvoy-image
 
+# Creates bin/konvoy-image-amd64 which will be copied to KIB container image for amd64. see Dockerfile
 bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image-amd64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image-amd64: $(REPO_ROOT_DIR)/pkg
@@ -351,6 +354,7 @@ bin/konvoy-image-amd64:
 	mkdir -p bin
 	ln -sf ../dist/konvoy-image_linux_amd64/konvoy-image bin/konvoy-image-amd64
 
+# Creates bin/konvoy-image-arm64 which will be copied to KIB container image for arm64. see Dockerfile
 bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/cmd
 bin/konvoy-image-arm64: $(shell find $(REPO_ROOT_DIR)/cmd -type f -name '*'.go)
 bin/konvoy-image-arm64: $(REPO_ROOT_DIR)/pkg
@@ -363,10 +367,6 @@ bin/konvoy-image-arm64:
 		-o ./dist/konvoy-image_linux_arm64/konvoy-image ./cmd/konvoy-image/main.go
 	mkdir -p bin
 	ln -sf ../dist/konvoy-image_linux_arm64/konvoy-image bin/konvoy-image-arm64
-
-konvoy-image-linux:
-	$(MAKE) make bin/konvoy-image GOOS=linux GOARCH=$(BUILDARCH)
-	$(MAKE) make bin/konvoy-image-$(BUILDARCH) GOOS=linux GOARCH=$(BUILDARCH)
 
 konvoy-image-amd64:
 	$(MAKE) bin/konvoy-image-amd64 GOOS=linux GOARCH=amd64
