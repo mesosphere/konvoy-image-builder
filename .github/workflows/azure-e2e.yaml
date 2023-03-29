@@ -2,21 +2,7 @@
 name: E2E Tests - Build Azure Image
 on:
   workflow_dispatch:
-    inputs:
-      run-tests:
-        description: "Run all the tests"
-        type: boolean
-        default: false
-        required: false
   workflow_call:
-    inputs:
-      run-tests:
-        description: "Run all the tests"
-        type: boolean
-        default: false
-        required: false
-  pull_request:
-    types: [labeled, synchronize]
 
 permissions:
   contents: read
@@ -24,13 +10,6 @@ permissions:
 
 jobs:
   rune2e:
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (github.event.action == 'labeled' &&  github.event.label.name == 'runs-azure-tests') ||
-        (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-azure-tests'))
-      ) ||
-      inputs.run-tests == true
     strategy:
       fail-fast: false
       max-parallel: 10
