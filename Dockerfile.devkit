@@ -87,10 +87,10 @@ RUN apk add --no-cache \
 RUN mkdir -p /usr/share/ansible/collections \
     && ansible-galaxy \
     collection install \
-    community.general \
-    ansible.netcommon \
-    ansible.posix \
-    ansible.utils \
+    community.general:==6.4.0 \
+    ansible.netcommon:==5.0.0 \
+    ansible.posix:==1.5.1 \
+    ansible.utils:==2.9.0 \
     -p /usr/share/ansible/collections
 
 # hadolint ignore=DL4006

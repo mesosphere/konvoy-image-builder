@@ -2,8 +2,7 @@
 name: E2E Tests - Build Azure Image
 on:
   workflow_dispatch:
-  pull_request:
-    types: [labeled, synchronize]
+  workflow_call:
 
 permissions:
   contents: read
@@ -22,12 +21,6 @@ jobs:
         - "basic"
     runs-on: self-hosted
     continue-on-error: false
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (github.event.action == 'labeled' &&  (github.event.label.name == 'runs-e2e-tests' || github.event.label.name == 'runs-azure-tests')) ||
-        (github.event.action == 'synchronize' && (contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests') ||  contains(github.event.pull_request.labels.*.name, 'runs-azure-tests')))
-      )
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3

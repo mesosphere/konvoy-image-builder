@@ -215,16 +215,6 @@ devkit-image-push-manifest: devkit-image-amd64 devkit-image-arm64
 	--amend $(DEVKIT_IMAGE_NAME):$(DEVKIT_IMAGE_TAG)-arm64
 	docker manifest push $(DEVKIT_IMAGE_NAME):$(DEVKIT_IMAGE_TAG)
 
-# TODO: Deprecate this target
-.PHONY: devkit.run
-devkit.run: ## run $(WHAT) in devkit
-devkit.run: devkit-image
-	docker run \
-		$(DOCKER_DEVKIT_DEFAULT_ARGS) \
-		$(DOCKER_DEVKIT_ARGS) \
-		$(DEVKIT_IMAGE_NAME):$(DEVKIT_IMAGE_TAG) \
-		$(WHAT)
-
 ##### Build KIB container image
 export DOCKER_REPOSITORY ?= mesosphere/konvoy-image-builder
 export DOCKER_IMG ?= $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
