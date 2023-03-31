@@ -1,5 +1,5 @@
 ARG BUILDARCH
-ARG BASE=mesosphere/konvoy-image-builder:latest-devkit-${BUILDARCH}
+ARG BASE
 # NOTE(jkoelker) Ignore "Always tag the version of an image explicitly"
 # hadolint ignore=DL3006
 FROM ${BASE} as devkit
@@ -25,15 +25,6 @@ RUN apk add --no-cache \
         py3-wheel \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
-# Managing the below ansible dependencies is covered in docs/dev/ansible-modules.md
-RUN mkdir -p /usr/share/ansible/collections \
-    && ansible-galaxy \
-    collection install \
-    community.general \
-    ansible.netcommon \
-    ansible.posix \
-    ansible.utils \
-    -p /usr/share/ansible/collections
 
 ARG BUILDARCH
 # we copy this to remote hosts to execute GOSS
@@ -45,6 +36,7 @@ COPY --from=devkit /usr/local/bin/packer-${BUILDARCH} /usr/local/bin/packer
 COPY --from=devkit /usr/local/bin/packer-provisioner-goss-${BUILDARCH} /usr/local/bin/packer-provisioner-goss
 COPY --from=devkit /usr/local/bin/govc /usr/local/bin/
 COPY --from=devkit /root/.config/packer/plugins/ ${PACKER_PLUGIN_PATH}
+COPY --from=devkit /usr/share/ansible/collections/ansible_collections/ /usr/share/ansible/collections/ansible_collections/
 COPY bin/konvoy-image-${BUILDARCH} /usr/local/bin/konvoy-image
 COPY images /root/images
 COPY ansible /root/ansible

@@ -39,22 +39,13 @@ See [`konvoy-image`](docs/cli/konvoy-image.md)
 
 ## Development
 
-### Devkit Container
+## Recommended Tools
 
-A devkit is provided to quickly allow usage and development. To build and
-launch the devkit run:
-
-```sh
-make devkit.run
-```
-
-By default, the `devkit.run` target will run a shell, to specify another
-command, set the `WHAT` variable. For example to run `make build` in the
-devkit run:
-
-```sh
-make devkit.run WHAT='make build'
-```
+* [Go](https://golang.org/doc/install)
+* [Docker](https://docs.docker.com/get-docker/)
+* [Docker Buildx](https://docs.docker.com/build/install-buildx/)
+* [goreleaser](https://goreleaser.com/install/)
+* [magefile](https://magefile.org/)
 
 ### Linting
 
@@ -80,18 +71,12 @@ will fail under `super-linter`, and is skipped for
 
 ### Testing
 
-To run a specific end-to-end test, use a subset of the commands used to run the complete set of end-to-end tests in CI.
+[Magefile](https://magefile.org/) tool is used to run konvoy image builder e2e tests.
 
-In this example, we run the end-to-end test against the latest version of Flatcar Linux:
-
+In this example, we run the end-to-end test against the Centos 7.9 with air-gapped and fips configuration in AWS
 ```sh
-WHAT="make flatcar-version.yaml" make devkit.run
-make devkit.run \
-    WHAT="./bin/konvoy-image build images/ami/flatcar.yaml --overrides flatcar-version.yaml -v 5" \
-    INTERACTIVE=""
-make docker.clean-latest-ami
+runE2e "centos 7.9" "offline-fips" aws false
 ```
-
 ### Building
 
 To build the CLI command run:
