@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.3.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.6...v2.3.0) (2023-04-03)
+
+
+### Features
+
+* do not copy stdin and set tty to false  ([#738](https://github.com/mesosphere/konvoy-image-builder/issues/738)) ([a5665e3](https://github.com/mesosphere/konvoy-image-builder/commit/a5665e3a94f2f047a7a99a06d4561bae1082a2a3))
+* upgrade kubernetes version to 1.26.3 ([#748](https://github.com/mesosphere/konvoy-image-builder/issues/748)) ([4986fc1](https://github.com/mesosphere/konvoy-image-builder/commit/4986fc11f9cee94382143d65bd52a0aeee1df5c0))
+
+
+### Bug Fixes
+
+* Retry containerd yum/rpm tasks up to 30s ([#749](https://github.com/mesosphere/konvoy-image-builder/issues/749)) ([9dfda76](https://github.com/mesosphere/konvoy-image-builder/commit/9dfda76fa377410905b85ffd3155bfab1df72a44))
+
 ## [2.2.6](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.5...v2.2.6) (2023-03-17)
 
 
