@@ -66,7 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
 
       - name: Create Pull Request in mesosphere/cluster-api-provider-preprovisioned for Konvoy-image-builder version update
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
