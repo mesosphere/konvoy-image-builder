@@ -112,6 +112,8 @@
     state: present
   when:
     - ansible_distribution_major_version == '7'
+  retries: 5
+  delay: 6
 
 # RPM
 - name: add Konvoy Kubernetes rpm repository
@@ -124,5 +126,5 @@
     gpgcheck: true
   register: konvoy_repo_installation_rpm
   until: konvoy_repo_installation_rpm is success
-  retries: 3
-  delay: 3
+  retries: 5
+  delay: 6
