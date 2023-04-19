@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -62,6 +63,7 @@ const (
 
 	containerWorkingDir = "/tmp/kib"
 	windows             = "windows"
+	envContainerEngine  = "KIB_CONTAINER_ENGINE"
 )
 
 var ErrEnv = errors.New("manifest not support")
@@ -71,8 +73,6 @@ func EnvError(o string) error {
 }
 
 type Runner struct {
-	version string
-
 	usr                   *user.User
 	usrGroup              *user.Group
 	homeDir               string
@@ -81,6 +81,7 @@ type Runner struct {
 	workingDir            string
 	env                   map[string]string
 	volumes               []volume
+	containerEngine       string
 }
 
 type volume struct {
@@ -95,11 +96,22 @@ func NewRunner() *Runner {
 	if err != nil {
 		log.Fatalf("error getting user home directory: %v", err)
 	}
+	containerEngine := os.Getenv(envContainerEngine)
+	if containerEngine == "" {
+		if isDockerAvailable() {
+			containerEngine = "docker"
+		} else if isPodmanAvailable() {
+			containerEngine = "podman"
+		} else {
+			log.Fatalf("failed to detect any supported container engine")
+		}
+	}
 
 	return &Runner{
 		homeDir:               home,
 		supplementaryGroupIDs: []int{},
 		env:                   map[string]string{},
+		containerEngine:       containerEngine,
 	}
 }
 
@@ -291,7 +303,7 @@ func (r *Runner) setupSSHAgent() {
 
 func (r *Runner) dockerRun(args []string) error {
 	cmd := exec.Command(
-		"docker", "run",
+		r.containerEngine, "run",
 		"--interactive",
 		"--tty=false",
 		"--rm",
@@ -338,44 +350,6 @@ func (r *Runner) dockerRun(args []string) error {
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("cmd failed %w", err)
-	}
-	return nil
-}
-
-// checkDockerVersion checks whether the docker version is greater than then
-// minimum required.
-func (r *Runner) checkDockerVersion() error {
-	_, err := exec.Command("docker", "version", "-f", "{{.Client.Version}}").Output()
-	if err != nil {
-		if ee, ok := err.(*exec.ExitError); ok {
-			os.Stderr.Write(ee.Stderr)
-		}
-		return err
-	}
-	return nil
-}
-
-// checkDockerRunning checks whether the docker daemon is running.
-func (r *Runner) checkDockerRunning() error {
-	out, err := exec.Command("docker", "info", "-f", "{{json .ServerVersion}}").Output()
-	if err != nil || len(out) == 0 {
-		if ee, ok := err.(*exec.ExitError); ok {
-			os.Stderr.Write(ee.Stderr)
-		}
-		return err
-	}
-	return nil
-}
-
-func (r *Runner) checkRequirements() error {
-	err := r.checkDockerVersion()
-	if err != nil {
-		return err
-	}
-
-	err = r.checkDockerRunning()
-	if err != nil {
-		return err
 	}
 	return nil
 }
@@ -475,13 +449,6 @@ func (r *Runner) maskSSHKnownHosts() error {
 func (r *Runner) Run(args []string) error {
 	// Get the Konvoy image version for marker file
 	var err error
-	r.version = ""
-
-	err = r.checkRequirements()
-	if err != nil {
-		return err
-	}
-
 	// Lookup for current user and its group ID.
 	// This also look for supplementary group IDs to set.
 	err = r.setUserAndGroups()
@@ -542,7 +509,7 @@ func (r *Runner) Run(args []string) error {
 
 	r.setHTTPProxyEnv()
 
-	err = image.LoadImage()
+	err = image.LoadImage(r.containerEngine)
 	if err != nil {
 		return fmt.Errorf("failed to load image %w", err)
 	}
@@ -551,4 +518,26 @@ func (r *Runner) Run(args []string) error {
 	r.setupSSHAgent()
 	// Run the command in the konvoy docker container.
 	return r.dockerRun(args)
+}
+
+func isPodmanAvailable() bool {
+	cmd := exec.Command("podman", "-v")
+	var buff bytes.Buffer
+	cmd.Stdout = &buff
+	err := cmd.Run()
+	if err != nil {
+		return false
+	}
+	return strings.HasPrefix(buff.String(), "podman version")
+}
+
+func isDockerAvailable() bool {
+	cmd := exec.Command("docker", "-v")
+	var buff bytes.Buffer
+	cmd.Stdout = &buff
+	err := cmd.Run()
+	if err != nil {
+		return false
+	}
+	return strings.HasPrefix(buff.String(), "Docker version")
 }
