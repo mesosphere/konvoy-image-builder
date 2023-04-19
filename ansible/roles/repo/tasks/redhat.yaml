@@ -99,7 +99,7 @@
   when:
     - ansible_distribution_major_version == '8'
 
-- name: install epel-release for centos 7
+- name: add EPEL rpm repository
   copy:
     src: files/etc/yum.repos.d/epel-7.repo
     dest: /etc/yum.repos.d/epel.repo
