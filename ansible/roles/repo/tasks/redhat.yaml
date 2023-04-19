@@ -99,21 +99,12 @@
   when:
     - ansible_distribution_major_version == '8'
 
-- name: add epel gpg key for centos 7
-  rpm_key:
-    state: present
-    key: "{{ epel_centos_7_rpm_gpg_key }}"
-  when:
-    - ansible_distribution_major_version == '7'
-
 - name: install epel-release for centos 7
-  yum:
-    name: "{{ epel_centos_7_rpm }}"
-    state: present
+  copy:
+    src: files/etc/yum.repos.d/epel-7.repo
+    dest: /etc/yum.repos.d/epel.repo
   when:
     - ansible_distribution_major_version == '7'
-  retries: 5
-  delay: 6
 
 # RPM
 - name: add Konvoy Kubernetes rpm repository
