@@ -3,9 +3,6 @@ kubernetes_version: "1.25.4"
 
 download_images: true
 
-epel_centos_7_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-epel_centos_7_rpm_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
-
 packer:
   goss_arch: amd64
   goss_entry_file: goss/goss.yaml
