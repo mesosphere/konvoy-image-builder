@@ -201,6 +201,7 @@ func (r *Runner) setVSphereEnv() error {
 		envRedHatSubscriptionManagerOrgID,
 		envVSphereSSHUserName,
 		envVSphereSSHPassword,
+		envVsphereSSHPrivatekeyFile,
 	} {
 		value, found := os.LookupEnv(env)
 		if found {
