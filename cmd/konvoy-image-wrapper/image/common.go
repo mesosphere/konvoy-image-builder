@@ -9,7 +9,7 @@ import (
 )
 
 func imageLoaded(containerEngine, image string) bool {
-	cmd := exec.Command(containerEngine,  "image", "inspect", image)
+	cmd := exec.Command(containerEngine, "image", "inspect", image)
 	stdErrBuf := bytes.NewBuffer(make([]byte, 0))
 	cmd.Stderr = stdErrBuf
 	if err := cmd.Run(); err != nil {
