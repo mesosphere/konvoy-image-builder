@@ -87,7 +87,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - uses: dsaltares/fetch-gh-release-asset@1.1.0
+      - uses: dsaltares/fetch-gh-release-asset@1.1.1
         with:
           version: "tags/${{ github.ref_name }}"
           file: "konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64.tar.gz"
@@ -137,7 +137,7 @@ jobs:
           security delete-keychain "${{ env.KEYCHAIN }}".keychain
 
       - name: Get checksum file
-        uses: dsaltares/fetch-gh-release-asset@1.1.0
+        uses: dsaltares/fetch-gh-release-asset@1.1.1
         with:
           version: "tags/${{ github.ref_name }}"
           file: "konvoy-image-builder_${{ github.ref_name }}_checksums.txt"
