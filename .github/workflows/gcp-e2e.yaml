@@ -20,7 +20,7 @@ jobs:
         - "centos 7.9"
         buildConfig:
         - "basic"
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
@@ -65,4 +65,3 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" gcp true
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          KIB_CONTAINER_ENGINE: "podman"
