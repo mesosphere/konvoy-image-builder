@@ -40,7 +40,6 @@ COPY --from=devkit /usr/share/ansible/collections/ansible_collections/ /usr/shar
 COPY bin/konvoy-image-${BUILDARCH} /usr/local/bin/konvoy-image
 COPY images /root/images
 COPY ansible /root/ansible
-COPY packer /root/packer
 
 WORKDIR /root
 ENTRYPOINT ["/usr/local/bin/konvoy-image"]
