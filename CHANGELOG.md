@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.3.0...v2.3.1) (2023-05-02)
+
+
+### Bug Fixes
+
+* install epel repo in RHEL 7 using static repo file  ([#781](https://github.com/mesosphere/konvoy-image-builder/issues/781)) ([4b70d2c](https://github.com/mesosphere/konvoy-image-builder/commit/4b70d2c7f325b0e31b57cc9f7b207d539bcae749))
+* run flatcar update scripts only in ansible playbook  ([#775](https://github.com/mesosphere/konvoy-image-builder/issues/775)) ([a1be118](https://github.com/mesosphere/konvoy-image-builder/commit/a1be11865d1100fbd35cb946e57c66dc1a9deb7e))
+* set SSH_PRIVATE_KEY_FILE env variable for docker  wrapper ([#786](https://github.com/mesosphere/konvoy-image-builder/issues/786)) ([a176b88](https://github.com/mesosphere/konvoy-image-builder/commit/a176b88f4b8e4cc84cdafcdeabe3b07b97335a2d))
+
 ## [2.3.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.6...v2.3.0) (2023-04-03)
 
 
