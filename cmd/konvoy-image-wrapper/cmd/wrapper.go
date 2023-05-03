@@ -308,6 +308,8 @@ func (r *Runner) dockerRun(args []string) error {
 		"--tty=false",
 		"--rm",
 		"--net=host",
+		"--security-opt",
+		"label=disable",
 		"-w", containerWorkingDir,
 	)
 

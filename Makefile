@@ -466,7 +466,7 @@ GORELEASER_SINGLE_TARGET ?= true
 build.snapshot: dist/konvoy-image_linux_amd64/konvoy-image
 build.snapshot:
 	$(call print-target)
-	goreleaser --parallelism=1 --skip-publish --snapshot --single-target=$(GORELEASER_SINGLE_TARGET) --clean
+	goreleaser build --parallelism=1 --snapshot --snapshot --single-target=$(GORELEASER_SINGLE_TARGET) --clean
 
 .PHONY: diff
 diff: ## git diff
