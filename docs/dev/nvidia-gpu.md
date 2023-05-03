@@ -7,8 +7,11 @@ hardware.
 To enable GPU build, add the following override:
 
 ```yaml
+---
 gpu:
-  type: nvidia
+  types:
+    - nvidia
+build_name_extra: "-nvidia"
 ```
 
 There is an existing prepared override file in `overrides/nvidia.yaml` that will
@@ -18,29 +21,25 @@ Example:
 
 ```sh
 build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-79.yaml \
-    --overrides overrides/nvidia.yaml
+    --overrides overrides/nvidia.yaml \
+    --instance-type=g4dn.2xlarge
 ```
 
-*NOTE* That for creating flatcar GPU images, the builder node has to have GPU support. `konvoy-image-builder` allows for providing the instance type to use:
+Example of building on AWS with Ubuntu 20.04 as the operating system and `p2.xlarge` as the AWS machines you are going to use:
 
 ```sh
---aws-instance-type <INSTANCE_TYPE_NAME>
+konvoy-image build aws --region us-west-2 images/ami/ubuntu-2004.yaml \
+    --overrides overrides/nvidia.yaml \
+    --instance-type=p2.xlarge
 ```
 
-Example:
-```sh
-build --region us-west-2 \
-    --aws-instance-type p2.xlarge \
-    images/ami/flatcar.yaml \
-    --overrides overrides/nvidia.yaml
-```
+**NOTE:** Providing the instance type is required for building GPU images.
 
 ## Supported images
 
 | base os   | nvidia             |
 |-----------|--------------------|
 | centos-7  | :white_check_mark: |
-| centos-8  | :white_check_mark: |
 | rhel-79   | :white_check_mark: |
 | rhel-84   | :white_check_mark: |
 | rhel-86   | :white_check_mark: |
