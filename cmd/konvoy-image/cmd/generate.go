@@ -29,6 +29,7 @@ func NewGenereateCmd() *cobra.Command {
 
 	cmd.AddCommand(NewAWSGenerateCmd())
 	cmd.AddCommand(NewAzureGenerateCmd())
+	cmd.AddCommand(NewvSphereISOGenerateCmd())
 
 	initGenerateFlags(cmd.Flags(), flags)
 

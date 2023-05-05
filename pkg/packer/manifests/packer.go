@@ -22,3 +22,8 @@ var PackerGCP []byte
 //
 //go:embed vsphere/packer.pkr.hcl
 var PackerVsphere []byte
+
+// PackerVsphere storage for vSphere ISO packer base template.
+//
+//go:embed vsphere-iso/packer.pkr.hcl
+var PackerVsphereISO []byte

@@ -37,6 +37,7 @@ func NewBuildCmd() *cobra.Command {
 	cmd.AddCommand(NewAWSBuildCmd())
 	cmd.AddCommand(NewAzureBuildCmd())
 	cmd.AddCommand(NewGCPBuildCmd())
+	cmd.AddCommand(NewvSphereISOBuildCmd())
 
 	initBuildFlags(cmd.Flags(), flags)
 

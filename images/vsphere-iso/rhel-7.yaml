@@ -1,0 +1,30 @@
+---
+download_images: true
+build_name: "centos-79"
+packer_builder_type: "vsphere-iso"
+guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
+guestinfo_datasource_ref: "v1.4.0"
+guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasource_ref}}/install.sh"
+packer:
+  # a subscription is needed so please provide iso_url and iso_checksum by yourself
+  # iso_url: ""
+  # iso_checksum: ""
+  insecure_connection: "false"
+  vsphere_guest_os_type: "rhel7_64Guest"
+  guest_os_type: "rhel7-64"
+  distro_name: "RHEL"
+  distro_version: "7"
+  # cluster: ""
+  # datacenter: ""
+  # datastore: ""
+  # folder: ""
+  # network: ""
+  # resource_pool: ""
+  # goss params
+  distro_name: "RHEL"
+  distro_version: "7.9"
+# Use following overrides to select the authentication method that can be used with base template
+# ssh_username: ""
+# ssh_password: ""
+# ssh_private_key_file = "" #
+# ssh_agent_auth: false  # is set to true, ssh_password and ssh_private_key will be ignored

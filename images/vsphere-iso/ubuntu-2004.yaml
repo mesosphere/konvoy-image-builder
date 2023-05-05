@@ -1,0 +1,22 @@
+---
+download_images: true
+build_name: "ubuntu-2004"
+packer_builder_type: "vsphere-iso"
+guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
+guestinfo_datasource_ref: "v1.4.0"
+guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasource_ref}}/install.sh"
+packer:
+  iso_url: "https://releases.ubuntu.com/20.04.5/ubuntu-20.04.5-live-server-amd64.iso"
+  iso_checksum: "sha256:5035be37a7e9abbdc09f0d257f3e33416c1a0fb322ba860d42d74aa75c3468d4"
+  insecure_connection: "false"
+  vsphere_guest_os_type: "ubuntu64Guest"
+  guest_os_type: "ubuntu64Guest"
+  distro_name: "Ubuntu"
+  distro_version: "20.04"
+  distribution: "Ubuntu"
+  distribution_version: "20.04"
+# Use following overrides to select the authentication method that can be used with base template
+# ssh_username: ""
+# ssh_password: ""
+# ssh_private_key_file = "" #
+# ssh_agent_auth: false  # is set to true, ssh_password and ssh_private_key will be ignored

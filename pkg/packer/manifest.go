@@ -12,6 +12,7 @@ var packerManifests = map[string][]byte{
 	"amazon":        manifests.PackerAmazon,
 	"azure":         manifests.PackerAzure,
 	"vsphere":       manifests.PackerVsphere,
+	"vsphere-iso":   manifests.PackerVsphereISO,
 	"googlecompute": manifests.PackerGCP,
 }
 
