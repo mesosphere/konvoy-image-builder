@@ -286,45 +286,10 @@ build {
     inline           = ["if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi", "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done", "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"]
   }
 
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["HTTP_PROXY=${var.http_proxy}", "http_proxy=${var.http_proxy}", "HTTPS_PROXY=${var.https_proxy}", "https_proxy=${var.https_proxy}", "NO_PROXY=${var.no_proxy}", "no_proxy=${var.no_proxy}", "BUILD_NAME=${var.build_name}"]
-    execute_command  = "BUILD_NAME=${var.build_name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["HTTP_PROXY=${var.http_proxy}", "http_proxy=${var.http_proxy}", "HTTPS_PROXY=${var.https_proxy}", "https_proxy=${var.https_proxy}", "NO_PROXY=${var.no_proxy}", "no_proxy=${var.no_proxy}", "BUILD_NAME=${var.build_name}"]
-    execute_command  = "BUILD_NAME=${var.build_name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["BUILD_NAME=${var.build_name}"]
-    execute_command  = "BUILD_NAME=${build.name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["BUILD_NAME=${build.name}"]
-    execute_command  = "BUILD_NAME=${build.name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["BUILD_NAME=${build.name}"]
-    execute_command  = "BUILD_NAME=${var.build_name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/bootstrap-flatcar.sh"
-  }
-
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
     extra_arguments  = ["--extra-vars", "${local.ansible_extra_vars}"]
-    playbook_file    = "./ansible/provision.yaml"
+    playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
 
