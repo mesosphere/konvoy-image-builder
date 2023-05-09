@@ -1,5 +1,63 @@
 # Changelog
 
+## [2.3.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.3.0...v2.3.1) (2023-05-02)
+
+
+### Bug Fixes
+
+* install epel repo in RHEL 7 using static repo file  ([#781](https://github.com/mesosphere/konvoy-image-builder/issues/781)) ([4b70d2c](https://github.com/mesosphere/konvoy-image-builder/commit/4b70d2c7f325b0e31b57cc9f7b207d539bcae749))
+* run flatcar update scripts only in ansible playbook  ([#775](https://github.com/mesosphere/konvoy-image-builder/issues/775)) ([a1be118](https://github.com/mesosphere/konvoy-image-builder/commit/a1be11865d1100fbd35cb946e57c66dc1a9deb7e))
+* set SSH_PRIVATE_KEY_FILE env variable for docker  wrapper ([#786](https://github.com/mesosphere/konvoy-image-builder/issues/786)) ([a176b88](https://github.com/mesosphere/konvoy-image-builder/commit/a176b88f4b8e4cc84cdafcdeabe3b07b97335a2d))
+
+## [2.3.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.6...v2.3.0) (2023-04-03)
+
+
+### Features
+
+* do not copy stdin and set tty to false  ([#738](https://github.com/mesosphere/konvoy-image-builder/issues/738)) ([a5665e3](https://github.com/mesosphere/konvoy-image-builder/commit/a5665e3a94f2f047a7a99a06d4561bae1082a2a3))
+* upgrade kubernetes version to 1.26.3 ([#748](https://github.com/mesosphere/konvoy-image-builder/issues/748)) ([4986fc1](https://github.com/mesosphere/konvoy-image-builder/commit/4986fc11f9cee94382143d65bd52a0aeee1df5c0))
+
+
+### Bug Fixes
+
+* Retry containerd yum/rpm tasks up to 30s ([#749](https://github.com/mesosphere/konvoy-image-builder/issues/749)) ([9dfda76](https://github.com/mesosphere/konvoy-image-builder/commit/9dfda76fa377410905b85ffd3155bfab1df72a44))
+
+## [2.2.6](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.5...v2.2.6) (2023-03-17)
+
+
+### Bug Fixes
+
+* uses 80gb for all azure builds and removes extra ([#739](https://github.com/mesosphere/konvoy-image-builder/issues/739)) ([33d0a77](https://github.com/mesosphere/konvoy-image-builder/commit/33d0a77625cc3c7d15129d360944cf295ff17dc1))
+
+## [2.2.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.4...v2.2.5) (2023-03-15)
+
+
+### Bug Fixes
+
+* set image_version 9.1 for Rocky on Azure  ([#735](https://github.com/mesosphere/konvoy-image-builder/issues/735)) ([811c046](https://github.com/mesosphere/konvoy-image-builder/commit/811c046e51c3b86e5c1702833ea3471971ecab98))
+
+## [2.2.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.3...v2.2.4) (2023-03-09)
+
+
+### Bug Fixes
+
+* allow building aws images using source_ami  ([#723](https://github.com/mesosphere/konvoy-image-builder/issues/723)) ([4e63f53](https://github.com/mesosphere/konvoy-image-builder/commit/4e63f532ddcb834c5ff83d18a032a99fbfe29d1b))
+
+## [2.2.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.2...v2.2.3) (2023-03-03)
+
+
+### Bug Fixes
+
+* set correct compute_gallery_image_id ([#718](https://github.com/mesosphere/konvoy-image-builder/issues/718)) ([a369543](https://github.com/mesosphere/konvoy-image-builder/commit/a369543370c385f1ce027dafe80d34d6cb65e21f))
+
+## [2.2.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.1...v2.2.2) (2023-03-03)
+
+
+### Bug Fixes
+
+* pass datacenter ([#710](https://github.com/mesosphere/konvoy-image-builder/issues/710)) ([eb54427](https://github.com/mesosphere/konvoy-image-builder/commit/eb544275526eb5f739f129e597dfaca0be8fb894))
+* set limitnofile ([#713](https://github.com/mesosphere/konvoy-image-builder/issues/713)) ([6477937](https://github.com/mesosphere/konvoy-image-builder/commit/64779374c0c993e92d65ef97898176053fbd405e))
+
 ## [2.2.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.2.0...v2.2.1) (2023-03-01)
 
 

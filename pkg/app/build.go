@@ -138,13 +138,8 @@ func (b *Builder) Run(workDir string, buildOptions BuildOptions) error {
 	var manifestPath string
 	if buildOptions.CustomManifestPath == "" {
 		// copy internal manifest to working directory
-		opts := packer.RenderOptions{
-			SourceAMIDefined: isSourceAMIProvided(config),
-			DryRun:           buildOptions.DryRun,
-		}
-
 		var data []byte
-		data, err = packer.GetManifest(builderType, &opts)
+		data, err = packer.GetManifest(builderType)
 		if err != nil {
 			return fmt.Errorf("error getting internal manifest: %w", err)
 		}

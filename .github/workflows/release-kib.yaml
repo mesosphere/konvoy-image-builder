@@ -29,7 +29,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Setup Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: 'go.mod'
           cache: true
@@ -37,7 +37,7 @@ jobs:
           cache: true
 
       - name: Download GoReleaser
-        run: go install github.com/goreleaser/goreleaser@v1.11.5
+        run: go install github.com/goreleaser/goreleaser@v1.15.2
 
       - name: Login to dockerhub Registry
         uses: docker/login-action@v2
@@ -92,8 +92,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
 
       - name: Create Pull Request in mesosphere/cluster-api-provider-preprovisioned for Konvoy-image-builder version update
-      - name: Create Pull Request in mesosphere/cluster-api-provider-preprovisioned for Konvoy-image-builder version update
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
@@ -117,8 +116,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - uses: dsaltares/fetch-gh-release-asset@1.1.0
-      - uses: dsaltares/fetch-gh-release-asset@1.1.0
+      - uses: dsaltares/fetch-gh-release-asset@1.1.1
         with:
           version: "tags/${{ github.ref_name }}"
           file: "konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64.tar.gz"
@@ -133,7 +131,7 @@ jobs:
         run: rm "konvoy-image-bundle-${{ github.ref_name }}_darwin_amd64.tar.gz"
 
       - name: Import Code-Signing Certificates
-        uses: Apple-Actions/import-codesign-certs@v1
+        uses: Apple-Actions/import-codesign-certs@v2
         with:
           keychain: ${{ env.KEYCHAIN }}
           # The certificates in a PKCS12 file encoded as a base64 string
@@ -168,8 +166,7 @@ jobs:
           security delete-keychain "${{ env.KEYCHAIN }}".keychain
 
       - name: Get checksum file
-        uses: dsaltares/fetch-gh-release-asset@1.1.0
-        uses: dsaltares/fetch-gh-release-asset@1.1.0
+        uses: dsaltares/fetch-gh-release-asset@1.1.1
         with:
           version: "tags/${{ github.ref_name }}"
           file: "konvoy-image-builder_${{ github.ref_name }}_checksums.txt"

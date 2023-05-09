@@ -6,12 +6,12 @@ packer:
   distribution_version: "rockylinux-9"  # SKU
   # Azure Rocky linux official image: https://portal.azure.com/#view/Microsoft_Azure_Marketplace/GalleryItemDetailsBladeNopdl/id/erockyenterprisesoftwarefoundationinc1653071250513.rockylinux-9
   image_publisher: "erockyenterprisesoftwarefoundationinc1653071250513"
-  image_version: "latest"
+  image_version: "9.1.20230215"
   ssh_username: "azureuser"
   plan_image_sku: "rockylinux-9" # SKU
   plan_image_offer: "rockylinux-9" # offer
   plan_image_publisher: "erockyenterprisesoftwarefoundationinc1653071250513" # publisher
 
-build_name: "rocky-90-az"
+build_name: "rocky-91-az"
 packer_builder_type: "azure"
 python_path: ""

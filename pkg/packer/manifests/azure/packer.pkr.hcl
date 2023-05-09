@@ -55,6 +55,11 @@ variable "distribution_version" {
   type = string
 }
 
+variable "disk_size" {
+  type = number
+  default = 80
+}
+
 variable "existing_ansible_ssh_args" {
   type    = string
   default = "${env("ANSIBLE_SSH_ARGS")}"
@@ -355,6 +360,7 @@ source "azure-arm" "kib_image" {
   managed_image_name                = local.managed_image_name
   managed_image_resource_group_name = var.resource_group_name
   os_type                           = "Linux"
+  os_disk_size_gb                   = var.disk_size
   plan_info {
     plan_name      = var.plan_image_sku
     plan_product   = var.plan_image_offer
@@ -392,45 +398,10 @@ build {
     inline           = ["if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi", "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done", "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"]
   }
 
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["HTTP_PROXY=${var.http_proxy}", "http_proxy=${var.http_proxy}", "HTTPS_PROXY=${var.https_proxy}", "https_proxy=${var.https_proxy}", "NO_PROXY=${var.no_proxy}", "no_proxy=${var.no_proxy}", "BUILD_NAME=${var.build_name}"]
-    execute_command  = "BUILD_NAME=${var.build_name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["HTTP_PROXY=${var.http_proxy}", "http_proxy=${var.http_proxy}", "HTTPS_PROXY=${var.https_proxy}", "https_proxy=${var.https_proxy}", "NO_PROXY=${var.no_proxy}", "no_proxy=${var.no_proxy}", "BUILD_NAME=${var.build_name}"]
-    execute_command  = "BUILD_NAME=${var.build_name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["BUILD_NAME=${var.build_name}"]
-    execute_command  = "BUILD_NAME=${build.name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["BUILD_NAME=${build.name}"]
-    execute_command  = "BUILD_NAME=${build.name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/no-update-flatcar.sh"
-  }
-
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["BUILD_NAME=${build.name}"]
-    execute_command  = "BUILD_NAME=${var.build_name}; if [[ \"$${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{ .Vars }} -S -E bash '{{ .Path }}'; fi"
-    script           = "./packer/files/bootstrap-flatcar.sh"
-  }
-
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
     extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}"]
-    playbook_file    = "./ansible/provision.yaml"
+    playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
 
@@ -485,7 +456,7 @@ build {
       distribution_version   = "${var.distribution_version}"
       kubernetes_cni_version = "${var.kubernetes_cni_semver}"
       kubernetes_version     = "${var.kubernetes_full_version}"
-      compute_gallery_image_id = "/subscriptions/${var.subscription_id}}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Compute/galleries/${var.shared_image_gallery_name}/images/${var.gallery_image_name}/versions/${local.shared_image_gallery_image_version}"
+      compute_gallery_image_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Compute/galleries/${var.shared_image_gallery_name}/images/${var.gallery_image_name}/versions/${local.shared_image_gallery_image_version}"
     }
     output = "${var.manifest_output}"
   }

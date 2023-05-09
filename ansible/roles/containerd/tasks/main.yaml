@@ -4,6 +4,12 @@
     path: "/etc/systemd/system/containerd.service.d/"
     state: directory
 
+- name: Create containerd max files
+  template:
+    dest: /etc/systemd/system/containerd.service.d/max-files.conf
+    src: etc/systemd/system/containerd.service.d/max-files.conf
+    mode: 0644
+
 - name: Create containerd proxy conf
   template:
     dest: /etc/systemd/system/containerd.service.d/http-proxy.conf

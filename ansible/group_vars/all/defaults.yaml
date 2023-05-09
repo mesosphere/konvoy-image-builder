@@ -3,7 +3,9 @@ python_path: ""
 
 # This is also in images/common.yaml as that's where the go code expects it to be.
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
-kubernetes_version: "1.24.6"
+#
+# IMPORTANT When you update kubernetes_version, also update crictl_version.
+kubernetes_version: "1.26.3"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 containerd_version: "1.4.13"
@@ -55,7 +57,7 @@ aws_images: []
 
 extra_images: []
 
-containerd_supplementary_images: ["docker.io/mesosphere/toml-merge:v0.1.0"]
+containerd_supplementary_images: ["ghcr.io/mesosphere/toml-merge:v0.2.0", "ghcr.io/mesosphere/dynamic-credential-provider:v0.2.0"]
 
 containerd_base_url: https://packages.d2iq.com/dkp/containerd
 kubernetes_http_source: https://dl.k8s.io/release

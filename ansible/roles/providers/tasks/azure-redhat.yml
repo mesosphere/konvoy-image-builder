@@ -15,6 +15,39 @@
 - name: import the Microsoft repository key
   command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
+- block:
+    # TODO: remove cut utility fix to initramfs after its been fixed upstream
+    # https://bugzilla.redhat.com/show_bug.cgi?id=2165042
+    - name: expose cut utility to initramfs setup
+      shell: echo 'install_items+=" /usr/bin/cut "' > /etc/dracut.conf.d/cut.conf
+
+    - name: refresh dracut
+      shell: dracut -f
+
+    # https://d2iq.atlassian.net/browse/D2IQ-96417 removes extra 4 and 5 partitions so that growpart cloud-init module can expand the root filesystem to the rest of the disk.
+    #
+    # [packer@pkrvmia9ljyrxtg ~]$ lsblk -oMOUNTPOINT,PKNAME -P | grep 'MOUNTPOINT="/"' | cut -d= -f3  | xargs
+    # sda
+    - name: Get Device that holds root filesystem
+      shell: lsblk -oMOUNTPOINT,PKNAME -P | grep 'MOUNTPOINT="/"' | cut -d= -f3  | xargs
+      register: rootdevice
+
+    - name: Loop over ansible block devices
+      parted:
+        number: "{{ item }}"
+        state: absent
+        device: "/dev/{{ rootdevice.stdout }}"
+      with_items:
+        - 4
+        - 5
+
+    - name: unconditionally reboot the machine with all defaults
+      ansible.builtin.reboot:
+  when:
+    - packer["image_publisher"] == "erockyenterprisesoftwarefoundationinc1653071250513" and packer["image_version"] == "9.1.20230215"
+
+
+
 - name: Add the yum repository for the azure cli
   yum_repository:
     name: azure_cli

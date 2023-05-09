@@ -2,8 +2,7 @@
 name: E2E Tests - Build AWS AMI
 on:
   workflow_dispatch:
-  pull_request:
-    types: [labeled, synchronize]
+  workflow_call:
 
 permissions:
   contents: read
@@ -85,12 +84,6 @@ jobs:
           buildConfig: offline
     runs-on: self-hosted
     continue-on-error: false
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (github.event.action == 'labeled' &&  github.event.label.name == 'runs-e2e-tests') ||
-        (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests'))
-      )
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3
@@ -99,7 +92,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: 'go.mod'
           cache: true
@@ -121,7 +114,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/konvoy-image-builder
           aws-region: us-west-2

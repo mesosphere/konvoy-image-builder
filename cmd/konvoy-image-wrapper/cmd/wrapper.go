@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
-	terminal "golang.org/x/term"
 
 	"github.com/mesosphere/konvoy-image-builder/cmd/konvoy-image-wrapper/image"
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
@@ -39,14 +38,20 @@ const (
 
 	envAzureLocation = "AZURE_LOCATION"
 
-	envVSphereServer                     = "VSPHERE_SERVER"
-	envVSphereUser                       = "VSPHERE_USERNAME"
-	envVSpherePassword                   = "VSPHERE_PASSWORD"
-	envRedHatSubscriptionManagerUser     = "RHSM_USER"
-	envRedHatSubscriptionManagerPassword = "RHSM_PASS"
-	envVSphereSSHUserName                = "SSH_USERNAME"
-	envVSphereSSHPassword                = "SSH_PASSWORD"
-	envVsphereSSHPrivatekeyFile          = "SSH_PRIVATE_KEY_FILE"
+	envVSphereServer     = "VSPHERE_SERVER"
+	envVSphereUser       = "VSPHERE_USERNAME"
+	envVSpherePassword   = "VSPHERE_PASSWORD"
+	envVSphereDatacenter = "VSPHERE_DATACENTER"
+	envVsphereDatastore  = "VSPHERE_DATASTORE"
+
+	envRedHatSubscriptionManagerUser          = "RHSM_USER"
+	envRedHatSubscriptionManagerPassword      = "RHSM_PASS"
+	envRedHatSubscriptionManagerActivationKey = "RHSM_ACTIVATION_KEY"
+	envRedHatSubscriptionManagerOrgID         = "RHSM_ORG_ID"
+
+	envVSphereSSHUserName       = "SSH_USERNAME"
+	envVSphereSSHPassword       = "SSH_PASSWORD"
+	envVsphereSSHPrivatekeyFile = "SSH_PRIVATE_KEY_FILE"
 
 	//nolint:gosec // environment var set by user
 	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
@@ -61,13 +66,12 @@ const (
 
 var ErrEnv = errors.New("manifest not support")
 
-func ENvError(o string) error {
+func EnvError(o string) error {
 	return fmt.Errorf("%w: %s", ErrEnv, o)
 }
 
 type Runner struct {
 	version string
-	tty     bool
 
 	usr                   *user.User
 	usrGroup              *user.Group
@@ -93,7 +97,6 @@ func NewRunner() *Runner {
 	}
 
 	return &Runner{
-		tty:                   terminal.IsTerminal(int(os.Stdout.Fd())),
 		homeDir:               home,
 		supplementaryGroupIDs: []int{},
 		env:                   map[string]string{},
@@ -125,7 +128,7 @@ func (r *Runner) setUserAndGroups() error {
 	if err == nil {
 		gid, err := strconv.Atoi(dockerGroup.Gid)
 		if err != nil {
-			return ENvError(fmt.Sprintf("docker gid '%s' is not an int", dockerGroup.Gid))
+			return EnvError(fmt.Sprintf("docker gid '%s' is not an int", dockerGroup.Gid))
 		}
 		r.supplementaryGroupIDs = append(r.supplementaryGroupIDs, gid)
 	}
@@ -190,10 +193,15 @@ func (r *Runner) setVSphereEnv() error {
 		envVSphereServer,
 		envVSphereUser,
 		envVSpherePassword,
+		envVSphereDatacenter,
+		envVsphereDatastore,
 		envRedHatSubscriptionManagerUser,
 		envRedHatSubscriptionManagerPassword,
+		envRedHatSubscriptionManagerActivationKey,
+		envRedHatSubscriptionManagerOrgID,
 		envVSphereSSHUserName,
 		envVSphereSSHPassword,
+		envVsphereSSHPrivatekeyFile,
 	} {
 		value, found := os.LookupEnv(env)
 		if found {
@@ -282,11 +290,10 @@ func (r *Runner) setupSSHAgent() {
 }
 
 func (r *Runner) dockerRun(args []string) error {
-	//nolint:gosec // running docker is inherently insecure
 	cmd := exec.Command(
 		"docker", "run",
 		"--interactive",
-		"--tty="+strconv.FormatBool(r.tty),
+		"--tty=false",
 		"--rm",
 		"--net=host",
 		"-w", containerWorkingDir,
@@ -325,7 +332,6 @@ func (r *Runner) dockerRun(args []string) error {
 
 	cmd.Args = append(cmd.Args, image.Tag())
 	cmd.Args = append(cmd.Args, args...)
-	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

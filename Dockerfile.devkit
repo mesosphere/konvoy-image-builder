@@ -1,11 +1,11 @@
 # hadolint ignore=DL3029
-FROM --platform=linux/amd64 hashicorp/packer:1.8.5 as packer-amd64
+FROM --platform=linux/amd64 hashicorp/packer:1.8.6 as packer-amd64
 # hadolint ignore=DL3029
-FROM --platform=linux/arm64 hashicorp/packer:1.8.5 as packer-arm64
-FROM golangci/golangci-lint:v1.50.1-alpine as golangci-lint
-FROM goreleaser/goreleaser:v1.14.1 as goreleaser
-FROM docker:20.10 as docker
-FROM vmware/govc:v0.29.0 as govc
+FROM --platform=linux/arm64 hashicorp/packer:1.8.6 as packer-arm64
+FROM golangci/golangci-lint:v1.52.2-alpine as golangci-lint
+FROM goreleaser/goreleaser:v1.17.2 as goreleaser
+FROM docker:23.0 as docker
+FROM vmware/govc:v0.30.4 as govc
 
 FROM golang:1.19.3-alpine3.15 as builder
 
@@ -53,12 +53,7 @@ ARG DOCKER_PY_VERSION=5.0.3
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
 
-ARG USER_NAME=root
-ARG USER_ID=0
-ARG GROUP_NAME=root
-ARG GROUP_ID=0
-ARG DOCKER_GID=0
-ARG MINDTHEGAP_VERSION=1.0.0
+ARG MINDTHEGAP_VERSION=1.7.3
 
 COPY requirements.txt /tmp/
 COPY requirements-devkit.txt /tmp/
@@ -87,14 +82,15 @@ RUN apk add --no-cache \
         --requirement /tmp/requirements-devkit.txt \
     && rm -rf \
         /root/.cache
+
 # Managing the below ansible dependencies is covered in docs/dev/ansible-modules.md
 RUN mkdir -p /usr/share/ansible/collections \
     && ansible-galaxy \
     collection install \
-    community.general \
-    ansible.netcommon \
-    ansible.posix \
-    ansible.utils \
+    community.general:==6.4.0 \
+    ansible.netcommon:==5.0.0 \
+    ansible.posix:==1.5.1 \
+    ansible.utils:==2.9.0 \
     -p /usr/share/ansible/collections
 
 # hadolint ignore=DL4006
@@ -112,26 +108,6 @@ COPY --from=goreleaser /usr/bin/goreleaser /usr/local/bin/
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 COPY --from=govc /govc /usr/local/bin/
 COPY --from=builder /tools /usr/local/bin
-RUN getent group "${GROUP_ID}" > /dev/null 2>&1 \
-    || addgroup -S -g "${GROUP_ID}" "${GROUP_NAME}"
-
-# NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
-# hadolint ignore=DL3059
-RUN getent passwd "${USER_ID}" > /dev/null 2>&1 \
-    || adduser -D -u "${USER_ID}" -G "${GROUP_NAME}" "${USER_NAME}" \
-    || adduser -D -u "${USER_ID}" -g "${GROUP_ID}" "${USER_NAME}"
-
-# NOTE(jkoelker) Ignore "A && B || C is not if-then-else"
-# NOTE(jkoelker) Ignore "Multiple consecutive `RUN`"
-# hadolint ignore=SC2015,DL3059
-RUN if [ "${DOCKER_GID}" -ne "${GROUP_ID}" ]; then \
-        getent group "${DOCKER_GID}" > /dev/null 2>&1 \
-            || addgroup -S -g "${DOCKER_GID}" "docker"; \
-        getent group ${DOCKER_GID} >> /tmp/docker.group \
-            && cut -d: -f1 /tmp/docker.group >> /tmp/docker.group_name \
-            && addgroup "${USER_NAME}" "$(cat /tmp/docker.group_name)"; \
-        rm -rf /tmp/docker.group*; \
-    fi
 
 # hadolint ignore=DL3059
 RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN="$(cat /run/secrets/githubtoken)" export PACKER_GITHUB_API_TOKEN && \

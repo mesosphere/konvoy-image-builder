@@ -16,7 +16,7 @@ jobs:
       max-parallel: 10
       matrix:
         include:
-          - os: "rocky 9.0"
+          - os: "rocky 9.1"
             buildConfig: "basic"
           - os: "ubuntu 20.04"
             buildConfig: "basic"
@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: 'go.mod'
           cache: true
