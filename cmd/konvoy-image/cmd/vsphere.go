@@ -127,6 +127,7 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.ResourcePool,
 		"ssh-publickey",
 		"",
+		//nolint:lll // a long help line
 		"Path to SSH public key which will be copied to the image template. Ensure to set ssh-privatekey-file or load the private key into ssh-agent",
 	)
 
