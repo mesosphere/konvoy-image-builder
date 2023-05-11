@@ -68,46 +68,46 @@ func addVSphereArgs(fs *flag.FlagSet, vsphereArgs *app.VSphereArgs) {
 		&vsphereArgs.Template,
 		"template",
 		"",
-		"Base template to be used. Can include folder. <templatename> or <folder>/<templatename>."+
-			"Required value: you can pass the template name through an override file, or image definition file.",
+		"Base template to be used. Can include folder. <templatename> or <folder>/<templatename>. "+
+			"Required value: you can pass the template name through an override file or image definition file.",
 	)
 	fs.StringVar(
 		&vsphereArgs.Datacenter,
 		"datacenter",
 		"",
-		"The vSphere datacenter."+
-			"Required value: you can pass the datacenter name through an override file, or image definition file.",
+		"The vSphere datacenter. "+
+			"Required value: you can pass the datacenter name through an override file or image definition file.",
 	)
 
 	fs.StringVar(
 		&vsphereArgs.Cluster,
 		"cluster",
 		"",
-		"vSphere cluster to be used. Alternatively set host."+
-			"Required value: you can pass the cluster name through an override file, or image definition file.",
+		"vSphere cluster to be used. Alternatively set host. "+
+			"Required value: you can pass the cluster name through an override file or image definition file.",
 	)
 
 	fs.StringVar(
 		&vsphereArgs.Host,
 		"host",
 		"",
-		"vSphere host to be used. Alternatively set cluster."+
-			"Required value: you can pass the host name through an override file, or image definition file.",
+		"vSphere host to be used. Alternatively set cluster. "+
+			"Required value: you can pass the host name through an override file or image definition file.",
 	)
 	fs.StringVar(
 		&vsphereArgs.Datastore,
 		"datastore",
 		"",
-		"vSphere datastore used to build and store the image template."+
-			"Required value: you can pass the datastore name through an override file, or image definition file.",
+		"vSphere datastore used to build and store the image template. "+
+			"Required value: you can pass the datastore name through an override file or image definition file.",
 	)
 	fs.StringVar(
 		&vsphereArgs.Network,
 		"network",
 		"",
 		"vSphere network used to build image template. "+
-			"Ensure the host running the command has access to this network."+
-			"Required value: you can pass the network name through an override file, or image definition file.",
+			"Ensure the host running the command has access to this network. "+
+			"Required value: you can pass the network name through an override file or image definition file.",
 	)
 	fs.StringVar(
 		&vsphereArgs.Folder,
