@@ -61,9 +61,11 @@ const (
 	envHTTPProxy  = "HTTP_PROXY"
 	envNoProxy    = "NO_PROXY"
 
-	containerWorkingDir = "/tmp/kib"
-	windows             = "windows"
-	envContainerEngine  = "KIB_CONTAINER_ENGINE"
+	containerWorkingDir   = "/tmp/kib"
+	windows               = "windows"
+	envContainerEngine    = "KIB_CONTAINER_ENGINE"
+	containerEngineDocker = "docker"
+	containerEnginePodman = "podman"
 )
 
 var ErrEnv = errors.New("manifest not support")
@@ -99,9 +101,9 @@ func NewRunner() *Runner {
 	containerEngine := os.Getenv(envContainerEngine)
 	if containerEngine == "" {
 		if isDockerAvailable() {
-			containerEngine = "docker"
+			containerEngine = containerEngineDocker
 		} else if isPodmanAvailable() {
-			containerEngine = "podman"
+			containerEngine = containerEnginePodman
 		} else {
 			log.Fatalf("failed to detect any supported container engine")
 		}
@@ -313,7 +315,7 @@ func (r *Runner) dockerRun(args []string) error {
 		"-w", containerWorkingDir,
 	)
 
-	if runtime.GOOS != windows {
+	if runtime.GOOS != windows && r.containerEngine == containerEngineDocker {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
 		r.addBindVolume(r.tempDir, r.homeDir)
 	}
