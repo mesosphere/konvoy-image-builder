@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'shalin/*'
+      - 'faiq/*'
   workflow_dispatch:
   workflow_call:
 
