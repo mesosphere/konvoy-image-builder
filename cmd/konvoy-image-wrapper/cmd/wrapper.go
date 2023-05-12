@@ -478,13 +478,15 @@ func (r *Runner) Run(args []string) error {
 
 	// Setup the user and group mappings in the container so that uid and
 	// gid on the host can be properly resolved in the container too.
-	err = r.setUserMapping()
-	if err != nil {
-		return fmt.Errorf("failed to set user mapping %w", err)
-	}
-	err = r.setGroupMapping()
-	if err != nil {
-		return fmt.Errorf("failed to set group mapping %w", err)
+	if r.containerEngine == containerEnginePodman {
+		err = r.setUserMapping()
+		if err != nil {
+			return fmt.Errorf("failed to set user mapping %w", err)
+		}
+		err = r.setGroupMapping()
+		if err != nil {
+			return fmt.Errorf("failed to set group mapping %w", err)
+		}
 	}
 
 	err = r.maskSSHConfig()
