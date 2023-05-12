@@ -314,6 +314,9 @@ func (r *Runner) dockerRun(args []string) error {
 		"label=disable",
 		"-w", containerWorkingDir,
 	)
+	if r.containerEngine == containerEnginePodman {
+		cmd.Args = append(cmd.Args, "--userns=keep-id")
+	}
 
 	if runtime.GOOS != windows && r.containerEngine == containerEngineDocker {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
@@ -478,7 +481,7 @@ func (r *Runner) Run(args []string) error {
 
 	// Setup the user and group mappings in the container so that uid and
 	// gid on the host can be properly resolved in the container too.
-	if r.containerEngine == containerEnginePodman {
+	if r.containerEngine == containerEngineDocker {
 		err = r.setUserMapping()
 		if err != nil {
 			return fmt.Errorf("failed to set user mapping %w", err)
