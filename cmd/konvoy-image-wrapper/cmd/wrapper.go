@@ -304,6 +304,7 @@ func (r *Runner) setupSSHAgent() {
 }
 
 func (r *Runner) dockerRun(args []string) error {
+	//nolint:gosec // we validate this
 	cmd := exec.Command(
 		r.containerEngine, "run",
 		"--interactive",
