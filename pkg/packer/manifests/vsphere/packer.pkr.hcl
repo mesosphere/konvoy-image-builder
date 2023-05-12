@@ -8,6 +8,10 @@ packer {
       version = ">= 1.0.2"
       source  = "github.com/hashicorp/ansible"
     }
+    sshkey = {
+      version = ">= 1.0.1"
+      source  = "github.com/ivoronin/sshkey"
+    }
   }
 }
 
@@ -144,6 +148,12 @@ variable "ssh_password" {
 variable "ssh_private_key_file" {
   type    = string
   default = env("SSH_PRIVATE_KEY_FILE")
+  sensitive = true
+}
+
+variable "ssh_public_key" {
+  type    = string
+  default = env("SSH_PUBLIC_KEY")
   sensitive = true
 }
 
@@ -339,6 +349,10 @@ variable "remote_folder" {
   default = "/tmp"
 }
 
+data "sshkey" "kibkey" {
+  name = "konvoy-image-builder-tmpkey"
+}
+
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
@@ -353,8 +367,36 @@ locals {
   ssh_bastion_private_key_file = var.ssh_bastion_private_key_file
   ssh_bastion_username         = var.ssh_bastion_username
   vm_name                      = "konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
-}
 
+  # if only a public key is given we expect the private key to be loaded into ssh-agent
+  ssh_agent_auth = var.ssh_agent_auth  != "false" ? true : var.ssh_private_key_file == "" && var.ssh_public_key != ""
+
+  # inject generated key if no agent auth or private key is given
+  ssh_private_key_file = var.ssh_private_key_file != "" ? var.ssh_private_key_file : local.ssh_agent_auth ? "" : data.sshkey.kibkey.private_key_path
+  # when ssh_private_key_file uses the generated key inject its public key
+  ssh_public_key = local.ssh_private_key_file == data.sshkey.kibkey.private_key_path ? data.sshkey.kibkey.public_key : var.ssh_public_key
+
+  # prepare cloud-init
+  cloud_init = <<EOF
+#cloud-config
+users:
+  - name: ${var.ssh_username}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo, wheel
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${local.ssh_public_key}
+EOF
+
+  # boolean toggling cloud-init injection. Check if local.ssh_public_key is not empty
+  use_cloud_init = local.ssh_public_key != ""
+  configuration_parameters = local.use_cloud_init ? {
+    "guestinfo.userdata" = base64encode(local.cloud_init),
+    "guestinfo.userdata.encoding" = "base64",
+    "guestinfo.metadata" = ""
+    "guestinfo.metadata.encoding" = "base64"
+  } : {}
+}
 # source blocks are generated from your builders; a source can be referenced in
 # build blocks. A build block runs provisioner and post-processors on a
 # source. Read the documentation for source blocks here:
@@ -380,7 +422,7 @@ source "vsphere-clone" "kib_image" {
   ssh_bastion_username         = local.ssh_bastion_username
   ssh_key_exchange_algorithms  = ["curve25519-sha256@libssh.org", "ecdh-sha2-nistp256", "ecdh-sha2-nistp384", "ecdh-sha2-nistp521", "diffie-hellman-group14-sha1", "diffie-hellman-group1-sha1"]
   ssh_password                 = var.ssh_password
-  ssh_private_key_file         = var.ssh_private_key_file
+  ssh_private_key_file         = local.ssh_private_key_file
   ssh_timeout                  = "4h"
   ssh_username                 = var.ssh_username
   template                     = var.template
@@ -388,6 +430,16 @@ source "vsphere-clone" "kib_image" {
   vcenter_server               = var.vcenter_server
   vm_name                      = local.vm_name
   resource_pool                = var.resource_pool
+
+  cd_label = "cidata"
+  cd_content = {
+    "/user-data"       = local.cloud_init,
+    "/user-data.txt"       = local.cloud_init,
+    "/meta-data"       = "",
+  }
+
+  // try injecting cloud-init via guestinfo
+  configuration_parameters = local.configuration_parameters
 
   create_snapshot     = !var.dry_run
   convert_to_template = !var.dry_run
@@ -398,7 +450,7 @@ build {
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
-    extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}"]
+    extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}", "--scp-extra-args", "'-O'"]
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = var.ssh_username
   }
