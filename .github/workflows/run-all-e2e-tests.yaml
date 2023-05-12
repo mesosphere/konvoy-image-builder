@@ -45,6 +45,18 @@ jobs:
     uses: ./.github/workflows/aws-e2e.yaml
     secrets: inherit
 
+  podman-aws-e2e-tests:
+    needs: [build-devkit-image]
+    if: |
+      github.event_name == 'pull_request' &&
+      (
+        (github.event.action == 'labeled' &&  (github.event.label.name == 'runs-e2e-tests' || github.event.label.name == 'runs-aws-tests')) ||
+        (github.event.action == 'synchronize' && (contains(github.event.pull_request.labels.*.name, 'runs-e2e-tests') ||  contains(github.event.pull_request.labels.*.name, 'runs-aws-tests')))
+      ) ||
+      contains(fromJson('["workflow_dispatch"]'), github.event_name)
+    uses: ./.github/workflows/podman-aws-e2e.yaml
+    secrets: inherit
+
   vsphere-e2e-tests:
     needs: [build-devkit-image]
     if: |

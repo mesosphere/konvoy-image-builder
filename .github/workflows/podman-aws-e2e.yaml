@@ -1,9 +1,6 @@
 # Runs Azure tests when pull request opened, repopened or synchronized
 name: Podman E2E Tests - Build AWS AMI
 on:
-  push:
-    branches:
-      - 'shalin/*'
   workflow_dispatch:
   workflow_call:
 

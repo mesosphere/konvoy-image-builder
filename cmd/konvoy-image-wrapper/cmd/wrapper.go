@@ -304,18 +304,20 @@ func (r *Runner) setupSSHAgent() {
 }
 
 func (r *Runner) dockerRun(args []string) error {
+	//nolint:gosec // we validate this
 	cmd := exec.Command(
 		r.containerEngine, "run",
 		"--interactive",
 		"--tty=false",
 		"--rm",
 		"--net=host",
-		"--security-opt",
-		"label=disable",
 		"-w", containerWorkingDir,
 	)
+	if r.containerEngine == containerEnginePodman {
+		cmd.Args = append(cmd.Args, "--userns=keep-id", "--security-opt", "label=disable")
+	}
 
-	if runtime.GOOS != windows && r.containerEngine == containerEngineDocker {
+	if runtime.GOOS != windows {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
 		r.addBindVolume(r.tempDir, r.homeDir)
 	}
@@ -478,13 +480,15 @@ func (r *Runner) Run(args []string) error {
 
 	// Setup the user and group mappings in the container so that uid and
 	// gid on the host can be properly resolved in the container too.
-	err = r.setUserMapping()
-	if err != nil {
-		return fmt.Errorf("failed to set user mapping %w", err)
-	}
-	err = r.setGroupMapping()
-	if err != nil {
-		return fmt.Errorf("failed to set group mapping %w", err)
+	if r.containerEngine == containerEngineDocker {
+		err = r.setUserMapping()
+		if err != nil {
+			return fmt.Errorf("failed to set user mapping %w", err)
+		}
+		err = r.setGroupMapping()
+		if err != nil {
+			return fmt.Errorf("failed to set group mapping %w", err)
+		}
 	}
 
 	err = r.maskSSHConfig()
