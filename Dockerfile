@@ -42,5 +42,10 @@ COPY bin/konvoy-image-${BUILDARCH} /usr/local/bin/konvoy-image
 COPY images /root/images
 COPY ansible /root/ansible
 
+# this is needed for containerd tar
+# place it in /usr/share/ansible/collections, the container will be run with a different user
+RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
+RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install community.general -p /usr/share/ansible/collections
+
 WORKDIR /root
 ENTRYPOINT ["/usr/local/bin/konvoy-image"]

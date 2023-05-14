@@ -155,6 +155,7 @@ $(ENVSUBST_ASSETS)/envsubst:
 	chmod +x $(ENVSUBST_ASSETS)/envsubst
 
 
+include make/molecule.mk
 include hack/pip-packages/Makefile
 include test/infra/aws/Makefile
 include test/infra/vsphere/Makefile

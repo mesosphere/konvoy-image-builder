@@ -71,7 +71,9 @@
   when: ansible_os_family in ["RedHat", "Suse"]
 
 - name: install aws agents Ubuntu
-  shell: snap install amazon-ssm-agent --classic
+  community.general.snap:
+    name: amazon-ssm-agent
+    classic: true
   when: ansible_distribution == "Ubuntu"
 
 - name: Ensure ssm agent is running Ubuntu
@@ -80,4 +82,3 @@
     state: started
     enabled: yes
   when: ansible_distribution == "Ubuntu"
-

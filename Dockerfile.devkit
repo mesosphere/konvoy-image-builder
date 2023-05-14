@@ -109,6 +109,12 @@ COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 COPY --from=govc /govc /usr/local/bin/
 COPY --from=builder /tools /usr/local/bin
 
+# this is needed for containerd tar
+# place it in /usr/share/ansible/collections, the container will be run with a different user
+RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install ansible.utils -p /usr/share/ansible/collections
+RUN mkdir -p /usr/share/ansible/collections && ansible-galaxy collection install community.general -p /usr/share/ansible/collections
+
+
 # hadolint ignore=DL3059
 RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN="$(cat /run/secrets/githubtoken)" export PACKER_GITHUB_API_TOKEN && \
     packer-${BUILDARCH} plugins install github.com/hashicorp/googlecompute ">=1.0.11" && \

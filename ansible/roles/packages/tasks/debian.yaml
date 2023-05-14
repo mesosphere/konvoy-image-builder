@@ -17,6 +17,7 @@
   until: result is success
   retries: 3
   delay: 3
+  changed_when: false
 
 - name: install common debs
   apt:
@@ -31,35 +32,50 @@
   retries: 3
   delay: 3
 
-- name: remove version hold for kubelet and kubectl packages
-  command: apt-mark unhold {{ item }}
-  with_items:
-    - kubelet
-    - kubectl
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+    strategy: first
 
+# only run if kubelet or kubectl ar not installed or with the wrong version
+- name: unlock, install and lock kubelet and kubectl packages
+  block:
+    - name: remove version hold for kubelet and kubectl packages
+      command: apt-mark unhold {{ item }}
+      with_items:
+        - kubelet
+        - kubectl
 
-- name: install kubelet deb package
-  apt:
-    name: kubelet={{ package_versions.kubernetes_deb }}
-    state: present
-    force: true
-  register: kubelet_installation_deb
-  until: kubelet_installation_deb is success
-  retries: 3
-  delay: 3
+    - name: install kubelet deb package
+      apt:
+        name: kubelet={{ package_versions.kubernetes_deb }}
+        state: present
+        force: true
+      register: kubelet_installation_deb
+      until: kubelet_installation_deb is success
+      retries: 3
+      delay: 3
 
-- name: install kubectl deb package
-  apt:
-    name: kubectl={{ package_versions.kubernetes_deb }}
-    state: present
-    force: true
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+    - name: install kubectl deb package
+      apt:
+        name: kubectl={{ package_versions.kubernetes_deb }}
+        state: present
+        force: true
+      register: result
+      until: result is success
+      retries: 3
+      delay: 3
 
-- name: add version hold for kubelet and kubectl packages
-  command: apt-mark hold {{ item }}
-  with_items:
-    - kubelet
-    - kubectl
+    - name: add version hold for kubelet and kubectl packages
+      command: apt-mark hold {{ item }}
+      with_items:
+        - kubelet
+        - kubectl
+  when: "'kubelet' not in ansible_facts.packages or
+         'kubectl' not in ansible_facts.packages or
+         ('kubelet' in ansible_facts.packages and
+          kubernetes_version not in
+            ansible_facts.packages['kubelet'][0]['version']) or
+         ('kubectl' in ansible_facts.packages and
+          kubernetes_version not in
+             ansible_facts.packages['kubectl'][0]['version'])"

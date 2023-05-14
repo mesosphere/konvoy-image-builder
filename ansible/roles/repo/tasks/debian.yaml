@@ -2,6 +2,7 @@
 # FIXME: remove after upgrading ansible
   - name: update apt cache
     command: apt-get update
+    changed_when: false
 
   - name: add Kubernetes deb key
     apt_key:

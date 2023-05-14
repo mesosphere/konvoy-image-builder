@@ -5,6 +5,7 @@
   failed_when:
     - remove_version_hold.rc != 0
     - remove_version_hold.rc != 100  # package does not exist
+  changed_when: remove_version_hold.rc == 0
 
 # remove previous install with KIB through an OS package
 - name: remove containerd.io deb package
