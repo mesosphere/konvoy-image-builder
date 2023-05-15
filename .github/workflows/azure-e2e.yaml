@@ -19,7 +19,9 @@ jobs:
         - "rocky 9.1"
         buildConfig:
         - "basic"
-    runs-on: self-hosted
+    runs-on: 
+    - self-hosted
+    - small
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository

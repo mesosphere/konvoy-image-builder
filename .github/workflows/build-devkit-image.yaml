@@ -21,7 +21,9 @@ concurrency:
 
 jobs:
   build-push-devkit:
-    runs-on: ubuntu-latest
+    runs-on: 
+    - self-hosted
+    - small
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v3

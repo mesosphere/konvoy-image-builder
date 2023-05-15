@@ -42,7 +42,9 @@ jobs:
           - os: "ubuntu 20.04"
             buildConfig: "nvidia"
 
-    runs-on: self-hosted
+    runs-on: 
+    - self-hosted
+    - small
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository

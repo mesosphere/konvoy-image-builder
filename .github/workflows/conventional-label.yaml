@@ -8,6 +8,8 @@ on:
       - edited
 jobs:
   label:
-    runs-on: ubuntu-latest
+    runs-on: 
+    - self-hosted
+    - micro
     steps:
       - uses: bcoe/conventional-release-labels@v1
