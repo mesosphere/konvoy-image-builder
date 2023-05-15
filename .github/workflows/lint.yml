@@ -16,7 +16,7 @@ permissions:
 jobs:
   super-linter:
     runs-on: 
-    - self-hosted§
+    - self-hosted
     - small
     steps:
       - name: Checkout konvoy-image-builder repository
