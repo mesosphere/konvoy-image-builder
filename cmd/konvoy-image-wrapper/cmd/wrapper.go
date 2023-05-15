@@ -315,7 +315,7 @@ func (r *Runner) dockerRun(args []string) error {
 		cmd.Args = append(cmd.Args, "--userns=keep-id", "--security-opt", "label=disable")
 	}
 
-	if runtime.GOOS != windows {
+	if runtime.GOOS != windows && r.containerEngine == containerEngineDocker {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
 		r.addBindVolume(r.tempDir, r.homeDir)
 	}
