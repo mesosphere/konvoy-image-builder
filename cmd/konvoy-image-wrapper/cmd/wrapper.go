@@ -63,7 +63,6 @@ const (
 
 	containerWorkingDir   = "/tmp/kib"
 	windows               = "windows"
-	envContainerEngine    = "KIB_CONTAINER_ENGINE"
 	containerEngineDocker = "docker"
 	containerEnginePodman = "podman"
 )
@@ -98,15 +97,14 @@ func NewRunner() *Runner {
 	if err != nil {
 		log.Fatalf("error getting user home directory: %v", err)
 	}
-	containerEngine := os.Getenv(envContainerEngine)
-	if containerEngine == "" {
-		if isDockerAvailable() {
-			containerEngine = containerEngineDocker
-		} else if isPodmanAvailable() {
-			containerEngine = containerEnginePodman
-		} else {
-			log.Fatalf("failed to detect any supported container engine")
-		}
+
+	containerEngine := ""
+	if isDockerAvailable() {
+		containerEngine = containerEngineDocker
+	} else if isPodmanAvailable() {
+		containerEngine = containerEnginePodman
+	} else {
+		log.Fatalf("failed to detect any supported container engine")
 	}
 
 	return &Runner{
