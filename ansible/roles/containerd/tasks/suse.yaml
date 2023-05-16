@@ -30,9 +30,11 @@
   retries: 15
   delay: 60
 
-- name: install libseccomp package
+- name: install containerd extra packages
   zypper:
-    name: libseccomp2
+    name:
+      - libseccomp2
+      - apparmor-abstractions
     state: present
   register: result
   until: result is success
