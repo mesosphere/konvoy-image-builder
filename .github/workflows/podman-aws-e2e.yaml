@@ -55,8 +55,7 @@ jobs:
 
       - name: Run E2E test for AWS centos 7.9 using podman
         run: |-
-          export KIB_CONTAINER_ENGINE=podman
-          dist/konvoy-image-wrapper_linux_amd64_v1/konvoy-image build aws images/ami/centos-79.yaml --dry-run
+          KIB_CONTAINER_ENGINE=podman dist/konvoy-image-wrapper_linux_amd64_v1/konvoy-image build aws images/ami/centos-79.yaml --dry-run
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           KIB_CONTAINER_ENGINE: podman
