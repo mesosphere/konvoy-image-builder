@@ -63,6 +63,7 @@ const (
 
 	containerWorkingDir   = "/tmp/kib"
 	windows               = "windows"
+	containerEngineEnv    = "KIB_CONTAINER_ENGINE"
 	containerEngineDocker = "docker"
 	containerEnginePodman = "podman"
 )
@@ -97,14 +98,16 @@ func NewRunner() *Runner {
 	if err != nil {
 		log.Fatalf("error getting user home directory: %v", err)
 	}
-
-	containerEngine := ""
-	if isDockerAvailable() {
-		containerEngine = containerEngineDocker
-	} else if isPodmanAvailable() {
+	var containerEngine string
+	switch p := os.Getenv(containerEngineEnv); p {
+	case "":
+		containerEngine = detectContainerEngine()
+	case "podman":
 		containerEngine = containerEnginePodman
-	} else {
-		log.Fatalf("failed to detect any supported container engine")
+	case "docker":
+		containerEngine = containerEngineDocker
+	default:
+		log.Printf("ignoring unknown value %q for %s", p, containerEngineEnv)
 	}
 
 	return &Runner{
@@ -524,6 +527,20 @@ func (r *Runner) Run(args []string) error {
 	r.setupSSHAgent()
 	// Run the command in the konvoy docker container.
 	return r.dockerRun(args)
+}
+
+// detectContainerEngine determines which container engine should be used.
+// if both docker and podman installed then docker engine takes precedence
+// if none of them are detected then fallback to existing behavior of using
+// docker as a container engine.
+func detectContainerEngine() string {
+	if isDockerAvailable() {
+		return containerEngineDocker
+	} else if isPodmanAvailable() {
+		return containerEnginePodman
+	}
+	// fall back to current behavior for backward compatibility
+	return containerEngineDocker
 }
 
 func isPodmanAvailable() bool {
