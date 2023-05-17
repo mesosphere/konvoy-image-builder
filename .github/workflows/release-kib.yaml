@@ -12,7 +12,9 @@ on:
 name: Release konvoy-image-builder
 jobs:
   release-to-github:
-    runs-on: self-hosted
+    runs-on: 
+    - self-hosted
+    - small
     steps:
       - uses: actions/checkout@v3
         with:
