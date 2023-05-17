@@ -30,7 +30,9 @@ jobs:
           buildConfig: offline-fips
         - os: "rocky 9.1"
           buildConfig: offline-fips
-    runs-on: self-hosted
+    runs-on: 
+    - self-hosted
+    - small
     continue-on-error: false
     steps:
       - uses: actions/checkout@v3

@@ -91,7 +91,9 @@ jobs:
           buildConfig: nvidia
         - os: "rocky 9.1"
           buildConfig: offline-nvidia
-    runs-on: self-hosted
+    runs-on: 
+    - self-hosted
+    - small
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
