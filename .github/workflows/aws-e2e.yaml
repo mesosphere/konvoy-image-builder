@@ -83,7 +83,9 @@ jobs:
           buildConfig: nvidia
         - os: "oracle 7.9"
           buildConfig: offline
-    runs-on: self-hosted
+    runs-on:
+    - self-hosted
+    - small
     continue-on-error: false
     if: |
       github.event_name == 'pull_request' &&

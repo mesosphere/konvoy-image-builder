@@ -27,7 +27,9 @@ jobs:
           buildConfig: fips
         - os: "ubuntu 20.04"
           buildConfig: offline-fips
-    runs-on: self-hosted
+    runs-on:
+    - self-hosted
+    - small
     continue-on-error: false
     if: |
       github.event_name == 'pull_request' &&
