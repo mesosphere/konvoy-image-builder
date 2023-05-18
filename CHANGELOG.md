@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.4.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.3.1...v2.4.0) (2023-05-18)
+
+
+### Features
+
+* podman as a supported container engine in konvoy image builder  ([#789](https://github.com/mesosphere/konvoy-image-builder/issues/789)) ([ea2d1a5](https://github.com/mesosphere/konvoy-image-builder/commit/ea2d1a5b6bec73b0b8613a25b07e14b87b452d9e))
+* vsphere cloud init and command  ([#800](https://github.com/mesosphere/konvoy-image-builder/issues/800)) ([c08d048](https://github.com/mesosphere/konvoy-image-builder/commit/c08d0484683fd8e75e76bad3085598c97d627d51))
+
+
+### Bug Fixes
+
+* remove packer directory from goreleaser configuration ([#788](https://github.com/mesosphere/konvoy-image-builder/issues/788)) ([df75332](https://github.com/mesosphere/konvoy-image-builder/commit/df75332d8c460117500e013d2607896759d1e03a))
+
 ## [2.3.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.3.0...v2.3.1) (2023-05-02)
 
 
