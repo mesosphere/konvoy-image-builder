@@ -461,19 +461,12 @@ mod-tidy: ## go mod tidy
 	$(call print-target)
 	go mod tidy
 
+GORELEASER_SINGLE_TARGET ?= true
 .PHONY: build.snapshot
 build.snapshot: dist/konvoy-image_linux_amd64/konvoy-image
 build.snapshot:
 	$(call print-target)
-	# NOTE(jkoelker) shenanigans to get around goreleaser and
-	#                `make release-bundle` being able to share the same
-	#                `Dockerfile`. Unfortunatly goreleaser forbids
-	#                copying the dist folder into the temporary folder
-	#                that it uses as its docker build context ;(.
-	# NOTE (faiq): does anyone use this target?
-	mkdir -p bin
-	cp dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image bin/konvoy-image
-	goreleaser --parallelism=1 --skip-publish --snapshot --clean
+	goreleaser build --parallelism=1 --snapshot --single-target=$(GORELEASER_SINGLE_TARGET) --clean
 
 .PHONY: diff
 diff: ## git diff
