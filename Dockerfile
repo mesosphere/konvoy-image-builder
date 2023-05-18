@@ -38,9 +38,8 @@ COPY --from=devkit /usr/local/bin/govc /usr/local/bin/
 COPY --from=devkit /root/.config/packer/plugins/ ${PACKER_PLUGIN_PATH}
 COPY --from=devkit /usr/share/ansible/collections/ansible_collections/ /usr/share/ansible/collections/ansible_collections/
 COPY bin/konvoy-image-${BUILDARCH} /usr/local/bin/konvoy-image
-COPY images /root/images
-COPY ansible /root/ansible
-COPY packer /root/packer
+COPY images /opt/images
+COPY ansible /opt/ansible
 
-WORKDIR /root
+WORKDIR /opt
 ENTRYPOINT ["/usr/local/bin/konvoy-image"]
