@@ -67,6 +67,7 @@ builds:
           env:
             - DOCKER_DEVKIT_DEFAULT_ARGS="--rm"
             - BUILDARCH={{.Arch }}
+            - REPO_REV=v{{trimprefix .Version "v"}}
 
 archives:
   - id: konvoy-image-bundle
