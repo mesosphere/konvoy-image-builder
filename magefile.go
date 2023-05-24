@@ -34,6 +34,7 @@ var (
 	offline       = "offline"
 	offlineFIPS   = "offline-fips"
 	offlineNvidia = "offline-nvidia"
+	rhck          = "rhck"
 
 	validOS = []string{
 		"centos 7.9",
@@ -56,6 +57,7 @@ var (
 		offline,
 		offlineFIPS,
 		offlineNvidia,
+		rhck,
 	}
 
 	aws   = "aws"
@@ -281,6 +283,8 @@ func getOverridesFromBuildConfig(buildConfig string) []string {
 		return []string{"offline-fips.yaml", "fips.yaml"}
 	case offlineNvidia:
 		return []string{"offline.yaml", "offline-nvidia.yaml"}
+	case rhck:
+		return []string{"rhck.yaml"}
 	}
 	return nil
 }

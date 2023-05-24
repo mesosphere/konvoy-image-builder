@@ -77,6 +77,8 @@ jobs:
             buildConfig: "basic"
           - os: "oracle 7.9"
             buildConfig: "fips"
+          - os: "oracle 7.9"
+            buildConfig: "rhck"
           # Flatcar
           - os: "flatcar"
             buildConfig: "basic"
