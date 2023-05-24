@@ -1,5 +1,4 @@
 ---
-
 - name: RHCK kernel
   when:
     - oracle_kernel == "RHCK"
@@ -74,3 +73,6 @@
 
       when:
         - ansible_distribution_major_version == '8'
+
+    - name: reboot to load RHCK kernel
+      ansible.builtin.reboot:
