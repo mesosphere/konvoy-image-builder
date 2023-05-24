@@ -1,0 +1,3 @@
+---
+- include: oracle.yaml
+  when: ansible_distribution == "OracleLinux"
