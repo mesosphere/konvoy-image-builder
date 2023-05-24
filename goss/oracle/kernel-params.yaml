@@ -14,6 +14,3 @@ kernel-param:
 
   net.bridge.bridge-nf-call-ip6tables:
     value: "1"
-
-  fs.may_detach_mounts:
-    value: "1"
