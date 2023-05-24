@@ -14,83 +14,85 @@ jobs:
       fail-fast: false
       max-parallel: 10
       matrix:
-        os:
-        - "centos 7.9"
-        - "redhat 7.9"
-        - "redhat 8.4"
-        - "redhat 8.6"
-        - "sles 15"
-        - "oracle 7.9"
-        - "flatcar"
-        - "ubuntu 18.04"
-        - "ubuntu 20.04"
-        - "rocky 9.1"
-        buildConfig:
-        - "basic"
-        - "fips"
-        - "nvidia"
-        - "offline"
-        - "offline-fips"
-        - "offline-nvidia"
-        exclude:
-        # we only support basic
-        - os: flatcar
-          buildConfig: nvidia
-        - os: flatcar
-          buildConfig: fips
-        - os: flatcar
-          buildConfig: offline-fips
-        - os: flatcar
-          buildConfig: offline-nvidia
-        - os: flatcar
-          buildConfig: offline
-        # we only support basic
-        - os: "ubuntu 18.04"
-          buildConfig: nvidia
-        - os: "ubuntu 18.04"
-          buildConfig: fips
-        - os: "ubuntu 18.04"
-          buildConfig: offline-fips
-        - os: "ubuntu 18.04"
-          buildConfig: offline-nvidia
-        - os: "ubuntu 18.04"
-          buildConfig: offline
-        # we only support gpu
-        - os: "ubuntu 20.04"
-          buildConfig: fips
-        - os: "ubuntu 20.04"
-          buildConfig: offline-fips
-        - os: "ubuntu 20.04"
-          buildConfig: offline-nvidia
-        - os: "ubuntu 20.04"
-          buildConfig: offline
-        # we only support gpu
-        - os: "sles 15"
-          buildConfig: fips
-        - os: "sles 15"
-          buildConfig: offline-fips
-        - os: "sles 15"
-          buildConfig: offline-nvidia
-        - os: "sles 15"
-          buildConfig: offline
-        # we only support fips
-        # https://docs.d2iq.com/dkp/2.4/supported-infrastructure-operating-systems
-        - os: "oracle 7.9"
-          buildConfig: offline-fips
-        - os: "oracle 7.9"
-          buildConfig: offline-nvidia
-        - os: "oracle 7.9"
-          buildConfig: nvidia
-        - os: "oracle 7.9"
-          buildConfig: offline
-        - os: "rocky 9.1"
-          buildConfig: fips
-        - os: "rocky 9.1"
-          buildConfig: offline-fips
-        - os: "rocky 9.1"
-          buildConfig: nvidia
-        - os: "rocky 9.1"
-          buildConfig: offline-nvidia
+        include:
+          # CentoOS 7.9
+          - os: "centos 7.9"
+            buildConfig: "basic"
+          - os: "centos 7.9"
+            buildConfig: "fips"
+          - os: "centos 7.9"
+            buildConfig: "nvidia"
+          - os: "centos 7.9"
+            buildConfig: "offline"
+          - os: "centos 7.9"
+            buildConfig: "offline-fips"
+          - os: "centos 7.9"
+            buildConfig: "offline-nvidia"
+          # RHEL 7.9
+          - os: "redhat 7.9"
+            buildConfig: "basic"
+          - os: "redhat 7.9"
+            buildConfig: "fips"
+          - os: "redhat 7.9"
+            buildConfig: "nvidia"
+          - os: "redhat 7.9"
+            buildConfig: "offline"
+          - os: "redhat 7.9"
+            buildConfig: "offline-fips"
+          - os: "redhat 7.9"
+            buildConfig: "offline-nvidia"
+          # RHEL 8.4
+          - os: "redhat 8.4"
+            buildConfig: "basic"
+          - os: "redhat 8.4"
+            buildConfig: "fips"
+          - os: "redhat 8.4"
+            buildConfig: "nvidia"
+          - os: "redhat 8.4"
+            buildConfig: "offline"
+          - os: "redhat 8.4"
+            buildConfig: "offline-fips"
+          - os: "redhat 8.4"
+            buildConfig: "offline-nvidia"
+          # RHEL 8.6
+          - os: "redhat 8.6"
+            buildConfig: "basic"
+          - os: "redhat 8.6"
+            buildConfig: "fips"
+          - os: "redhat 8.6"
+            buildConfig: "nvidia"
+          - os: "redhat 8.6"
+            buildConfig: "offline"
+          - os: "redhat 8.6"
+            buildConfig: "offline-fips"
+          - os: "redhat 8.6"
+            buildConfig: "offline-nvidia"
+          # SLES 15
+          - os: "sles 15"
+            buildConfig: "basic"
+          - os: "sles 15"
+            buildConfig: "nvidia"
+          # Oracle 7.9
+          - os: "oracle 7.9"
+            buildConfig: "basic"
+          - os: "oracle 7.9"
+            buildConfig: "fips"
+          # Flatcar
+          - os: "flatcar"
+            buildConfig: "basic"
+          # Ubuntu 18.04
+          - os: "ubuntu 18.04"
+            buildConfig: "basic"
+          # Ubuntu 20.04
+          - os: "ubuntu 20.04"
+            buildConfig: "basic"
+          - os: "ubuntu 20.04"
+            buildConfig: "nvidia"
+          # Rocky 9.1
+          - os: "rocky 9.1"
+            buildConfig: "basic"
+          - os: "rocky 9.1"
+            buildConfig: "offline"
     runs-on: 
     - self-hosted
     - small
