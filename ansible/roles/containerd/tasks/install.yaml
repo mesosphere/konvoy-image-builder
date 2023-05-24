@@ -48,7 +48,6 @@
 
 # Workaround for issue that affects the kernel used by RHEL 7.9, CentOS 7.9, and Oracle Linux 7.9
 # For issue, see https://bugzilla.redhat.com/show_bug.cgi?id=1441737.
-# Solution adapted from https://github.com/kubernetes-sigs/kubespray/blob/999586a110eed72914358a1b5bd182df514e755b/roles/kubernetes/preinstall/tasks/0080-system-configurations.yml#L90-L106.
 - name: Check if we need to set fs.may_detach_mounts
   command: sysctl fs.may_detach_mounts
   register: fs_may_detach_mounts
