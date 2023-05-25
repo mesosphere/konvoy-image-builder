@@ -1,0 +1,13 @@
+---
+download_images: true
+
+packer:
+  distribution: "centos"            # Offer
+  distribution_version: "7_9-gen2"  # SKU
+  image_publisher: "openlogic"
+  image_version: "latest"
+  ssh_username: "centos"
+
+build_name: "centos-7"
+packer_builder_type: "azure"
+python_path: ""
