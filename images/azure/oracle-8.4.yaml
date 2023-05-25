@@ -1,0 +1,13 @@
+---
+download_images: true
+
+packer:
+  distribution: "oracle-linux"           # Offer
+  distribution_version: "ol84-lvm-gen2"  # SKU
+  image_publisher: "oracle"
+  image_version: "latest"
+  ssh_username: "azureuser"
+
+build_name: "oracle-8"
+packer_builder_type: "azure"
+python_path: ""
