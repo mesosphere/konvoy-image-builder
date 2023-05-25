@@ -1,0 +1,13 @@
+---
+build_name: "ubuntu-2204"
+packer_builder_type: "googlecompute"
+python_path: ""
+packer:
+  # The source image to use to create the new image from. source_image = `distribution`-`distribution_version-k8sversion-timestamp`
+  distribution: "ubuntu"
+  distribution_version: "2204-jammy-v20241218"
+  source_image: "ubuntu-2204-jammy-v20241218"
+  # The source_image_family to use to create the new image from.
+  distribution_family: "ubuntu-2204-lts"
+  # The username to connect to SSH with. Required if using SSH.
+  ssh_username: "ubuntu"
