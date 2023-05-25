@@ -101,6 +101,3 @@
     'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
   when:
     - versionlock_plugin_enabled
-
-- include: oracle.yaml
-  when: ansible_distribution == "OracleLinux"
