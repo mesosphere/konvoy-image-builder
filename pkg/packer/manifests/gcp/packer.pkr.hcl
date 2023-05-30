@@ -231,7 +231,6 @@ variable "remote_folder" {
   default = "/tmp"
 }
 
-
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
@@ -293,7 +292,7 @@ build {
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args}'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
-    extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}", "--scp-extra-args", "'-O'"]
+    extra_arguments  = ["--extra-vars", "${local.ansible_extra_vars}", "--scp-extra-args", "'-O'"]
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
