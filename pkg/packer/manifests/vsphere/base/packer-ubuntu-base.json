@@ -9,7 +9,7 @@
         "export_manifest": "none",
         "folder": "",
         "guest_os_type": null,
-        "ib_version": "{{env `IB_VERSION`}}",
+        "kib_version": "{{env `KIB_VERSION`}}",
         "username": "{{env `VSPHERE_USERNAME`}}",
         "password": "{{env `VSPHERE_PASSWORD`}}",
         "vcenter_server": "{{env `VSPHERE_SERVER`}}",

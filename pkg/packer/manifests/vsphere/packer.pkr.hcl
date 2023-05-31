@@ -104,9 +104,9 @@ variable "guest_os_type" {
   type = string
 }
 
-variable "ib_version" {
+variable "kib_version" {
   type    = string
-  default = "${env("IB_VERSION")}"
+  default = "${env("KIB_VERSION")}"
 }
 
 variable "insecure_connection" {
@@ -516,7 +516,7 @@ build {
       gpu_nvidia_version       = "${var.gpu_nvidia_version}"
       gpu_types                = "${var.gpu_types}"
       guest_os_type            = "${var.guest_os_type}"
-      ib_version               = "${var.ib_version}"
+      kib_version               = "${var.kib_version}"
       kubernetes_cni_version   = "${var.kubernetes_cni_semver}"
       kubernetes_version       = "${var.kubernetes_full_version}"
       kubernetes_source_type   = "${var.kubernetes_source_type}"
