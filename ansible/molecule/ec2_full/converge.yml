@@ -6,10 +6,10 @@
   tasks:
     - name: Flatcar no update
       changed_when: false
-      script: ../../../packer/files/no-update-flatcar.sh
+      script: ../../files/no-update-flatcar.sh
     - name: exec bootstrap python
       changed_when: false
-      script: ../../../packer/files/bootstrap-flatcar.sh
+      script: ../../files/bootstrap-flatcar.sh
     - name: check for flatcar python
       raw: stat /opt/bin/.bootstrapped
       changed_when: false
