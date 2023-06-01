@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.4.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.4.0...v2.4.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* comment and add test ([e2d739f](https://github.com/mesosphere/konvoy-image-builder/commit/e2d739f30b5165201ecf91941fc31d4c5deaace5))
+* fs.may_detach_mounts check to be more resilient ([ae14726](https://github.com/mesosphere/konvoy-image-builder/commit/ae14726824197654ae3ad57ac73cbfcd4983dff0))
+* install RHCK kernel earlier in the playbook ([89a27ef](https://github.com/mesosphere/konvoy-image-builder/commit/89a27ef1b16d8a3d2bb387c53c68b6f00b0b9c75))
+* reboot after installing RHCK kernel ([7bb666d](https://github.com/mesosphere/konvoy-image-builder/commit/7bb666d3c8423f261f2beac3e26851cba777d5e4))
+* update references to no-update-flatcar.sh scripts ([#817](https://github.com/mesosphere/konvoy-image-builder/issues/817)) ([8c0727b](https://github.com/mesosphere/konvoy-image-builder/commit/8c0727b92d2f3a802425eb37f6d619bf48ff17f5))
+
 ## [2.4.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.3.1...v2.4.0) (2023-05-18)
 
 
