@@ -2,10 +2,8 @@ download_images: true
 
 packer:
   # Selectors for source AMI:
-  ami_filter_name: "Flatcar*stable*"
+  ami_filter_name: "Flatcar-lts-3033.3.x"
   ami_filter_owners: "075585003325"
-  # Flatcar-lts-3033.3.7-hvm
-  source_ami: "ami-0f9a215a1195261ca" 
   # Tags applied to generated AMI:
   distribution: "Flatcar"
   distribution_version: "Stable"
