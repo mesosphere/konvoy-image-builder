@@ -8,12 +8,11 @@ issues:
 
 linters-settings:
   depguard:
-    list-type: blacklist
-    packages:
-      - k8s.io/kubernetes
-    packages-with-error-message:
-      - k8s.io/kubernetes: >-
-          Avoid k8s.io/kubernetes if possible to reduce transitive dependencies
+    rules:
+      main:
+        deny:
+          - pkg: "k8s.io/kubernetes"
+            desc: "Avoid if possible to reduce transitive dependencies"
   dupl:
     threshold: 100
   exhaustive:
