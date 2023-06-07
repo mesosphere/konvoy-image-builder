@@ -1,0 +1,27 @@
+[Unit]
+Requires=torcx.target
+After=torcx.target
+Description=containerd container runtime
+After=network.target prepare-docker.service
+Requires=prepare-docker.service
+
+[Service]
+EnvironmentFile=/run/metadata/torcx
+Environment=TORCX_IMAGEDIR=/docker
+Delegate=yes
+Environment=PATH=${PATH}:/opt/bin
+ExecStartPre=mkdir -p /run/docker/libcontainerd
+ExecStartPre=ln -fs /run/containerd/containerd.sock /run/docker/libcontainerd/docker-containerd.sock
+Environment=CONTAINERD_CONFIG=/etc/containerd/config.toml
+ExecStart=/opt/bin/containerd --config ${CONTAINERD_CONFIG}
+KillMode=process
+Restart=always
+
+# (lack of) limits from the upstream docker service unit
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+
+[Install]
+WantedBy=multi-user.target

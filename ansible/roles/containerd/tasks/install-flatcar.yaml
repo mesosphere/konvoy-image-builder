@@ -5,6 +5,41 @@
     src: etc/systemd/system/containerd-flatcar.service
     mode: 0600
 
+- name: Download docker for 3033.3.x flatcar LTS to /opt/docker.tgz
+  when:
+    - ansible_facts['distribution_version'] is version('3033.3.0', '>=', version_type='semver')
+    - ansible_facts['distribution_version'] is version('3033.4.0', '<', version_type='semver')
+  get_url:
+    # Flatcar LTS 3033.3.x is shipped with docker version 20.10.12 - See https://www.flatcar.org/releases#lts-release
+    # Download the least possible docker version that has 1.6.x containerd for k8s 1.26.x compatibility - https://docs.docker.com/engine/release-notes/20.10/#201015
+    # We are bumping docker version by 3 patch versions (least possible delta).
+    url: https://download.docker.com/linux/static/stable/{{ ansible_facts['architecture'] }}/docker-20.10.15.tgz
+    dest: /opt/docker.tgz
+    mode: 0644
+    force: true
+
+- name: Update containerd unit file for flatcar LTS 3033.3.x
+  when:
+    - ansible_facts['distribution_version'] is version('3033.3.0', '>=', version_type='semver')
+    - ansible_facts['distribution_version'] is version('3033.4.0', '<', version_type='semver')
+  copy:
+    src: 3033.3.x-flatcar-lts/etc/systemd/system/
+    dest: /etc/systemd/system/
+    mode: 0644
+
+- name: Download new docker in flatcar LTS 3033.3.x
+  when:
+    - ansible_facts['distribution_version'] is version('3033.3.0', '>=', version_type='semver')
+    - ansible_facts['distribution_version'] is version('3033.4.0', '<', version_type='semver')
+  systemd:
+    name: '{{ item }}'
+    state: restarted
+    enabled: true
+  loop:
+    - prepare-docker
+    - docker
+    - containerd
+
 - name: Create containerd memory pressure drop in file
   template:
     dest: /etc/systemd/system/containerd.service.d/memory-pressure.conf
@@ -26,5 +61,6 @@
 
 - name: add to PATH unpack docker to path
   copy:
-    content: "export PATH=$PATH:/run/torcx/unpack/docker/bin/"
+    # If using Flatcar 3033.3.x LTS then /opt/bin will have the preferred version for docker and containerd binaries
+    content: "export PATH=$PATH:/opt/bin:/run/torcx/unpack/docker/bin/"
     dest: "/etc/profile.d/my_path.sh"
