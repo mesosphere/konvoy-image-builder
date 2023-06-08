@@ -61,6 +61,7 @@ extra_images: []
 containerd_supplementary_images: ["ghcr.io/mesosphere/toml-merge:v0.2.0", "ghcr.io/mesosphere/dynamic-credential-provider:v0.2.0"]
 
 containerd_base_url: https://packages.d2iq.com/dkp/containerd
+docker_base_url: https://download.docker.com/linux/static/stable
 kubernetes_http_source: https://dl.k8s.io/release
 kubernetes_cni_semver: v{{ kubernetes_cni_version }}
 kubernetes_cni_http_checksum: sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
