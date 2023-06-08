@@ -4,3 +4,14 @@
     src: rpm-offline.repo
     dest: /etc/yum.repos.d/offline.repo
   when: offline_mode_enabled
+
+# Force update the repo metadata to avoid an issue when upgrading from an older version that was built after the newer version.
+#
+# Not using downloaded offline/repomd.xml because it is older than what we have:
+#   Current   : Wed Mar 22 00:42:58 2023
+#   Downloaded: Mon Mar 20 16:25:47 2023
+- name: clean metadata for offline repository
+  command: yum clean metadata --disablerepo "*" --enablerepo offline
+
+- name: update the cache for offline repository
+  command: yum makecache --disablerepo "*" --enablerepo offline
