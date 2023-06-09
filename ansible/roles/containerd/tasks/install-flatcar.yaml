@@ -1,9 +1,52 @@
 ---
+- name: Check docker version
+  shell: docker version --format {{ '{{' }}.Server.Version{{ '}}' }}
+  register: docker_contents
+
+- name: Calculate docker upgrade eligibility
+  set_fact:
+    dockerUpgradeRequired: true
+  when:
+    # Flatcar LTS 3033.3.x is shipped with docker version 20.10.12 - See https://www.flatcar.org/releases#lts-release
+    # Download the least possible docker version that has 1.6.x containerd for k8s 1.26.x compatibility - https://docs.docker.com/engine/release-notes/20.10/#201015
+    # We are bumping docker version by 3 patch versions (least possible delta).
+    # Following conditionals avoid downgrading docker and also avoid upgrading docker in untested flatcar releases (we only validate 3033.3.x)
+    - docker_contents.stdout is version('20.10.15', '<', version_type='semver')
+    - ansible_facts['distribution_version'] is version('3033.3.0', '>=', version_type='semver')
+    - ansible_facts['distribution_version'] is version('3033.4.0', '<', version_type='semver')
+
 - name: Create systemd unit file for containerd
   template:
     dest: /etc/systemd/system/containerd.service
     src: etc/systemd/system/containerd-flatcar.service
     mode: 0600
+  when: dockerUpgradeRequired is not defined
+
+- name: Download, Update and Restart docker for 3033.3.x flatcar LTS
+  when: dockerUpgradeRequired is true
+  block:
+  - name: Download docker for 3033.3.x flatcar LTS to /opt/docker.tgz
+    get_url:
+      url: "{{ docker_base_url }}/{{ ansible_facts['architecture'] }}/docker-20.10.15.tgz"
+      dest: /opt/docker.tgz
+      mode: 0644
+      force: true
+
+  - name: Update docker and containerd unit files for flatcar LTS 3033.3.x
+    copy:
+      src: 3033.3.x-flatcar-lts/etc/systemd/system/
+      dest: /etc/systemd/system/
+      mode: 0644
+
+  - name: Restart Docker systemd services
+    systemd:
+      name: '{{ item }}'
+      state: restarted
+      enabled: true
+    loop:
+      - prepare-docker
+      - docker
+      - containerd
 
 - name: Create containerd memory pressure drop in file
   template:
@@ -26,5 +69,6 @@
 
 - name: add to PATH unpack docker to path
   copy:
-    content: "export PATH=$PATH:/run/torcx/unpack/docker/bin/"
+    # If using Flatcar 3033.3.x LTS then /opt/bin will have the preferred version for docker and containerd binaries
+    content: "export PATH=$PATH:/opt/bin:/run/torcx/unpack/docker/bin/"
     dest: "/etc/profile.d/my_path.sh"
