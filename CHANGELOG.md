@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.4.1...v2.4.2) (2023-06-12)
+
+
+### Bug Fixes
+
+* force update the offline repo metadata cache ([#829](https://github.com/mesosphere/konvoy-image-builder/issues/829)) ([944d313](https://github.com/mesosphere/konvoy-image-builder/commit/944d31333f67b0944b68b0ff91527256a5d72fbe))
+* upgrade docker in flatcar 3033.3.x LTS for k8s 1.26 support ([#828](https://github.com/mesosphere/konvoy-image-builder/issues/828)) ([82b1270](https://github.com/mesosphere/konvoy-image-builder/commit/82b1270fb87d6195c9541052ed8c211a8b702211))
+
 ## [2.4.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.4.0...v2.4.1) (2023-05-31)
 
 
