@@ -12,6 +12,10 @@ packer {
       version = ">= 1.0.1"
       source  = "github.com/ivoronin/sshkey"
     }
+    goss = {
+      version = ">=3.1.5"
+      source = "github.com/supershal/goss"
+    }
   }
 }
 

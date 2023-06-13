@@ -21,29 +21,7 @@ RUN apk add --no-cache \
         curl \
         p7zip
 
-ARG PACKER_GOSS_VERSION=3.1.4
-ARG PACKER_GOSS_AMD64_SHA256=28da34afdc8bac0a6be64f36d66aaf3095584782ddc6d66147b7da28f56ca5f4
-ARG PACKER_GOSS_ARM64_SHA256=6ca4dfd0a696b065727b9e530cd0a7773f684da6e78b8ad3c1de5070714ebbba
-ARG PACKER_GOSS_REPO="https://github.com/YaleUniversity/packer-provisioner-goss"
-ARG PACKER_GOSS_AMD64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-amd64.tar.gz"
-ARG PACKER_GOSS_ARM64_FILE="packer-provisioner-goss-v${PACKER_GOSS_VERSION}-linux-arm64.tar.gz"
-ARG PACKER_GOSS_AMD64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_AMD64_FILE}"
-ARG PACKER_GOSS_ARM64_URL="${PACKER_GOSS_REPO}/releases/download/v${PACKER_GOSS_VERSION}/${PACKER_GOSS_ARM64_FILE}"
-RUN printf "%s  %s\n%s  %s\n" "${PACKER_GOSS_AMD64_SHA256}" /tmp/"${PACKER_GOSS_AMD64_FILE}" \
-                            "${PACKER_GOSS_ARM64_SHA256}" /tmp/"${PACKER_GOSS_ARM64_FILE}" > "/tmp/packer-goss.sha256"
-RUN curl -fsSLo "/tmp/${PACKER_GOSS_AMD64_FILE}" "${PACKER_GOSS_AMD64_URL}"
-RUN curl -fsSLo "/tmp/${PACKER_GOSS_ARM64_FILE}" "${PACKER_GOSS_ARM64_URL}"
-RUN sha256sum -c "/tmp/packer-goss.sha256"
-RUN tar --extract \
-        --file "/tmp/${PACKER_GOSS_AMD64_FILE}" \
-        --directory /tools
-RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-amd64
-RUN tar --extract \
-        --file "/tmp/${PACKER_GOSS_ARM64_FILE}" \
-        --directory /tools
-RUN mv /tools/packer-provisioner-goss /tools/packer-provisioner-goss-arm64
 ARG BUILDARCH
-RUN ln -s /tools/packer-provisioner-goss-${BUILDARCH} /tools/packer-provisioner-goss
 
 # NOTE(jkoelker) From here we care about layers
 FROM golang:1.19.3-alpine3.15
@@ -95,12 +73,12 @@ RUN mkdir -p /usr/share/ansible/collections \
 
 # hadolint ignore=DL4006
 RUN  curl -Lf https://github.com/mesosphere/mindthegap/releases/download/v"${MINDTHEGAP_VERSION}"/mindthegap_v"${MINDTHEGAP_VERSION}"_linux_amd64.tar.gz |tar xzf - -C /usr/local/bin
-ARG GOSS_VERSION=v0.3.18
-RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
-RUN curl -L "https://github.com/aelsabbahy/goss/releases/download/${GOSS_VERSION}/goss-linux-arm64" -o /usr/local/bin/goss-arm64
-RUN chmod +rx /usr/local/bin/goss-amd64 /usr/local/bin/goss-arm64
+ARG GOSS_VERSION=v0.3.23
+RUN curl -L "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
+RUN chmod +rx /usr/local/bin/goss-amd64
 ARG BUILDARCH
 RUN ln -s /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
+
 COPY --from=packer-amd64 /bin/packer /usr/local/bin/packer-amd64
 COPY --from=packer-arm64 /bin/packer /usr/local/bin/packer-arm64
 COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
@@ -116,7 +94,8 @@ RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN="$(cat /run/secre
     packer-${BUILDARCH} plugins install github.com/hashicorp/amazon ">=1.1.3" && \
     packer-${BUILDARCH} plugins install github.com/hashicorp/ansible ">=1.0.3" && \
     packer-${BUILDARCH} plugins install github.com/hashicorp/vsphere ">=1.0.8" && \
-    packer-${BUILDARCH} plugins install github.com/ivoronin/sshkey ">=1.0.1"
+    packer-${BUILDARCH} plugins install github.com/ivoronin/sshkey ">=1.0.1" && \
+    packer-${BUILDARCH} plugins install github.com/supershal/goss ">=3.1.5"
 
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
