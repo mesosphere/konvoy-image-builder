@@ -1,5 +1,5 @@
 ---
-kubernetes_version: "1.26.3"
+kubernetes_version: "1.26.6"
 
 download_images: true
 
