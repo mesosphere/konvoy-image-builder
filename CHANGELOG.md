@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.4.2...v2.5.0) (2023-06-20)
+
+
+### Features
+
+* Upgrade kubernetes version to v1.26.6 and CRI tools ([00be4b0](https://github.com/mesosphere/konvoy-image-builder/commit/00be4b063203b52d539a54b5fdb1355dd8d5643d))
+
 ## [2.4.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.4.1...v2.4.2) (2023-06-12)
 
 
