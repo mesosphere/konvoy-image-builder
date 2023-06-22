@@ -6,7 +6,9 @@ on:
 name: upload-release-artifacts
 jobs:
   release-artifacts:
-    runs-on: self-hosted
+    runs-on:
+      - self-hosted
+      - medium
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,7 +30,9 @@ jobs:
           WHAT: make release
 
   bump-kib:
-    runs-on: self-hosted
+    runs-on:
+      - self-hosted
+      - medium
     steps:
       - name: Setup Go
         uses: actions/setup-go@v3
