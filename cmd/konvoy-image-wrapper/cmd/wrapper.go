@@ -46,6 +46,7 @@ const (
 	envVSphereSSHUserName                = "SSH_USERNAME"
 	envVSphereSSHPassword                = "SSH_PASSWORD"
 	envVsphereSSHPrivatekeyFile          = "SSH_PRIVATE_KEY_FILE"
+	envVSphereDatacenter                 = "VSPHERE_DATACENTER"
 
 	//nolint:gosec // environment var set by user
 	envGCPApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
@@ -183,6 +184,7 @@ func (r *Runner) setVSphereEnv() error {
 		envVSphereServer,
 		envVSphereUser,
 		envVSpherePassword,
+		envVSphereDatacenter,
 		envRedHatSubscriptionManagerUser,
 		envRedHatSubscriptionManagerPassword,
 		envVSphereSSHUserName,

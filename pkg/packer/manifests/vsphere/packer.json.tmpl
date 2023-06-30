@@ -14,6 +14,7 @@
     "export_manifest": "none",
     "firmware": "bios",
     "folder": "",
+    "resource_pool": "",
     "gpu": "false",
     "gpu_nvidia_version": "",
     "gpu_types": "",
@@ -38,6 +39,7 @@
     "vsphere_username": "{{env `VSPHERE_USERNAME`}}",
     "vsphere_password": "{{env `VSPHERE_PASSWORD`}}",
     "vcenter_server": "{{env `VSPHERE_SERVER`}}",
+    "vsphere_datacenter": "{{env `VSPHERE_DATACENTER`}}",
     "vsphere_guest_os_type": null
   },
   "builders": [
@@ -52,6 +54,7 @@
       "datacenter": "{{user `datacenter`}}",
       "datastore": "{{user `datastore`}}",
       "folder": "{{user `folder`}}",
+      "resource_pool": "{{user `resource_pool`}}",
       "host": "{{user `host`}}",
       "insecure_connection": "{{user `insecure_connection`}}",
       "linked_clone": "{{user `linked_clone`}}",
@@ -123,7 +126,7 @@
         "GOVC_PASSWORD={{user `vsphere_password`}}"
       ],
       "inline": [
-        "echo 'destroying VM {{user `vm_name`}}' && govc vm.destroy {{user `vm_name`}}"
+        "echo 'destroying VM {{user `vm_name`}}' && govc vm.destroy -dc={{user `vsphere_datacenter`}} {{user `vm_name`}}"
       ]
     }
     ((- end ))
