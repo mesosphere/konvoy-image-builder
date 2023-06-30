@@ -12,7 +12,9 @@ on:
 name: Determine next release version
 jobs:
   release-please:
-    runs-on: ubuntu-latest
+    runs-on: 
+    - self-hosted
+    - small
     outputs:
       release_created: ${{ steps.release-please.outputs.release_created }}
       release_tag_name: ${{ steps.release-please.outputs.tag_name }}
