@@ -13,8 +13,9 @@ on:
 jobs:
   lint:
     name: Lint code base
-    runs-on: ubuntu-latest
-
+    runs-on:
+    - self-hosted
+    - small
     steps:
       - name: Setup Go
         uses: actions/setup-go@v3

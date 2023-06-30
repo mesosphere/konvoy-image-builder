@@ -9,7 +9,9 @@ on:
 
 jobs:
   sync-cli-docs:
-    runs-on: ubuntu-latest
+    runs-on: 
+    - self-hosted
+    - small
     name: Sync CLI docs to Confluence
     steps:
       - name: Checkout
