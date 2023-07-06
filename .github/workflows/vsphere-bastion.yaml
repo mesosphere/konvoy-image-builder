@@ -1,0 +1,38 @@
+# Builds vSphere bastion host
+name: Build vSphere bastion host for e2e tests
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'shalin*'
+
+jobs:
+  build-bastion:
+    runs-on: 
+    - self-hosted
+    - small
+    steps:
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+      - name: Install terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Setup SSH agent with private key to connect with pre-configured bastion host
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
+      - name: create bastion host
+        run: |
+          cd ./hack/vsphere
+          terraform init
+          terraform apply --auto-approve
+        env:
+          VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
+          VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
+          TF_VAR_datastore_name: ${{ secrets.VSPHERE_DATASTORE }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
