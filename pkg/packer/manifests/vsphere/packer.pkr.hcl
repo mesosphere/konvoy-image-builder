@@ -185,6 +185,12 @@ variable "ssh_bastion_host" {
   type = string
   default = ""
 }
+
+variable "ssh_bastion_port" {
+  type = string
+  default = "22"
+}
+
 variable "ssh_bastion_password" {
   type = string
   default = ""
@@ -349,6 +355,7 @@ locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 locals {
   build_timestamp              = local.timestamp
   ssh_bastion_host             = var.ssh_bastion_host
+  ssh_bastion_port             = var.ssh_bastion_port
   ssh_bastion_password         = var.ssh_bastion_password
   ssh_bastion_private_key_file = var.ssh_bastion_private_key_file
   ssh_bastion_username         = var.ssh_bastion_username
@@ -375,6 +382,7 @@ source "vsphere-clone" "kib_image" {
   password                     = var.vsphere_password
   ssh_agent_auth               = var.ssh_agent_auth
   ssh_bastion_host             = local.ssh_bastion_host
+  ssh_bastion_port             = local.ssh_bastion_port
   ssh_bastion_password         = local.ssh_bastion_password
   ssh_bastion_private_key_file = local.ssh_bastion_private_key_file
   ssh_bastion_username         = local.ssh_bastion_username

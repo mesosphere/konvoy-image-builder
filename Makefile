@@ -173,8 +173,7 @@ $(ENVSUBST_ASSETS)/envsubst:
 
 
 include hack/pip-packages/Makefile
-include test/infra/aws/Makefile
-include test/infra/vsphere/Makefile
+include test/infra/Makefile
 
 BUILD_FLAGS := \
 		--build-arg USER_ID=$(UID) \
