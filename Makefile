@@ -156,8 +156,7 @@ $(ENVSUBST_ASSETS)/envsubst:
 
 
 include hack/pip-packages/Makefile
-include test/infra/aws/Makefile
-include test/infra/vsphere/Makefile
+include test/infra/Makefile
 
 github-token.txt:
 	echo $(GITHUB_TOKEN) >> github-token.txt
