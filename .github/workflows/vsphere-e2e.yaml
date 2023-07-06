@@ -75,7 +75,7 @@ jobs:
         env:
           SSH_BASTION_KEY_CONTENTS: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
           SSH_BASTION_HOST: ${{ secrets.SSH_BASTION_HOST }}
-          SSH_BASTION_PORT: ${{ secrets.SSH_BASTION_PORT }}
+          SSH_BASTION_PORT: 30070
           SSH_BASTION_USERNAME: ${{ secrets.SSH_BASTION_USERNAME }}
           VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
           VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
