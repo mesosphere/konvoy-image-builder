@@ -15,7 +15,7 @@ module "bastion_node" {
   vsphere_folder = var.vsphere_folder
   ssh_user = var.ssh_user
   custom_attribute_owner      = var.bastion_owner
-  custom_attribute_expiration = "24h"
+  custom_attribute_expiration = "4h"
   vsphere_network = var.vsphere_network
 }
 

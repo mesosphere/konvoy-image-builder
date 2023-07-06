@@ -78,6 +78,8 @@ infra.aws.destroy: install-terraform infra.aws.init
 
 .PHONY: infra.vsphere.destroy
 infra.vsphere.destroy: ## Destroy infrastructure
+infra.vsphere.destroy: TF_VAR_ssh_public_key=$(SSH_BASTION_PUBLIC_KEY_FILE)
+infra.vsphere.destroy: TF_VAR_datastore_name=$(VSPHERE_DATASTORE)
 infra.vsphere.destroy: infra.vsphere.init
 	$(call print-target)
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/vsphere destroy -auto-approve
