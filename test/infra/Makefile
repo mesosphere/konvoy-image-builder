@@ -17,7 +17,7 @@ VSPHERE_DATASTORE ?= "ci-kib"
 
 ifeq ($(CI),true)
   $(shell echo "$(SSH_BASTION_PUBLIC_KEY_CONTENTS)" > $(CURDIR)/vsphere-bastion.pub)
-  SSH_BASTION_PUBLIC_KEY_FILE = "$(CURDIR)/vsphere-bastion.pub"
+  SSH_BASTION_PUBLIC_KEY_FILE = $(CURDIR)/vsphere-bastion.pub
 endif
 
 .PHONY: install-terraform
@@ -55,10 +55,10 @@ infra.aws.create: infra.aws.init
 
 PHONY: infra.vsphere.create
 infra.vsphere.create: ## Create infrastructure
+infra.vsphere.create: TF_VAR_ssh_public_key=$(SSH_BASTION_PUBLIC_KEY_FILE)
+infra.vsphere.create: TF_VAR_datastore_name=$(VSPHERE_DATASTORE)
 infra.vsphere.create: infra.vsphere.init
 	$(call print-target)
-	export TF_VAR_ssh_public_key=$(SSH_BASTION_PUBLIC_KEY_FILE)
-	export TF_VAR_datastore_name=$(VSPHERE_DATASTORE)
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/vsphere plan
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/vsphere apply -auto-approve
 
