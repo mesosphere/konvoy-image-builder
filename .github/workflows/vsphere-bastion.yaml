@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'shalin*'
+      - 'shalin/*'
 
 jobs:
   build-bastion:
@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ github.ref }}
+
       - name: Install terraform
         uses: hashicorp/setup-terraform@v2
 
@@ -24,15 +24,23 @@ jobs:
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
       - name: create bastion host
         run: |
-          cd ./hack/vsphere
+          git config --global url."https://git:${{ secrets.MESOSPHERECI_USER_TOKEN }}@github.com/mesosphere".insteadOf "https://github.com/mesosphere"
+          git config --global url."https://${{ secrets.MESOSPHERECI_USER_TOKEN }}:x-oauth-basic@github.com/mesosphere".insteadOf ssh://git@github.com/mesosphere
+          echo "${{ secrets.SSH_BASTION_PUBLIC_KEY_CONTENTS }}" > "${{github.workspace}}/hack/vsphere/bastion.pub"
+          export TF_VAR_ssh_public_key="${{github.workspace}}/hack/vsphere/bastion.pub"
+          cd hack/vsphere
           terraform init
           terraform apply --auto-approve
+        shell: bash
         env:
-          VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
+          VSPHERE_USER: ${{ secrets.VSPHERE_USERNAME }}
           VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
           TF_VAR_datastore_name: ${{ secrets.VSPHERE_DATASTORE }}
-          TF_VAR_ssh_public_key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
