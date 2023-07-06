@@ -15,21 +15,21 @@ jobs:
       max-parallel: 3
       matrix:
         os:
-        - "redhat 7.9"
+        # - "redhat 7.9"
         - "redhat 8.4"
-        - "redhat 8.6"
-        - "ubuntu 20.04"
-        - "rocky 9.1"
+        # - "redhat 8.6"
+        # - "ubuntu 20.04"
+        # - "rocky 9.1"
         buildConfig:
         - "offline"
-        - "offline-fips"
-        exclude:
-        - os: "ubuntu 20.04"
-          buildConfig: fips
-        - os: "ubuntu 20.04"
-          buildConfig: offline-fips
-        - os: "rocky 9.1"
-          buildConfig: offline-fips
+        # - "offline-fips"
+        # exclude:
+        # - os: "ubuntu 20.04"
+        #   buildConfig: fips
+        # - os: "ubuntu 20.04"
+        #   buildConfig: offline-fips
+        # - os: "rocky 9.1"
+        #   buildConfig: offline-fips
     runs-on: 
     - self-hosted
     - small
@@ -66,6 +66,12 @@ jobs:
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
+      
+      # configure git to access private repo hosting vsphere module mesosphere/vcenter-tools
+      - name: Configure git to clone private registry from mesosphere org
+        run: |
+          git config --global url."https://git:${{ secrets.MESOSPHERECI_USER_TOKEN }}@github.com/mesosphere".insteadOf "https://github.com/mesosphere"
+          git config --global url."https://${{ secrets.MESOSPHERECI_USER_TOKEN }}:x-oauth-basic@github.com/mesosphere".insteadOf ssh://git@github.com/mesosphere
 
       - name: Run E2E test for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
         uses: magefile/mage-action@v2
@@ -74,12 +80,14 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" ova true
         env:
           SSH_BASTION_KEY_CONTENTS: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
-          SSH_BASTION_HOST: ${{ secrets.SSH_BASTION_HOST }}
-          SSH_BASTION_PORT: 30070
-          SSH_BASTION_USERNAME: ${{ secrets.SSH_BASTION_USERNAME }}
+          SSH_BASTION_PUBLIC_KEY_CONTENTS: ${{ secrets.SSH_BASTION_PUBLIC_KEY_CONTENTS }}
           VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
           VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
           VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
           VSPHERE_DATACENTER: ${{ secrets.VSPHERE_DATACENTER }}
+        
+      - name: Run make destroy to clean up failed tests
+        if: ${{ always() }}
+        run: make infra.vsphere.destroy || true

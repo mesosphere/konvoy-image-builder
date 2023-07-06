@@ -2,9 +2,7 @@
 name: Build vSphere bastion host for e2e tests
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'shalin/*'
+  workflow_call:
 
 jobs:
   build-bastion:
@@ -20,15 +18,12 @@ jobs:
       - name: Install terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Setup SSH agent with private key to connect with pre-configured bastion host
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
-
-      - uses: actions/setup-node@v2
+      - name: setup node application required to run terraform github action
+        uses: actions/setup-node@v2
         with:
           node-version: '14'
 
+      # configure git to access private repo hosting vsphere module mesosphere/vcenter-tools
       - name: create bastion host
         run: |
           git config --global url."https://git:${{ secrets.MESOSPHERECI_USER_TOKEN }}@github.com/mesosphere".insteadOf "https://github.com/mesosphere"

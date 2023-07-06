@@ -197,7 +197,7 @@ variable "ssh_bastion_host" {
 
 variable "ssh_bastion_port" {
   type = string
-  default = 22
+  default = "22"
 }
 
 variable "ssh_bastion_password" {

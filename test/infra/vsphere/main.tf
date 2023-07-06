@@ -1,7 +1,10 @@
+resource "random_id" "build_id" {
+  byte_length = 8
+}
 module "bastion_node" {
   source = "github.com/mesosphere/vcenter-tools/modules/vmclone"
 
-  node_name      = "konvoy-image-builder-bastion"
+  node_name      = "konvoy-image-builder-bastion-${random_id.build_id.hex}"
   ssh_public_key =  file(var.ssh_public_key)
 
   datastore_name       = var.datastore_name
@@ -14,6 +17,10 @@ module "bastion_node" {
   custom_attribute_owner      = var.bastion_owner
   custom_attribute_expiration = "24h"
   vsphere_network = var.vsphere_network
+}
+
+output "bastion_node_ssh_user" {
+  value = "${var.ssh_user}"
 }
 
 output "bastion_node_ssh_nat_address" {
