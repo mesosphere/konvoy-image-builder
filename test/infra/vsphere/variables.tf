@@ -1,6 +1,6 @@
 variable "datastore_name" {
   description = "The datastore name"
-  default = "ci-kib"
+  default     = "ci-kib"
 }
 
 variable "bastion_base_template" {
@@ -42,5 +42,5 @@ variable "ssh_public_key" {
 variable "vsphere_network" {
   description = "vsphere network"
   type        = string
-  default = "Airgapped"
+  default     = "Airgapped"
 }
