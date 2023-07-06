@@ -13,10 +13,11 @@ TEST_INFRA_STATE_DIR ?= $(CURDIR)/.local/infra
 
 # export for local testing
 SSH_BASTION_PUBLIC_KEY_FILE ?= ""
+VSPHERE_DATASTORE ?= "ci-kib"
 
-ifeq ($(CI),yes)
-  $(shell echo "$(SSH_BASTION_PUBLIC_KEY_CONTENTS)" > vsphere-bastion.pub)
-  SSH_BASTION_PUBLIC_KEY_FILE = vsphere-bastion.pub
+ifeq ($(CI),true)
+  $(shell echo "$(SSH_BASTION_PUBLIC_KEY_CONTENTS)" > $(CURDIR)/vsphere-bastion.pub)
+  SSH_BASTION_PUBLIC_KEY_FILE = "$(CURDIR)/vsphere-bastion.pub"
 endif
 
 .PHONY: install-terraform
@@ -57,6 +58,7 @@ infra.vsphere.create: ## Create infrastructure
 infra.vsphere.create: infra.vsphere.init
 	$(call print-target)
 	export TF_VAR_ssh_public_key=$(SSH_BASTION_PUBLIC_KEY_FILE)
+	export TF_VAR_datastore_name=$(VSPHERE_DATASTORE)
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/vsphere plan
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(TEST_INFRA_STATE_DIR)/vsphere apply -auto-approve
 

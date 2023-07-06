@@ -1,5 +1,6 @@
 variable "datastore_name" {
   description = "The datastore name"
+  default = "ci-kib"
 }
 
 variable "bastion_base_template" {
