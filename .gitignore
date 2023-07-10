@@ -73,3 +73,7 @@ github-token.txt
 .local
 /overrides/release.yaml
 ansible-runs
+
+.terraform
+*.tfstate*
+.terraform.*
