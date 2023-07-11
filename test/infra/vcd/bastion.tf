@@ -5,42 +5,28 @@ module "bastion_node" {
   source = "github.com/mesosphere/vcenter-tools/modules/vmclone"
 
   node_name      = "kib-vcd-bastion-${random_id.build_id.hex}"
-  ssh_public_key =  file(var.ssh_public_key)
+  ssh_public_key = file(var.ssh_public_key)
 
-  datastore_name       = var.datastore_name
-  datastore_is_cluster = false
-  vm_template_name = var.bastion_base_template
-  resource_pool_name = var.vcd_bastion_resource_pool_name
-  root_volume_size = var.root_volume_size #80
-  vsphere_folder = var.vcd_bastion_vsphere_folder
-  ssh_user = var.ssh_user
+  datastore_name              = var.datastore_name
+  datastore_is_cluster        = false
+  vm_template_name            = var.bastion_base_template
+  resource_pool_name          = var.vcd_bastion_resource_pool_name
+  root_volume_size            = var.root_volume_size #80
+  vsphere_folder              = var.vcd_bastion_vsphere_folder
+  ssh_user                    = var.ssh_user
   custom_attribute_owner      = var.bastion_owner
-  custom_attribute_expiration = "8h"
-}
-
-resource "null_resource" "set_lower_mtu" {
-  provisioner "remote-exec" {
-    inline = [
-      "sudo ip link set ens192 mtu 1400",
-    ]
-  }
-  connection {
-    host = module.bastion_node.nat_address
-    port = module.bastion_node.nat_ssh_port
-    user = var.ssh_user
-    agent = true
-  }
+  custom_attribute_expiration = "2h"
 }
 
 resource "null_resource" "copy_upload_template_script" {
-   provisioner "file" {
-    source = "${path.module}/upload-template.sh"
-    destination =  "/home/${var.ssh_user}/upload-template.sh"
+  provisioner "file" {
+    source      = "${path.module}/upload-template.sh"
+    destination = "/home/${var.ssh_user}/upload-template.sh"
   }
   connection {
-    host = module.bastion_node.nat_address
-    port = module.bastion_node.nat_ssh_port
-    user = var.ssh_user
+    host  = module.bastion_node.nat_address
+    port  = module.bastion_node.nat_ssh_port
+    user  = var.ssh_user
     agent = true
   }
 }
@@ -55,9 +41,11 @@ resource "null_resource" "execute_upload_template_script" {
       "export VCD_USERNAME=${var.vcd_org_username}",
       "export VCD_PASSWORD=${var.vcd_org_password}",
       "export PROD_TEMPLATE_NAME=${var.vm_template_name_to_upload}",
+      "export VCD_ORG=${var.vcd_org}",
+      "export VCD_ORG_CATALOG=${var.vcd_org_catalog}",
       "set -o errexit",
       "chmod +x /home/${var.ssh_user}/upload-template.sh",
-      "/home/${var.ssh_user}/upload-template.sh >> /home/${var.ssh_user}/upload-template.log"
+      "/home/${var.ssh_user}/upload-template.sh | tee /home/${var.ssh_user}/upload-template.log"
     ]
   }
   provisioner "remote-exec" {
@@ -66,15 +54,14 @@ resource "null_resource" "execute_upload_template_script" {
     ]
   }
   connection {
-    host = module.bastion_node.nat_address
-    port = module.bastion_node.nat_ssh_port
-    user = var.ssh_user
+    host  = module.bastion_node.nat_address
+    port  = module.bastion_node.nat_ssh_port
+    user  = var.ssh_user
     agent = true
   }
   depends_on = [
-    null_resource.set_lower_mtu,
     null_resource.copy_upload_template_script
-   ]
+  ]
 }
 
 

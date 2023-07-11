@@ -58,7 +58,7 @@ variable "vsphere_username" {
 variable "vsphere_password" {
   description = "password for production vSphere environment"
   type        = string
-  #sensitive = true
+  sensitive   = true
 }
 
 variable "vcd_url" {
@@ -74,9 +74,20 @@ variable "vcd_org_username" {
 variable "vcd_org_password" {
   description = "password for cloud director tenant organization"
   type        = string
-  #sensitive = true
+  sensitive   = true
 }
 
+variable "vcd_org" {
+  description = "Name of the cloud director tenant organization"
+  type        = string
+  default     = "konvoy"
+}
+
+variable "vcd_org_catalog" {
+  description = "Name of the cloud director tenant organization's catalog"
+  type        = string
+  default     = "default"
+}
 variable "vm_template_name_to_upload" {
   description = "name of the VM template to upload"
   type        = string
