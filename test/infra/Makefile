@@ -47,7 +47,7 @@ infra.aws.init: ## Initialize infrastructure metadata
 infra.aws.init: install-terraform
 	$(call print-target)
 	$(TERRAFORM_BIN) -chdir=$(INFRA_MODULES_DIR)/aws init
-	cd $(INFRA_MODULES_DIR)/aws && $(TEST_INFRA_STATE_DIR)/aws/init.sh
+	cd $(INFRA_MODULES_DIR)/aws && $(INFRA_MODULES_DIR)/aws/init.sh
 
 .PHONY: infra.vsphere.init
 infra.vsphere.init: ## Initialize infrastructure metadata
