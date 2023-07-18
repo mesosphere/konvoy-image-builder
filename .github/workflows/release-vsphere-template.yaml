@@ -92,3 +92,28 @@ jobs:
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
           VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
           VSPHERE_DATACENTER: ${{ secrets.VSPHERE_DATACENTER }}
+
+      - name: Extract vsphere template name
+        id: extract-template
+        shell: bash
+        run: |
+          export RELEASE_TEMPLATE=$(jq -r '.last_run_uuid as $runid | .builds[] | select(.packer_run_uuid==$runid).artifact_id' manifest.json)
+          echo "release_template=${RELEASE_TEMPLATE}" >> "$GITHUB_OUTPUT"
+          echo "Release template = $RELEASE_TEMPLATE"
+          echo "$GITHUB_OUTPUT"
+
+      - name: Upload template to VCD
+        uses: ./.github/composite/vcd-e2e/
+        env:
+          VCD_SERVER:  ${{ secrets.VCD_SERVER }}
+          VCD_ORG_USERNAME:  ${{ secrets.VCD_ORG_USERNAME }}
+          VCD_ORG_PASSWORD:  ${{ secrets.VCD_ORG_PASSWORD }}
+          SSH_BASTION_KEY_CONTENTS: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
+          SSH_BASTION_PUBLIC_KEY_CONTENTS: ${{ secrets.SSH_BASTION_PUBLIC_KEY_CONTENTS }}
+          VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
+          VSPHERE_USER: ${{ secrets.VSPHERE_USERNAME }} # required for terraform
+          VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
+          VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
+          TEMPLATE_NAME_TO_UPLOAD: ${{ steps.extract-template.outputs.release_template }}

@@ -1,0 +1,55 @@
+# Builds vSphere image template when a release tag is created
+name: Upload VCD templates for Konvoy E2E tests
+on:
+  workflow_dispatch:
+    inputs:
+      template_name:
+        description:  "Name of the template in vCenter to upload to Cloud Director"
+        type: string
+        required: true
+env:
+  VCD_SERVER:  ${{ secrets.VCD_SERVER }}
+  VCD_ORG_USERNAME:  ${{ secrets.VCD_ORG_USERNAME }}
+  VCD_ORG_PASSWORD:  ${{ secrets.VCD_ORG_PASSWORD }}
+  SSH_BASTION_KEY_CONTENTS: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
+  SSH_BASTION_PUBLIC_KEY_CONTENTS: ${{ secrets.SSH_BASTION_PUBLIC_KEY_CONTENTS }}
+  VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
+  VSPHERE_USER: ${{ secrets.VSPHERE_USERNAME }} # required for terraform
+  VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
+  GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+  VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
+  VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
+  TEMPLATE_NAME_TO_UPLOAD: ${{ inputs.template_name }}
+
+jobs:
+  build-e2e:
+    runs-on: 
+    - self-hosted
+    - small
+    continue-on-error: false
+    steps:
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+  
+      - name: Setup SSH agent with private key to connect with pre-configured bastion host
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
+  
+      # configure git to access private repo hosting vsphere module mesosphere/vcenter-tools
+      - name: Configure git to clone private registry from mesosphere org
+        run: |
+          git config --global url."https://git:${{ secrets.MESOSPHERECI_USER_TOKEN }}@github.com/mesosphere".insteadOf "https://github.com/mesosphere"
+          git config --global url."https://${{ secrets.MESOSPHERECI_USER_TOKEN }}:x-oauth-basic@github.com/mesosphere".insteadOf ssh://git@github.com/mesosphere
+      
+      - name: Upload template to VCD
+        uses: ./.github/composite/vcd-e2e/
