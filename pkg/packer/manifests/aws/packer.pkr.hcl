@@ -5,7 +5,7 @@ packer {
       source = "github.com/hashicorp/amazon"
     }
     ansible = {
-      version = ">= 1.0.2"
+      version = ">= 1.1.0"
       source  = "github.com/hashicorp/ansible"
     }
     goss = {
@@ -428,7 +428,7 @@ build {
   }
 
   provisioner "ansible" {
-    ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
+    ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args}'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
     extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}"]
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"

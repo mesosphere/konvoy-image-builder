@@ -5,7 +5,7 @@ packer {
       source  = "github.com/hashicorp/vsphere"
     }
     ansible = {
-      version = ">= 1.0.2"
+      version = ">= 1.1.0"
       source  = "github.com/hashicorp/ansible"
     }
     sshkey = {
