@@ -105,4 +105,4 @@
     - ansible_distribution == 'RedHat'
     - "packer_builder_type not in ['amazon']"
     - not offline_mode_enabled
-    - rhelorg != None or rheluser != None
+    - rhelorg.changed != false or rheluser.changed != false
