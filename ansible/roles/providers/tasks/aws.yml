@@ -19,19 +19,17 @@
   when:
     - ansible_os_family == "Debian"
 
+# solution from: https://stackoverflow.com/a/76721835
+# pinning awscli==1.29.9 fails
+# likely due to the pypy setup
 - name: install cython for flatcar
   pip:
-    name: "cython<3.0.0"
+    name: "{{ item.package }}"
     executable: pip3
-    extra_args: "wheel"
-  when:
-    - ansible_distribution == "Flatcar"
-
-- name: install pyyaml
-  pip:
-    name: "pyyaml==5.4.1"
-    executable: pip3
-    extra_args: "--no-build-isolation"
+    extra_args: "{{ item.extra }}"
+  with_items:
+    - { "package": "cython<3.0.0", "extra": "wheel" }
+    - { "package": "pyyaml==5.4.1", "extra": "--no-build-isolation" }
   when:
     - ansible_distribution == "Flatcar"
 
