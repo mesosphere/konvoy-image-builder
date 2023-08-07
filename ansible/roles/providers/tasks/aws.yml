@@ -19,11 +19,27 @@
   when:
     - ansible_os_family == "Debian"
 
+- name: install cython for flatcar
+  pip:
+    name: "cython<3.0.0"
+    executable: pip3
+    extra_args: "wheel"
+  when:
+    - ansible_distribution == "Flatcar"
+
+- name: install pyyaml
+  pip:
+    name: "pyyaml==5.4.1"
+    executable: pip3
+    extra_args: "--no-build-isolation"
+  when:
+    - ansible_distribution == "Flatcar"
+
 - name: install aws clients
   pip:
     name: "awscli"
     executable: pip3
-    extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path if offline_mode_enabled }}"
+    extra_args: "{{ '--no-cache-dir --no-index --find-links=' + pip_packages_remote_filesystem_repo_path if offline_mode_enabled }}"
   when:
     - ansible_distribution != "Amazon"
     - ansible_os_family != "Suse"
