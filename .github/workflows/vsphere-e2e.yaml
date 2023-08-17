@@ -15,21 +15,21 @@ jobs:
       max-parallel: 3
       matrix:
         os:
-        # - "redhat 7.9"
-        # - "redhat 8.4"
-        # - "redhat 8.6"
-        # - "ubuntu 20.04"
+        - "redhat 7.9"
+        - "redhat 8.4"
+        - "redhat 8.6"
+        - "ubuntu 20.04"
         - "rocky 9.1"
         buildConfig:
         - "offline"
-        # - "offline-fips"
-        # exclude:
-        # - os: "ubuntu 20.04"
-        #   buildConfig: fips
-        # - os: "ubuntu 20.04"
-        #   buildConfig: offline-fips
-        # - os: "rocky 9.1"
-        #   buildConfig: offline-fips
+        - "offline-fips"
+        exclude:
+        - os: "ubuntu 20.04"
+          buildConfig: fips
+        - os: "ubuntu 20.04"
+          buildConfig: offline-fips
+        - os: "rocky 9.1"
+          buildConfig: offline-fips
     runs-on: 
     - self-hosted
     - small

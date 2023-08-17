@@ -354,7 +354,7 @@ variable "remote_folder" {
   default = "/tmp"
 }
 
-data "sshkey" "temp_kib_key" {
+data "sshkey" "kibkey" {
   name = "konvoy-image-builder-tmpkey"
 }
 
@@ -378,9 +378,9 @@ locals {
   ssh_agent_auth = var.ssh_agent_auth  != "false" ? true : var.ssh_private_key_file == "" && var.ssh_public_key != ""
 
   # inject generated key if no agent auth or private key is given
-  ssh_private_key_file = var.ssh_private_key_file != "" ? var.ssh_private_key_file : local.ssh_agent_auth ? "" : data.sshkey.temp_kib_key.private_key_path
+  ssh_private_key_file = var.ssh_private_key_file != "" ? var.ssh_private_key_file : local.ssh_agent_auth ? "" : data.sshkey.kibkey.private_key_path
   # when ssh_private_key_file uses the generated key inject its public key
-  ssh_public_key = local.ssh_private_key_file == data.sshkey.temp_kib_key.private_key_path ? data.sshkey.temp_kib_key.public_key : var.ssh_public_key
+  ssh_public_key = local.ssh_private_key_file == data.sshkey.kibkey.private_key_path ? data.sshkey.kibkey.public_key : var.ssh_public_key
 
   # prepare cloud-init
   cloud_init = <<EOF
