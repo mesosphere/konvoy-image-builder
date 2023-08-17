@@ -3,11 +3,11 @@
 # off before then. Hence, we run this script before all other Flatcar scripts.
 # We should check if this can be moved to Ansible and still work or if we can
 # configure even earlier with a cloud-init / Container Linux Config.
-set -e
+set -ex
 
 source /etc/os-release
 
-[[ "${NAME,,}" != *"flatcar"* ]] && exit 0
+[[ "${ID,,}" != *"flatcar"* ]] && exit 0
 # Prevent systemd from starting `update-engine` and `locksmithd`. The default
 # system unit files check for `/usr/.noupdate`, but since `/usr` is a read-only
 # filesystem we cannot create this. Add `/etc/.noupdate` to perform the same
