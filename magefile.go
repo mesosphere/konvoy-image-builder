@@ -110,7 +110,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	}
 
 	// we need these extra overrides always for ova
-	if buildConfig == offline || buildConfig == offlineNvidia || buildConfig == offlineFIPS || buildInfra == ova {
+	if buildConfig == offline || buildConfig == offlineNvidia || buildConfig == offlineFIPS {
 		infraOverride := getInfraOverride(buildInfra)
 		fullOverride := fmt.Sprintf("--overrides=%s", infraOverride)
 		overrideFlagForCmd = append(overrideFlagForCmd, fullOverride)
