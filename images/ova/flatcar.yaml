@@ -11,7 +11,7 @@ packer:
   datastore: "tmp-iscsi-ovh"
   folder: "cluster-api"
   insecure_connection: "false"
-  network: "VMs"
+  network: "Public"
   resource_pool: "Users"
   template: "flatcar_lts_vmware_ova"
   vsphere_guest_os_type: "flatcar_64Guest"
