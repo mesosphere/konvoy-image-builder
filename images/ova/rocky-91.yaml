@@ -13,7 +13,7 @@ packer:
   insecure_connection: "false"
   network: ""
   resource_pool: ""
-  template: "os-qualification-templates/d2iq-base-RockyLinux-9.1" # change default value with your base template name
+  template: "d2iq-base-templates/d2iq-base-RockyLinux-9.1" # change default value with your base template name
   vsphere_guest_os_type: "other4xLinux64Guest"
   guest_os_type: "rocky9-64"
   # goss params
