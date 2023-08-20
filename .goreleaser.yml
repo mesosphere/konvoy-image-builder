@@ -82,7 +82,6 @@ archives:
       - goss
       - images
       - overrides
-      - packer
       - LICENSE
       - README.md
 
