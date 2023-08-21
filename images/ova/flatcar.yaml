@@ -13,7 +13,7 @@ packer:
   insecure_connection: "false"
   network: "Public"
   resource_pool: "Users"
-  template: "flatcar_lts_vmware_ova"
+  template: "flatcar_production_lts_release_ova"
   vsphere_guest_os_type: "flatcar_64Guest"
   guest_os_type: "flatcar-64"
   # goss params

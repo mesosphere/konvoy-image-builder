@@ -29,28 +29,6 @@
     name: kubelet
     enabled: true
 
-- name: Create /opt/libexec overlay directories
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - /opt/libexec
-    - /opt/libexec.work
-
-- name: Create usr-libexec.mount unit
-  copy:
-    src: etc/systemd/system/usr-libexec.mount
-    dest: /etc/systemd/system/usr-libexec.mount
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Enable usr-libexec.mount unit
-  systemd:
-    daemon_reload: yes
-    enabled: yes
-    name: usr-libexec.mount
-
 - name: Create system-environment-generators directory
   file:
     path: /etc/systemd/system-environment-generators
