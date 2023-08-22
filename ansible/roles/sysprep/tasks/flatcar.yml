@@ -17,6 +17,20 @@
     last_log_mode: "0644"
     machine_id_mode: "0444"
 
+- name: Ensure ignition runs on next boot
+  file:
+    state: touch
+    path: /boot/flatcar/first_boot
+    owner: root
+    group: root
+  when: ansible_os_family == "Flatcar"
+
+- name: Remove any default Ignition files used by Packer
+  file:
+    state: absent
+    path: /usr/share/oem/config.ign
+  when: ansible_os_family == "Flatcar"
+
 - name: Invalidate the machine-id file for systemd to reevaluate presets
   file:
     path: /etc/machine-id
