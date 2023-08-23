@@ -77,6 +77,9 @@ packer-aws-offline-override.yaml: infra.aws.create install-envsubst
 packer-ova-offline-override.yaml: infra.vsphere.create install-envsubst
 	@$(INFRA_MODULES_DIR)/vsphere/export.sh $@
 
+packer-ova-flatcar-override.yaml: install-envsubst
+	"${ENVSUBST_ASSETS}"/envsubst < "$(INFRA_MODULES_DIR)"/vsphere/packer-vsphere-flatcar.yaml.tmpl > $@
+
 .PHONY: infra.aws.destroy
 infra.aws.destroy: ## Destroy infrastructure
 infra.aws.destroy: install-terraform infra.aws.init

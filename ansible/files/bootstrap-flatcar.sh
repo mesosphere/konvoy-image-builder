@@ -4,7 +4,7 @@ set -e
 
 source /etc/os-release
 
-[[ "${ID,,}" != *"flatcar"* ]] && exit 0
+[[ "${NAME,,}" != *"flatcar"* ]] && exit 0
 
 BINDIR="/opt/bin"
 BUILDER_ENV="/opt/bin/builder-env"

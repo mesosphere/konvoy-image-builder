@@ -1,26 +1,24 @@
 ---
 download_images: true
-build_name: "flatcar-lts"
+build_name: "flatcar-3033.3.16"
 packer_builder_type: "vsphere"
 guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
 guestinfo_datasource_ref: "v1.4.0"
 guestinfo_datasource_script: "{{guestinfo_datasource_slug}}/{{guestinfo_datasource_ref}}/install.sh"
 packer:
-  cluster: "zone1"
-  datacenter: "dc1"
-  datastore: "tmp-iscsi-ovh"
-  folder: "cluster-api"
+  cluster: ""
+  datacenter: ""
+  datastore: ""
+  folder: ""
   insecure_connection: "false"
-  network: "Public"
-  resource_pool: "Users"
+  network: ""
+  resource_pool: ""
   template: "flatcar_production_lts_release_ova"
   vsphere_guest_os_type: "flatcar_64Guest"
   guest_os_type: "flatcar-64"
   # goss params
   distribution: "flatcar"
   distribution_version: "3033.3.16"
-  ssh_username: "builder"
-  linked_clone: false
 # Use following overrides to select the authentication method that can be used with base template
 # ssh_username: ""  # can be exported as environment variable 'SSH_USERNAME'
 # ssh_password: "" # can be exported as environment variable 'SSH_PASSWORD'
