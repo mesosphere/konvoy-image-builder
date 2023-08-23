@@ -21,7 +21,6 @@ packer:
   distribution_version: "3033.3.16"
   ssh_username: "builder"
   linked_clone: false
-  ssh_agent_auth: true
 # Use following overrides to select the authentication method that can be used with base template
 # ssh_username: ""  # can be exported as environment variable 'SSH_USERNAME'
 # ssh_password: "" # can be exported as environment variable 'SSH_PASSWORD'
