@@ -14,28 +14,25 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os:
-        # - "redhat 7.9"
-        # - "redhat 8.4"
-        # - "redhat 8.6"
-        # - "ubuntu 20.04"
-        # - "rocky 9.1"
-        - "flatcar"
-        buildConfig:
-        - "basic"
-        # - "offline"
-        # - "offline-fips"
-        # exclude:
-        # - os: "ubuntu 20.04"
-        #   buildConfig: fips
-        # - os: "ubuntu 20.04"
-        #   buildConfig: offline-fips
-        # - os: "rocky 9.1"
-        #   buildConfig: offline-fips
-        # - os: "flatcar"
-        #   buildConfig: offline
-        # - os: "flatcar"
-        #   buildConfig: offline-fips
+        include:
+        - os: "redhat 7.9"
+          buildConfig: "offline"
+        - os: "redhat 7.9"
+          buildConfig: "offline-fips"
+        - os: "redhat 8.4"
+          buildConfig: "offline"
+        - os: "redhat 8.4"
+          buildConfig: "offline-fips"
+        - os: "redhat 8.6"
+          buildConfig: "offline"
+        - os: "redhat 8.6"
+          buildConfig: "offline-fips"
+        - os: "ubuntu 20.04"
+          buildConfig: "offline"
+        - os: "rocky 9.1"
+          buildConfig: "offline"
+        - os: "flatcar"
+          buildConfig: "basic"
     runs-on: 
     - self-hosted
     - small
