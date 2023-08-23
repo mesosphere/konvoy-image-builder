@@ -381,7 +381,7 @@ locals {
   ssh_private_key_file = var.ssh_private_key_file != "" ? var.ssh_private_key_file : local.ssh_agent_auth ? "" : data.sshkey.kibkey.private_key_path
   # when ssh_private_key_file uses the generated key inject its public key
   ssh_public_key = local.ssh_private_key_file == data.sshkey.kibkey.private_key_path ? data.sshkey.kibkey.public_key : chomp(var.ssh_public_key)
-  ssh_password_hash = bcrypt(var.ssh_password)
+  ssh_password_hash = var.ssh_password != "" ? bcrypt(var.ssh_password): ""
   # prepare cloud-init
   cloud_init = <<EOF
 #cloud-config

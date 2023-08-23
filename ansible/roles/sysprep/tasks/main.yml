@@ -34,6 +34,7 @@
     owner: root
     group: root
     mode: "{{ item.mode }}"
+  when: ansible_os_family not in ["Flatcar"]
   loop:
     - path: /etc/machine-id
       state: absent
@@ -60,7 +61,7 @@
 - name: Set hostname
   hostname:
     name: localhost.local
-  when: ansible_os_family != "VMware Photon OS"
+  when: ansible_os_family not in ["Flatcar", "VMware Photon OS"]
 
 - name: Remove containerd http proxy conf file if needed
   file:
@@ -154,7 +155,7 @@
     state: absent
     path: "{{ item.path }}"
   loop:
-    - path: /root/.ssh/authorized_keys
+    - path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.ssh/authorized_keys"
   when: ansible_os_family == "Flatcar"
 
 - name: Truncate all remaining log files in /var/log

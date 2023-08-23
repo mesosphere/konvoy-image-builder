@@ -3,7 +3,7 @@
 # off before then. Hence, we run this script before all other Flatcar scripts.
 # We should check if this can be moved to Ansible and still work or if we can
 # configure even earlier with a cloud-init / Container Linux Config.
-set -ex
+set -e
 
 source /etc/os-release
 

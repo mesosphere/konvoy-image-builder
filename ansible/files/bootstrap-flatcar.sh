@@ -1,6 +1,6 @@
 #!/bin/bash
 # copied from: https://github.com/kinvolk/image-builder/blob/3d00a5dc9c9562765d56942b90e5fe300756d425/images/capi/packer/files/bootstrap-flatcar.sh
-set -ex
+set -e
 
 source /etc/os-release
 
