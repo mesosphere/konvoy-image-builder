@@ -110,7 +110,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	}
 
 	// we need these extra overrides always for ova
-	if buildConfig == offline || buildConfig == offlineNvidia || buildConfig == offlineFIPS || buildInfra == ova {
+	if buildConfig == offline || buildConfig == offlineNvidia || buildConfig == offlineFIPS {
 		infraOverride := getInfraOverride(buildInfra)
 		fullOverride := fmt.Sprintf("--overrides=%s", infraOverride)
 		overrideFlagForCmd = append(overrideFlagForCmd, fullOverride)
@@ -162,6 +162,18 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 			}
 		}
 	}
+
+	if buildOS == "flatcar" && buildInfra == ova {
+		flatcarOverride := "packer-ova-flatcar-override.yaml"
+		flatcarOverrideFlag := fmt.Sprintf("--overrides=%s", flatcarOverride)
+		overrideFlagForCmd = append(overrideFlagForCmd, flatcarOverrideFlag)
+		fmt.Printf("making flatcar override %s \n", flatcarOverride)
+		// TODO: @faiq - move this to mage
+		if err := sh.RunV("make", flatcarOverride); err != nil {
+			return fmt.Errorf("failed to override for flatcar ova %s %v", flatcarOverride, err)
+		}
+	}
+
 	args := []string{"build"}
 	buildCmd := buildInfra
 	if buildCmd == ova {

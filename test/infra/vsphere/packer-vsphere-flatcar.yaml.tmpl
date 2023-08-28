@@ -1,0 +1,9 @@
+packer:
+  cluster: "zone1"
+  datacenter: "dc1"
+  datastore: ${VSPHERE_DATASTORE}
+  folder: "cluster-api"
+  network: "Public"
+  resource_pool: "Users"
+  ssh_username: "builder"
+  linked_clone: false

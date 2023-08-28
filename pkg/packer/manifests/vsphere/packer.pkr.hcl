@@ -380,8 +380,8 @@ locals {
   # inject generated key if no agent auth or private key is given
   ssh_private_key_file = var.ssh_private_key_file != "" ? var.ssh_private_key_file : local.ssh_agent_auth ? "" : data.sshkey.kibkey.private_key_path
   # when ssh_private_key_file uses the generated key inject its public key
-  ssh_public_key = local.ssh_private_key_file == data.sshkey.kibkey.private_key_path ? data.sshkey.kibkey.public_key : var.ssh_public_key
-
+  ssh_public_key = local.ssh_private_key_file == data.sshkey.kibkey.private_key_path ? data.sshkey.kibkey.public_key : chomp(var.ssh_public_key)
+  ssh_password_hash = var.ssh_password != "" ? bcrypt(var.ssh_password): ""
   # prepare cloud-init
   cloud_init = <<EOF
 #cloud-config
@@ -393,16 +393,65 @@ users:
     ssh_authorized_keys:
       - ${local.ssh_public_key}
 EOF
+  ignition_config = <<EOF
+{
+  "ignition": {
+    "config": {},
+    "security": {
+      "tls": {}
+    },
+    "timeouts": {},
+    "version": "2.3.0"
+  },
+  "networkd": {},
+  "passwd": {
+    "users": [
+      {
+        "groups": [
+          "wheel",
+          "sudo",
+          "docker"
+        ],
+        "name": "${var.ssh_username}",
+        "passwordHash": "${local.ssh_password_hash}",
+        "sshAuthorizedKeys": [
+          "${local.ssh_public_key}"
+        ]
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "enabled": true,
+        "name": "docker.service"
+      },
+      {
+        "mask": true,
+        "name": "update-engine.service"
+      },
+      {
+        "mask": true,
+        "name": "locksmithd.service"
+      }
+    ]
+  }
+}
+EOF
 
-  # boolean toggling cloud-init injection. Check if local.ssh_public_key is not empty
-  use_cloud_init = local.ssh_public_key != ""
-  configuration_parameters = local.use_cloud_init ? {
+  configuration_parameters_cloud_init = local.ssh_public_key != "" ? {
     "guestinfo.userdata" = base64encode(local.cloud_init),
     "guestinfo.userdata.encoding" = "base64",
     "guestinfo.metadata" = ""
     "guestinfo.metadata.encoding" = "base64"
   } : {}
+  configuration_parameters_ignition = {
+    "guestinfo.ignition.config.data" = base64encode(local.ignition_config),
+    "guestinfo.ignition.config.data.encoding" = "base64",
+  }
+  configuration_parameters = var.distribution == "flatcar" ? local.configuration_parameters_ignition : local.configuration_parameters_cloud_init
 }
+
 # source blocks are generated from your builders; a source can be referenced in
 # build blocks. A build block runs provisioner and post-processors on a
 # source. Read the documentation for source blocks here:
