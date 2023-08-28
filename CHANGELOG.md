@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.6.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.5.0...v2.6.0) (2023-08-28)
+
+
+### Features
+
+* Build flatcar LTS vSphere template ([#880](https://github.com/mesosphere/konvoy-image-builder/issues/880)) ([ae90f4c](https://github.com/mesosphere/konvoy-image-builder/commit/ae90f4cb5e42082b1c361ed45bf9029677fee4c5))
+
+
+### Bug Fixes
+
+* bumps ansible to remove extra ssh arguments ([a4e3532](https://github.com/mesosphere/konvoy-image-builder/commit/a4e3532e21a77c7e2032cde623d057901e85e422))
+* chnages condition ([1df6471](https://github.com/mesosphere/konvoy-image-builder/commit/1df6471d3e1d7010dab4429ec0f4bd8eb9299363))
+* cython issue for flatcar ([feb5820](https://github.com/mesosphere/konvoy-image-builder/commit/feb58207ce0fe0a814f8967ff86b45a8f72ee8eb))
+* neat up the code and add a little comment ([228bde3](https://github.com/mesosphere/konvoy-image-builder/commit/228bde3dc70b5b23fc87118607d6468b717958c6))
+
 ## [2.5.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.4.2...v2.5.0) (2023-06-20)
 
 
