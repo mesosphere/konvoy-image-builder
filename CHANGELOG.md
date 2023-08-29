@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.6.0...v2.6.1) (2023-08-29)
+
+
+### Bug Fixes
+
+* start usr-libexec.mount to also support pre-provisioned ([#886](https://github.com/mesosphere/konvoy-image-builder/issues/886)) ([619079b](https://github.com/mesosphere/konvoy-image-builder/commit/619079b2ad9fae60b51e7b334741919ed4324739))
+
 ## [2.6.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.5.0...v2.6.0) (2023-08-28)
 
 
