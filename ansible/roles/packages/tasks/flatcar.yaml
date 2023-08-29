@@ -45,8 +45,9 @@
     group: root
     mode: "0644"
 
-- name: Enable usr-libexec.mount unit
+- name: Start usr-libexec.mount unit
   systemd:
+    state: started
     daemon_reload: yes
     enabled: yes
     name: usr-libexec.mount
