@@ -15,15 +15,7 @@
     - ansible_facts['distribution_version'] is version('3033.3.0', '>=', version_type='semver')
     - ansible_facts['distribution_version'] is version('3033.4.0', '<', version_type='semver')
 
-- name: Create systemd unit file for containerd
-  template:
-    dest: /etc/systemd/system/containerd.service
-    src: etc/systemd/system/containerd-flatcar.service
-    mode: 0600
-  when: dockerUpgradeRequired is not defined
-
-- name: Download, Update and Restart docker for 3033.3.x flatcar LTS
-  when: dockerUpgradeRequired is true
+- when: dockerUpgradeRequired is true
   block:
   - name: Download docker for 3033.3.x flatcar LTS to /opt/docker.tgz
     get_url:
@@ -47,6 +39,20 @@
       - prepare-docker
       - docker
       - containerd
+
+- name: Check if /opt/bin/dockerd binary exists
+  changed_when: false
+  stat:
+    path: "/opt/bin/dockerd"
+  register: dockerd_binary_exists
+
+# Only run this task if not using the downloaded Docker binary
+- name: Create systemd unit file for containerd
+  template:
+    dest: /etc/systemd/system/containerd.service
+    src: etc/systemd/system/containerd-flatcar.service
+    mode: 0600
+  when: not dockerd_binary_exists.stat.exists
 
 - name: Create containerd memory pressure drop in file
   template:
