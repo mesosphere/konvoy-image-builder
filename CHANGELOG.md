@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.6.1...v2.6.2) (2023-08-31)
+
+
+### Bug Fixes
+
+* don't override Docker systemd unit file for Flatcar ([#890](https://github.com/mesosphere/konvoy-image-builder/issues/890)) ([50f37c7](https://github.com/mesosphere/konvoy-image-builder/commit/50f37c70eb1e928f8020438d2d598febe682817b))
+* force redownload of Kubelet and kubectl binaries for Flatcar ([#889](https://github.com/mesosphere/konvoy-image-builder/issues/889)) ([8e07f9c](https://github.com/mesosphere/konvoy-image-builder/commit/8e07f9c3a9a7e32450324834303a00eb03645af6))
+
 ## [2.6.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.6.0...v2.6.1) (2023-08-29)
 
 
