@@ -30,9 +30,9 @@ variable "ami_users" {
   default = ""
 }
 
-variable "ansible_extra_vars" {
-  type    = string
-  default = ""
+variable "ansible_override_files" {
+  type    = list(string)
+  default = []
 }
 
 variable "aws_access_key" {
@@ -350,6 +350,7 @@ locals {
   gen_ami_name                 = "konvoy-ami-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
   # clean_resource_name https://github.com/hashicorp/packer-plugin-amazon/blob/f1ebbbf409f4863de79a0474ef64d3576faad0e4/builder/common/template_funcs.go#L24
   ami_name                     = regex_replace(local.gen_ami_name, "[^A-Za-z0-9\\(\\)\\[\\] \\.\\/\\\\\\-\\'\\@_]", "-")
+  ansible_override_file_list = flatten([for override in var.ansible_override_files : concat(["--extra-vars"], [override])])
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -428,7 +429,7 @@ build {
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args}'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
-    extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}", "--scp-extra-args", "'-O'"]
+    extra_arguments  = concat(local.ansible_override_file_list, ["--scp-extra-args", "'-O'"])
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
