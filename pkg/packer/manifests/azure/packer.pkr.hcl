@@ -15,10 +15,9 @@ packer {
   }
 }
 
-
-variable "ansible_extra_vars" {
-  type    = string
-  default = ""
+variable "ansible_override_files" {
+  type    = list(string)
+  default = []
 }
 
 variable "build_name" {
@@ -331,6 +330,7 @@ locals {
   generated_managed_image_name = "${var.gallery_image_name}-${local.build_timestamp}"
   # clean_resource_name https://github.com/hashicorp/packer-plugin-azure/blob/a56b4569b8e71781cbe56bd09cd0cdc7419e4d48/builder/azure/common/template_funcs.go#L23
   managed_image_name = trimsuffix(local.generated_managed_image_name, "-_.")
+  ansible_override_file_list = flatten([for override in var.ansible_override_files : concat(["--extra-vars"], [override])])
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -404,7 +404,7 @@ build {
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args}'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
-    extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}", "--scp-extra-args", "'-O'"]
+    extra_arguments  = concat(local.ansible_override_file_list, ["--scp-extra-args", "'-O'"])
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
