@@ -34,6 +34,7 @@
       force: true
       owner: root
       group: root
+      force: true
 
   - name: Install CNI
     unarchive:
@@ -57,6 +58,7 @@
     mode: 0755
     owner: root
     group: root
+    force: true
   loop: "{{ kubernetes_bins }}"
 
 - name: Create Kubernetes manifests directory
