@@ -160,9 +160,9 @@ variable "kubernetes_cni_semver" {
   default = ""
 }
 
-variable "ansible_extra_vars" {
-  type    = string
-  default = ""
+variable "ansible_override_files" {
+  type    = list(string)
+  default = []
 }
 
 variable "existing_ansible_ssh_args" {
@@ -234,12 +234,12 @@ locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 # Read the documentation for locals blocks here:
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
 locals {
-  ansible_extra_vars   = "${var.ansible_extra_vars}"
   build_timestamp      = local.timestamp
   zone                 = "${var.region}-a"
   generated_image_name = "konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
   # clean_resource_name https://github.com/hashicorp/packer-plugin-googlecompute/blob/81d8d5a740c0d7fb0b02be93133ac17a11557f34/builder/googlecompute/template_funcs.go#L20
   image_name           = regex_replace(lower(local.generated_image_name), "[^-a-z0-9]", "-")
+  ansible_override_file_list = flatten([for override in var.ansible_override_files : concat(["--extra-vars"], [override])])
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -291,7 +291,7 @@ build {
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args}'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
-    extra_arguments  = ["--extra-vars", "${local.ansible_extra_vars}", "--scp-extra-args", "'-O'"]
+    extra_arguments  = concat(local.ansible_override_file_list, ["--scp-extra-args", "'-O'"])
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
