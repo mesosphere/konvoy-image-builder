@@ -19,9 +19,9 @@ packer {
   }
 }
 
-variable "ansible_extra_vars" {
-  type    = string
-  default = ""
+variable "ansible_override_files" {
+  type    = list(string)
+  default = []
 }
 
 variable "build_name_extra" {
@@ -450,6 +450,7 @@ EOF
     "guestinfo.ignition.config.data.encoding" = "base64",
   }
   configuration_parameters = var.distribution == "flatcar" ? local.configuration_parameters_ignition : local.configuration_parameters_cloud_init
+  ansible_override_file_list = flatten([for override in var.ansible_override_files : concat(["--extra-vars"], [override])])
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -506,7 +507,7 @@ build {
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args} -o IdentitiesOnly=yes -o HostkeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
-    extra_arguments  = ["--extra-vars", "${var.ansible_extra_vars}", "--scp-extra-args", "'-O'"]
+    extra_arguments  = concat(local.ansible_override_file_list, ["--scp-extra-args", "'-O'"])
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = var.ssh_username
   }
