@@ -41,6 +41,7 @@ var (
 		"redhat 7.9",
 		"redhat 8.4",
 		"redhat 8.6",
+		"redhat 8.8",
 		"sles 15",
 		"oracle 7.9",
 		"flatcar",
