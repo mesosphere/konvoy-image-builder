@@ -6,10 +6,10 @@ packer:
   ami_filter_owners: "075585003325"
   # Tags applied to generated AMI:
   distribution: "Flatcar"
-  distribution_version: "Stable"
+  distribution_version: "LTS"
   # Other variables:
   ssh_username: "core"
   root_device_name: "/dev/xvda"
 
-build_name: "flatcar-stable"
+build_name: "flatcar-lts-3033.3.x"
 packer_builder_type: "amazon"
