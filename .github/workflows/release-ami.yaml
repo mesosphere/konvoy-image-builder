@@ -41,6 +41,8 @@ jobs:
             buildConfig: "basic"
           - os: "ubuntu 20.04"
             buildConfig: "nvidia"
+          - os: "flatcar"
+            buildConfig: "basic"
 
     runs-on: 
     - self-hosted
