@@ -17,6 +17,8 @@ jobs:
             buildConfig: "offline"
           - os: "redhat 8.6"
             buildConfig: "offline"
+          - os: "redhat 8.8"
+            buildConfig: "offline"
           - os: "redhat 8.4"
             buildConfig: "offline-fips"
           - os: "ubuntu 20.04"
