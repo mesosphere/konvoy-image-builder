@@ -147,6 +147,12 @@ variable "ssh_private_key_file" {
   sensitive = true
 }
 
+variable "ssh_public_key" {
+  type    = string
+  default = env("SSH_PUBLIC_KEY")
+  sensitive = true
+}
+
 variable "ssh_timeout" {
   type    = string
   default = "60m"
