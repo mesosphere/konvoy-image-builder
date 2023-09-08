@@ -86,7 +86,6 @@ jobs:
         env:
           SSH_BASTION_KEY_CONTENTS: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
           SSH_BASTION_PUBLIC_KEY_CONTENTS: ${{ secrets.SSH_BASTION_PUBLIC_KEY_CONTENTS }}
-          SSH_PUBLIC_KEY: ${{ secrets.SSH_BASTION_PUBLIC_KEY_CONTENTS}}
           VSPHERE_USERNAME: ${{ secrets.VSPHERE_USERNAME }}
           VSPHERE_USER: ${{ secrets.VSPHERE_USERNAME }} # required for terraform
           VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
