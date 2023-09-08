@@ -8,6 +8,10 @@ packer {
       version = ">= 1.0.2"
       source  = "github.com/hashicorp/ansible"
     }
+    sshkey = {
+      version = ">= 1.0.1"
+      source  = "github.com/ivoronin/sshkey"
+    }
   }
 }
 
@@ -144,6 +148,12 @@ variable "ssh_password" {
 variable "ssh_private_key_file" {
   type    = string
   default = env("SSH_PRIVATE_KEY_FILE")
+  sensitive = true
+}
+
+variable "ssh_public_key" {
+  type    = string
+  default = env("SSH_PUBLIC_KEY")
   sensitive = true
 }
 
@@ -345,6 +355,10 @@ variable "remote_folder" {
   default = "/tmp"
 }
 
+data "sshkey" "kibkey" {
+  name = "konvoy-image-builder-tmpkey"
+}
+
 # "timestamp" template function replacement
 locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
 
@@ -360,6 +374,83 @@ locals {
   ssh_bastion_private_key_file = var.ssh_bastion_private_key_file
   ssh_bastion_username         = var.ssh_bastion_username
   vm_name                      = "konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
+
+  # if only a public key is given we expect the private key to be loaded into ssh-agent
+  ssh_agent_auth = var.ssh_agent_auth  != "false" ? true : var.ssh_private_key_file == "" && var.ssh_public_key != ""
+
+  # inject generated key if no agent auth or private key is given
+  ssh_private_key_file = var.ssh_private_key_file != "" ? var.ssh_private_key_file : local.ssh_agent_auth ? "" : data.sshkey.kibkey.private_key_path
+  # when ssh_private_key_file uses the generated key inject its public key
+  ssh_public_key = local.ssh_private_key_file == data.sshkey.kibkey.private_key_path ? data.sshkey.kibkey.public_key : chomp(var.ssh_public_key)
+  ssh_password_hash = var.ssh_password != "" ? bcrypt(var.ssh_password): ""
+  # prepare cloud-init
+  cloud_init = <<EOF
+#cloud-config
+users:
+  - name: ${var.ssh_username}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo, wheel
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${local.ssh_public_key}
+EOF
+  ignition_config = <<EOF
+{
+  "ignition": {
+    "config": {},
+    "security": {
+      "tls": {}
+    },
+    "timeouts": {},
+    "version": "2.3.0"
+  },
+  "networkd": {},
+  "passwd": {
+    "users": [
+      {
+        "groups": [
+          "wheel",
+          "sudo",
+          "docker"
+        ],
+        "name": "${var.ssh_username}",
+        "passwordHash": "${local.ssh_password_hash}",
+        "sshAuthorizedKeys": [
+          "${local.ssh_public_key}"
+        ]
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "enabled": true,
+        "name": "docker.service"
+      },
+      {
+        "mask": true,
+        "name": "update-engine.service"
+      },
+      {
+        "mask": true,
+        "name": "locksmithd.service"
+      }
+    ]
+  }
+}
+EOF
+
+  configuration_parameters_cloud_init = local.ssh_public_key != "" ? {
+    "guestinfo.userdata" = base64encode(local.cloud_init),
+    "guestinfo.userdata.encoding" = "base64",
+    "guestinfo.metadata" = ""
+    "guestinfo.metadata.encoding" = "base64"
+  } : {}
+  configuration_parameters_ignition = {
+    "guestinfo.ignition.config.data" = base64encode(local.ignition_config),
+    "guestinfo.ignition.config.data.encoding" = "base64",
+  }
+  configuration_parameters = var.distribution == "flatcar" ? local.configuration_parameters_ignition : local.configuration_parameters_cloud_init
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -388,7 +479,7 @@ source "vsphere-clone" "kib_image" {
   ssh_bastion_username         = local.ssh_bastion_username
   ssh_key_exchange_algorithms  = ["curve25519-sha256@libssh.org", "ecdh-sha2-nistp256", "ecdh-sha2-nistp384", "ecdh-sha2-nistp521", "diffie-hellman-group14-sha1", "diffie-hellman-group1-sha1"]
   ssh_password                 = var.ssh_password
-  ssh_private_key_file         = var.ssh_private_key_file
+  ssh_private_key_file         = local.ssh_private_key_file
   ssh_timeout                  = "4h"
   ssh_username                 = var.ssh_username
   template                     = var.template
@@ -396,6 +487,16 @@ source "vsphere-clone" "kib_image" {
   vcenter_server               = var.vcenter_server
   vm_name                      = local.vm_name
   resource_pool                = var.resource_pool
+
+  cd_label = "cidata"
+  cd_content = {
+    "/user-data"       = local.cloud_init,
+    "/user-data.txt"       = local.cloud_init,
+    "/meta-data"       = "",
+  }
+
+  // try injecting cloud-init via guestinfo
+  configuration_parameters = local.configuration_parameters
 
   create_snapshot     = !var.dry_run
   convert_to_template = !var.dry_run
@@ -489,9 +590,9 @@ build {
   post-processor "shell-local" {
     inline = [ "if ${var.dry_run}; then echo 'destroying VM ${local.vm_name} with command: govc vm.destroy -dc=${var.vsphere_datacenter} ${local.vm_name}'; govc vm.destroy -dc=${var.vsphere_datacenter} ${local.vm_name}; fi"]
     environment_vars =[
-        "GOVC_URL=${var.vcenter_server}",
-        "GOVC_USERNAME=${var.vsphere_username}",
-        "GOVC_PASSWORD=${var.vsphere_password}"
+      "GOVC_URL=${var.vcenter_server}",
+      "GOVC_USERNAME=${var.vsphere_username}",
+      "GOVC_PASSWORD=${var.vsphere_password}"
     ]
   }
 }

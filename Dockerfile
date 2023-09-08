@@ -6,7 +6,7 @@ FROM ${BASE} as devkit
 
 ARG TARGETPLATFORM
 # hadolint ignore=DL3029
-FROM --platform=${TARGETPLATFORM} alpine:3.15.4
+FROM --platform=${TARGETPLATFORM} alpine:3.15.6
 
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
@@ -23,6 +23,7 @@ RUN apk add --no-cache \
         py3-cryptography \
         py3-pip \
         py3-wheel \
+        xorriso \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
