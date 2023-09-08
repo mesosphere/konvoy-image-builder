@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.7.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.6.2...v2.7.0) (2023-09-08)
+
+
+### Features
+
+* bump nvidia version ([daefa2e](https://github.com/mesosphere/konvoy-image-builder/commit/daefa2eff5df44f6ba4f7c248148299e7fc9bfc9))
+* rhel 8.8 on aws ([857c7cd](https://github.com/mesosphere/konvoy-image-builder/commit/857c7cdad72f326c9084c57b6c3344374b51f634))
+* Upgrade Kubernetes version to 1.27.5 ([b339c32](https://github.com/mesosphere/konvoy-image-builder/commit/b339c327ab4dbc1d99696e1a5f22ed51c97a1177))
+
+
+### Bug Fixes
+
+* extra arguments ([d49755f](https://github.com/mesosphere/konvoy-image-builder/commit/d49755f85f398af317236a9170e5fb7c0d1f8209))
+* use d2iq base templates ([ec8b09f](https://github.com/mesosphere/konvoy-image-builder/commit/ec8b09fda102f19f4a03e81f9a18a88610a59d4b))
+* Use updated kubeadm API version ([b48af2f](https://github.com/mesosphere/konvoy-image-builder/commit/b48af2f0c297fa1cccf3d4aef56266bc4840b49f))
+
 ## [2.6.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.6.1...v2.6.2) (2023-08-31)
 
 
