@@ -60,7 +60,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64 }}
 
       - name: Build GCP image for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
-        uses: magefile/mage-action@v2
+        uses: magefile/mage-action@v3
         with:
           version: latest
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" gcp false

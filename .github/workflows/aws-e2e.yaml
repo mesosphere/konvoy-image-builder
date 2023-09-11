@@ -148,7 +148,7 @@ jobs:
           aws-region: us-west-2
 
       - name: Run E2E test for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
-        uses: magefile/mage-action@v2
+        uses: magefile/mage-action@v3
         with:
           version: latest
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws true
