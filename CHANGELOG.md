@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.7.0...v2.7.1) (2023-09-12)
+
+
+### Bug Fixes
+
+* remove deprecated cmdline argument ([234782f](https://github.com/mesosphere/konvoy-image-builder/commit/234782fa961eef28e992af22d5f423cb2e5251fb))
+
 ## [2.7.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.6.2...v2.7.0) (2023-09-08)
 
 
