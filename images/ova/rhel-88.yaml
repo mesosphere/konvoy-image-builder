@@ -18,7 +18,7 @@ packer:
   guest_os_type: "rhel8-64"
   # goss params
   distribution: "RHEL"
-  distribution_version: "8.6"
+  distribution_version: "8.8"
 # Use following overrides to select the authentication method that can be used with base template
 # ssh_username: ""  # can be exported as environment variable 'SSH_USERNAME'
 # ssh_password: "" # can be exported as environment variable 'SSH_PASSWORD'
