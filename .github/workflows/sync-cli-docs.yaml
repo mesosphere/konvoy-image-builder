@@ -15,9 +15,9 @@ jobs:
     name: Sync CLI docs to Confluence
     steps:
       - name: Checkout konvoy-image-builder repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Checkout dkp-cli
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: mesosphere/dkp-cli
           path: dkp-cli
