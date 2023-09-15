@@ -81,7 +81,7 @@ jobs:
           git config --global url."https://${{ secrets.MESOSPHERECI_USER_TOKEN }}:x-oauth-basic@github.com/mesosphere".insteadOf ssh://git@github.com/mesosphere
 
       - name: Run E2E test for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
-        uses: magefile/mage-action@v2
+        uses: magefile/mage-action@v3
         with:
           version: latest
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" ova true
