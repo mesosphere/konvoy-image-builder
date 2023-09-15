@@ -16,7 +16,7 @@ jobs:
     - self-hosted
     - small
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -51,7 +51,7 @@ jobs:
     needs: release-to-github
     steps:
       - name: Checkout mesosphere/cluster-api-provider-preprovisioned repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: mesosphere/cluster-api-provider-preprovisioned
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
