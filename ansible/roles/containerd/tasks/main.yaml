@@ -35,4 +35,6 @@
 - name: enable containerd
   systemd:
     name: containerd
+    daemon_reload: true
+    force: true
     enabled: true

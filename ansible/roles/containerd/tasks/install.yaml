@@ -31,6 +31,9 @@
     dest: /
     extra_opts:
       - --no-overwrite-dir
+  notify:
+    - reload systemd
+    - restart containerd
 
 # Some ansible tasks run ctr and containerd. For these tasks, the executable must be in the PATH of the ansible process.
 # On some distributions, /usr/local/bin is not in the PATH. The symlink makes the executables available in /usr/bin,
