@@ -42,11 +42,14 @@
 - name: copy kubeadm config
   template:
     src: "kubeadm-conf.yaml.tmpl"
-    dest: "kubeadm-conf.yaml"
+    dest: "/tmp/kubeadm-conf.yaml"
 
 - name: determine kubernetes images
-  shell: kubeadm config images list --config kubeadm-conf.yaml
+  shell: kubeadm config images list --config /tmp/kubeadm-conf.yaml
   register: kubernetes_kubeadm_images
+
+- name: Cleanup kubeadm-conf
+  shell: rm /tmp/kubeadm-conf.yaml
 
 - name: set kubernetes images
   set_fact:
