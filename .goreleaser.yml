@@ -46,13 +46,7 @@ builds:
       - EMBED_DOCKER_IMAGE
     ldflags:
       - -s -w
-      - -X {{ .ModulePath }}/pkg/version.version=v{{trimprefix .Version "v"}}
-      - -X {{ .ModulePath }}/pkg/version.major={{ .Major }}
-      - -X {{ .ModulePath }}/pkg/version.minor={{ .Minor }}
-      - -X {{ .ModulePath }}/pkg/version.patch={{ .Patch }}
-      - -X {{ .ModulePath }}/pkg/version.revision={{ .FullCommit }}
-      - -X {{ .ModulePath }}/pkg/version.commitDate={{ .CommitDate }}
-      - -X {{ .ModulePath }}/pkg/version.branch={{ .Branch }}
+      - -X {{ .ModulePath }}/pkg/version.version={{ .FullCommit }}
       - -X {{ .ModulePath }}/pkg/version.builtBy=goreleaser
     goos:
       - linux
