@@ -53,7 +53,6 @@ jobs:
       - name: Build snapshot
         run:  |-
           make build-for-podman
-          make build.snapshot
           goreleaser build --id konvoy-image-wrapper-for-podman
 
       - name: Run E2E test for AWS centos 7.9 using podman
