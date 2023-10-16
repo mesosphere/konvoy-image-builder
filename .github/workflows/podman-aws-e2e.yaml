@@ -51,7 +51,7 @@ jobs:
         run: go install github.com/goreleaser/goreleaser@v1.15.2
 
       - name: Build snapshot
-        run: make build.snapshot
+        run: make kib-image-push-amd64
 
       - name: Run E2E test for AWS centos 7.9 using podman
         run: |-
