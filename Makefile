@@ -505,3 +505,7 @@ cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: kib-image-push-manif
 	docker pull $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH)
 	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
 	docker save $(DOCKER_REPOSITORY):$(REPO_REV) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
+
+build-for-podman: kib-image-build-amd64
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
+	docker save $(DOCKER_REPOSITORY):$(REPO_REV) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
