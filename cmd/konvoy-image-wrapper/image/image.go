@@ -7,6 +7,7 @@ package image
 import (
 	"bytes"
 	_ "embed"
+	"fmt"
 	"os"
 	"os/exec"
 )
@@ -27,5 +28,19 @@ func LoadImage(containerEngine string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	return cmd.Run()
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to run cmd %s with error %w", cmd.Args, err)
+	}
+	if containerEngine != "podman" {
+		return nil
+	}
+	cmdTag := exec.Command(containerEngine, "tag", fmt.Sprintf("localhost/%s", image), fmt.Sprintf("docker.io/%s", image))
+	cmdTag.Stdout = os.Stdout
+	cmdTag.Stderr = os.Stderr
+	err = cmdTag.Run()
+	if err != nil {
+		return fmt.Errorf("failed to run cmd %s with error %w", cmd.Args, err)
+	}
+	return nil
 }
