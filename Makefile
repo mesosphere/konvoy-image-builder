@@ -8,6 +8,7 @@ INTERACTIVE := $(shell [ -t 0 ] && echo 1)
 root_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 export REPO_ROOT_DIR := $(patsubst %/,%,$(dir $(root_mkfile_path)))
 export REPO_REV ?= $(shell cd $(REPO_ROOT_DIR) && git describe --abbrev=12 --tags --match='v*' HEAD)
+export COMMIT := $(shell  git log -n1 | grep commit | cut -d' ' -f2)
 
 UID ?= $(shell id -u)
 GID ?= $(shell id -g)
@@ -507,5 +508,5 @@ cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: kib-image-push-manif
 	docker save $(DOCKER_REPOSITORY):$(REPO_REV) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
 build-for-podman: kib-image-build-amd64
-	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
-	docker save $(DOCKER_REPOSITORY):$(REPO_REV) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
+	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(COMMIT)
+	docker save $(DOCKER_REPOSITORY):$(COMMIT) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
