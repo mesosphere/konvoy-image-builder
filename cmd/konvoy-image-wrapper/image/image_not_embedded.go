@@ -4,6 +4,7 @@
 package image
 
 import (
+	"fmt"
 	"os/exec"
 )
 
@@ -14,7 +15,12 @@ func LoadImage(containerEngine string) error {
 	if imageLoaded(containerEngine, image) {
 		return nil
 	}
+
 	//nolint:gosec // this is necessary
-	cmd := exec.Command(containerEngine, "pull", Tag())
-	return cmd.Run()
+	cmd := exec.Command(containerEngine, "pull", fmt.Sprintf("docker.io/%s", Tag()))
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to pull image %s using cmd %s with error %w", Tag(), cmd.Args, err)
+	}
+	return nil
 }
