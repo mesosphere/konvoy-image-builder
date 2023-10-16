@@ -51,7 +51,7 @@ jobs:
           password: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Setup buildkit
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Setup GOOGLE_APPLICATION_CREDENTIALS
         run: |-
