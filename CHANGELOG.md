@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.8.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.7.1...v2.8.0) (2023-10-17)
+
+
+### Features
+
+* update Containerd to 1.6.24 ([#922](https://github.com/mesosphere/konvoy-image-builder/issues/922)) ([79c1737](https://github.com/mesosphere/konvoy-image-builder/commit/79c17372839c0578ce5e295bebbd117c07c954fc))
+* upgrade Kubernetes to 1.27.6 ([#923](https://github.com/mesosphere/konvoy-image-builder/issues/923)) ([a25e815](https://github.com/mesosphere/konvoy-image-builder/commit/a25e81558b797a129e6fc112594e46f1c4ea979e))
+
+
+### Bug Fixes
+
+* attempts to build an image just for amd64 process ([6e4cca0](https://github.com/mesosphere/konvoy-image-builder/commit/6e4cca0e8fb2ea980ddab8c959c3185ad45fee95))
+* do not run build snapshot ([c87ffe5](https://github.com/mesosphere/konvoy-image-builder/commit/c87ffe504d729ebf3c38f3cc6571b3c219b3e592))
+* downgrade vsphere version ([f90d6ca](https://github.com/mesosphere/konvoy-image-builder/commit/f90d6caff11122df56607d7f4dc66fcca1d4190e))
+* just build one image ([e54b244](https://github.com/mesosphere/konvoy-image-builder/commit/e54b244d86ea9569c35efe72517349f08978e183))
+* mistake, packer plugin was not broken just tf provider ([39749bf](https://github.com/mesosphere/konvoy-image-builder/commit/39749bf8608be93365d65802166068a3bc1df6b5))
+* push the image and copy modified commands to pull ([ebbe945](https://github.com/mesosphere/konvoy-image-builder/commit/ebbe945ff4530f651d8ccedcbced9279fce79914))
+* RHEL 8.8 build_name ([#910](https://github.com/mesosphere/konvoy-image-builder/issues/910)) ([096c294](https://github.com/mesosphere/konvoy-image-builder/commit/096c2948a69a52153ccae3798dbaeebb947b9e32))
+* RHEL 8.8 distribution_version ([#907](https://github.com/mesosphere/konvoy-image-builder/issues/907)) ([93923f7](https://github.com/mesosphere/konvoy-image-builder/commit/93923f71f8ed6415d4583748b882a8928cb1b736))
+* use bin/konvoy-image-wrapper now ([c5aeef6](https://github.com/mesosphere/konvoy-image-builder/commit/c5aeef6bf071a3813a743888a7f2346466462fc9))
+* use snapshot: ([ec7bf9a](https://github.com/mesosphere/konvoy-image-builder/commit/ec7bf9a7d282dcdcc0dbf18eb0518402b5906720))
+* use the container engine to retag after load ([9d08345](https://github.com/mesosphere/konvoy-image-builder/commit/9d083456b53502522023db0171bf74dbfbfc14bb))
+* vsphere test terraform as well ([bc369a9](https://github.com/mesosphere/konvoy-image-builder/commit/bc369a9d678e20708fb539e43581a933aca61fa3))
+
 ## [2.7.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.7.0...v2.7.1) (2023-09-12)
 
 
