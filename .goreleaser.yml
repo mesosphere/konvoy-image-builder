@@ -35,25 +35,6 @@ builds:
       - arm64
 
   - main: ./cmd/konvoy-image-wrapper/main.go
-    id: konvoy-image-wrapper-for-podman
-    binary: konvoy-image
-    mod_timestamp: "{{ .CommitTimestamp }}"
-    env:
-      - CGO_ENABLED=0
-    flags:
-      - -trimpath
-    tags:
-      - EMBED_DOCKER_IMAGE
-    ldflags:
-      - -s -w
-      - -X {{ .ModulePath }}/pkg/version.version={{ .FullCommit }}
-      - -X {{ .ModulePath }}/pkg/version.builtBy=goreleaser
-    goos:
-      - linux
-    goarch:
-      - amd64
-
-  - main: ./cmd/konvoy-image-wrapper/main.go
     id: konvoy-image-wrapper
     binary: konvoy-image
     mod_timestamp: "{{ .CommitTimestamp }}"
