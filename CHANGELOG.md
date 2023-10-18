@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.0...v2.8.1) (2023-10-18)
+
+
+### Bug Fixes
+
+* skip building podman binary on release ([#931](https://github.com/mesosphere/konvoy-image-builder/issues/931)) ([5d89ee7](https://github.com/mesosphere/konvoy-image-builder/commit/5d89ee7262911b1c8edee43a24574f4d6644af40))
+
 ## [2.8.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.7.1...v2.8.0) (2023-10-17)
 
 
