@@ -421,9 +421,9 @@ export DOCKER_SUPER_LINTER_ARGS ?= \
 	--env-file $(REPO_ROOT_DIR)/.github/super-linter.env \
 	--volume $(REPO_ROOT_DIR):/tmp/lint
 export DOCKER_SUPER_LINTER_VERSION ?= $(shell \
-	grep 'uses: github/super-linter' $(REPO_ROOT_DIR)/.github/workflows/lint.yml | cut -d@ -f2 \
+	grep 'uses: super-linter/super-linter' $(REPO_ROOT_DIR)/.github/workflows/lint.yml | cut -d@ -f2 \
 )
-export DOCKER_SUPER_LINTER_IMG := github/super-linter:$(DOCKER_SUPER_LINTER_VERSION)
+export DOCKER_SUPER_LINTER_IMG := ghcr.io/super-linter/super-linter:$(DOCKER_SUPER_LINTER_VERSION)
 
 super-lint: ## run all linting with super-linter
 	$(call print-target)
@@ -449,7 +449,7 @@ super-lint-shell: ## open a shell in the super-linter container
 .PHONY: test
 test: ## go test with race detector and code coverage
 	$(call print-target)
-	CGO_ENABLED=1 go test $(shell go list ./... | grep -v e2e) -- -race -short -v  
+	CGO_ENABLED=1 go test $(shell go list ./... | grep -v e2e) -- -race -short -v
 
 .PHONY: integration-test
 integration-test: ## go test with race detector for integration tests

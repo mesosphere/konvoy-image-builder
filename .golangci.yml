@@ -68,7 +68,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
     - depguard
     - dogsled
     - dupl
@@ -100,7 +99,6 @@ linters:
     - predeclared
     - revive
     - staticcheck
-    - structcheck
     - stylecheck
     - thelper
     - tparallel
@@ -108,7 +106,6 @@ linters:
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
     # NOTE(jkoelker) disable wrapcheck until >1.10 is in golangci-lint
     #    - wrapcheck
