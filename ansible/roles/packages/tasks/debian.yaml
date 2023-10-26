@@ -36,9 +36,9 @@
 # This is a workaround to downgrade to older cloud-init version. 
 # Once the fix is available in cloud-init and base ubuntu AMI are built with the fixed cloud-init,
 # we can revert to using cloud-init version provided by the base AMI. 
-- name: Install specific cloud-init version 23.2.1-0ubuntu0~20.04.2
+- name: Install cloud-init version 23.1.2-0ubuntu0~20.04.2
   apt:
-    deb: https://launchpad.net/ubuntu/+source/cloud-init/23.2.1-0ubuntu0~20.04.2/+build/26374992/+files/cloud-init_23.2.1-0ubuntu0~20.04.2_all.deb
+    name: cloud-init=23.1.2-0ubuntu0~20.04.2
     state: present
     force_apt_get: true
     allow_downgrade: true
