@@ -15,9 +15,7 @@ permissions:
 
 jobs:
   super-linter:
-    runs-on: 
-    - self-hosted
-    - small
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v4
@@ -34,13 +32,10 @@ jobs:
           env-file: .github/super-linter.env
 
       - name: Run Super-Linter
-        uses: github/super-linter@v5.0.0
+        uses: super-linter/super-linter@v5
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # NOTE(jkoelker) super-linter is broken for go packages
-          #                https://github.com/github/super-linter/issues/143
-          VALIDATE_GO: false
           # NOTE(jongiddy) super-linter is broken for Packer HCL files
           #                https://github.com/github/super-linter/pull/1707
           # This can be removed when a release > 4.2.2 exists.
@@ -49,20 +44,16 @@ jobs:
           VALIDATE_NATURAL_LANGUAGE: false
           # we use terraform to provision *test* infrastructure that is deleted
           VALIDATE_TERRAFORM_TFLINT: false
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'pull_request' }}
   golangci-lint:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout konvoy-image-builder repository
-          uses: actions/checkout@v4
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v4
 
-        - name: Setup Go
-          uses: actions/setup-go@v4
-          with:
-            go-version-file: 'go.mod'
-            cache: true
-
-        - name: Run golangci lint
-          uses: golangci/golangci-lint-action@v3
-          with:
-            #version of golangci-lint to use with
-            version: latest
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          fail_on_error: true
+          reporter: github-pr-review
+          go_version_file: 'go.mod'

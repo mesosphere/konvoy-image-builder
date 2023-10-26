@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   rune2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository

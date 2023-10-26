@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
 
   bump-kib:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: release-to-github
     steps:
       - name: Checkout mesosphere/cluster-api-provider-preprovisioned repository
