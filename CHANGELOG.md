@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.8.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.1...v2.8.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* downgrade cloud-init package for ubuntu OS ([#938](https://github.com/mesosphere/konvoy-image-builder/issues/938)) ([6c9dcca](https://github.com/mesosphere/konvoy-image-builder/commit/6c9dcca8e68e9ce098d0191af1c1454204479a39))
+* downgrade cloud-init to 23.1.2-0ubuntu0~20.04.2 ([#942](https://github.com/mesosphere/konvoy-image-builder/issues/942)) ([7109d00](https://github.com/mesosphere/konvoy-image-builder/commit/7109d00137506dc645b962f7f06f877c10b35e04))
+
 ## [2.8.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.0...v2.8.1) (2023-10-18)
 
 
