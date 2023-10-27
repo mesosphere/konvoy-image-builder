@@ -108,3 +108,5 @@ nvidia_driver_version: "470.199.02"
 nvidia_runfile_installer: "NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}.run"
 nvidia_runfile_installer_url: "https://download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_driver_version }}/{{ nvidia_runfile_installer }}"
 suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansible_architecture }}
+
+pinned_debs: []

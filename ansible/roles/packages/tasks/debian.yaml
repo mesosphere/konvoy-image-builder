@@ -31,30 +31,17 @@
   retries: 3
   delay: 3
 
-# The latest cloud-init version '23.3.1-0ubuntu1~20.04.1 is unable to run #boothook created by CAPA
-# https://github.com/kubernetes-sigs/cluster-api-provider-aws/blob/0bf78b04b305a77aec37a68c107102231faa7a16/pkg/cloud/services/secretsmanager/secret_fetch_script.go#L20
-# This is a workaround to downgrade to older cloud-init version. 
-# Once the fix is available in cloud-init and base ubuntu AMI are built with the fixed cloud-init,
-# we can revert to using cloud-init version provided by the base AMI. 
-- name: Install cloud-init version 23.1.2-0ubuntu0~20.04.2
+- name: install pinned debs
   apt:
-    name: cloud-init=23.1.2-0ubuntu0~20.04.2
+    force_apt_get: True
+    name: "{{ item }}"
     state: present
-    force_apt_get: true
-    allow_downgrade: true
-  when: ansible_os_family == "Debian"
-
-- name: Install cloud-init packages
-  apt:
-    name: "{{ packages }}"
-    state: present
-    force_apt_get: true
-  vars:
-    packages:
-      - cloud-guest-utils
-      - cloud-initramfs-copymods
-      - cloud-initramfs-dyn-netconf
-      - cloud-initramfs-growroot
+    force: yes
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  with_items: "{{pinned_debs}}"
   when: ansible_os_family == "Debian"
 
 - name: remove version hold for kubelet and kubectl packages
