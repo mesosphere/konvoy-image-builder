@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.2...v2.8.3) (2023-10-27)
+
+
+### Bug Fixes
+
+* install pinned cloud-init for only ubuntu 20.04 ([#943](https://github.com/mesosphere/konvoy-image-builder/issues/943)) ([465c7de](https://github.com/mesosphere/konvoy-image-builder/commit/465c7de8300f0d7be1d15b9a0ab708520d13b21c))
+
 ## [2.8.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.1...v2.8.2) (2023-10-26)
 
 
