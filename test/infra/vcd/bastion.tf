@@ -1,3 +1,13 @@
+// FIXME: https://d2iq.atlassian.net/browse/D2IQ-99451
+terraform {
+  required_providers {
+    vsphere = {
+      source  = "hashicorp/vsphere"
+      version = "~> 2.4.0"
+    }
+  }
+}
+
 resource "random_id" "build_id" {
   byte_length = 8
 }
