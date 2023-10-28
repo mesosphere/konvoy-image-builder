@@ -31,6 +31,19 @@
   retries: 3
   delay: 3
 
+- name: install pinned debs
+  apt:
+    force_apt_get: True
+    name: "{{ item }}"
+    state: present
+    force: yes
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  with_items: "{{ pinned_debs }}"
+  when: ansible_os_family == "Debian"
+
 - name: remove version hold for kubelet and kubectl packages
   command: apt-mark unhold {{ item }}
   with_items:
