@@ -73,6 +73,8 @@ jobs:
           - os: "redhat 8.8"
             buildConfig: "fips"
           - os: "redhat 8.8"
+            buildConfig: "fips-kernel"
+          - os: "redhat 8.8"
             buildConfig: "nvidia"
           - os: "redhat 8.8"
             buildConfig: "offline"

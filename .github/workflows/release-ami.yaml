@@ -39,6 +39,8 @@ jobs:
             buildConfig: "offline"
           - os: "redhat 8.8"
             buildConfig: "offline-fips"
+          - os: "redhat 8.8"
+            buildConfig: "fips-kernel"
           - os: "rocky 9.1"
             buildConfig: "offline"
           - os: "sles 15"
