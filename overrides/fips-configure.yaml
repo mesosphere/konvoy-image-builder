@@ -1,0 +1,3 @@
+fips:
+  configure: true
+build_name_extra: -fips-kernel

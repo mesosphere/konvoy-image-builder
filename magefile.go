@@ -35,6 +35,7 @@ var (
 var (
 	basic         = "basic"
 	fips          = "fips"
+	fipsKernel    = "fips-kernel"
 	nvidia        = "nvidia"
 	offline       = "offline"
 	offlineFIPS   = "offline-fips"
@@ -58,6 +59,7 @@ var (
 
 	validBuildConfig = []string{
 		basic,
+		fipsKernel,
 		fips,
 		nvidia,
 		offline,
@@ -261,6 +263,9 @@ func getOverridesFromBuildConfig(buildConfig string) []string {
 	switch buildConfig {
 	case basic:
 		return nil
+
+	case fipsKernel:
+		return []string{"fips.yaml", "fips-configure.yaml"}
 	case fips:
 		return []string{"fips.yaml"}
 	case nvidia:
