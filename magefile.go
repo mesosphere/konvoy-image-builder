@@ -265,7 +265,7 @@ func getOverridesFromBuildConfig(buildConfig string) []string {
 		return nil
 
 	case fipsKernel:
-		return []string{"fips.yaml", "fips-configure.yaml"}
+		return []string{"fips-configure.yaml", "fips.yaml"}
 	case fips:
 		return []string{"fips.yaml"}
 	case nvidia:
@@ -300,6 +300,8 @@ func getReleaseOverride(buildConfig string) (string, error) {
 	case nvidia, offlineNvidia:
 		// "-nvidia-release"
 		buildNameExtra = fmt.Sprintf("-nvidia%s", buildNameExtra)
+	case fipsKernel:
+		buildNameExtra = fmt.Sprintf("-fips-kernel%s", buildNameExtra)
 	}
 
 	releaseFile := "release.yaml"
