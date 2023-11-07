@@ -1,0 +1,61 @@
+name: Manually triggered E2E Tests - Build AWS AMI
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: "Name of the operating system"
+        required: true
+        type: string
+      buildConfig:
+        description: "Build configuation options"
+        required: true
+        type: choice
+        default: basic
+        options:
+          - basic
+          - fips
+          - offline
+          - nvidia
+          - offline-fips
+          - offline-nvidia
+          - rhck
+          - fips-kernel
+  workflow_call:
+    inputs:
+      os:
+        description: "Name of the operating system"
+        required: true
+        type: string
+      buildConfig:
+        description: "Build configuation options"
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  rune2e:
+    runs-on: 
+      - self-hosted
+      - small
+    continue-on-error: false
+    steps:
+      - name: Checkout konvoy-image-builder repository
+        uses: actions/checkout@v4
+        with:
+          repository: mesosphere/konvoy-image-builder
+          fetch-depth: 0
+      
+      - name: Build AWS AMI for ${{ inputs.os }} with ${{ inputs.buildConfig }} configuration
+        uses: ./.github/composite/aws-e2e/
+        with:
+          os: ${{ inputs.os }}
+          buildConfig: ${{ inputs.buildConfig}}
+          registry_mirror_url: ${{ secrets.D2IQ_DOCKER_MIRROR_REGISTRY}}
+          docker_username: ${{ secrets.NEXUS_USERNAME }}
+          docker_password: ${{ secrets.NEXUS_PASSWORD }}
+          aws_runner_role_arn: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/konvoy-image-builder"
+          redhat_user: ${{ secrets.RHSM_USER }}
+          redhat_password: ${{ secrets.RHSM_PASS }}
+          github_token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
