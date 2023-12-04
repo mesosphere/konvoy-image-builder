@@ -6,7 +6,7 @@ FROM ${BASE} as devkit
 
 ARG TARGETPLATFORM
 # hadolint ignore=DL3029
-FROM --platform=${TARGETPLATFORM} alpine:3.17.5
+FROM --platform=${TARGETPLATFORM} alpine:3.17.6
 
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
