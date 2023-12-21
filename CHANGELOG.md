@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.8.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.3...v2.8.4) (2023-12-21)
+
+
+### Bug Fixes
+
+* Add directives to false positives reported by goleaks linter ([#968](https://github.com/mesosphere/konvoy-image-builder/issues/968)) ([57983bd](https://github.com/mesosphere/konvoy-image-builder/commit/57983bd2670b6edb9d237834dd52db7a1f8f714f))
+* Install gcloud CLI system package ([09687aa](https://github.com/mesosphere/konvoy-image-builder/commit/09687aaad8e75284182d82ff94dadc68af16bffc))
+
 ## [2.8.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.2...v2.8.3) (2023-10-27)
 
 
