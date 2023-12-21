@@ -41,17 +41,17 @@ const (
 
 	envVSphereServer     = "VSPHERE_SERVER"
 	envVSphereUser       = "VSPHERE_USERNAME"
-	envVSpherePassword   = "VSPHERE_PASSWORD"
+	envVSpherePassword   = "VSPHERE_PASSWORD" // #gitleaks:allow
 	envVSphereDatacenter = "VSPHERE_DATACENTER"
 	envVsphereDatastore  = "VSPHERE_DATASTORE"
 
 	envRedHatSubscriptionManagerUser          = "RHSM_USER"
-	envRedHatSubscriptionManagerPassword      = "RHSM_PASS"
+	envRedHatSubscriptionManagerPassword      = "RHSM_PASS" // #gitleaks:allow
 	envRedHatSubscriptionManagerActivationKey = "RHSM_ACTIVATION_KEY"
 	envRedHatSubscriptionManagerOrgID         = "RHSM_ORG_ID"
 
 	envVSphereSSHUserName       = "SSH_USERNAME"
-	envVSphereSSHPassword       = "SSH_PASSWORD"
+	envVSphereSSHPassword       = "SSH_PASSWORD" // #gitleaks:allow
 	envVsphereSSHPrivatekeyFile = "SSH_PRIVATE_KEY_FILE"
 
 	//nolint:gosec // environment var set by user
