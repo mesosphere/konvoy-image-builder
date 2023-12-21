@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.4...v2.8.5) (2023-12-21)
+
+
+### Bug Fixes
+
+* bump to sp5 ([1de6fa9](https://github.com/mesosphere/konvoy-image-builder/commit/1de6fa9a5f11a9ef220dc8c0a3b4c968f4fd94f3))
+
 ## [2.8.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.3...v2.8.4) (2023-12-21)
 
 
