@@ -25,7 +25,7 @@ const (
 	packerKIBVersionKey           = "konvoy_image_builder_version"
 	packerSSHBastionHostKey       = "ssh_bastion_host"
 	packerSSHBastionUsernameKey   = "ssh_bastion_username"
-	packerSSHBastionPasswordKey   = "ssh_bastion_password"         //nolint:gosec // just a key
+	packerSSHBastionPasswordKey   = "ssh_bastion_password"         //nolint:gosec // just a key // #gitleaks:allow
 	packerSSHBastionPrivateKeyKey = "ssh_bastion_private_key_file" //nolint:gosec // just a key
 	azureaGlleryImageNameRegex    = "[^-a-zA-Z.0-9_]"
 )
