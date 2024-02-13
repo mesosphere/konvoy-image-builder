@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Setup buildkit
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Image ${{ matrix.os }} with ${{ matrix.buildConfig }} for Azure
         uses: magefile/mage-action@v3

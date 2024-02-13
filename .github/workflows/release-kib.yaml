@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Setup buildkit
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Release
         run: make release
