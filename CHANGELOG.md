@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.9.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.5...v2.9.0) (2024-02-13)
+
+
+### Features
+
+* use 1.28.5 k8s version ([#983](https://github.com/mesosphere/konvoy-image-builder/issues/983)) ([c3b2b16](https://github.com/mesosphere/konvoy-image-builder/commit/c3b2b1628a6bd1fb7def05d5d97f51aebee4d1c1))
+
+
+### Bug Fixes
+
+* wrong vsphere config assignment ([#980](https://github.com/mesosphere/konvoy-image-builder/issues/980)) ([6168ac6](https://github.com/mesosphere/konvoy-image-builder/commit/6168ac683f502e33f23fba4933f15b544bdaf6b8))
+
 ## [2.8.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.4...v2.8.5) (2023-12-21)
 
 
