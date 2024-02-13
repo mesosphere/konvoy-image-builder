@@ -27,7 +27,7 @@ jobs:
           cache: true
 
       - name: Set environment Variables from Dotenv
-        uses: c-py/action-dotenv-to-setenv@v4
+        uses: c-py/action-dotenv-to-setenv@v5
         with:
           env-file: .github/super-linter.env
 
