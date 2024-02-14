@@ -7,8 +7,8 @@ python_path: ""
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
 kubernetes_major: "1"
 kubernetes_minor: "28"
-kubernetes_patch: "5"
-kubernetes_version: "1.28.5"
+kubernetes_patch: "6"
+kubernetes_version: "1.28.6"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 kubernetes_cni_version: "0.9.1"
