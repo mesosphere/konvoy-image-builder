@@ -7,9 +7,9 @@ kubernetes_rpm_repository_url: "https://packages.d2iq.com/konvoy/stable/linux/re
 kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/stable/linux/repos/d2iq-sign-authority-gpg-public-key"
 
 ## Debian
-kubernetes_deb_repository_url: "https://packages.cloud.google.com/apt/"
-kubernetes_deb_gpg_key_url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
-kubernetes_deb_release_name: "kubernetes-xenial"
+kubernetes_deb_repository_url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_major }}.{{ kubernetes_minor }}/deb/"
+kubernetes_deb_gpg_key_url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_major }}.{{ kubernetes_minor }}/deb/Release.key"
+kubernetes_deb_release_name: "/"
 
 # containerd package
 # Appstream is enabled by default in rhel8, so install the package from local repositories in that case
