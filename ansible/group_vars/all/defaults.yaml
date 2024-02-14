@@ -18,19 +18,19 @@ kubernetes_cni_version: "0.9.1"
 # The project release closely follows the Kubernetes release cycle, and uses a
 # nearly identical version scheme.
 # IMPORTANT When you update crictl_version, also update crictl_sha256.
-crictl_version: "1.26.0"
+crictl_version: "{{ kubernetes_major }}.{{ kubernetes_minor }}.0"
 
 # On flatcar Linux, we install crictl from a release artifact, not a system package.
 # The url points to the linux/amd64 release artifact.
 crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
 # The sha256 sum verifies the integrity of the release artifact.
-crictl_sha256: cda5e2143bf19f6b548110ffba0fe3565e03e8743fadd625fee3d62fc4134eed
+crictl_sha256: 8dc78774f7cbeaf787994d386eec663f0a3cf24de1ea4893598096cb39ef2508
 
 
 # The critools deb and rpm package versions. While the version derives directly from
 # the crictl verson, the package revision can change independently.
 # The initial revision is 00.
-critools_deb: "{{ crictl_version }}-00"
+critools_deb: "{{ crictl_version }}-1.1"
 # The initial revision 0.
 critools_rpm: "{{ crictl_version }}-0"
 
