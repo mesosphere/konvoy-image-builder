@@ -105,9 +105,6 @@ imports = ["/etc/containerd/conf.d/*.toml"]
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ registry }}"]
           endpoint = ["{{ mirror }}"{{ ',"https://registry-1.docker.io"' if registry == 'docker.io' else ''}}]
 {% endfor %}
-{% else %}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-          endpoint = ["https://registry-1.docker.io"]
 {% endif %}
 {% if image_registries_with_auth is defined and image_registries_with_auth is not none and image_registries_with_auth | list | length >0 %}
       [plugins."io.containerd.grpc.v1.cri".registry.configs]
