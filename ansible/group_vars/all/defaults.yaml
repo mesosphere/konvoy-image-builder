@@ -5,10 +5,8 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 #
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
-kubernetes_major: "1"
-kubernetes_minor: "28"
-kubernetes_patch: "6"
 kubernetes_version: "1.28.6"
+kubernetes_major_minor: "{{ (kubernetes_version.split('.') | map('trim'))[:2] | join('.') }}"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 kubernetes_cni_version: "0.9.1"
@@ -17,7 +15,7 @@ kubernetes_cni_version: "0.9.1"
 # The project release closely follows the Kubernetes release cycle, and uses a
 # nearly identical version scheme.
 # IMPORTANT When you update crictl_version, also update crictl_sha256.
-crictl_version: "{{ (kubernetes_version.split('.') | map('trim'))[:2] | join('.') }}.0"
+crictl_version: "{{ kubernetes_major_minor }}.0"
 
 # On flatcar Linux, we install crictl from a release artifact, not a system package.
 # The url points to the linux/amd64 release artifact.
