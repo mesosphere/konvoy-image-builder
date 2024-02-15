@@ -6,6 +6,7 @@ python_path: ""
 #
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
 kubernetes_version: "1.26.6"
+kubernetes_major_minor: "{{ (kubernetes_version.split('.') | map('trim'))[:2] | join('.') }}"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 kubernetes_cni_version: "0.9.1"
@@ -14,19 +15,20 @@ kubernetes_cni_version: "0.9.1"
 # The project release closely follows the Kubernetes release cycle, and uses a
 # nearly identical version scheme.
 # IMPORTANT When you update crictl_version, also update crictl_sha256.
-crictl_version: "1.26.0"
+crictl_version: "{{ kubernetes_major_minor }}.0"
 
 # On flatcar Linux, we install crictl from a release artifact, not a system package.
 # The url points to the linux/amd64 release artifact.
 crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
-# The sha256 sum verifies the integrity of the release artifact.
+# The sha256 sum verifies the integrity of the release artifact. Obtained from a
+# table in the release notes, https://github.com/kubernetes-sigs/cri-tools/releases/tag/<crictl_version>
 crictl_sha256: cda5e2143bf19f6b548110ffba0fe3565e03e8743fadd625fee3d62fc4134eed
 
 
 # The critools deb and rpm package versions. While the version derives directly from
 # the crictl verson, the package revision can change independently.
 # The initial revision is 00.
-critools_deb: "{{ crictl_version }}-00"
+critools_deb: "{{ crictl_version }}-1.1"
 # The initial revision 0.
 critools_rpm: "{{ crictl_version }}-0"
 
@@ -45,7 +47,7 @@ package_versions:
   enable_repository_installation: "{{ (spec.osPackages.enableAdditionalRepositories if spec.osPackages is defined else true)|default(true)|bool }}"
   # the version may contain d2iq specific suffix, remove it when downloading packages
   kubernetes_rpm: "{{ kubernetes_version }}-0"
-  kubernetes_deb: "{{ kubernetes_version }}-00"
+  kubernetes_deb: "{{ kubernetes_version }}-1.1"
   kubenode: "{{ kubernetes_version }}"
 
 # variable used for seeding images
