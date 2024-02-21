@@ -471,7 +471,17 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get wd %w", err)
 	}
+	err = r.setVSphereEnv()
+	if err != nil {
+		return fmt.Errorf("failed to set vshpere env %w", err)
+	}
 	r.addBindVolume(r.workingDir, containerWorkingDir)
+	if len(args) > 0 && args[0] == createPackageBundleCmd {
+		err := r.preCreatePackageBundleSteps(args[1:])
+		if err != nil {
+			return err
+		}
+	}
 
 	// Create a temporary dir to hold some files that need to be mounted to the container,
 	// eg. /etc/passwd, /etc/group, etc.
@@ -509,10 +519,6 @@ func (r *Runner) Run(args []string) error {
 		return fmt.Errorf("failed to set aws env %w", err)
 	}
 	r.setAzureEnv()
-	err = r.setVSphereEnv()
-	if err != nil {
-		return fmt.Errorf("failed to set vshpere env %w", err)
-	}
 	err = r.setGCPEnv()
 	if err != nil {
 		return fmt.Errorf("failed to set gcp env %w", err)

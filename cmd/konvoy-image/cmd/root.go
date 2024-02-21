@@ -85,6 +85,7 @@ func init() {
 	rootCmd.AddCommand(provisionCmd)
 	rootCmd.AddCommand(uploadCmd)
 	rootCmd.AddCommand(validateCmd)
+	rootCmd.AddCommand(createPackageBundleCmd)
 	rootCmd.DisableAutoGenTag = true
 
 	fs := rootCmd.PersistentFlags()

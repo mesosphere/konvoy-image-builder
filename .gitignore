@@ -78,3 +78,8 @@ ansible-runs
 .terraform
 *.tfstate*
 .terraform.*
+bundles/*/repos
+bundles/*/repodata*
+bundles/*/*.txt
+bundles/*/*.sh
+
