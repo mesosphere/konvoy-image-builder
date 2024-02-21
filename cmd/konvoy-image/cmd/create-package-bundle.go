@@ -1,0 +1,79 @@
+package cmd
+
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
+
+var (
+	packageCmd        = "create-package-bundle"
+	packageCmdExample = "create-package-bundle --os redhat-8.4 --kuberernetes-version=1.28.6 --output-directory=artifacts"
+	validOS           = []string{
+		"centos-7.9",
+		"redhat-7.9",
+		"redhat-8.4",
+		"redhat-8.6",
+		"redhat-8.8",
+		"oracle-7.9",
+		"rocky-9.1",
+		"ubuntu-18.04",
+		"ubuntu-20.04",
+	}
+)
+
+type packageBundleCmdFlags struct {
+	targetOS          string
+	kubernetesVersion string
+	fips              bool
+	outputDirectory   string
+}
+
+var packageBundleFlags packageBundleCmdFlags
+
+var createPackageBundleCmd = &cobra.Command{
+	Use:     packageCmd,
+	Short:   "build os package bundles for airgapped installs",
+	Example: packageCmdExample,
+	Args:    cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return nil
+	},
+}
+
+func init() {
+	fs := createPackageBundleCmd.Flags()
+	fs.StringVar(
+		&packageBundleFlags.targetOS,
+		"os",
+		"",
+		fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", validOS),
+	)
+	fs.StringVar(
+		&packageBundleFlags.kubernetesVersion,
+		"kuberernetes-version",
+		"",
+		"The version of kubernetes to download packages for. Example: 1.21.6",
+	)
+	fs.BoolVar(
+		&packageBundleFlags.fips,
+		"fips",
+		false,
+		"If the package bundle should include fips packages.")
+	fs.StringVar(&packageBundleFlags.outputDirectory,
+		"output-directory",
+		"",
+		"The directory to place the bundle in.")
+
+	err := createPackageBundleCmd.MarkFlagRequired("os")
+	if err != nil {
+		// This is a programming error
+		panic(fmt.Sprintf("unable to mark flag `os` as required: %v", err))
+	}
+	err = createPackageBundleCmd.MarkFlagRequired("kuberernetes-version")
+	if err != nil {
+		// This is a programming error
+		panic(fmt.Sprintf("unable to mark flag `os` as required: %v", err))
+	}
+
+}

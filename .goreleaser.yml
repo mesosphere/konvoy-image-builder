@@ -78,6 +78,7 @@ archives:
         format: zip
     files:
       - ansible
+      - bundle
       - goss
       - images
       - overrides

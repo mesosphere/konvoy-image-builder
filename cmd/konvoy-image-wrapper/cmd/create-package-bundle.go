@@ -1,0 +1,284 @@
+package cmd
+
+import (
+	"errors"
+	"flag"
+	"fmt"
+	"io/fs"
+	"os"
+	"os/exec"
+	"os/signal"
+	"path"
+	"strconv"
+	"strings"
+	"syscall"
+	"text/template"
+
+	terminal "golang.org/x/term"
+)
+
+const (
+	createPackageBundleCmd = "create-package-bundle"
+)
+
+type OSConfig struct {
+	configDir      string
+	containerImage string
+}
+
+var (
+	osToConfig = map[string]OSConfig{
+		"rocky-9.1": {
+			configDir:      "bundles/rocky9.1",
+			containerImage: "docker.io/library/rockylinux:9.1",
+		},
+		"centos-7.9": {
+			configDir:      "bundles/",
+			containerImage: "docker.io/library/mesosphere/centos:7.9.2009.minimal",
+		},
+		"redhat-7.9": {
+			configDir:      "bundles/",
+			containerImage: "registry.access.redhat.com/ubi7/ubi:7.9",
+		},
+		"oracle-7.9": {
+			configDir:      "bundles/",
+			containerImage: "mesosphere/centos:7.9.2009.minimal",
+		},
+		"redhat-8.4": {
+			configDir:      "bundles/",
+			containerImage: "registry.access.redhat.com/ubi8/ubi:8.4",
+		},
+		"redhat-8.6": {
+			configDir:      "bundles/",
+			containerImage: "registry.access.redhat.com/ubi8/ubi:8.6",
+		},
+		"redhat-8.8": {
+			configDir:      "bundles/",
+			containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",
+		},
+		"ubuntu-18.04": {
+			configDir:      "bundles/",
+			containerImage: "docker.io/library/ubuntu:20.04",
+		},
+		"ubuntu-20.04": {
+			configDir:      "bundles/",
+			containerImage: "docker.io/library/ubuntu:20.04",
+		},
+	}
+)
+
+func (r *Runner) preCreatePackageBundleSteps(args []string) error {
+	var (
+		osFlag                string
+		kubernetesVersionFlag string
+		fipsFlag              bool
+		outputDirectoy        string
+	)
+	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
+	flagSet.StringVar(&osFlag, "os", "", fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
+	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "", "The version of kubernetes to download packages for. Example: 1.21.6")
+	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
+	flagSet.StringVar(&outputDirectoy, "output-directory", "", "The directory to place the bundle in.")
+	if len(args) != 0 {
+		flagSet.Parse(args)
+		if osFlag == "" || kubernetesVersionFlag == "" || outputDirectoy == "" {
+			return errors.New("--os --kuberernetes-version and --output-directory all must be set")
+		}
+		image, err := getContainerImage(osFlag)
+		if err != nil {
+			return err
+		}
+		bundleCmd := "./bundle.sh"
+		absPathToOutput := outputDirectoy
+		if !path.IsAbs(outputDirectoy) {
+			dir := r.workingDir
+			absPathToOutput = path.Join(dir, outputDirectoy)
+		}
+		reposList, err := templateObjects(osFlag, kubernetesVersionFlag, absPathToOutput, fipsFlag)
+		if err != nil {
+			return err
+		}
+		config, found := osToConfig[osFlag]
+		if !found {
+			return fmt.Errorf("buildOS %s is invalid must be one of %v", osFlag, getKeys(osToConfig))
+		}
+		configDir := config.configDir
+		dir := r.workingDir
+		base := path.Join(dir, configDir)
+		return startContainer(r.containerEngine, image, base, bundleCmd, absPathToOutput, reposList, r.env)
+	}
+	return nil
+}
+
+func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) ([]string, error) {
+	config, found := osToConfig[targetOS]
+	if !found {
+		return nil, fmt.Errorf("buildOS %s is invalid must be one of %v", targetOS, getKeys(osToConfig))
+	}
+	configDir := config.configDir
+	dir, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get working directory %w", err)
+	}
+	base := path.Join(dir, configDir)
+	configDirFS := os.DirFS(base)
+	l := make([]string, 0)
+	err = fs.WalkDir(configDirFS, ".", func(filepath string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() && strings.Contains(filepath, "repo-templates") {
+			newDir := path.Join(base, "repos")
+			if err := os.MkdirAll(newDir, 0755); err != nil {
+				return err
+			}
+		}
+
+		if strings.Contains(filepath, "kubernetes.repo.gotmpl") {
+			kubernetesRepoTmpl, err := os.ReadFile(path.Join(base, filepath))
+			if err != nil {
+				return fmt.Errorf("failed to read template kubernetes repo file %w", err)
+			}
+			t, err := template.New("").Parse(string(kubernetesRepoTmpl))
+			if err != nil {
+				return fmt.Errorf("failed to parse go template: %w", err)
+			}
+			repoSuffix := "nokmem"
+			if fips {
+				repoSuffix = "fips"
+			}
+			templateInput := struct {
+				RepoSuffix        string
+				KubernetesVersion string
+			}{
+				RepoSuffix:        repoSuffix,
+				KubernetesVersion: kubernetesVersion,
+			}
+			out, err := os.Create(path.Join(base, "repos", "kubernetes.repo"))
+			if err != nil {
+				return fmt.Errorf("failed to create file: %w", err)
+			}
+			err = t.Execute(out, templateInput)
+			if err != nil {
+				return fmt.Errorf("failed to execute go template: %w", err)
+			}
+			l = append(l, out.Name())
+		}
+
+		if strings.Contains(filepath, "images.txt.gotmpl") {
+			imagesTmpl, err := os.ReadFile(path.Join(base, filepath))
+			if err != nil {
+				return fmt.Errorf("failed to read template images repo file %w", err)
+			}
+			t, err := template.New("").Parse(string(imagesTmpl))
+			if err != nil {
+				return fmt.Errorf("failed to parse go template: %w", err)
+			}
+			out, err := os.Create(path.Join(base, "images.txt"))
+			if err != nil {
+				return fmt.Errorf("failed to create file: %w", err)
+			}
+			templateInput := struct {
+				KubernetesVersion string
+			}{
+				KubernetesVersion: kubernetesVersion,
+			}
+			err = t.Execute(out, templateInput)
+			if err != nil {
+				return fmt.Errorf("failed to execute go template: %w", err)
+			}
+		}
+
+		if strings.Contains(filepath, "bundle.sh.gotmpl") {
+			outputBaseName := "/" + path.Base(outputDir)
+			bundleTmpl, err := os.ReadFile(path.Join(base, filepath))
+			if err != nil {
+				return fmt.Errorf("failed to read template images repo file %w", err)
+			}
+			t, err := template.New("").Parse(string(bundleTmpl))
+			if err != nil {
+				return fmt.Errorf("failed to parse go template: %w", err)
+			}
+			out, err := os.OpenFile(path.Join(base, "bundle.sh"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
+			if err != nil {
+				return fmt.Errorf("failed to create file: %w", err)
+			}
+			defer out.Close()
+			templateInput := struct {
+				KubernetesVersion string
+				OutputDirectory   string
+			}{
+				KubernetesVersion: kubernetesVersion,
+				OutputDirectory:   outputBaseName,
+			}
+			err = t.Execute(out, templateInput)
+			if err != nil {
+				return fmt.Errorf("failed to execute go template: %w", err)
+			}
+		}
+		return nil
+	})
+	return l, err
+}
+
+func getKeys(m map[string]OSConfig) []string {
+	ret := make([]string, 0, len(m))
+	for k := range m {
+		ret = append(ret, k)
+	}
+	return ret
+}
+
+func getContainerImage(targetOS string) (string, error) {
+	config, found := osToConfig[targetOS]
+	if !found {
+		return "", fmt.Errorf("buildOS %s is invalid must be one of %v", targetOS, getKeys(osToConfig))
+	}
+	return config.containerImage, nil
+}
+
+func startContainer(containerEngine, containerImage, workingDir, runCmd, outputDir string, reposList []string, envs map[string]string) error {
+	tty := terminal.IsTerminal(int(os.Stdout.Fd()))
+	outputBaseName := path.Base(outputDir)
+	cmd := exec.Command(
+		containerEngine, "run",
+		"--interactive",
+		"--tty="+strconv.FormatBool(tty),
+		"--rm",
+		"-v", fmt.Sprintf("%s:/%s", outputDir, outputBaseName),
+		"-v", fmt.Sprintf("%s:%s", workingDir, containerWorkingDir),
+		"-w", containerWorkingDir,
+	)
+	for _, repoFullPath := range reposList {
+		repo := path.Base(repoFullPath)
+		cmd.Args = append(
+			cmd.Args,
+			"-v",
+			fmt.Sprintf("%s:%s/%s", repoFullPath, "/etc/yum.repos.d", repo),
+		)
+	}
+	for k, v := range envs {
+		cmd.Args = append(cmd.Args, "-e", k)
+		cmd.Env = append(cmd.Env, k+"="+v)
+	}
+	cmd.Args = append(cmd.Args, []string{"--entrypoint", "/bin/sh", containerImage, "-c", runCmd}...)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(c)
+	go func() {
+		for sig := range c {
+			if signalErr := cmd.Process.Signal(sig); signalErr != nil {
+				fmt.Fprintf(cmd.Stderr, "failed to relay signal %s %v\n", sig.String(), signalErr)
+			}
+		}
+	}()
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("error running command: %w", err)
+	}
+	return nil
+}
