@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.9.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.5...v2.9.0) (2024-02-21)
+
+
+### Features
+
+* **k8s:** Bump to 1.28.7 ([#1012](https://github.com/mesosphere/konvoy-image-builder/issues/1012)) ([69cc77e](https://github.com/mesosphere/konvoy-image-builder/commit/69cc77ef95eefd680590ef6a30bebca48d4dccd1))
+* update Containerd to 1.6.28 ([#1010](https://github.com/mesosphere/konvoy-image-builder/issues/1010)) ([1069abc](https://github.com/mesosphere/konvoy-image-builder/commit/1069abcd011ab68553fa94e18ba79e9ca6775a13))
+* use 1.28.5 k8s version ([#983](https://github.com/mesosphere/konvoy-image-builder/issues/983)) ([c3b2b16](https://github.com/mesosphere/konvoy-image-builder/commit/c3b2b1628a6bd1fb7def05d5d97f51aebee4d1c1))
+
+
+### Bug Fixes
+
+* Update k8s debian package repositories to pkgs.k8s.io, bumps critools to 1.28  ([#996](https://github.com/mesosphere/konvoy-image-builder/issues/996)) ([d9bbc94](https://github.com/mesosphere/konvoy-image-builder/commit/d9bbc94fe88f7321f57af3917953d7ce708f6738))
+* wrong vsphere config assignment ([#980](https://github.com/mesosphere/konvoy-image-builder/issues/980)) ([6168ac6](https://github.com/mesosphere/konvoy-image-builder/commit/6168ac683f502e33f23fba4933f15b544bdaf6b8))
+
 ## [2.8.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.4...v2.8.5) (2023-12-21)
 
 
