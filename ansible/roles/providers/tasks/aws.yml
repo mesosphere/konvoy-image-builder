@@ -19,11 +19,25 @@
   when:
     - ansible_os_family == "Debian"
 
+# solution from: https://stackoverflow.com/a/76721835
+# pinning awscli==1.29.9 fails
+# likely due to the pypy setup
+- name: install cython for flatcar
+  pip:
+    name: "{{ item.package }}"
+    executable: pip3
+    extra_args: "{{ item.extra }}"
+  with_items:
+    - { "package": "cython<3.0.0", "extra": "wheel" }
+    - { "package": "pyyaml==5.4.1", "extra": "--no-build-isolation" }
+  when:
+    - ansible_distribution == "Flatcar"
+
 - name: install aws clients
   pip:
     name: "awscli"
     executable: pip3
-    extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path if offline_mode_enabled }}"
+    extra_args: "{{ '--no-cache-dir --no-index --find-links=' + pip_packages_remote_filesystem_repo_path if offline_mode_enabled }}"
   when:
     - ansible_distribution != "Amazon"
     - ansible_os_family != "Suse"
