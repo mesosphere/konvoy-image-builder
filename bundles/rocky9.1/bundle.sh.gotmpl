@@ -10,6 +10,6 @@ pushd "${TMP_DIR}"
 yumdownloader -y --setopt=skip_missing_names_on_install=False --destdir=. -x \*i686 --archlist=x86_64,noarch --resolve  $(< images.txt) --exclude $(< exclude.txt)
 rm images.txt exclude.txt
 createrepo -v . && chown -R 1000:1000 repodata/
-tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9_x86_64.tar.gz *
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.1_x86_64.tar.gz *
 popd
 rm -rf "${TMP_DIR}"

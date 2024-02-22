@@ -82,4 +82,4 @@ bundles/*/repos
 bundles/*/repodata*
 bundles/*/*.txt
 bundles/*/*.sh
-
+bundles/*/generated*

@@ -19,6 +19,7 @@ import (
 
 const (
 	createPackageBundleCmd = "create-package-bundle"
+	generatedDirName       = "generated"
 )
 
 type OSConfig struct {
@@ -58,7 +59,7 @@ var (
 		},
 		"ubuntu-18.04": {
 			configDir:      "bundles/",
-			containerImage: "docker.io/library/ubuntu:20.04",
+			containerImage: "docker.io/library/ubuntu:18.04",
 		},
 		"ubuntu-20.04": {
 			configDir:      "bundles/",
@@ -123,13 +124,18 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 	base := path.Join(dir, configDir)
 	configDirFS := os.DirFS(base)
 	l := make([]string, 0)
+	generated := path.Join(base, generatedDirName)
+	if err := os.MkdirAll(generated, 0755); err != nil {
+		return l, err
+	}
+
 	err = fs.WalkDir(configDirFS, ".", func(filepath string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
 		if d.IsDir() && strings.Contains(filepath, "repo-templates") {
-			newDir := path.Join(base, "repos")
+			newDir := path.Join(base, generatedDirName, "repos")
 			if err := os.MkdirAll(newDir, 0755); err != nil {
 				return err
 			}
@@ -155,7 +161,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 				RepoSuffix:        repoSuffix,
 				KubernetesVersion: kubernetesVersion,
 			}
-			out, err := os.Create(path.Join(base, "repos", "kubernetes.repo"))
+			out, err := os.Create(path.Join(base, generatedDirName, "repos", "kubernetes.repo"))
 			if err != nil {
 				return fmt.Errorf("failed to create file: %w", err)
 			}
@@ -166,7 +172,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			l = append(l, out.Name())
 		}
 
-		if strings.Contains(filepath, "images.txt.gotmpl") {
+		if strings.Contains(filepath, "packages.txt.gotmpl") {
 			imagesTmpl, err := os.ReadFile(path.Join(base, filepath))
 			if err != nil {
 				return fmt.Errorf("failed to read template images repo file %w", err)
@@ -175,7 +181,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			if err != nil {
 				return fmt.Errorf("failed to parse go template: %w", err)
 			}
-			out, err := os.Create(path.Join(base, "images.txt"))
+			out, err := os.Create(path.Join(base, generatedDirName, "packages.txt"))
 			if err != nil {
 				return fmt.Errorf("failed to create file: %w", err)
 			}
@@ -200,7 +206,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			if err != nil {
 				return fmt.Errorf("failed to parse go template: %w", err)
 			}
-			out, err := os.OpenFile(path.Join(base, "bundle.sh"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
+			out, err := os.OpenFile(path.Join(base, generatedDirName, "bundle.sh"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
 			if err != nil {
 				return fmt.Errorf("failed to create file: %w", err)
 			}
@@ -248,7 +254,7 @@ func startContainer(containerEngine, containerImage, workingDir, runCmd, outputD
 		"--rm",
 		"-v", fmt.Sprintf("%s:/%s", outputDir, outputBaseName),
 		"-v", fmt.Sprintf("%s:%s", workingDir, containerWorkingDir),
-		"-w", containerWorkingDir,
+		"-w", fmt.Sprintf("%s/%s", containerWorkingDir, generatedDirName),
 	)
 	for _, repoFullPath := range reposList {
 		repo := path.Base(repoFullPath)
