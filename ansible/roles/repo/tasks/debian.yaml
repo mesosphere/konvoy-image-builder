@@ -11,6 +11,6 @@
 
   - name: add Kubernetes deb repository
     apt_repository:
-      repo: 'deb {{ kubernetes_deb_repository_url }} {{ kubernetes_deb_release_name }} main'
+      repo: 'deb {{ kubernetes_deb_repository_url }} {{ kubernetes_deb_release_name }}'
     retries: 3
     delay: 3
