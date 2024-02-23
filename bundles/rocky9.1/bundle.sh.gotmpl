@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-yum -y install epel-release gettext yum-utils createrepo
+yum -y install epel-release gettext yum-utils createrepo dnf-utils
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
-yumdownloader -y --setopt=skip_missing_names_on_install=False --destdir=. -x \*i686 --archlist=x86_64,noarch --resolve  $(< packages.txt)
+repoquery --resolve --requires --recursive $(< packages.txt) | xargs -r yumdownloader
 rm packages.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v . && chown -R 1000:1000 repodata/
