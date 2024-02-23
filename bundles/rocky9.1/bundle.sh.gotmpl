@@ -4,12 +4,13 @@ set -e
 yum -y install epel-release gettext yum-utils createrepo
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
-cp images.txt "${TMP_DIR}"
-cp exclude.txt "${TMP_DIR}"
+cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
-yumdownloader -y --setopt=skip_missing_names_on_install=False --destdir=. -x \*i686 --archlist=x86_64,noarch --resolve  $(< images.txt) --exclude $(< exclude.txt)
-rm images.txt exclude.txt
+yumdownloader -y --setopt=skip_missing_names_on_install=False --destdir=. -x \*i686 --archlist=x86_64,noarch --resolve  $(< packages.txt)
+rm packages.txt
+curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v . && chown -R 1000:1000 repodata/
 tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.1_x86_64.tar.gz *
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.1_x86_64.tar.gz
 popd
 rm -rf "${TMP_DIR}"
