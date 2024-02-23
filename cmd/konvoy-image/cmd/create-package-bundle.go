@@ -51,7 +51,7 @@ func init() {
 	)
 	fs.StringVar(
 		&packageBundleFlags.kubernetesVersion,
-		"kuberernetes-version",
+		"kubernetes-version",
 		"",
 		"The version of kubernetes to download packages for. Example: 1.21.6",
 	)
@@ -70,10 +70,10 @@ func init() {
 		// This is a programming error
 		panic(fmt.Sprintf("unable to mark flag `os` as required: %v", err))
 	}
-	err = createPackageBundleCmd.MarkFlagRequired("kuberernetes-version")
+	err = createPackageBundleCmd.MarkFlagRequired("kubernetes-version")
 	if err != nil {
 		// This is a programming error
-		panic(fmt.Sprintf("unable to mark flag `os` as required: %v", err))
+		panic(fmt.Sprintf("unable to mark flag `kubernetes-version` as required: %v", err))
 	}
 
 }
