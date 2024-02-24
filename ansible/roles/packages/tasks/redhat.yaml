@@ -8,7 +8,7 @@
   register: installed_rpms
 
 - name: install common RPMS if already not installed
-  command: yum install {{ '--disablerepo "*" --enablerepo offline --allowerasing' if offline_mode_enabled else '' }} {{ item }}
+  command: yum install -y {{ '--disablerepo "*" --enablerepo offline --allowerasing' if offline_mode_enabled else '' }} {{ item }}
   when:
     - installed_rpms.results | selectattr('name','equalto', item ) | list | count == 0
   with_items:
