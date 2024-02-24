@@ -382,7 +382,7 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 	}
 	// Fetch artifacts
 	isFips := buildConfig == offlineFIPS
-	if err := buildOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
+	if err := fetchOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
 		return fmt.Errorf("failed to fetch OS bundle %w", err)
 	}
 	if err := fetchImageBundle(kubeVersion, artifactsDir, isFips); err != nil {
@@ -402,7 +402,26 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 	return nil
 }
 
-func buildOSBundle(osName, kubernetesVersion, artifactsDir string, fips bool) error {
+func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) error {
+	if !strings.Contains(osName, "rocky") {
+		osInfo := strings.Split(osName, " ")
+		osDist := osInfo[0]
+		osMajor := strings.Split(osInfo[1], ".")[0]
+
+		airgappedBundlePath := fmt.Sprintf("%s_%s_%s_x86_64", kubernetesVersion, osDist, osMajor)
+		if fips {
+			airgappedBundlePath += fipsSuffix
+		}
+		airgappedBundlePath += tgzExt
+
+		srcURL, err := url.Parse(baseURL)
+		if err != nil {
+			return fmt.Errorf("failed to parse url %s :%w", baseURL, err)
+		}
+		srcURL.Path = path.Join(srcURL.Path, "airgapped", "os-packages", airgappedBundlePath)
+		osBundleDownloadPath := path.Join(downloadDir, airgappedBundlePath)
+		return downloadArtifact(srcURL, osBundleDownloadPath)
+	}
 	osInfo := strings.Replace(osName, " ", "-", 1)
 	args := []string{
 		"create-package-bundle", fmt.Sprintf("--os=%s", osInfo),
