@@ -8,13 +8,9 @@
   register: installed_rpms
 
 - name: install common RPMS if already not installed
-  yum:
-    name: "{{ item }}"
-    state: present
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-    update_cache: true
-  when: installed_rpms.results | selectattr('name','equalto', item ) | list | count == 0
+  command: yum install {{ '--disablerepo "*" --enablerepo offline --allowerasing' if offline_mode_enabled else '' }} {{ item }}
+  when:
+    - installed_rpms.results | selectattr('name','equalto', item ) | list | count == 0
   with_items:
       - audit
       - ca-certificates
@@ -34,6 +30,7 @@
   until: result is success
   retries: 5
   delay: 3
+
 
 - name: enable auditd
   systemd:
