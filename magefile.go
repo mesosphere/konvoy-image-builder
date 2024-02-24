@@ -406,20 +406,25 @@ func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) err
 		osMajor := strings.Split(osInfo[1], ".")[0]
 		osMinor := strings.Split(osInfo[1], ".")[1]
 
-		airgappedBundlePath := fmt.Sprintf("%s_%s_%s_x86_64", kubernetesVersion, osDist, osMajor)
+		downloadPath := fmt.Sprintf("%s_%s_%s_x86_64", kubernetesVersion, osDist, osMajor)
 		if fips {
-			airgappedBundlePath += fipsSuffix
+			downloadPath += fipsSuffix
 		}
-		airgappedBundlePath += tgzExt
+		downloadPath += tgzExt
 
 		srcURL, err := url.Parse(baseURL)
 		if err != nil {
 			return fmt.Errorf("failed to parse url %s :%w", baseURL, err)
 		}
-		srcURL.Path = path.Join(srcURL.Path, "airgapped", "os-packages", airgappedBundlePath)
-		airgappedBundlePath = fmt.Sprintf("%s_%s_%s.%s_x86_64", kubernetesVersion, osDist, osMajor, osMinor)
+		srcURL.Path = path.Join(srcURL.Path, "airgapped", "os-packages", downloadPath)
 
-		osBundleDownloadPath := path.Join(downloadDir, airgappedBundlePath)
+		bundlePath := fmt.Sprintf("%s_%s_%s.%s_x86_64", kubernetesVersion, osDist, osMajor, osMinor)
+		if fips {
+			bundlePath += fipsSuffix
+		}
+		downloadPath += tgzExt
+
+		osBundleDownloadPath := path.Join(downloadDir, downloadPath)
 		return downloadArtifact(srcURL, osBundleDownloadPath)
 	}
 	osInfo := strings.Replace(osName, " ", "-", 1)
