@@ -404,6 +404,7 @@ func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) err
 		osInfo := strings.Split(osName, " ")
 		osDist := osInfo[0]
 		osMajor := strings.Split(osInfo[1], ".")[0]
+		osMinor := strings.Split(osInfo[1], ".")[1]
 
 		airgappedBundlePath := fmt.Sprintf("%s_%s_%s_x86_64", kubernetesVersion, osDist, osMajor)
 		if fips {
@@ -416,6 +417,8 @@ func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) err
 			return fmt.Errorf("failed to parse url %s :%w", baseURL, err)
 		}
 		srcURL.Path = path.Join(srcURL.Path, "airgapped", "os-packages", airgappedBundlePath)
+		airgappedBundlePath = fmt.Sprintf("%s_%s_%s.%s_x86_64", kubernetesVersion, osDist, osMajor, osMinor)
+
 		osBundleDownloadPath := path.Join(downloadDir, airgappedBundlePath)
 		return downloadArtifact(srcURL, osBundleDownloadPath)
 	}
