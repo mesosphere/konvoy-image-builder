@@ -422,9 +422,9 @@ func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) err
 		if fips {
 			bundlePath += fipsSuffix
 		}
-		downloadPath += tgzExt
+		bundlePath += tgzExt
 
-		osBundleDownloadPath := path.Join(downloadDir, downloadPath)
+		osBundleDownloadPath := path.Join(downloadDir, bundlePath)
 		return downloadArtifact(srcURL, osBundleDownloadPath)
 	}
 	osInfo := strings.Replace(osName, " ", "-", 1)
