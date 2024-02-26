@@ -15,6 +15,7 @@ import (
 	"text/template"
 
 	terminal "golang.org/x/term"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -68,6 +69,26 @@ var (
 	}
 )
 
+func getKubernetesVerisonFromAnsible() (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("failed to get process's working dir: %w", err)
+	}
+	bytes, err := os.ReadFile(path.Join(pwd, "ansible", "group_vars", "all", "defaults.yaml"))
+	if err != nil {
+		return "", fmt.Errorf("failed to read ansible defaults file %w", err)
+	}
+	var config map[string]interface{}
+	if err = yaml.Unmarshal(bytes, &config); err != nil {
+		return "", fmt.Errorf("failed to unmarshal ansible defaults %w", err)
+	}
+	kubeVersion, ok := config["kubernetes_version"].(string)
+	if !ok {
+		return "", fmt.Errorf("unable to parse kubernetes_version from ansible defaults")
+	}
+	return kubeVersion, nil
+}
+
 func (r *Runner) preCreatePackageBundleSteps(args []string) error {
 	var (
 		osFlag                string
@@ -84,13 +105,20 @@ func (r *Runner) preCreatePackageBundleSteps(args []string) error {
 	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
 	if len(args) != 0 {
 		flagSet.Parse(args)
-		if osFlag == "" || kubernetesVersionFlag == "" || outputDirectoy == "" {
-			return errors.New("--os --kuberernetes-version and --output-directory all must be set")
+		if osFlag == "" || outputDirectoy == "" {
+			return errors.New("--os and --output-directory all must be set")
 		}
 		image := containerImage
 		var err error
 		if containerImage == "" {
 			image, err = getContainerImage(osFlag)
+			if err != nil {
+				return err
+			}
+		}
+		kubernetesVersion := kubernetesVersionFlag
+		if kubernetesVersion == "" {
+			kubernetesVersion, err = getKubernetesVerisonFromAnsible()
 			if err != nil {
 				return err
 			}
@@ -101,7 +129,7 @@ func (r *Runner) preCreatePackageBundleSteps(args []string) error {
 			dir := r.workingDir
 			absPathToOutput = path.Join(dir, outputDirectoy)
 		}
-		reposList, err := templateObjects(osFlag, kubernetesVersionFlag, absPathToOutput, fipsFlag)
+		reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag)
 		if err != nil {
 			return err
 		}
@@ -216,13 +244,19 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			if err != nil {
 				return fmt.Errorf("failed to create file: %w", err)
 			}
+			fipsSuffix := ""
+			if fips {
+				fipsSuffix = "_fips"
+			}
 			defer out.Close()
 			templateInput := struct {
 				KubernetesVersion string
 				OutputDirectory   string
+				FipsSuffix        string
 			}{
 				KubernetesVersion: kubernetesVersion,
 				OutputDirectory:   outputBaseName,
+				FipsSuffix:        fipsSuffix,
 			}
 			err = t.Execute(out, templateInput)
 			if err != nil {
