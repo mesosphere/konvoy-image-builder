@@ -11,7 +11,7 @@ yumdownloader  --archlist=x86_64,noarch $(< packages.txt)
 rm packages.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v . && chown -R 1000:1000 repodata/
-tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_centos_7.9_x86_64.tar.gz *
-chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_centos_7.9_x86_64.tar.gz
+tar -czf  {{ .OutputDirectory }}/{{ .KubernetesVersion }}_centos_7.9_x86_64{{ .FipsSuffix }}.tar.gz *
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_centos_7.9_x86_64{{ .FipsSuffix }}.tar.gz
 popd
 rm -rf "${TMP_DIR}"

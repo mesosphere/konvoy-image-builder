@@ -70,15 +70,4 @@ func init() {
 		"container-image",
 		"",
 		"A container image to use for building the package bundles")
-	err := createPackageBundleCmd.MarkFlagRequired("os")
-	if err != nil {
-		// This is a programming error
-		panic(fmt.Sprintf("unable to mark flag `os` as required: %v", err))
-	}
-	err = createPackageBundleCmd.MarkFlagRequired("kubernetes-version")
-	if err != nil {
-		// This is a programming error
-		panic(fmt.Sprintf("unable to mark flag `kubernetes-version` as required: %v", err))
-	}
-
 }

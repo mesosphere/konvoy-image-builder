@@ -404,7 +404,6 @@ func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) err
 		osInfo := strings.Replace(osName, " ", "-", 1)
 		args := []string{
 			"create-package-bundle", fmt.Sprintf("--os=%s", osInfo),
-			fmt.Sprintf("--kubernetes-version=%s", kubernetesVersion),
 			fmt.Sprintf("--output-directory=%s", artifactsDir),
 		}
 		if fips {
