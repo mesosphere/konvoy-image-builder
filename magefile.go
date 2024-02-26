@@ -379,9 +379,6 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 	}
 	// Fetch artifacts
 	isFips := buildConfig == offlineFIPS
-	if err := fetchOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
-		return fmt.Errorf("failed to fetch OS bundle %w", err)
-	}
 	if err := fetchImageBundle(kubeVersion, artifactsDir, isFips); err != nil {
 		return fmt.Errorf("failed to fetch Image bundle %w", err)
 	}
@@ -396,6 +393,9 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 			return fmt.Errorf("failed to fetch nvidiaRunFile %w", err)
 		}
 	}
+	if err := fetchOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
+		return fmt.Errorf("failed to fetch OS bundle %w", err)
+	}
 	return nil
 }
 
@@ -408,7 +408,7 @@ func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) err
 			fmt.Sprintf("--output-directory=%s", artifactsDir),
 		}
 		if fips {
-			args = append(args, "fips=true")
+			args = append(args, "--fips=true")
 		}
 		return sh.RunV(wrapperCmd, args...)
 	}
