@@ -8,7 +8,7 @@ import (
 
 var (
 	packageCmd        = "create-package-bundle"
-	packageCmdExample = "create-package-bundle --os redhat-8.4 --kuberernetes-version=1.28.6 --output-directory=artifacts"
+	packageCmdExample = "create-package-bundle --os redhat-8.4 --kubernetes-version=1.28.6 --output-directory=artifacts"
 	validOS           = []string{
 		"centos-7.9",
 		"redhat-7.9",
@@ -27,6 +27,7 @@ type packageBundleCmdFlags struct {
 	kubernetesVersion string
 	fips              bool
 	outputDirectory   string
+	containerImage    string
 }
 
 var packageBundleFlags packageBundleCmdFlags
@@ -65,6 +66,10 @@ func init() {
 		"",
 		"The directory to place the bundle in.")
 
+	fs.StringVar(&packageBundleFlags.containerImage,
+		"container-image",
+		"",
+		"A container image to use for building the package bundles")
 	err := createPackageBundleCmd.MarkFlagRequired("os")
 	if err != nil {
 		// This is a programming error

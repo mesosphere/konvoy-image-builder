@@ -74,20 +74,26 @@ func (r *Runner) preCreatePackageBundleSteps(args []string) error {
 		kubernetesVersionFlag string
 		fipsFlag              bool
 		outputDirectoy        string
+		containerImage        string
 	)
 	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
 	flagSet.StringVar(&osFlag, "os", "", fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
 	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "", "The version of kubernetes to download packages for. Example: 1.21.6")
 	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
 	flagSet.StringVar(&outputDirectoy, "output-directory", "", "The directory to place the bundle in.")
+	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
 	if len(args) != 0 {
 		flagSet.Parse(args)
 		if osFlag == "" || kubernetesVersionFlag == "" || outputDirectoy == "" {
 			return errors.New("--os --kuberernetes-version and --output-directory all must be set")
 		}
-		image, err := getContainerImage(osFlag)
-		if err != nil {
-			return err
+		image := containerImage
+		var err error
+		if containerImage == "" {
+			image, err = getContainerImage(osFlag)
+			if err != nil {
+				return err
+			}
 		}
 		bundleCmd := "./bundle.sh"
 		absPathToOutput := outputDirectoy
@@ -282,6 +288,7 @@ func startContainer(containerEngine, containerImage, workingDir, runCmd, outputD
 			}
 		}
 	}()
+	fmt.Fprint(os.Stdout, fmt.Sprintf("running: %s \n", strings.Join(cmd.Args, " ")))
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("error running command: %w", err)
