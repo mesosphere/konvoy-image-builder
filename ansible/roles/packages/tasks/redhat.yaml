@@ -8,7 +8,7 @@
   register: installed_rpms
 
 - name: install common RPMS if already not installed
-  command: yum install -y {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} {{ '--allowerasing' if ansible_distribution_major_version >= 9 else '' }} {{ item }}
+  command: yum install -y {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} {{ '--allowerasing' if ansible_distribution_major_version == '9' else '' }} {{ item }}
   when:
     - installed_rpms.results | selectattr('name','equalto', item ) | list | count == 0
   with_items:
