@@ -84,7 +84,6 @@ var (
 
 var (
 	dryRunFlag         = "--dry-run"
-	p2Instance         = "p2.xlarge"
 	g4dnInstance       = "g4dn.2xlarge"
 	azureGPUInstance   = "Standard_NC6s_v3"
 	azureBuildInstance = "Standard_B2ms"
@@ -347,9 +346,7 @@ func getVMForBuild(buildInfra, buildConfig string) string {
 	switch buildInfra {
 	case aws:
 		switch buildConfig {
-		case offlineNvidia:
-			return p2Instance
-		case nvidia:
+		case nvidia, offlineNvidia:
 			return g4dnInstance
 		default:
 			return ""
