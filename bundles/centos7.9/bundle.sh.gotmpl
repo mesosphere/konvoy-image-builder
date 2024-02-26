@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+yum -y install epel-release gettext yum-utils createrepo dnf-utils
+yum clean all
+TMP_DIR="$(mktemp -d repodata-XXXX)"
+cp packages.txt "${TMP_DIR}"
+pushd "${TMP_DIR}"
+repoquery --resolve --requires --recursive  $(cat packages.txt) | xargs -r yumdownloader
+yumdownloader $(< packages.txt)
+rm packages.txt
+curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
+createrepo -v . && chown -R 1000:1000 repodata/
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_centos_7.9_x86_64.tar.gz *
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_centos_7.9_x86_64.tar.gz
+popd
+rm -rf "${TMP_DIR}"

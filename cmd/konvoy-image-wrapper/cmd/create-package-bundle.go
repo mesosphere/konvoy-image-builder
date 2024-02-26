@@ -34,8 +34,8 @@ var (
 			containerImage: "docker.io/library/rockylinux:9.1",
 		},
 		"centos-7.9": {
-			configDir:      "bundles/",
-			containerImage: "docker.io/library/mesosphere/centos:7.9.2009.minimal",
+			configDir:      "bundles/centos7.9",
+			containerImage: "docker.io/mesosphere/centos:7.9.2009.minimal",
 		},
 		"redhat-7.9": {
 			configDir:      "bundles/",
