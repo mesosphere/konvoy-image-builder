@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -55,12 +56,8 @@ var (
 			containerImage: "registry.access.redhat.com/ubi8/ubi:8.6",
 		},
 		"redhat-8.8": {
-			configDir:      "bundles/",
+			configDir:      "bundles/redhat8.8",
 			containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",
-		},
-		"ubuntu-18.04": {
-			configDir:      "bundles/",
-			containerImage: "docker.io/library/ubuntu:18.04",
 		},
 		"ubuntu-20.04": {
 			configDir:      "bundles/",
@@ -72,7 +69,7 @@ var (
 func getKubernetesVerisonFromAnsible() (string, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
-		return "", fmt.Errorf("failed to get process's working dir: %w", err)
+		return "", fmt.Errorf("failed to get working dir: %w", err)
 	}
 	bytes, err := os.ReadFile(path.Join(pwd, "ansible", "group_vars", "all", "defaults.yaml"))
 	if err != nil {
@@ -175,6 +172,26 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			}
 		}
 
+		if strings.Contains(filepath, "repo-templates") && strings.Contains(filepath, ".repo") &&
+			filepath != "kubernetes.repo.gotmpl" {
+			f, err := os.Open(path.Join(base, filepath))
+			if err != nil {
+				return fmt.Errorf("failed to open file: %w", err)
+			}
+			defer f.Close()
+			baseName := path.Base(filepath)
+			newFile := path.Join(base, generatedDirName, "repos", baseName)
+			out, err := os.Create(newFile)
+			if err != nil {
+				return fmt.Errorf("failed to create file: %w", err)
+			}
+			_, err = io.Copy(out, f)
+			if err != nil {
+				return fmt.Errorf("failed to copy contents of repo file: %w", err)
+			}
+			l = append(l, out.Name())
+		}
+
 		if strings.Contains(filepath, "kubernetes.repo.gotmpl") {
 			kubernetesRepoTmpl, err := os.ReadFile(path.Join(base, filepath))
 			if err != nil {
@@ -244,11 +261,11 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			if err != nil {
 				return fmt.Errorf("failed to create file: %w", err)
 			}
+			defer out.Close()
 			fipsSuffix := ""
 			if fips {
 				fipsSuffix = "_fips"
 			}
-			defer out.Close()
 			templateInput := struct {
 				KubernetesVersion string
 				OutputDirectory   string
@@ -284,7 +301,9 @@ func getContainerImage(targetOS string) (string, error) {
 	return config.containerImage, nil
 }
 
-func startContainer(containerEngine, containerImage, workingDir, runCmd, outputDir string, reposList []string, envs map[string]string) error {
+func startContainer(containerEngine, containerImage,
+	workingDir, runCmd, outputDir string,
+	reposList []string, envs map[string]string) error {
 	tty := terminal.IsTerminal(int(os.Stdout.Fd()))
 	outputBaseName := path.Base(outputDir)
 	cmd := exec.Command(
