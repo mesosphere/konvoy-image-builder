@@ -1,0 +1,61 @@
+#!/bin/bash
+set -e
+
+sed -i 's/\(def in_container():\)/\1\n    return False/g' /usr/lib64/python*/*-packages/rhsm/config.py
+env
+FOUND=false
+
+if [[ -n "${RHSM_ORG_ID}" && -n "${RHSM_ACTIVATION_KEY}" ]]; then
+  subscription-manager register --org="${RHSM_ORG_ID}" --activationkey="${RHSM_ACTIVATION_KEY}" --force
+  FOUND=true
+fi
+
+if [[ -n "${RHSM_USER}" && -n "${RHSM_PASS}" && ${FOUND} == false ]]; then
+  subscription-manager register --username="${RHSM_USER}" --password="${RHSM_PASS}" --force
+  FOUND=true
+fi
+
+if [[ ${FOUND} == false ]]; then
+  echo "You must use subscription manager to fetch packages for redhat"
+  exit 1
+fi
+
+subscription::unregister() {
+  subscription-manager unregister
+}
+
+subscription::defer_unregister() {
+    trap subscription::unregister ABRT
+    trap subscription::unregister EXIT
+    trap subscription::unregister HUP
+    trap subscription::unregister INT
+    trap subscription::unregister TERM
+    trap subscription::unregister USR1
+    trap subscription::unregister USR2
+}
+
+subscription-manager release --set=8.6
+subscription-manager refresh
+subscription::defer_unregister
+subscription-manager repos --enable rhel-8-for-x86_64-baseos-eus-rpms
+subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
+yum -y install gettext yum-utils createrepo dnf-utils modulemd-tools
+yum clean all
+TMP_DIR="$(mktemp -d repodata-XXXX)"
+cp packages.txt "${TMP_DIR}"
+pushd "${TMP_DIR}"
+repoquery --archlist=x86_64,noarch --resolve --requires --recursive  $(cat packages.txt) | grep -v *.i686  >> reqs.txt
+sed -i 1d reqs.txt # we need to get rid of the first line
+yumdownloader --archlist=x86_64,noarch --setopt=skip_missing_names_on_install=False -x \*i686 $(< reqs.txt)
+yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch --resolve --disablerepo=*  --enablerepo=kubernetes,rhel-8-for-x86_64-baseos-eus-rpms,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms $(< packages.txt)
+rm packages.txt reqs.txt
+curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
+createrepo -v .
+chown -R 1000:1000 repodata/
+repo2module . --module-name offline
+createrepo_mod .
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.6_x86_64{{ .FipsSuffix }}.tar.gz *
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.6_x86_64{{ .FipsSuffix }}.tar.gz
+popd
+rm -rf "${TMP_DIR}"
