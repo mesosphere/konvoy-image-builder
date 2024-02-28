@@ -10,8 +10,8 @@ if [[ -n "${RHSM_ORG_ID}" && -n "${RHSM_ACTIVATION_KEY}" ]]; then
   FOUND=true
 fi
 
-if [[ -n "${RHSM_USERNAME}" && -n "${RHSM_PASS}" && ${FOUND} == false ]]; then
-  subscription-manager register --username="${RHSM_USERNAME}" --password="${RHSM_PASS}" --force
+if [[ -n "${RHSM_USER}" && -n "${RHSM_PASS}" && ${FOUND} == false ]]; then
+  subscription-manager register --username="${RHSM_USER}" --password="${RHSM_PASS}" --force
   FOUND=true
 fi
 
