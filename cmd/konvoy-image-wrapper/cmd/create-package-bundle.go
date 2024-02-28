@@ -52,7 +52,7 @@ var (
 			containerImage: "registry.access.redhat.com/ubi8/ubi:8.4",
 		},
 		"redhat-8.6": {
-			configDir:      "bundles/",
+			configDir:      "bundles/redhat8.6",
 			containerImage: "registry.access.redhat.com/ubi8/ubi:8.6",
 		},
 		"redhat-8.8": {
