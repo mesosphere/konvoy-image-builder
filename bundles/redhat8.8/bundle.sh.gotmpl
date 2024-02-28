@@ -54,7 +54,7 @@ createrepo -v .
 chown -R 1000:1000 repodata/
 repo2module . --module-name offline
 createrepo_mod .
-tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.8_x86_64.tar.gz *
-chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.8_x86_64.tar.gz
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.8_x86_64{{ .FipsSuffix }}.tar.gz *
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.8_x86_64{{ .FipsSuffix }}.tar.gz
 popd
 rm -rf "${TMP_DIR}"
