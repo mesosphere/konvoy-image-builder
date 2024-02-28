@@ -173,7 +173,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 		}
 
 		if strings.Contains(filepath, "repo-templates") && strings.Contains(filepath, ".repo") &&
-			filepath != "kubernetes.repo.gotmpl" {
+			!strings.Contains(filepath, "kubernetes.repo.gotmpl") {
 			f, err := os.Open(path.Join(base, filepath))
 			if err != nil {
 				return fmt.Errorf("failed to open file: %w", err)
