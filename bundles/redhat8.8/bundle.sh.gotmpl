@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 sed -i 's/\(def in_container():\)/\1\n    return False/g' /usr/lib64/python*/*-packages/rhsm/config.py
 env
@@ -10,8 +10,8 @@ if [[ -n "${RHSM_ORG_ID}" && -n "${RHSM_ACTIVATION_KEY}" ]]; then
   FOUND=true
 fi
 
-if [[ -n "${RHSM_USERNAME}" && -n "${RHSM_PASSWORD}" && ${FOUND} == false ]]; then
-  subscription-manager register --username="${RHSM_USERNAME}" --password="${RHSM_PASSWORD}" --force
+if [[ -n "${RHSM_USERNAME}" && -n "${RHSM_PASS}" && ${FOUND} == false ]]; then
+  subscription-manager register --username="${RHSM_USERNAME}" --password="${RHSM_PASS}" --force
   FOUND=true
 fi
 
