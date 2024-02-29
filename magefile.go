@@ -400,7 +400,8 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 }
 
 func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) error {
-	if strings.Contains(osName, "rocky") || strings.Contains(osName, "centos") || osName == "redhat 8.8" || osName == "redhat 8.6" {
+	if strings.Contains(osName, "rocky") || strings.Contains(osName, "centos") ||
+		osName == "redhat 8.8" || osName == "redhat 8.6" || osName == "redhat 8.4" {
 		osInfo := strings.Replace(osName, " ", "-", 1)
 		args := []string{
 			"create-package-bundle", fmt.Sprintf("--os=%s", osInfo),

@@ -48,7 +48,7 @@ var (
 			containerImage: "mesosphere/centos:7.9.2009.minimal",
 		},
 		"redhat-8.4": {
-			configDir:      "bundles/",
+			configDir:      "bundles/redhat8.4",
 			containerImage: "registry.access.redhat.com/ubi8/ubi:8.4",
 		},
 		"redhat-8.6": {
