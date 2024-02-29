@@ -51,7 +51,7 @@ rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
 chown -R 1000:1000 repodata/
-dnf install modulemd-tools
+yum install -y modulemd-tools
 repo2module . --module-name offline
 createrepo_mod .
 tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.4_x86_64{{ .FipsSuffix }}.tar.gz *

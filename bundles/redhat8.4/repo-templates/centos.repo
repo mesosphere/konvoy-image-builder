@@ -1,6 +1,6 @@
 [appstream-centos]
 name=Centos $releasever - AppStream
-mirrorlist=http://mirrorlist.centos.org/?release=$releasever-stream&arch=x86_64&repo=BaseOS
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever-stream&arch=x86_64&repo=AppStream
 enabled=1
 gpgcheck=1
 gpgkey=https://centos.org/keys/RPM-GPG-KEY-CentOS-Official
