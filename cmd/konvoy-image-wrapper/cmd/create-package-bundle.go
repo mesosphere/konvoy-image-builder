@@ -86,7 +86,7 @@ func getKubernetesVerisonFromAnsible() (string, error) {
 	return kubeVersion, nil
 }
 
-func (r *Runner) preCreatePackageBundleSteps(args []string) error {
+func (r *Runner) CreatePackageBundle(args []string) error {
 	var (
 		osFlag                string
 		kubernetesVersionFlag string
