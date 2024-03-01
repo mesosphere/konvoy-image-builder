@@ -29,42 +29,40 @@ type OSConfig struct {
 	containerImage string
 }
 
-var (
-	osToConfig = map[string]OSConfig{
-		"rocky-9.1": {
-			configDir:      "bundles/rocky9.1",
-			containerImage: "docker.io/library/rockylinux:9.1",
-		},
-		"centos-7.9": {
-			configDir:      "bundles/centos7.9",
-			containerImage: "docker.io/mesosphere/centos:7.9.2009.minimal",
-		},
-		"redhat-7.9": {
-			configDir:      "bundles/",
-			containerImage: "registry.access.redhat.com/ubi7/ubi:7.9",
-		},
-		"oracle-7.9": {
-			configDir:      "bundles/",
-			containerImage: "mesosphere/centos:7.9.2009.minimal",
-		},
-		"redhat-8.4": {
-			configDir:      "bundles/redhat8.4",
-			containerImage: "registry.access.redhat.com/ubi8/ubi:8.4",
-		},
-		"redhat-8.6": {
-			configDir:      "bundles/redhat8.6",
-			containerImage: "registry.access.redhat.com/ubi8/ubi:8.6",
-		},
-		"redhat-8.8": {
-			configDir:      "bundles/redhat8.8",
-			containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",
-		},
-		"ubuntu-20.04": {
-			configDir:      "bundles/",
-			containerImage: "docker.io/library/ubuntu:20.04",
-		},
-	}
-)
+var osToConfig = map[string]OSConfig{
+	"rocky-9.1": {
+		configDir:      "bundles/rocky9.1",
+		containerImage: "docker.io/library/rockylinux:9.1",
+	},
+	"centos-7.9": {
+		configDir:      "bundles/centos7.9",
+		containerImage: "docker.io/mesosphere/centos:7.9.2009.minimal",
+	},
+	"redhat-7.9": {
+		configDir:      "bundles/",
+		containerImage: "registry.access.redhat.com/ubi7/ubi:7.9",
+	},
+	"oracle-7.9": {
+		configDir:      "bundles/",
+		containerImage: "mesosphere/centos:7.9.2009.minimal",
+	},
+	"redhat-8.4": {
+		configDir:      "bundles/redhat8.4",
+		containerImage: "registry.access.redhat.com/ubi8/ubi:8.4",
+	},
+	"redhat-8.6": {
+		configDir:      "bundles/redhat8.6",
+		containerImage: "registry.access.redhat.com/ubi8/ubi:8.6",
+	},
+	"redhat-8.8": {
+		configDir:      "bundles/redhat8.8",
+		containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",
+	},
+	"ubuntu-20.04": {
+		configDir:      "bundles/",
+		containerImage: "docker.io/library/ubuntu:20.04",
+	},
+}
 
 func getKubernetesVerisonFromAnsible() (string, error) {
 	pwd, err := os.Getwd()
@@ -96,7 +94,8 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	)
 	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
 	flagSet.StringVar(&osFlag, "os", "", fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
-	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "", "The version of kubernetes to download packages for. Example: 1.21.6")
+	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "",
+		"The version of kubernetes to download packages for. Example: 1.21.6")
 	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
 	flagSet.StringVar(&outputDirectoy, "output-directory", "", "The directory to place the bundle in.")
 	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
@@ -139,8 +138,6 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	dir := r.workingDir
 	base := path.Join(dir, configDir)
 	return startContainer(r.containerEngine, image, base, bundleCmd, absPathToOutput, reposList, r.env)
-
-	return nil
 }
 
 func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) ([]string, error) {
@@ -157,7 +154,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 	configDirFS := os.DirFS(base)
 	l := make([]string, 0)
 	generated := path.Join(base, generatedDirName)
-	if err := os.MkdirAll(generated, 0755); err != nil {
+	if err := os.MkdirAll(generated, 0o755); err != nil {
 		return l, err
 	}
 
@@ -168,7 +165,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 
 		if d.IsDir() && strings.Contains(filepath, "repo-templates") {
 			newDir := path.Join(base, generatedDirName, "repos")
-			if err := os.MkdirAll(newDir, 0755); err != nil {
+			if err := os.MkdirAll(newDir, 0o755); err != nil {
 				return err
 			}
 		}
@@ -258,7 +255,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			if err != nil {
 				return fmt.Errorf("failed to parse go template: %w", err)
 			}
-			out, err := os.OpenFile(path.Join(base, generatedDirName, "bundle.sh"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
+			out, err := os.OpenFile(path.Join(base, generatedDirName, "bundle.sh"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o777)
 			if err != nil {
 				return fmt.Errorf("failed to create file: %w", err)
 			}
@@ -304,9 +301,11 @@ func getContainerImage(targetOS string) (string, error) {
 
 func startContainer(containerEngine, containerImage,
 	workingDir, runCmd, outputDir string,
-	reposList []string, envs map[string]string) error {
+	reposList []string, envs map[string]string,
+) error {
 	tty := terminal.IsTerminal(int(os.Stdout.Fd()))
 	outputBaseName := path.Base(outputDir)
+	//nolint:gosec // the input is sanatized and contained.
 	cmd := exec.Command(
 		containerEngine, "run",
 		"--interactive",
