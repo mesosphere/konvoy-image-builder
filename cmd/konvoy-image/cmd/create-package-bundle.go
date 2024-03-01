@@ -32,6 +32,8 @@ type packageBundleCmdFlags struct {
 
 var packageBundleFlags packageBundleCmdFlags
 
+// NOTE Usage information always comes from the konvoy-image command, not the konvoy-image-wrapper command.
+// We define this command only to show usage; it does nothing else.
 var createPackageBundleCmd = &cobra.Command{
 	Use:     packageCmd,
 	Short:   "build os package bundles for airgapped installs",

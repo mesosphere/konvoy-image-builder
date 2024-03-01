@@ -86,7 +86,7 @@ func getKubernetesVerisonFromAnsible() (string, error) {
 	return kubeVersion, nil
 }
 
-func (r *Runner) preCreatePackageBundleSteps(args []string) error {
+func (r *Runner) CreatePackageBundle(args []string) error {
 	var (
 		osFlag                string
 		kubernetesVersionFlag string
@@ -100,45 +100,46 @@ func (r *Runner) preCreatePackageBundleSteps(args []string) error {
 	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
 	flagSet.StringVar(&outputDirectoy, "output-directory", "", "The directory to place the bundle in.")
 	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
-	if len(args) != 0 {
-		flagSet.Parse(args)
-		if osFlag == "" || outputDirectoy == "" {
-			return errors.New("--os and --output-directory all must be set")
-		}
-		image := containerImage
-		var err error
-		if containerImage == "" {
-			image, err = getContainerImage(osFlag)
-			if err != nil {
-				return err
-			}
-		}
-		kubernetesVersion := kubernetesVersionFlag
-		if kubernetesVersion == "" {
-			kubernetesVersion, err = getKubernetesVerisonFromAnsible()
-			if err != nil {
-				return err
-			}
-		}
-		bundleCmd := "./bundle.sh"
-		absPathToOutput := outputDirectoy
-		if !path.IsAbs(outputDirectoy) {
-			dir := r.workingDir
-			absPathToOutput = path.Join(dir, outputDirectoy)
-		}
-		reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag)
+	err := flagSet.Parse(args)
+	if err != nil {
+		return err
+	}
+	if osFlag == "" || outputDirectoy == "" {
+		return errors.New("--os and --output-directory all must be set")
+	}
+	image := containerImage
+	if containerImage == "" {
+		image, err = getContainerImage(osFlag)
 		if err != nil {
 			return err
 		}
-		config, found := osToConfig[osFlag]
-		if !found {
-			return fmt.Errorf("buildOS %s is invalid must be one of %v", osFlag, getKeys(osToConfig))
-		}
-		configDir := config.configDir
-		dir := r.workingDir
-		base := path.Join(dir, configDir)
-		return startContainer(r.containerEngine, image, base, bundleCmd, absPathToOutput, reposList, r.env)
 	}
+	kubernetesVersion := kubernetesVersionFlag
+	if kubernetesVersion == "" {
+		kubernetesVersion, err = getKubernetesVerisonFromAnsible()
+		if err != nil {
+			return err
+		}
+	}
+	bundleCmd := "./bundle.sh"
+	absPathToOutput := outputDirectoy
+	if !path.IsAbs(outputDirectoy) {
+		dir := r.workingDir
+		absPathToOutput = path.Join(dir, outputDirectoy)
+	}
+	reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag)
+	if err != nil {
+		return err
+	}
+	config, found := osToConfig[osFlag]
+	if !found {
+		return fmt.Errorf("buildOS %s is invalid must be one of %v", osFlag, getKeys(osToConfig))
+	}
+	configDir := config.configDir
+	dir := r.workingDir
+	base := path.Join(dir, configDir)
+	return startContainer(r.containerEngine, image, base, bundleCmd, absPathToOutput, reposList, r.env)
+
 	return nil
 }
 

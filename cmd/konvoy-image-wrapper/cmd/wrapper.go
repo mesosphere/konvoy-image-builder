@@ -477,11 +477,11 @@ func (r *Runner) Run(args []string) error {
 	}
 	r.addBindVolume(r.workingDir, containerWorkingDir)
 	if len(args) > 0 && args[0] == createPackageBundleCmd {
-		err := r.preCreatePackageBundleSteps(args[1:])
-		if err != nil {
-			return err
-		}
+		// The create-package-bundle command must be implemented in konvoy-image-wrapper,
+		// and if it runs, we must not call konvoy-image, so we return immediately.
+		return r.CreatePackageBundle(args[1:])
 	}
+	// Below here, we end up running commands implemented in konvoy-image.
 
 	// Create a temporary dir to hold some files that need to be mounted to the container,
 	// eg. /etc/passwd, /etc/group, etc.
