@@ -29,7 +29,7 @@ func NewBuildCmd() *cobra.Command {
 		Long: "Build and Provision images. Specifying AWS arguments is deprecated and will " +
 			"be removed in a future version. Use the `aws` subcommand instead.",
 		Args: cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runBuild(args[0], flags)
 		},
 	}

@@ -93,7 +93,8 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		containerImage        string
 	)
 	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
-	flagSet.StringVar(&osFlag, "os", "", fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
+	flagSet.StringVar(&osFlag, "os", "",
+		fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
 	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "",
 		"The version of kubernetes to download packages for. Example: 1.21.6")
 	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
@@ -140,6 +141,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	return startContainer(r.containerEngine, image, base, bundleCmd, absPathToOutput, reposList, r.env)
 }
 
+//nolint:funlen // its not that long
 func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) ([]string, error) {
 	config, found := osToConfig[targetOS]
 	if !found {
@@ -154,7 +156,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 	configDirFS := os.DirFS(base)
 	l := make([]string, 0)
 	generated := path.Join(base, generatedDirName)
-	if err := os.MkdirAll(generated, 0o755); err != nil {
+	if err = os.MkdirAll(generated, 0o755); err != nil {
 		return l, err
 	}
 

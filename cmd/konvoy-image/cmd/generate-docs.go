@@ -14,7 +14,7 @@ var generateDocsCmd = &cobra.Command{
 	Example: "generate-docs /tmp/docs",
 	Args:    cobra.ExactArgs(1),
 
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		path := args[0]
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {

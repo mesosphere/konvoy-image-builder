@@ -21,7 +21,7 @@ func NewVSphereBuildCmd() *cobra.Command {
 		Short:   "build and provision vsphere images",
 		Example: vsphereExample,
 		Args:    cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runBuild(args[0], flags)
 		},
 	}
@@ -37,7 +37,7 @@ func NewVSphereGenerateCmd() *cobra.Command {
 		Short:   "generate files relating to building vsphere images",
 		Example: vsphereExample,
 		Args:    cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runGenerate(args[0], flags)
 		},
 	}
