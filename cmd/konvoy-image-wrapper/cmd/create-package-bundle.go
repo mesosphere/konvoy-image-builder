@@ -280,7 +280,6 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 				// according to ansible.group_vars/all/defaults.yaml L18 this is always k8s major minor.0
 				criToolsVersion = fmt.Sprintf("%s.0", kubernetesMajorMinorVersionNoV)
 				kubernetesMajorMinorVersion = fmt.Sprintf("v%s", kubernetesMajorMinorVersionNoV)
-
 			}
 			templateInput := struct {
 				KubernetesVersion string
