@@ -147,6 +147,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 }
 
 //nolint:funlen // its not that long
+//nolint:gocyclo // the function is relatively clear
 func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) ([]string, error) {
 	config, found := osToConfig[targetOS]
 	if !found {
@@ -169,7 +170,6 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 		if err != nil {
 			return err
 		}
-
 		if d.IsDir() && strings.Contains(filepath, "repo-templates") {
 			newDir := path.Join(base, generatedDirName, "repos")
 			if err := os.MkdirAll(newDir, 0o755); err != nil {
@@ -197,6 +197,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			l = append(l, out.Name())
 		}
 
+		//nolint:nestif // this if is not nested
 		if strings.Contains(filepath, "kubernetes.repo.gotmpl") {
 			kubernetesRepoTmpl, err := os.ReadFile(path.Join(base, filepath))
 			if err != nil {
@@ -252,6 +253,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			}
 		}
 
+		//nolint:nestif // this if is not nested
 		if strings.Contains(filepath, "bundle.sh.gotmpl") {
 			outputBaseName := "/" + path.Base(outputDir)
 			bundleTmpl, err := os.ReadFile(path.Join(base, filepath))
@@ -362,7 +364,7 @@ func startContainer(containerEngine, containerImage,
 			}
 		}
 	}()
-	fmt.Fprint(os.Stdout, fmt.Sprintf("running: %s \n", strings.Join(cmd.Args, " ")))
+	fmt.Fprintf(os.Stdout, "running: %s \n", strings.Join(cmd.Args, " "))
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("error running command: %w", err)

@@ -39,7 +39,7 @@ var createPackageBundleCmd = &cobra.Command{
 	Short:   "build os package bundles for airgapped installs",
 	Example: packageCmdExample,
 	Args:    cobra.NoArgs,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		return nil
 	},
 }

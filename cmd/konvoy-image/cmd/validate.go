@@ -16,7 +16,7 @@ var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "validate existing infrastructure",
 	Args:  cobra.NoArgs,
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		if err := app.Validate(validateFlags); err != nil {
 			return fmt.Errorf("failed running validate %w", err)
 		}

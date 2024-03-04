@@ -415,7 +415,8 @@ func (r *Runner) maskSSHConfig() error {
 	if runtime.GOOS == windows {
 		return nil
 	}
-	_, err := os.Stat(r.usr.HomeDir + "/.ssh/config")
+	sshConfig := "/.ssh/config"
+	_, err := os.Stat(r.usr.HomeDir + sshConfig)
 	if err != nil {
 		if os.IsNotExist(err) {
 			// ignore if the ~/.ssh/config file is not found
@@ -435,7 +436,7 @@ func (r *Runner) maskSSHConfig() error {
 		return ferr
 	}
 
-	r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+"/.ssh/config")
+	r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+sshConfig)
 
 	return nil
 }

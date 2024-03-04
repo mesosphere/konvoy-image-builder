@@ -28,7 +28,7 @@ var rootCmd = &cobra.Command{
 	Use:   "konvoy-image",
 	Short: "Create, provision, and customize images for running Konvoy",
 	Args:  cobra.NoArgs,
-	PersistentPreRunE: func(_ *cobra.Command, args []string) error {
+	PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
 		var err error
 		rootFlags, err = rootCmdFlagsToRootFlags(rootCmdFlags)
 		if err != nil {
@@ -59,7 +59,7 @@ func Execute() {
 	rootCmd.Version = version.Info()
 
 	// add a version command
-	versionCmd.Run = func(_ *cobra.Command, args []string) {
+	versionCmd.Run = func(_ *cobra.Command, _ []string) {
 		_, _ = fmt.Fprintf(os.Stdout, "%s\n", version.Print("konvoy-image"))
 	}
 

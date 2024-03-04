@@ -14,7 +14,7 @@ var artifactsCmd = &cobra.Command{
 	Use:   "artifacts",
 	Short: "upload offline artifacts to hosts defined in inventory-file",
 	Args:  cobra.NoArgs,
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		uploader, err := app.NewArtifactUploader(artifactsFlags.WorkDir)
 		if err != nil {
 			return fmt.Errorf("failed to initialize uploader %w", err)

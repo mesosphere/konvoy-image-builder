@@ -14,7 +14,7 @@ var provisionCmd = &cobra.Command{
 	Short:   "provision to an inventory.yaml or hostname, note the comma at the end of the hostname",
 	Example: "provision --inventory-file inventory.yaml",
 	Args:    cobra.NoArgs,
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		provisionFlags.RootFlags = rootFlags
 		builder := newBuilder()
 		var workDir string
