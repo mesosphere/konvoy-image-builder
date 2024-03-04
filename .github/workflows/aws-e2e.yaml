@@ -100,11 +100,13 @@ jobs:
           ## Ubuntu 18.04
           #- os: "ubuntu 18.04"
           #  buildConfig: "basic"
-          ## Ubuntu 20.04
-          #- os: "ubuntu 20.04"
-          #  buildConfig: "basic"
-          #- os: "ubuntu 20.04"
-          #  buildConfig: "nvidia"
+          # Ubuntu 20.04
+          - os: "ubuntu 20.04"
+            buildConfig: "basic"
+          - os: "ubuntu 20.04"
+            buildConfig: "nvidia"
+          - os: "ubuntu 20.04"
+            buildConfig: "offline"
           # Rocky 9.1
           - os: "rocky 9.1"
             buildConfig: "basic"

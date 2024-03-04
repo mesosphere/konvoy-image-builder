@@ -400,43 +400,15 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 }
 
 func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) error {
-	if strings.Contains(osName, "rocky") || strings.Contains(osName, "centos") ||
-		osName == "redhat 8.8" || osName == "redhat 8.6" || osName == "redhat 8.4" {
-		osInfo := strings.Replace(osName, " ", "-", 1)
-		args := []string{
-			"create-package-bundle", fmt.Sprintf("--os=%s", osInfo),
-			fmt.Sprintf("--output-directory=%s", artifactsDir),
-		}
-		if fips {
-			args = append(args, "--fips=true")
-		}
-		return sh.RunV(wrapperCmd, args...)
+	osInfo := strings.Replace(osName, " ", "-", 1)
+	args := []string{
+		"create-package-bundle", fmt.Sprintf("--os=%s", osInfo),
+		fmt.Sprintf("--output-directory=%s", artifactsDir),
 	}
-	osInfo := strings.Split(osName, " ")
-	osDist := osInfo[0]
-	osMajor := strings.Split(osInfo[1], ".")[0]
-	osMinor := strings.Split(osInfo[1], ".")[1]
-
-	downloadPath := fmt.Sprintf("%s_%s_%s_x86_64", kubernetesVersion, osDist, osMajor)
 	if fips {
-		downloadPath += fipsSuffix
+		args = append(args, "--fips=true")
 	}
-	downloadPath += tgzExt
-
-	srcURL, err := url.Parse(baseURL)
-	if err != nil {
-		return fmt.Errorf("failed to parse url %s :%w", baseURL, err)
-	}
-	srcURL.Path = path.Join(srcURL.Path, "airgapped", "os-packages", downloadPath)
-
-	bundlePath := fmt.Sprintf("%s_%s_%s.%s_x86_64", kubernetesVersion, osDist, osMajor, osMinor)
-	if fips {
-		bundlePath += fipsSuffix
-	}
-	bundlePath += tgzExt
-
-	osBundleDownloadPath := path.Join(downloadDir, bundlePath)
-	return downloadArtifact(srcURL, osBundleDownloadPath)
+	return sh.RunV(wrapperCmd, args...)
 }
 
 func fetchImageBundle(kubernetesVersion, downloadDir string, fips bool) error {

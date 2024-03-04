@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"text/template"
 
+	"github.com/blang/semver"
 	terminal "golang.org/x/term"
 	"gopkg.in/yaml.v2"
 )
@@ -59,7 +60,7 @@ var osToConfig = map[string]OSConfig{
 		containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",
 	},
 	"ubuntu-20.04": {
-		configDir:      "bundles/",
+		configDir:      "bundles/ubuntu20.04",
 		containerImage: "docker.io/library/ubuntu:20.04",
 	},
 }
@@ -80,6 +81,10 @@ func getKubernetesVerisonFromAnsible() (string, error) {
 	kubeVersion, ok := config["kubernetes_version"].(string)
 	if !ok {
 		return "", fmt.Errorf("unable to parse kubernetes_version from ansible defaults")
+	}
+	_, err = semver.ParseTolerant(kubeVersion)
+	if err != nil {
+		return "", err
 	}
 	return kubeVersion, nil
 }
@@ -266,14 +271,28 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 			if fips {
 				fipsSuffix = "_fips"
 			}
+			var criToolsVersion string
+			var kubernetesMajorMinorVersion string
+			if targetOS == "ubuntu-20.04" {
+				kubernetesMajorMinorVersionNoV := strings.Join(strings.Split(kubernetesVersion, ".")[0:2], ".")
+				// according to ansible.group_vars/all/defaults.yaml L18 this is always k8s major minor.0
+				criToolsVersion = fmt.Sprintf("%s.0", kubernetesMajorMinorVersionNoV)
+				kubernetesMajorMinorVersion = fmt.Sprintf("v%s", kubernetesMajorMinorVersionNoV)
+
+			}
 			templateInput := struct {
 				KubernetesVersion string
 				OutputDirectory   string
 				FipsSuffix        string
+				// these two get used by ubuntu
+				CRIToolsVersion             string
+				KubernetesMajorMinorVersion string
 			}{
-				KubernetesVersion: kubernetesVersion,
-				OutputDirectory:   outputBaseName,
-				FipsSuffix:        fipsSuffix,
+				KubernetesVersion:           kubernetesVersion,
+				OutputDirectory:             outputBaseName,
+				FipsSuffix:                  fipsSuffix,
+				CRIToolsVersion:             criToolsVersion,
+				KubernetesMajorMinorVersion: kubernetesMajorMinorVersion,
 			}
 			err = t.Execute(out, templateInput)
 			if err != nil {
