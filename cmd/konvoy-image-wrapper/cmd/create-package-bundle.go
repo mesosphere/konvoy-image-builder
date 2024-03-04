@@ -146,8 +146,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	return startContainer(r.containerEngine, image, base, bundleCmd, absPathToOutput, reposList, r.env)
 }
 
-//nolint:funlen // its not that long
-//nolint:gocyclo // the function is relatively clear
+//nolint:gocyclo,funlen // the function is relatively clear
 func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) ([]string, error) {
 	config, found := osToConfig[targetOS]
 	if !found {
