@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.0...v2.9.1) (2024-03-05)
+
+
+### Bug Fixes
+
+* remove unneeded Containerd registry.mirrors configuration ([85d6f32](https://github.com/mesosphere/konvoy-image-builder/commit/85d6f329c690cb0a6874f0d344b8cde2dd0353da))
+* update Packer to v1.10.1 ([#1020](https://github.com/mesosphere/konvoy-image-builder/issues/1020)) ([4c056da](https://github.com/mesosphere/konvoy-image-builder/commit/4c056da64cd2ea5c115fe13557ad2596aa9cc277))
+
 ## [2.9.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.8.5...v2.9.0) (2024-02-21)
 
 
