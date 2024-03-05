@@ -36,7 +36,7 @@ var osToConfig = map[string]OSConfig{
 		containerImage: "docker.io/mesosphere/centos:7.9.2009.minimal",
 	},
 	"redhat-7.9": {
-		configDir:      "bundles/",
+		configDir:      "bundles/redhat7.9",
 		containerImage: "registry.access.redhat.com/ubi7/ubi:7.9",
 	},
 	"redhat-8.4": {
