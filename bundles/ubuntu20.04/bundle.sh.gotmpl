@@ -24,9 +24,11 @@ sed -i 's/cloud-init/cloud-init='"23.1.2-0ubuntu0~20.04.2"'/' /tmp/packages
 
 TMP_DIR="$(mktemp -d repodata-XXXX)"
 pushd "${TMP_DIR}"
-apt-get download $(< /tmp/packages)
+apt-get download "$(< /tmp/packages)"
 dpkg-scanpackages -m . | gzip > Packages.gz
+#shellcheck disable=SC1083
 tar -czf  {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_20.04_x86_64.tar.gz *
+#shellcheck disable=SC1083
 chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_20.04_x86_64.tar.gz
 popd
 rm -rf "${TMP_DIR}"
