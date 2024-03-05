@@ -8,14 +8,13 @@ import (
 
 var (
 	packageCmd        = "create-package-bundle"
-	packageCmdExample = "create-package-bundle --os redhat-8.4 --kubernetes-version=1.28.6 --output-directory=artifacts"
+	packageCmdExample = "create-package-bundle --os redhat-8.4 --output-directory=artifacts"
 	validOS           = []string{
 		"centos-7.9",
 		"redhat-7.9",
 		"redhat-8.4",
 		"redhat-8.6",
 		"redhat-8.8",
-		"oracle-7.9",
 		"rocky-9.1",
 		"ubuntu-18.04",
 		"ubuntu-20.04",
@@ -56,7 +55,7 @@ func init() {
 		&packageBundleFlags.kubernetesVersion,
 		"kubernetes-version",
 		"",
-		"The version of kubernetes to download packages for. Example: 1.21.6",
+		"The version of kubernetes to download packages for.",
 	)
 	fs.BoolVar(
 		&packageBundleFlags.fips,
@@ -65,7 +64,7 @@ func init() {
 		"If the package bundle should include fips packages.")
 	fs.StringVar(&packageBundleFlags.outputDirectory,
 		"output-directory",
-		"",
+		"artifacts",
 		"The directory to place the bundle in.")
 
 	fs.StringVar(&packageBundleFlags.containerImage,

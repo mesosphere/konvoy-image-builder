@@ -97,9 +97,10 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	flagSet.StringVar(&osFlag, "os", "",
 		fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
 	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "",
-		"The version of kubernetes to download packages for. Example: 1.21.6")
+		"The version of kubernetes to download packages for.")
 	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
-	flagSet.StringVar(&outputDirectoy, "output-directory", "", "The directory to place the bundle in.")
+	flagSet.StringVar(&outputDirectoy, "output-directory", "artifacts",
+		"The directory to place the bundle in.")
 	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
 	err := flagSet.Parse(args)
 	if err != nil {

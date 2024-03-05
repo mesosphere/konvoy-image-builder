@@ -393,13 +393,13 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 			return fmt.Errorf("failed to fetch nvidiaRunFile %w", err)
 		}
 	}
-	if err := fetchOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
+	if err := createOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
 		return fmt.Errorf("failed to fetch OS bundle %w", err)
 	}
 	return nil
 }
 
-func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) error {
+func createOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) error {
 	osInfo := strings.Replace(osName, " ", "-", 1)
 	args := []string{
 		"create-package-bundle", fmt.Sprintf("--os=%s", osInfo),
