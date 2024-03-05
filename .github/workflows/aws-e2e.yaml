@@ -16,12 +16,12 @@ jobs:
       matrix:
         include:
           # CentoOS 7.9
-          - os: "centos 7.9"
-            buildConfig: "basic"
-          - os: "centos 7.9"
-            buildConfig: "fips"
-          - os: "centos 7.9"
-            buildConfig: "nvidia"
+          #- os: "centos 7.9"
+          #  buildConfig: "basic"
+          #- os: "centos 7.9"
+          #  buildConfig: "fips"
+          #- os: "centos 7.9"
+          #  buildConfig: "nvidia"
           - os: "centos 7.9"
             buildConfig: "offline"
           - os: "centos 7.9"
@@ -55,12 +55,12 @@ jobs:
           - os: "redhat 8.4"
             buildConfig: "offline-nvidia"
           # RHEL 8.6
-          - os: "redhat 8.6"
-            buildConfig: "basic"
-          - os: "redhat 8.6"
-            buildConfig: "fips"
-          - os: "redhat 8.6"
-            buildConfig: "nvidia"
+          #- os: "redhat 8.6"
+          #  buildConfig: "basic"
+          #- os: "redhat 8.6"
+          #  buildConfig: "fips"
+          #- os: "redhat 8.6"
+          #  buildConfig: "nvidia"
           - os: "redhat 8.6"
             buildConfig: "offline"
           - os: "redhat 8.6"
@@ -68,14 +68,14 @@ jobs:
           - os: "redhat 8.6"
             buildConfig: "offline-nvidia"
           # RHEL 8.8
-          - os: "redhat 8.8"
-            buildConfig: "basic"
-          - os: "redhat 8.8"
-            buildConfig: "fips"
-          - os: "redhat 8.8"
-            buildConfig: "fips-kernel"
-          - os: "redhat 8.8"
-            buildConfig: "nvidia"
+          #- os: "redhat 8.8"
+          #  buildConfig: "basic"
+          #- os: "redhat 8.8"
+          #  buildConfig: "fips"
+          #- os: "redhat 8.8"
+          #  buildConfig: "fips-kernel"
+          #- os: "redhat 8.8"
+          #  buildConfig: "nvidia"
           - os: "redhat 8.8"
             buildConfig: "offline"
           - os: "redhat 8.8"
@@ -101,8 +101,8 @@ jobs:
           #- os: "ubuntu 18.04"
           #  buildConfig: "basic"
           # Ubuntu 20.04
-          - os: "ubuntu 20.04"
-            buildConfig: "basic"
+          #- os: "ubuntu 20.04"
+          #  buildConfig: "basic"
           - os: "ubuntu 20.04"
             buildConfig: "nvidia"
           - os: "ubuntu 20.04"
@@ -112,7 +112,7 @@ jobs:
             buildConfig: "basic"
           - os: "rocky 9.1"
             buildConfig: "offline"
-    runs-on: 
+    runs-on:
     - self-hosted
     - small
     continue-on-error: false

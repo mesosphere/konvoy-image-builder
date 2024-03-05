@@ -11,6 +11,7 @@ mkdir -p /etc/apt/keyrings
 curl -fsSL "https://pkgs.k8s.io/core:/stable:/{{ .KubernetesMajorMinorVersion }}/deb/Release.key" | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ .KubernetesMajorMinorVersion }}/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
 apt-get update
+#shellcheck disable=SC2046
 apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $(< packages.txt) | grep "^\w" > /tmp/packages
 
 # The list returned by apt-cache depends does not contain the versions
@@ -24,9 +25,10 @@ sed -i 's/cloud-init/cloud-init='"23.1.2-0ubuntu0~20.04.2"'/' /tmp/packages
 
 TMP_DIR="$(mktemp -d repodata-XXXX)"
 pushd "${TMP_DIR}"
-apt-get download "$(< /tmp/packages)"
+#shellcheck disable=SC2046
+apt-get download $(< /tmp/packages)
 dpkg-scanpackages -m . | gzip > Packages.gz
-#shellcheck disable=SC1083
+#shellcheck disable=SC1083,SC2035
 tar -czf  {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_20.04_x86_64.tar.gz *
 #shellcheck disable=SC1083
 chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_20.04_x86_64.tar.gz

@@ -44,17 +44,20 @@ yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
-repoquery --archlist=x86_64,noarch --resolve --requires --recursive -x \*i686 "$(< packages.txt)" | grep -v *.i686  >> reqs.txt
+#shellcheck disable=SC2046,SC2062,SC2063,SC2035
+repoquery --archlist=x86_64,noarch --resolve --requires --recursive  "$(cat packages.txt)" | grep -v *.i686  >> reqs.txt
 sed -i 1d reqs.txt # we need to get rid of the first line
-yumdownloader --archlist=x86_64,noarch --setopt=skip_missing_names_on_install=False -x \*i686 "$(< reqs.txt)"
-yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch --resolve --disablerepo=*  --enablerepo=kubernetes,rhel-8-for-x86_64-baseos-eus-rpms,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms "$(< packages.txt)"
+#shellcheck disable=SC2046
+yumdownloader --archlist=x86_64,noarch --setopt=skip_missing_names_on_install=False -x \*i686 $(< reqs.txt)
+#shellcheck disable=SC2046
+yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch --resolve --disablerepo=*  --enablerepo=kubernetes,rhel-8-for-x86_64-baseos-eus-rpms,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms $(< packages.txt)
 rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
 chown -R 1000:1000 repodata/
 repo2module . --module-name offline
 createrepo_mod .
-#shellcheck disable=SC1083
+#shellcheck disable=SC1083,SC2035
 tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.6_x86_64{{ .FipsSuffix }}.tar.gz *
 #shellcheck disable=SC1083
 chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.6_x86_64{{ .FipsSuffix }}.tar.gz
