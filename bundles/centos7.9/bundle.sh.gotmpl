@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# A high limit causes yum 3.x to run slowly; the issue is known, but the root cause is not.
+# The default limit is 'infinity,' as set by docker. We work around it by setting a lower limit.
+ulimit -n 1024000
+
 set -euo pipefail
 
 yum -y install epel-release gettext yum-utils createrepo dnf-utils
