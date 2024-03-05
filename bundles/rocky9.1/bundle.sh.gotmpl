@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 yum -y install epel-release gettext yum-utils createrepo dnf-utils
 yum clean all

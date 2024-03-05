@@ -31,21 +31,17 @@ type OSConfig struct {
 }
 
 var osToConfig = map[string]OSConfig{
-	"rocky-9.1": {
-		configDir:      "bundles/rocky9.1",
-		containerImage: "docker.io/library/rockylinux:9.1",
-	},
 	"centos-7.9": {
 		configDir:      "bundles/centos7.9",
 		containerImage: "docker.io/mesosphere/centos:7.9.2009.minimal",
 	},
-	"redhat-7.9": {
-		configDir:      "bundles/",
-		containerImage: "registry.access.redhat.com/ubi7/ubi:7.9",
-	},
 	"oracle-7.9": {
 		configDir:      "bundles/",
 		containerImage: "mesosphere/centos:7.9.2009.minimal",
+	},
+	"redhat-7.9": {
+		configDir:      "bundles/",
+		containerImage: "registry.access.redhat.com/ubi7/ubi:7.9",
 	},
 	"redhat-8.4": {
 		configDir:      "bundles/redhat8.4",
@@ -58,6 +54,10 @@ var osToConfig = map[string]OSConfig{
 	"redhat-8.8": {
 		configDir:      "bundles/redhat8.8",
 		containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",
+	},
+	"rocky-9.1": {
+		configDir:      "bundles/rocky9.1",
+		containerImage: "docker.io/library/rockylinux:9.1",
 	},
 	"ubuntu-20.04": {
 		configDir:      "bundles/ubuntu20.04",
