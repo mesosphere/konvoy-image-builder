@@ -507,7 +507,7 @@ cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz: kib-image-push-manif
 	docker tag $(DOCKER_REPOSITORY):$(REPO_REV)-$(BUILDARCH) $(DOCKER_REPOSITORY):$(REPO_REV)
 	docker save $(DOCKER_REPOSITORY):$(REPO_REV) | gzip -c - > "$(REPO_ROOT_DIR)/cmd/konvoy-image-wrapper/image/konvoy-image-builder.tar.gz"
 
-export GITHUB_CLI_VERSION=2.14.0
+export GITHUB_CLI_VERSION=2.45.0
 export GITHUB_CLI_ASSETS=$(CURDIR)/.local/github_cli/
 export GITHUB_CLI_URL_GOOS := $(shell echo $(OS) | tr '[:upper:]' '[:lower:]')
 ifeq ($(GOOS),darwin)

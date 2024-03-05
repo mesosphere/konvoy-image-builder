@@ -18,10 +18,10 @@ while [ "$1" != "" ]; do
 done
 
 if [[ -z $version_latest  || -z $version_previous ]]; then
-  read -r version_latest version_previous <<< $(${GITHUB_CLI_BIN} release list -L 2 | awk '{print $1}' | xargs)
+  read -r version_latest version_previous <<< "$(${GITHUB_CLI_BIN} release list -L 2 | awk '{print $1}' | xargs)"
 fi
 
-DIFF=$(${SEMVER_CLI_BIN} diff $version_latest $version_previous)
+DIFF="$(${SEMVER_CLI_BIN} diff "${version_latest}" "${version_previous}")"
 PR_TYPE=""
 case $DIFF in
   patch)
