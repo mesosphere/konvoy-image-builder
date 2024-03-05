@@ -7,9 +7,9 @@ TMP_DIR="$(mktemp -d repodata-XXXX)"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046
-repoquery --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch
+repoquery --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
 #shellcheck disable=SC2046
-yumdownloader  --archlist=x86_64,noarch $(< packages.txt)
+yumdownloader  --archlist=x86_64,noarch -x \*i686 $(< packages.txt)
 rm packages.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v . && chown -R 1000:1000 repodata/

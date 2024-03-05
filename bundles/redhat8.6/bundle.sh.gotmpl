@@ -3,6 +3,11 @@ set -euo pipefail
 sed -i 's/\(def in_container():\)/\1\n    return False/g' /usr/lib64/python*/*-packages/rhsm/config.py
 FOUND=false
 
+RHSM_ORG_ID=${RHSM_ORG_ID:-""}
+RHSM_ACTIVATION_KEY=${RHSM_ACTIVATION_KEY:-""}
+RHSM_USER=${RHSM_USER:-""}
+RHSM_PASS=${RHSM_PASS:-""}
+
 if [[ -n "${RHSM_ORG_ID}" && -n "${RHSM_ACTIVATION_KEY}" ]]; then
   subscription-manager register --org="${RHSM_ORG_ID}" --activationkey="${RHSM_ACTIVATION_KEY}" --force
   FOUND=true
