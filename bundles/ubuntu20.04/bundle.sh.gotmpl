@@ -19,10 +19,12 @@ sed -i 's/kubelet/kubelet='"{{ .KubernetesVersion }}-${DEB_PATCH_VERSION}"'/' /t
 sed -i 's/kubectl/kubectl='"{{ .KubernetesVersion }}-${DEB_PATCH_VERSION}"'/' /tmp/packages
 sed -i 's/kubeadm/kubeadm='"{{ .KubernetesVersion }}-${DEB_PATCH_VERSION}"'/' /tmp/packages
 sed -i 's/cri-tools/cri-tools='"{{ .CRIToolsVersion }}-${DEB_PATCH_VERSION}"'/' /tmp/packages
+# https://github.com/kubernetes-sigs/cluster-api-provider-aws/issues/4745 pins version for CAPA
+sed -i 's/cloud-init/cloud-init='"23.1.2-0ubuntu0~20.04.2"'/' /tmp/packages
 
 TMP_DIR="$(mktemp -d repodata-XXXX)"
 pushd "${TMP_DIR}"
-apt-get download $(cat /tmp/packages)
+apt-get download $(< /tmp/packages)
 dpkg-scanpackages -m . | gzip > Packages.gz
 tar -czf  {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_20.04_x86_64.tar.gz *
 chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_20.04_x86_64.tar.gz
