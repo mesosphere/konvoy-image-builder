@@ -1,0 +1,76 @@
+#!/bin/bash
+set -euo pipefail
+
+# A high limit causes yum to run slowly; the issue is known, but the root cause is not.
+# The default limit is 'infinity,' as set by docker. We work around it by setting a lower limit. 
+ulimit -n 1024000
+
+# When yum operates on multiple packages, it does not, by default, return an error if a subset
+# of packages is not found. This makes yum return an error.
+echo skip_missing_names_on_install=False >> /etc/yum.conf
+
+sed -i 's/\(def in_container():\)/\1\n    return False/g' /usr/lib64/python*/*-packages/rhsm/config.py
+FOUND=false
+
+RHSM_ORG_ID=${RHSM_ORG_ID:-""}
+RHSM_ACTIVATION_KEY=${RHSM_ACTIVATION_KEY:-""}
+RHSM_USER=${RHSM_USER:-""}
+RHSM_PASS=${RHSM_PASS:-""}
+
+if [[ -n "${RHSM_ORG_ID}" && -n "${RHSM_ACTIVATION_KEY}" ]]; then
+  subscription-manager register --org="${RHSM_ORG_ID}" --activationkey="${RHSM_ACTIVATION_KEY}" --force
+  FOUND=true
+fi
+
+if [[ -n "${RHSM_USER}" && -n "${RHSM_PASS}" && ${FOUND} == false ]]; then
+  subscription-manager register --username="${RHSM_USER}" --password="${RHSM_PASS}" --force
+  FOUND=true
+fi
+
+if [[ ${FOUND} == false ]]; then
+  echo "You must use subscription manager to fetch packages for redhat"
+  exit 1
+fi
+
+subscription::unregister() {
+  subscription-manager unregister
+}
+
+subscription::defer_unregister() {
+    trap subscription::unregister ABRT
+    trap subscription::unregister EXIT
+    trap subscription::unregister HUP
+    trap subscription::unregister INT
+    trap subscription::unregister TERM
+    trap subscription::unregister USR1
+    trap subscription::unregister USR2
+}
+
+subscription-manager release --set=7.9
+subscription-manager refresh
+subscription::defer_unregister
+
+# For container-selinux
+subscription-manager repos --enable=rhel-7-server-extras-rpms
+
+# We need EPEL for certain packages (e.g. python2-pip), but the epel-release package is not available,
+# therefore we install from a URL that is, in theory, equivalent.
+yum -y install createrepo gettext yum-utils https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum clean all
+TMP_DIR="$(mktemp -d repodata-XXXX)"
+cp packages.txt "${TMP_DIR}"
+pushd "${TMP_DIR}"
+#shellcheck disable=SC2046
+repoquery  --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
+#shellcheck disable=SC2046
+yumdownloader  --resolve --archlist=x86_64,noarch -x \*i686 $(< packages.txt)
+rm packages.txt
+curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
+createrepo -v .
+chown -R 1000:1000 repodata/
+#shellcheck disable=SC1083,SC2035
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_7.9_x86_64{{ .FipsSuffix }}.tar.gz *
+#shellcheck disable=SC1083
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_7.9_x86_64{{ .FipsSuffix }}.tar.gz
+popd
+rm -rf "${TMP_DIR}"
