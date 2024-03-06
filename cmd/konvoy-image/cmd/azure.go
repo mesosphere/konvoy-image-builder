@@ -23,7 +23,7 @@ func NewAzureBuildCmd() *cobra.Command {
 		Short:   "build and provision azure images",
 		Example: azureExample,
 		Args:    cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runBuild(args[0], flags)
 		},
 	}
@@ -39,7 +39,7 @@ func NewAzureGenerateCmd() *cobra.Command {
 		Short:   "generate files relating to building azure images",
 		Example: azureExample,
 		Args:    cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runGenerate(args[0], flags)
 		},
 	}

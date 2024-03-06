@@ -27,7 +27,7 @@ func NewGCPBuildCmd() *cobra.Command {
 		Short:   "build and provision gcp images",
 		Example: gcpExample,
 		Args:    cobra.ExactArgs(1),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(_ *cobra.Command, _ []string) error {
 			filePath, found := os.LookupEnv(envGCPApplicationCredentials)
 			if !found {
 				return fmt.Errorf("envornment variable %s is not set", envGCPApplicationCredentials)
@@ -42,7 +42,7 @@ func NewGCPBuildCmd() *cobra.Command {
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runBuild(args[0], flags)
 		},
 	}

@@ -415,7 +415,8 @@ func (r *Runner) maskSSHConfig() error {
 	if runtime.GOOS == windows {
 		return nil
 	}
-	_, err := os.Stat(r.usr.HomeDir + "/.ssh/config")
+	sshConfig := "/.ssh/config"
+	_, err := os.Stat(r.usr.HomeDir + sshConfig)
 	if err != nil {
 		if os.IsNotExist(err) {
 			// ignore if the ~/.ssh/config file is not found
@@ -435,7 +436,7 @@ func (r *Runner) maskSSHConfig() error {
 		return ferr
 	}
 
-	r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+"/.ssh/config")
+	r.addBindVolume(r.tempDir+"/ssh_config", r.usr.HomeDir+sshConfig)
 
 	return nil
 }
@@ -471,7 +472,17 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get wd %w", err)
 	}
+	err = r.setVSphereEnv()
+	if err != nil {
+		return fmt.Errorf("failed to set vshpere env %w", err)
+	}
 	r.addBindVolume(r.workingDir, containerWorkingDir)
+	if len(args) > 0 && args[0] == createPackageBundleCmd {
+		// The create-package-bundle command must be implemented in konvoy-image-wrapper,
+		// and if it runs, we must not call konvoy-image, so we return immediately.
+		return r.CreatePackageBundle(args[1:])
+	}
+	// Below here, we end up running commands implemented in konvoy-image.
 
 	// Create a temporary dir to hold some files that need to be mounted to the container,
 	// eg. /etc/passwd, /etc/group, etc.
@@ -509,10 +520,6 @@ func (r *Runner) Run(args []string) error {
 		return fmt.Errorf("failed to set aws env %w", err)
 	}
 	r.setAzureEnv()
-	err = r.setVSphereEnv()
-	if err != nil {
-		return fmt.Errorf("failed to set vshpere env %w", err)
-	}
 	err = r.setGCPEnv()
 	if err != nil {
 		return fmt.Errorf("failed to set gcp env %w", err)

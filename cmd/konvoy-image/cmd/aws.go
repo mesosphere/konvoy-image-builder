@@ -21,7 +21,7 @@ func NewAWSBuildCmd() *cobra.Command {
 		Short:   "build and provision aws images",
 		Example: awsExample,
 		Args:    cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runBuild(args[0], flags)
 		},
 	}
@@ -37,7 +37,7 @@ func NewAWSGenerateCmd() *cobra.Command {
 		Short:   "generate files relating to building aws images",
 		Example: awsExample,
 		Args:    cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			runGenerate(args[0], flags)
 		},
 	}

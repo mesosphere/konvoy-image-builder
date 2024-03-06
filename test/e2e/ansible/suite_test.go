@@ -1,5 +1,6 @@
 package ansible
 
+//nolint:revive // dot imports ok in test
 import (
 	"testing"
 

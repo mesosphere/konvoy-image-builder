@@ -1,5 +1,6 @@
 package cmd
 
+//nolint:revive // dot imports ok in test
 import (
 	"os"
 	"testing"
