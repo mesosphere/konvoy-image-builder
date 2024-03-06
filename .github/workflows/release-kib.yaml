@@ -89,12 +89,3 @@ jobs:
           commit-message: "$pr_type: bump kib to ${{ GITHUB_REF_NAME }}"
           path: cluster-api-provider-preprovisioned
           title: "$pr_type: bump kib to ${{ GITHUB_REF_NAME }}"
-
-  sign-binary:
-    runs-on: macos-latest
-    needs: release-please
-    env:
-      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
-    steps:
-      - if: ${{ needs.release-please.outputs.release_created }}
-        name: Fetch current main directory
