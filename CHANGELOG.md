@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.3...v2.9.4) (2024-03-07)
+
+
+### Bug Fixes
+
+* goreleaser ([#1036](https://github.com/mesosphere/konvoy-image-builder/issues/1036)) ([a2d8350](https://github.com/mesosphere/konvoy-image-builder/commit/a2d83509cb5c714222fe44226b12df843541487f))
+
 ## [2.9.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.2...v2.9.3) (2024-03-07)
 
 
