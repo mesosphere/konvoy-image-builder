@@ -73,7 +73,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
 
       # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#environment-files
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+          path: kib
+
       - name: Get bump pr type
+        working-directoy: kib
         run: |
           make install-semver
           export SEMVER_CLI_BIN=.local/semver-cli/semver
