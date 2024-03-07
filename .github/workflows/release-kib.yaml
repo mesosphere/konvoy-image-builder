@@ -77,7 +77,7 @@ jobs:
         run: |
           make install-semver
           export SEMVER_CLI_BIN=.local/semver-cli/semver
-          PR_TYPE=$(hack/version-diff.sh --version-latest ${{ GITHUB_REF_NAME }} --version-previous $PREV_VERSION)
+          PR_TYPE=$(hack/version-diff.sh --version-latest ${{ github.ref_name }} --version-previous $PREV_VERSION)
           echo "pr_type=$PR_TYPE" >> "$GITHUB_ENV"
 
       - name: Create Pull Request for KIB bump in CAPPP
@@ -86,6 +86,6 @@ jobs:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
           body: bumps KIB to latest version
-          commit-message: "$pr_type: bump kib to ${{ GITHUB_REF_NAME }}"
+          commit-message: "$pr_type: bump kib to ${{ github.ref_name }}"
           path: cluster-api-provider-preprovisioned
-          title: "$pr_type: bump kib to ${{ GITHUB_REF_NAME }}"
+          title: "${{ env.pr_type }}: bump kib to ${{ github.ref_name }}"
