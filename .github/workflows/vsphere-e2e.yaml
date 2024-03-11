@@ -95,7 +95,9 @@ jobs:
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
           VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
           VSPHERE_DATACENTER: ${{ secrets.VSPHERE_DATACENTER }}
-        
+          RHSM_USER: ${{ secrets.RHSM_USER }}
+          RHSM_PASS: ${{ secrets.RHSM_PASS }}
+
       - name: Run make destroy to clean up failed tests
         if: ${{ always() }}
         run: make infra.vsphere.destroy || true
