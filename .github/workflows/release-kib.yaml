@@ -80,7 +80,7 @@ jobs:
           path: kib
 
       - name: Get bump pr type
-        working-directoy: kib
+        working-directory: kib
         run: |
           make install-semver
           export SEMVER_CLI_BIN=.local/semver-cli/semver
