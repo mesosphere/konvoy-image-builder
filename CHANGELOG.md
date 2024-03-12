@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.4...v2.9.5) (2024-03-12)
+
+
+### Bug Fixes
+
+* include python-unversioned-command package for Rocky ([53f56ec](https://github.com/mesosphere/konvoy-image-builder/commit/53f56ecc9ec514323e1cf30339c4c697bdc7006c))
+* include python2-pip package for RHEL ([20b2a94](https://github.com/mesosphere/konvoy-image-builder/commit/20b2a9442a5d933195b2cbfe8ec936ea0c8b717d))
+
 ## [2.9.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.3...v2.9.4) (2024-03-07)
 
 
