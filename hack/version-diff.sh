@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+set -e
 
 # According to:
 # https://github.com/cli/cli/blob/235fdcdcc4c3df76adb4a84ecb0ba1ad470fbf5b/pkg/cmd/release/list/http.go#L32
@@ -17,8 +19,9 @@ while [ "$1" != "" ]; do
   shift
 done
 
-if [[ -z $version_latest  || -z $version_previous ]]; then
-  read -r version_latest version_previous <<< "$(${GITHUB_CLI_BIN} release list -L 2 | awk '{print $1}' | xargs)"
+if [[ -z "${version_latest}"  || -z "${version_previous}" ]]; then
+  printf "both version_latest and version_previous must be set"
+  exit 1
 fi
 
 DIFF="$(${SEMVER_CLI_BIN} diff "${version_latest}" "${version_previous}")"
