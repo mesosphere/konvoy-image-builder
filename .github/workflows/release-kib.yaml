@@ -64,6 +64,7 @@ jobs:
       - name: Get KIB Version
         run: |
           PREV_VERSION=$(make --silent get-kib-version)
+          echo "prev_version=$PREV_VERSION" >> "$GITHUB_ENV"
         working-directory: cluster-api-provider-preprovisioned
 
       - name: Update Konvoy-image-builder version in mesosphere/cluster-api-provider-preprovisioned repository
@@ -84,7 +85,7 @@ jobs:
         run: |
           make install-semver
           export SEMVER_CLI_BIN=.local/semver-cli/semver
-          PR_TYPE=$(hack/version-diff.sh --version-latest ${{ github.ref_name }} --version-previous $PREV_VERSION)
+          PR_TYPE=$(hack/version-diff.sh --version-latest ${{ github.ref_name }} --version-previous ${{ env.prev_version }})
           echo "pr_type=$PR_TYPE" >> "$GITHUB_ENV"
 
       - name: Create Pull Request for KIB bump in CAPPP
@@ -93,6 +94,6 @@ jobs:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
           body: bumps KIB to latest version
-          commit-message: "$pr_type: bump kib to ${{ github.ref_name }}"
+          commit-message: "${{ env.pr_type }}: bump kib to ${{ github.ref_name }}"
           path: cluster-api-provider-preprovisioned
           title: "${{ env.pr_type }}: bump kib to ${{ github.ref_name }}"
