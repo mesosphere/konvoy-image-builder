@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.7](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.6...v2.9.7) (2024-03-14)
+
+
+### Bug Fixes
+
+* adds an ubuntu release for kommander tests ([#1047](https://github.com/mesosphere/konvoy-image-builder/issues/1047)) ([09499d2](https://github.com/mesosphere/konvoy-image-builder/commit/09499d2dbff96a1b9387a10d2a7b21f85f602bfe))
+* attempts to fix the bump again ([#1048](https://github.com/mesosphere/konvoy-image-builder/issues/1048)) ([8d9fbe4](https://github.com/mesosphere/konvoy-image-builder/commit/8d9fbe42c838cc0f1a51df8435a3f696294df9bf))
+
 ## [2.9.6](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.5...v2.9.6) (2024-03-12)
 
 
