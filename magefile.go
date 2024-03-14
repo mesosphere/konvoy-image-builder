@@ -160,6 +160,9 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	args = append(args, buildPath)
 	// skip creating image
 	if dryRun {
+		overrideFlagForCmd = append(
+			overrideFlagForCmd,
+			fmt.Sprintf("--overrides=%s/%s", overrideDirName, "runtags.yaml"))
 		args = append(args, dryRunFlag)
 	} else {
 		releaseOverrideFile, err := getReleaseOverride(buildConfig)
