@@ -5,7 +5,7 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 #
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
-kubernetes_version: "1.28.7"
+kubernetes_version: "1.29.4"
 kubernetes_major_minor: "{{ (kubernetes_version.split('.') | map('trim'))[:2] | join('.') }}"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
@@ -21,7 +21,7 @@ crictl_version: "{{ kubernetes_major_minor }}.0"
 # The url points to the linux/amd64 release artifact.
 crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
 # The sha256 sum verifies the integrity of the release artifact.
-crictl_sha256: 8dc78774f7cbeaf787994d386eec663f0a3cf24de1ea4893598096cb39ef2508
+crictl_sha256: d16a1ffb3938f5a19d5c8f45d363bd091ef89c0bc4d44ad16b933eede32fdcbb
 
 
 # The critools deb and rpm package versions. While the version derives directly from
@@ -46,7 +46,7 @@ package_versions:
   enable_repository_installation: "{{ (spec.osPackages.enableAdditionalRepositories if spec.osPackages is defined else true)|default(true)|bool }}"
   # the version may contain d2iq specific suffix, remove it when downloading packages
   kubernetes_rpm: "{{ kubernetes_version }}-0"
-  kubernetes_deb: "{{ kubernetes_version }}-1.1"
+  kubernetes_deb: "{{ kubernetes_version }}-2.1"
   kubenode: "{{ kubernetes_version }}"
 
 # variable used for seeding images

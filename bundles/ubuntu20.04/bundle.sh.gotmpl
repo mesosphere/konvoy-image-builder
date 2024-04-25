@@ -4,7 +4,8 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update && apt-get install -y --no-install-recommends \
 apt-transport-https software-properties-common dpkg-dev curl gpg
 
-DEB_PATCH_VERSION="1.1"
+KUBERNETES_DEB_BUILD_VERSION="2.1"
+CRI_TOOLS_DEB_BUILD_VERSION="1.1"
 
 # Install dependencies.
 mkdir -p /etc/apt/keyrings
@@ -16,10 +17,10 @@ apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-br
 
 # The list returned by apt-cache depends does not contain the versions
 # Append the bare Kubernetes packages with the provided versions
-sed -i 's/kubelet/kubelet='"{{ .KubernetesVersion }}-${DEB_PATCH_VERSION}"'/' /tmp/packages
-sed -i 's/kubectl/kubectl='"{{ .KubernetesVersion }}-${DEB_PATCH_VERSION}"'/' /tmp/packages
-sed -i 's/kubeadm/kubeadm='"{{ .KubernetesVersion }}-${DEB_PATCH_VERSION}"'/' /tmp/packages
-sed -i 's/cri-tools/cri-tools='"{{ .CRIToolsVersion }}-${DEB_PATCH_VERSION}"'/' /tmp/packages
+sed -i 's/kubelet/kubelet='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
+sed -i 's/kubectl/kubectl='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
+sed -i 's/kubeadm/kubeadm='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
+sed -i 's/cri-tools/cri-tools='"{{ .CRIToolsVersion }}-${CRI_TOOLS_DEB_BUILD_VERSION}"'/' /tmp/packages
 # https://github.com/kubernetes-sigs/cluster-api-provider-aws/issues/4745 pins version for CAPA
 sed -i 's/cloud-init/cloud-init='"23.1.2-0ubuntu0~20.04.2"'/' /tmp/packages
 
