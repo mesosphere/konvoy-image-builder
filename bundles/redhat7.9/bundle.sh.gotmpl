@@ -61,10 +61,12 @@ TMP_DIR="$(mktemp -d repodata-XXXX)"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046
-repoquery  --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
+repoquery --archlist=x86_64,noarch --resolve --requires --recursive $(< packages.txt )  | grep -v *.i686  >> reqs.txt
+sed -i 1d reqs.txt # we need to get rid of the first line
+cat packages.txt >> reqs.txt
 #shellcheck disable=SC2046
-yumdownloader  --resolve --archlist=x86_64,noarch -x \*i686 $(< packages.txt)
-rm packages.txt
+yumdownloader --setopt=skip_missing_names_on_install=False --resolve -x \*i686 --archlist=x86_64,noarch $(< reqs.txt)
+rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
 chown -R 1000:1000 repodata/
