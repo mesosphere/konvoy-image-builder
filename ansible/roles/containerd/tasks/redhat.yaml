@@ -39,20 +39,6 @@
   when:
     - ansible_distribution == 'OracleLinux'
 
-# only required for RHEL when not installing from a local file
-- name: install container-selinux GPG key
-  rpm_key:
-    state: present
-    key: "{{ docker_rpm_container_selinux_gpg_key_url }}"
-  register: result
-  until: result is success
-  retries: 5
-  delay: 6
-  when:
-    - ansible_distribution == 'RedHat'
-    - ansible_distribution_major_version|int == 7
-    - not offline_mode_enabled
-
 - name: install container-selinux rpm package
   yum:
     name: "{{

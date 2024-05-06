@@ -58,15 +58,6 @@
     packages: "cloud-init cloud-utils python3-netifaces"
   when: ansible_os_family == "VMware Photon OS"
 
-# pip on CentOS needs to be upgraded, but since it's still
-# Python 2.7, need < 21.0
-- name: Upgrade pip
-  pip:
-    name: pip<21.0
-    extra_args: "{{ '--no-index --find-links=' + pip_packages_remote_filesystem_repo_path if offline_mode_enabled }}"
-    state: forcereinstall
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
-
 - name: Copy vmware guestinfo datasource
   copy:
     src: "{{ item }}"
