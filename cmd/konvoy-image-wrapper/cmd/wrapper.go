@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	envAWSConfigFile      = "AWS_CONFIG_FILE"             //nolint:gosec // environment var set by user
 	envAWSCredentialsFile = "AWS_SHARED_CREDENTIALS_FILE" //nolint:gosec // environment var set by user
 
 	envAWSDefaultRegion = "AWS_DEFAULT_REGION"
@@ -171,6 +172,7 @@ func (r *Runner) setAWSEnv() error {
 		}
 	}
 
+	// mount the aws credentials file
 	_, found := os.LookupEnv(envAWSCredentialsFile)
 	if !found {
 		// fall-back to default location for aws credentials file
@@ -178,6 +180,17 @@ func (r *Runner) setAWSEnv() error {
 	}
 	if err := r.mountFileEnv(envAWSCredentialsFile, filepath.Join(r.homeDir, ".aws", "credentials")); err != nil {
 		return fmt.Errorf("unable to mount AWS credenttials file: %w", err)
+	}
+
+	// mount the aws config file
+	_, found = os.LookupEnv(envAWSConfigFile)
+	if !found {
+		// fall-back to default location for aws config file
+		os.Setenv(envAWSConfigFile, filepath.Join(r.usr.HomeDir, ".aws", "config"))
+	}
+
+	if err := r.mountFileEnv(envAWSConfigFile, filepath.Join(r.homeDir, ".aws", "config")); err != nil {
+		return fmt.Errorf("unable to mount AWS config file: %w", err)
 	}
 
 	if err := r.mountFileEnv(envAWSCABundle, ""); err != nil {
