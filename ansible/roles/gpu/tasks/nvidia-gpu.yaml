@@ -48,6 +48,54 @@
     path: "{{ nvidia_remote_bundle_path }}"
     state: directory
 
+- name: find nvidia driver installer file
+  find:
+    paths: "{{ nvidia_remote_bundle_path }}"
+    patterns: "NVIDIA-Linux-x86_64-*.run"
+  register: nvidia_driver_files
+
+
+- name: extract version from file names
+  set_fact:
+    nvidia_driver_versions: "{{ nvidia_driver_files.files | map(attribute='path') | map('regex_replace', '^.*NVIDIA-Linux-x86_64-(\\d+\\.\\d+\\.\\d+)\\.run$', '\\1') | list }}"
+    uninstall_list: []
+
+- name: compare versions with nvidia_driver_version
+  loop: "{{ nvidia_driver_versions }}"
+  when: item is version( nvidia_driver_version , '<')
+  set_fact:
+    uninstall_list: "{{ uninstall_list + [item] }}"
+
+- name: uninstall and stop programs using older nvidia drivers
+  block:
+  - name: uninstall older versions
+    shell: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ item }}.run --uninstall -s"
+    args:
+      chdir: "{{ nvidia_remote_bundle_path }}"
+    become: yes
+    loop: "{{ uninstall_list }}"
+
+  # this is to make installing new drivers easier. older kernels don't support unloading modules in use
+  - name: stop persistenced service before installing the new drivers
+    ansible.builtin.systemd:
+      daemon_reload: yes
+      name: nvidia-persistenced
+      state: stopped
+    become: yes
+
+  - name: remove older nvidia driver directory
+    file:
+      path: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ item }}"
+      state: absent
+    loop: "{{ uninstall_list }}"
+
+  - name: remove older runfile
+    file:
+      path: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ item }}.run"
+      state: absent
+    loop: "{{ uninstall_list }}"
+  when: uninstall_list | length > 0
+
 - name: download gpu runfile
   get_url:
     url: "{{ nvidia_runfile_installer_url }}"
