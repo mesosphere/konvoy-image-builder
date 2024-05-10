@@ -21,7 +21,14 @@ linters-settings:
     lines: 100
     statements: 50
   gci:
-    local-prefixes: github.com/mesosphere/konvoy-image-builder
+    sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - prefix(github.com/mesosphere/konvoy-image-builder) # Custom section: groups all imports with the specified Prefix.
+      - blank # Blank section: contains all blank imports. This section is not present unless explicitly enabled.
+      - dot # Dot section: contains all dot imports. This section is not present unless explicitly enabled.
+      - alias # Alias section: contains all alias imports. This section is not present unless explicitly enabled.
+      - localmodule # Local module section: contains all local packages. This section is not present unless explicitly enabled.
   goconst:
     min-len: 2
     min-occurrences: 2
@@ -34,16 +41,12 @@ linters-settings:
       - style
   gocyclo:
     min-complexity: 15
-  gomnd:
-    settings:
-      mnd:
-        # don't include "argument", "operation", and "assign"
-        checks:
-          - case
-          - condition
-          - return
+  mnd:
+    checks:
+    - case
+    - condition
+    - return
   govet:
-    check-shadowing: true
     enable-all: true
     disable:
       - fieldalignment
@@ -82,7 +85,6 @@ linters:
     - gofmt
     - gofumpt
     - goimports
-    - gomnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -91,6 +93,7 @@ linters:
     - lll
     - makezero
     - misspell
+    - mnd
     - nakedret
     - nestif
     - noctx

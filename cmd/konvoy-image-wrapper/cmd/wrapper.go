@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	envAWSConfigFile      = "AWS_CONFIG_FILE"             //nolint:gosec // environment var set by user
+	envAWSConfigFile      = "AWS_CONFIG_FILE"
 	envAWSCredentialsFile = "AWS_SHARED_CREDENTIALS_FILE" //nolint:gosec // environment var set by user
 
 	envAWSDefaultRegion = "AWS_DEFAULT_REGION"
