@@ -49,7 +49,7 @@ func addExtraVarsToMap(extraVars []string, m map[string]interface{}) error {
 	extraVarSet := make(map[string]interface{})
 	for _, extraVars := range extraVars {
 		set := strings.Split(extraVars, "=")
-		//nolint:gomnd // the code is splitting on the equal
+		//nolint:mnd // the code is splitting on the equal
 		if len(set) == 2 {
 			k := set[0]
 			v := set[1]
