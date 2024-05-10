@@ -16,8 +16,9 @@ import (
 	"text/template"
 
 	"github.com/blang/semver"
-	terminal "golang.org/x/term"
 	"gopkg.in/yaml.v2"
+
+	terminal "golang.org/x/term"
 )
 
 const (
