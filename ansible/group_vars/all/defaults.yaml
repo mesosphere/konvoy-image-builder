@@ -4,6 +4,7 @@ python_path: ""
 # This is also in images/common.yaml as that's where the go code expects it to be.
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 kubernetes_version: "1.24.6"
+kubernetes_major_minor: "{{ (kubernetes_version.split('.') | map('trim'))[:2] | join('.') }}"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
 containerd_version: "1.4.13"
@@ -21,7 +22,7 @@ nvidia_cuda_version: ""
 # The initial revision is 00.
 # kubeadm 1.24.6 was released after https://github.com/kubernetes/release/commit/5e6ea972a71975172f1bb91cdec40bd48b2801dc
 # merged, and it therefore requires cri-tools >= 1.25.0. However, cri-tools 1.26.0 is incompatible with containerd 1.4.13.
-critools_version_deb: "1.25.0-00"
+critools_version_deb: "1.25.0-1.1"
 # DKP publishes its own RPM packages, which include cri-tools, so KIB
 # cannot select a different version.
 # critools_version_rpm: n/a
@@ -42,7 +43,7 @@ package_versions:
   enable_repository_installation: "{{ (spec.osPackages.enableAdditionalRepositories if spec.osPackages is defined else true)|default(true)|bool }}"
   # the version may contain d2iq specific suffix, remove it when downloading packages
   kubernetes_rpm: "{{ kubernetes_version }}-0"
-  kubernetes_deb: "{{ kubernetes_version }}-00"
+  kubernetes_deb: "{{ kubernetes_version }}-1.1"
   kubenode: "{{ kubernetes_version }}"
 
 # variable used for seeding images
