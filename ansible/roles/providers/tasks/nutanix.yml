@@ -1,0 +1,12 @@
+---
+- ansible.builtin.include_tasks: nutanix-redhat.yml
+  when: ansible_os_family == "RedHat"
+
+- ansible.builtin.include_tasks: nutanix-ubuntu.yml
+  when: ansible_os_family == "Debian"
+
+- name: Ensure ip_vs module is loaded
+  ansible.builtin.lineinfile:
+    path: /etc/modules-load.d/kubernetes.conf
+    create: true
+    line: ip_vs
