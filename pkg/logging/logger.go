@@ -3,8 +3,9 @@ package logging
 import (
 	"errors"
 
-	logrustooling "github.com/onrik/logrus/filename"
 	"github.com/sirupsen/logrus"
+
+	logrustooling "github.com/onrik/logrus/filename"
 )
 
 // Logger is the custom global logger object.

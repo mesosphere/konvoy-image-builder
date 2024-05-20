@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
 	flag "github.com/spf13/pflag"
 
 	"github.com/mesosphere/konvoy-image-builder/pkg/app"
