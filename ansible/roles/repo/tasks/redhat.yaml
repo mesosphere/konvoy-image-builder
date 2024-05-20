@@ -119,3 +119,7 @@
   until: konvoy_repo_installation_rpm is success
   retries: 5
   delay: 6
+
+- name: clean yum caches
+  shell: yum clean all
+  when: ansible_distribution_major_version == '7'
