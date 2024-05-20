@@ -122,3 +122,4 @@
 
 - name: clean yum caches
   shell: yum clean all
+  when: ansible_distribution_major_version == '7'
