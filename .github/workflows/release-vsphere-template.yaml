@@ -13,8 +13,6 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - os: "redhat 8.4"
-            buildConfig: "offline"
           - os: "redhat 8.6"
             buildConfig: "offline"
           - os: "redhat 8.8"
@@ -27,7 +25,7 @@ jobs:
             buildConfig: "offline"
           - os: "flatcar"
             buildConfig: "basic"
-    runs-on: 
+    runs-on:
     - self-hosted
     - small
     continue-on-error: false

@@ -17,20 +17,8 @@ jobs:
       max-parallel: 10
       matrix:
         include:
-          - os: "centos 7.9"
-            buildConfig: "offline"
-          - os: "centos 7.9"
-            buildConfig: "offline-fips"
           - os: "oracle 7.9"
             buildConfig: "fips"
-          - os: "redhat 7.9"
-            buildConfig: "offline"
-          - os: "redhat 7.9"
-            buildConfig: "offline-fips"
-          - os: "redhat 8.4"
-            buildConfig: "offline"
-          - os: "redhat 8.4"
-            buildConfig: "offline-fips"
           - os: "redhat 8.6"
             buildConfig: "offline"
           - os: "redhat 8.6"
@@ -52,7 +40,7 @@ jobs:
           - os: "flatcar"
             buildConfig: "basic"
 
-    runs-on: 
+    runs-on:
     - self-hosted
     - small
     continue-on-error: false

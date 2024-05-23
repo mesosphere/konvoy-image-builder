@@ -15,45 +15,6 @@ jobs:
       max-parallel: 30
       matrix:
         include:
-          # CentoOS 7.9
-          - os: "centos 7.9"
-            buildConfig: "basic"
-          - os: "centos 7.9"
-            buildConfig: "fips"
-          - os: "centos 7.9"
-            buildConfig: "nvidia"
-          - os: "centos 7.9"
-            buildConfig: "offline"
-          - os: "centos 7.9"
-            buildConfig: "offline-fips"
-          - os: "centos 7.9"
-            buildConfig: "offline-nvidia"
-          # RHEL 7.9
-          - os: "redhat 7.9"
-            buildConfig: "basic"
-          - os: "redhat 7.9"
-            buildConfig: "fips"
-          - os: "redhat 7.9"
-            buildConfig: "nvidia"
-          - os: "redhat 7.9"
-            buildConfig: "offline"
-          - os: "redhat 7.9"
-            buildConfig: "offline-fips"
-          - os: "redhat 7.9"
-            buildConfig: "offline-nvidia"
-          # RHEL 8.4
-          - os: "redhat 8.4"
-            buildConfig: "basic"
-          - os: "redhat 8.4"
-            buildConfig: "fips"
-          - os: "redhat 8.4"
-            buildConfig: "nvidia"
-          - os: "redhat 8.4"
-            buildConfig: "offline"
-          - os: "redhat 8.4"
-            buildConfig: "offline-fips"
-          - os: "redhat 8.4"
-            buildConfig: "offline-nvidia"
           # RHEL 8.6
           - os: "redhat 8.6"
             buildConfig: "basic"
@@ -112,7 +73,7 @@ jobs:
             buildConfig: "basic"
           - os: "rocky 9.1"
             buildConfig: "offline"
-    runs-on: 
+    runs-on:
     - self-hosted
     - small
     continue-on-error: false

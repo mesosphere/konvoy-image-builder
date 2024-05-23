@@ -17,10 +17,9 @@ jobs:
         os:
         - "ubuntu 20.04"
         - "ubuntu 18.04"
-        - "centos 7.9"
         buildConfig:
         - "basic"
-    runs-on: 
+    runs-on:
     - self-hosted
     - small
     continue-on-error: false
