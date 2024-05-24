@@ -31,7 +31,7 @@ jobs:
           buildConfig: "basic"
     runs-on:
     - self-hosted
-    - small
+    - medium
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4

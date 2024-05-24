@@ -75,7 +75,7 @@ jobs:
             buildConfig: "offline"
     runs-on:
     - self-hosted
-    - small
+    - medium
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
