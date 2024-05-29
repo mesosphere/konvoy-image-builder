@@ -43,9 +43,6 @@ var (
 	rhck          = "rhck"
 
 	validOS = []string{
-		"centos 7.9",
-		"redhat 7.9",
-		"redhat 8.4",
 		"redhat 8.6",
 		"redhat 8.8",
 		"sles 15",
