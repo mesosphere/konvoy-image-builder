@@ -32,18 +32,6 @@ type OSConfig struct {
 }
 
 var osToConfig = map[string]OSConfig{
-	"centos-7.9": {
-		configDir:      "bundles/centos7.9",
-		containerImage: "docker.io/mesosphere/centos:7.9.2009.minimal",
-	},
-	"redhat-7.9": {
-		configDir:      "bundles/redhat7.9",
-		containerImage: "registry.access.redhat.com/ubi7/ubi:7.9",
-	},
-	"redhat-8.4": {
-		configDir:      "bundles/redhat8.4",
-		containerImage: "registry.access.redhat.com/ubi8/ubi:8.4",
-	},
 	"redhat-8.6": {
 		configDir:      "bundles/redhat8.6",
 		containerImage: "registry.access.redhat.com/ubi8/ubi:8.6",
