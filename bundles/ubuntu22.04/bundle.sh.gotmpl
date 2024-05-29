@@ -1,0 +1,39 @@
+#!/bin/bash
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+apt-get update && apt-get install -y --no-install-recommends \
+apt-transport-https software-properties-common dpkg-dev curl gpg
+
+KUBERNETES_DEB_BUILD_VERSION="1.1"
+CRI_TOOLS_DEB_BUILD_VERSION="1.1"
+
+# Install dependencies.
+mkdir -p /etc/apt/keyrings
+curl -fsSL "https://pkgs.k8s.io/core:/stable:/{{ .KubernetesMajorMinorVersion }}/deb/Release.key" | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ .KubernetesMajorMinorVersion }}/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
+apt-get update
+#shellcheck disable=SC2046
+apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $(< packages.txt) | grep "^\w" > /tmp/packages
+
+# The list returned by apt-cache depends does not contain the versions
+# Append the bare Kubernetes packages with the provided versions
+sed -i 's/kubelet/kubelet='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
+sed -i 's/kubectl/kubectl='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
+sed -i 's/kubeadm/kubeadm='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
+sed -i 's/cri-tools/cri-tools='"{{ .CRIToolsVersion }}-${CRI_TOOLS_DEB_BUILD_VERSION}"'/' /tmp/packages
+# https://github.com/kubernetes-sigs/cluster-api-provider-aws/issues/4745 pins version for CAPA
+# (TODO) we currently do not suport ubuntu-22.04 on AWS. following hack needed for aws provider only.
+# enable it back if https://github.com/kubernetes-sigs/cluster-api-provider-aws/issues/4745 by the time we support AWS
+#sed -i 's/cloud-init/cloud-init='"23.1.2-0ubuntu0~20.04.2"'/' /tmp/packages
+
+TMP_DIR="$(mktemp -d repodata-XXXX)"
+pushd "${TMP_DIR}"
+#shellcheck disable=SC2046
+apt-get download $(< /tmp/packages)
+dpkg-scanpackages -m . | gzip > Packages.gz
+#shellcheck disable=SC1083,SC2035
+tar -czf  {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_22.04_x86_64.tar.gz *
+#shellcheck disable=SC1083
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_ubuntu_22.04_x86_64.tar.gz
+popd
+rm -rf "${TMP_DIR}"
