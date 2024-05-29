@@ -62,3 +62,5 @@
     name: hv-kvp-daemon
     state: stopped
     enabled: false
+  when: ('hv-kvp-daemon.service' in ansible_facts.services) and (ansible_os_family == "Debian")
+
