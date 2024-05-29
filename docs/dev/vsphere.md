@@ -26,9 +26,18 @@ VSPHERE_PASSWORD=example_password
 
 **Environment Variables for RedHat subscription:**
 
+For username and password:
+
 ```bash
 RHSM_USER=example_user
 RHSM_PASS=example_password
+```
+
+Or activation key and org ID:
+
+```bash
+RHSM_ACTIVATION_KEY=example_key
+RHSM_ORG_ID=example_org_id
 ```
 
 **Packer variables for vSphere:**
