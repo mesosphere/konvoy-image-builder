@@ -10,3 +10,4 @@
     path: /etc/modules-load.d/kubernetes.conf
     create: true
     line: ip_vs
+
