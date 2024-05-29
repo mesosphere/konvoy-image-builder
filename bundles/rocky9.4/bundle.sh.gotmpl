@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+
+# When yum operates on multiple packages, it does not, by default, return an error if a subset
+# of packages is not found. This makes yum return an error.
+echo skip_missing_names_on_install=False >> /etc/yum.conf
+
+yum -y install epel-release gettext yum-utils createrepo dnf-utils
+yum clean all
+TMP_DIR="$(mktemp -d repodata-XXXX)"
+cp packages.txt "${TMP_DIR}"
+pushd "${TMP_DIR}"
+#shellcheck disable=SC2046
+repoquery --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
+#shellcheck disable=SC2046
+yumdownloader  --archlist=x86_64,noarch -x \*i686 $(< packages.txt)
+rm packages.txt
+curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
+createrepo -v . && chown -R 1000:1000 repodata/
+#shellcheck disable=SC1083,SC2035
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.4_x86_64.tar.gz *
+#shellcheck disable=SC1083
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.4_x86_64.tar.gz
+popd
+rm -rf "${TMP_DIR}"
