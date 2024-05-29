@@ -83,8 +83,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
           VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
-          RHSM_USER: ${{ secrets.RHSM_USER }}
-          RHSM_PASS: ${{ secrets.RHSM_PASS }}
+          RHSM_ACTIVATION_KEY: ${{ secrets.RHSM_ACTIVATION_KEY }}
+          RHSM_ORG_ID: ${{ secrets.RHSM_ORG_ID }}
 
       - name: Run make destroy to clean up failed tests
         if: ${{ always() }}
