@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.10.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.6...v2.10.0) (2024-05-30)
+
+
+### Features
+
+* bumps nvidia driver to new LTSB ([#1073](https://github.com/mesosphere/konvoy-image-builder/issues/1073)) ([0347b82](https://github.com/mesosphere/konvoy-image-builder/commit/0347b82c52a4afc78631989c1f6f643b3760c28e))
+* removes rhel 7.9 rhel 8.4 and centos 7.9 ([#1072](https://github.com/mesosphere/konvoy-image-builder/issues/1072)) ([b633d84](https://github.com/mesosphere/konvoy-image-builder/commit/b633d84cfc97fb898c8b390cc7c6701fed5399ab))
+* update Kubernetes to v1.29.4 ([#1067](https://github.com/mesosphere/konvoy-image-builder/issues/1067)) ([20706b8](https://github.com/mesosphere/konvoy-image-builder/commit/20706b8c045c0446c1c750696d4398cc0eec6a9f))
+* update Kubernetes to v1.29.5 ([#1089](https://github.com/mesosphere/konvoy-image-builder/issues/1089)) ([6cb5a26](https://github.com/mesosphere/konvoy-image-builder/commit/6cb5a26b4a5bd4e8306998090daed946ee04f33f))
+
+
+### Bug Fixes
+
+* add missing .aws/config file mount ([#1064](https://github.com/mesosphere/konvoy-image-builder/issues/1064)) ([efd89da](https://github.com/mesosphere/konvoy-image-builder/commit/efd89dacfc8cc1577993944ea7841ee0f7d4e980))
+* adds an ubuntu release for kommander tests ([#1047](https://github.com/mesosphere/konvoy-image-builder/issues/1047)) ([09499d2](https://github.com/mesosphere/konvoy-image-builder/commit/09499d2dbff96a1b9387a10d2a7b21f85f602bfe))
+* attempts to fix the bump again ([#1048](https://github.com/mesosphere/konvoy-image-builder/issues/1048)) ([8d9fbe4](https://github.com/mesosphere/konvoy-image-builder/commit/8d9fbe42c838cc0f1a51df8435a3f696294df9bf))
+* clean yum cache after adding repos  ([#1081](https://github.com/mesosphere/konvoy-image-builder/issues/1081)) ([ce71dd6](https://github.com/mesosphere/konvoy-image-builder/commit/ce71dd6d3ce39af8ebcc56e8720b0809e38e6dab))
+* linter workflow due to golangci-lint in CI ([#1075](https://github.com/mesosphere/konvoy-image-builder/issues/1075)) ([6318740](https://github.com/mesosphere/konvoy-image-builder/commit/6318740866d0f3a60126f79bb8ffd3d380e07737))
+* linter workflow due to golangci-lint in CI ([#1075](https://github.com/mesosphere/konvoy-image-builder/issues/1075)) ([#1086](https://github.com/mesosphere/konvoy-image-builder/issues/1086)) ([abdbb77](https://github.com/mesosphere/konvoy-image-builder/commit/abdbb77ca500506090591d6383441f086607fe5b))
+* remove building bundles for unsupported OS ([#1095](https://github.com/mesosphere/konvoy-image-builder/issues/1095)) ([75f5da7](https://github.com/mesosphere/konvoy-image-builder/commit/75f5da733f400a8253f0371900c73e0f34ee48e4))
+* remove old nvidia drivers  ([#1074](https://github.com/mesosphere/konvoy-image-builder/issues/1074)) ([8bc4b94](https://github.com/mesosphere/konvoy-image-builder/commit/8bc4b94869dd49f41b082b6b2a9d1c003eaddb17))
+
 ## [2.9.6](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.5...v2.9.6) (2024-03-12)
 
 
