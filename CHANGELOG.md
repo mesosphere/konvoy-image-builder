@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.0...v2.10.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* Enable unprivileged ports sysctl in containerd config ([#1099](https://github.com/mesosphere/konvoy-image-builder/issues/1099)) ([2d8b0d1](https://github.com/mesosphere/konvoy-image-builder/commit/2d8b0d16f6689f4f0b5e331fda27339c22337795))
+
 ## [2.10.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.9.6...v2.10.0) (2024-05-30)
 
 
