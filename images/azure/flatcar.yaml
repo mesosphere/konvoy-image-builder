@@ -1,6 +1,7 @@
 ---
-download_images: true
-
+build_name: "flatcar"
+packer_builder_type: "azure"
+python_path: ""
 # yamllint disable rule:line-length
 # NOTE(jkoelker) Flatcar/Kinvolk requires accepting the terms and conditions
 # az vm image terms show --publish kinvolk --offer flatcar-container-linux-free --plan stable-gen2
@@ -15,7 +16,3 @@ packer:
   plan_image_offer: "flatcar-container-linux-free"
   plan_image_publisher: "kinvolk"
   plan_image_sku: "stable-gen2"
-
-build_name: "flatcar"
-packer_builder_type: "azure"
-python_path: ""

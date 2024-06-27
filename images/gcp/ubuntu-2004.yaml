@@ -1,6 +1,7 @@
 ---
-download_images: true
-
+build_name: "ubuntu-2004"
+packer_builder_type: "googlecompute"
+python_path: ""
 packer:
   # The source image to use to create the new image from. source_image = `distribution`-`distribution_version-k8sversion-timestamp`
   distribution: "ubuntu"
@@ -10,7 +11,3 @@ packer:
   distribution_family: "ubuntu-2004-lts"
   # The username to connect to SSH with. Required if using SSH.
   ssh_username: "ubuntu"
-
-build_name: "ubuntu-2004"
-packer_builder_type: "googlecompute"
-python_path: ""

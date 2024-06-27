@@ -1,4 +1,4 @@
-download_images: true
+---
 build_name: "oracle-7"
 packer_builder_type: ""
 python_path: ""
