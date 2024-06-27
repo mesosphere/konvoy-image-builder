@@ -1,5 +1,7 @@
-
-
+---
+build_name: "rhel-8.8"
+packer_builder_type: "amazon"
+python_path: ""
 packer:
   ami_filter_name: "RHEL-8.8.0_HVM-*"
   ami_filter_owners: "309956199498"
@@ -10,6 +12,3 @@ packer:
   root_device_name: "/dev/sda1"
   volume_size: "15"
 
-build_name: "rhel-8.8"
-packer_builder_type: "amazon"
-python_path: ""

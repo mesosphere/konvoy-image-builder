@@ -1,5 +1,7 @@
-
-
+---
+build_name: "rocky-9.1"
+packer_builder_type: "amazon"
+python_path: ""
 packer:
   ami_filter_name: "Rocky-9-EC2-Base-9.1*x86_64*"
   ami_filter_owners: "792107900819"
@@ -9,8 +11,3 @@ packer:
   ssh_username: "rocky"
   root_device_name: "/dev/sda1"
   volume_size: "15"
-
-build_name: "rocky-9.1"
-packer_builder_type: "amazon"
-python_path: ""
-

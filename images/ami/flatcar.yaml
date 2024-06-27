@@ -1,5 +1,6 @@
-
-
+---
+build_name: "flatcar-lts-3033.3.x"
+packer_builder_type: "amazon"
 packer:
   # Selectors for source AMI:
   ami_filter_name: "Flatcar-lts-3033.3.*"
@@ -10,6 +11,3 @@ packer:
   # Other variables:
   ssh_username: "core"
   root_device_name: "/dev/xvda"
-
-build_name: "flatcar-lts-3033.3.x"
-packer_builder_type: "amazon"

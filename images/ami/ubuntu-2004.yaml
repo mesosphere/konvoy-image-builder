@@ -1,4 +1,12 @@
-
+---
+build_name: "ubuntu-20"
+packer_builder_type: "amazon"
+python_path: ""
+# The latest cloud-init version '23.3.1-0ubuntu1~20.04.1 is unable to run #boothook created by CAPA
+# https://github.com/kubernetes-sigs/cluster-api-provider-aws/blob/0bf78b04b305a77aec37a68c107102231faa7a16/pkg/cloud/services/secretsmanager/secret_fetch_script.go#L20
+# This is a workaround to downgrade to older cloud-init version.
+# TODO: remove it when base ubuntu AMI has fixed version of cloud-init available. https://d2iq.atlassian.net/browse/D2IQ-99637
+pinned_debs: ["cloud-init=23.1.2-0ubuntu0~20.04.2"]
 packer:
   ami_filter_name: "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server*"
   ami_filter_owners: "099720109477"
@@ -8,12 +16,3 @@ packer:
   ssh_username: "ubuntu"
   root_device_name: "/dev/sda1"
   volume_size: "15"
-
-build_name: "ubuntu-20"
-packer_builder_type: "amazon"
-python_path: ""
-# The latest cloud-init version '23.3.1-0ubuntu1~20.04.1 is unable to run #boothook created by CAPA
-# https://github.com/kubernetes-sigs/cluster-api-provider-aws/blob/0bf78b04b305a77aec37a68c107102231faa7a16/pkg/cloud/services/secretsmanager/secret_fetch_script.go#L20
-# This is a workaround to downgrade to older cloud-init version.
-# TODO: remove it when base ubuntu AMI has fixed version of cloud-init available. https://d2iq.atlassian.net/browse/D2IQ-99637
-pinned_debs: ["cloud-init=23.1.2-0ubuntu0~20.04.2"]
