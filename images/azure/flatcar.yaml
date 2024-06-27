@@ -1,5 +1,5 @@
 ---
-download_images: true
+
 
 # yamllint disable rule:line-length
 # NOTE(jkoelker) Flatcar/Kinvolk requires accepting the terms and conditions

@@ -1,5 +1,5 @@
 ---
-download_images: true
+
 
 packer:
   distribution: "0001-com-ubuntu-server-focal" # Offer

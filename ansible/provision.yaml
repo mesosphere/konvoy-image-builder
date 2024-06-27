@@ -37,7 +37,6 @@
     - role: networking
     - role: providers
     - role: images
-      when: download_images
     - role: sysprep
       when: sysprep # make the finalize process skipable
   environment: "{{ default_env }}"
