@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.1...v2.10.2) (2024-06-27)
+
+
+### Bug Fixes
+
+* bump Containerd patch release 1.6.33 ([#1108](https://github.com/mesosphere/konvoy-image-builder/issues/1108)) ([b5a6232](https://github.com/mesosphere/konvoy-image-builder/commit/b5a62328da470a5cdb22d75b7dc2d259e24acf25))
+* bump Kubernetes patch release 1.29.6 ([#1109](https://github.com/mesosphere/konvoy-image-builder/issues/1109)) ([79c3e41](https://github.com/mesosphere/konvoy-image-builder/commit/79c3e41c9864cb8c6618cc0ce74a32784e7d9cff))
+
 ## [2.10.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.0...v2.10.1) (2024-06-04)
 
 
