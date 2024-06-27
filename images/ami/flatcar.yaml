@@ -1,4 +1,4 @@
-download_images: true
+
 
 packer:
   # Selectors for source AMI:

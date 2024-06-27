@@ -83,7 +83,6 @@ kubernetes_bins:
 
 sysprep: true
 
-download_images: Null
 images_local_bundle_dir: ""
 images_cache: /opt/dkp/images
 # use the mindthegap in the container by default

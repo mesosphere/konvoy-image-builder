@@ -1,5 +1,5 @@
 ---
-download_images: true
+
 
 packer:
   distribution: "sles-15-sp3"   # Offer

@@ -1,4 +1,4 @@
-download_images: true
+
 
 packer:
   ami_filter_name: "OL7.9-x86_64-HVM-2023-01-05"

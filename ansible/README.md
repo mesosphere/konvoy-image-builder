@@ -30,8 +30,7 @@ Installs and configures tooling for the cloud provider being used to generate
 this image
 
 ### `images` - prepare images cache
-This role ensures images are present. First, all images in the local cache are imported. Then, every required image is checked; if it was not imported, or if it is missing one or more layers, the image is pulled from a remote registry. This role is skipped when `download_images` is false.
-If `download_images` is false, the variable `pause_image` must be set to the image tag to use as containerd's sandbox image.
+This role ensures images are present. First, all images in the local cache are imported. Then, every required image is checked; if it was not imported, or if it is missing one or more layers, the image is pulled from a remote registry.
 
 ### `sysprep` - prepare image for distribution
 truncate logs, system id, host key etc.

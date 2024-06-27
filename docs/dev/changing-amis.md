@@ -10,7 +10,6 @@ When using KIB for building machine images to Amazon, the default source AMIs th
 You can view an example of that with the provided `centos-79.yaml` snippet below:
 
 ```yaml
-download_images: true
 
 packer:
   ami_filter_name: "CentOS Linux 7"
@@ -40,7 +39,7 @@ Alternatively, if you want to add it to your yaml file, or are making your own f
 You just need to add that AMI ID into the `source_ami` in the yaml file:
 
 ```yaml
-download_images: true
+
 
 packer:
   ami_filter_name: ""

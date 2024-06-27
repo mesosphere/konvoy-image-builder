@@ -1,4 +1,4 @@
-download_images: true
+
 packer:
   ami_filter_name: "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server*"
   ami_filter_owners: "099720109477"

@@ -1,5 +1,5 @@
 ---
-download_images: true
+
 
 packer:
   # The source image to use to create the new image from. source_image = `distribution`-`distribution_version-k8sversion-timestamp`

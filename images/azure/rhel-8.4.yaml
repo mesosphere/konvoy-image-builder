@@ -1,5 +1,5 @@
 ---
-download_images: true
+
 
 packer:
   distribution: "rhel"                # Offer
