@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.2...v2.10.3) (2024-06-27)
+
+
+### Bug Fixes
+
+* always downoad kubernetes images  ([#1111](https://github.com/mesosphere/konvoy-image-builder/issues/1111)) ([c63ff7a](https://github.com/mesosphere/konvoy-image-builder/commit/c63ff7adf41acecb9ee6f31346fa2d59c2ed8141))
+
 ## [2.10.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.1...v2.10.2) (2024-06-27)
 
 
