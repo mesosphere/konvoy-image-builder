@@ -57,10 +57,12 @@
     state: stopped
     enabled: true
 
+- name: Get a list of services
+  service_facts:
+
 - name: Disable Hyper-V KVP protocol daemon
   ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
   when: ('hv-kvp-daemon.service' in ansible_facts.services) and (ansible_os_family == "Debian")
-
