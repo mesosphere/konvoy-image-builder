@@ -8,10 +8,6 @@ packer {
       version = ">= 1.1.0"
       source  = "github.com/hashicorp/ansible"
     }
-    goss = {
-      version = ">=3.1.5"
-      source = "github.com/supershal/goss"
-    }
   }
 }
 
@@ -250,52 +246,6 @@ variable "kubernetes_cni_semver" {
   default = ""
 }
 
-variable "goss_binary" {
-  type = string
-  default = "/usr/local/bin/goss-amd64"
-}
-
-variable "goss_entry_file" {
-  type    = string
-  default = null
-}
-
-variable "goss_inspect_mode" {
-  type    = bool
-  default = false
-}
-
-variable "goss_tests_dir" {
-  type    = string
-  default = null
-}
-
-variable "goss_url" {
-  type    = string
-  default = null
-}
-
-variable "goss_vars_file" {
-  type    = string
-  default = null
-}
-variable "goss_format" {
-  type    = string
-  default = null
-}
-variable "goss_format_options" {
-  type    = string
-  default = null
-}
-variable "goss_arch" {
-  type    = string
-  default = null
-}
-variable "goss_version" {
-  type    = string
-  default = null
-}
-
 variable "dry_run" {
   type    = bool
   default = false
@@ -433,50 +383,6 @@ build {
     playbook_file    = "${path.cwd}/ansible/provision.yaml"
     user             = "${var.ssh_username}"
   }
-
-  // provisioner "shell" {
-  //   inline = ["mkdir -p ${var.remote_folder}/.goss-dir"]
-  // }
-
-  // provisioner "file" {
-  //   destination = "${var.remote_folder}/.goss-dir/goss"
-  //   direction   = "upload"
-  //   max_retries = "10"
-  //   source      = var.goss_binary
-  // }
-
-
-  // provisioner "goss" {
-  //   arch           = var.goss_arch
-  //   download_path  = "${var.remote_folder}/.goss-dir/goss"
-  //   format         = var.goss_format
-  //   format_options = var.goss_format_options
-  //   goss_file      = var.goss_entry_file
-  //   inspect        = var.goss_inspect_mode
-  //   skip_install   = true
-  //   tests          = var.goss_tests_dir == null ? null : [var.goss_tests_dir]
-  //   url            = var.goss_url
-  //   use_sudo       = true
-  //   vars_env = {
-  //     HTTPS_PROXY = var.https_proxy
-  //     HTTP_PROXY  = var.http_proxy
-  //     NO_PROXY    = var.no_proxy
-  //     http_proxy  = var.http_proxy
-  //     https_proxy = var.https_proxy
-  //     no_proxy    = var.no_proxy
-  //   }
-  //   vars_file = var.goss_vars_file
-  //   vars_inline = {
-  //     ARCH     = "amd64"
-  //     OS       = lower(var.distribution)
-  //     PROVIDER = "amazon"
-  //   }
-  //   version = var.goss_version
-  // }
-
-  // provisioner "shell" {
-  //   inline = ["rm -r  ${var.remote_folder}/.goss-dir"]
-  // }
 
   post-processor "manifest" {
     custom_data = {
