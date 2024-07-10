@@ -24,3 +24,17 @@ failovermethod=priority
 enabled=0
 gpgkey=https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
 gpgcheck=1
+
+[ol7_latest]
+name=Oracle Linux 7 Latest ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL7/latest/$basearch/
+gpgcheck=1
+gpgkey=https://yum.oracle.com/RPM-GPG-KEY-oracle-ol7
+enabled=1
+
+[ol7_addons]
+name=Oracle Linux 7 Addons ($basearch)
+baseurl=https://yum.oracle.com/repo/OracleLinux/OL7/addons/$basearch/
+gpgcheck=1
+gpgkey=https://yum.oracle.com/RPM-GPG-KEY-oracle-ol7
+enabled=1
