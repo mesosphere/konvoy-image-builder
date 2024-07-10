@@ -32,15 +32,5 @@ func LoadImage(containerEngine string) error {
 	if err != nil {
 		return fmt.Errorf("failed to run cmd %s with error %w", cmd.Args, err)
 	}
-	if containerEngine != "podman" {
-		return nil
-	}
-	cmdTag := exec.Command(containerEngine, "tag", fmt.Sprintf("localhost/%s", image), fmt.Sprintf("docker.io/%s", image))
-	cmdTag.Stdout = os.Stdout
-	cmdTag.Stderr = os.Stderr
-	err = cmdTag.Run()
-	if err != nil {
-		return fmt.Errorf("failed to run cmd %s with error %w", cmd.Args, err)
-	}
 	return nil
 }
