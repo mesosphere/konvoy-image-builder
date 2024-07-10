@@ -10,7 +10,10 @@ permissions:
 
 jobs:
   rune2e:
-    runs-on: ubuntu-22.04
+    # According to https://docs.d2iq.com/dkp/2.8/podman, podman >= 4.0.0 is required.
+    # The ubuntu-24.04 runner has podman 4.9.3 (as of https://github.com/actions/runner-images/pull/9828).
+    # The other ubuntu images have podman 3.x, so we cannot use them.
+    runs-on: ubuntu-24.04
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
