@@ -10,7 +10,10 @@ permissions:
 
 jobs:
   rune2e:
-    runs-on: ubuntu-22.04
+    # According to https://docs.d2iq.com/dkp/2.8/podman, podman >= 4.0.0 is required.
+    # The ubuntu-24.04 runner has podman 4.9.3 (as of https://github.com/actions/runner-images/pull/9828).
+    # The other ubuntu images have podman 3.x, so we cannot use them.
+    runs-on: ubuntu-24.04
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
@@ -55,9 +58,9 @@ jobs:
           make build-for-podman
           goreleaser build --config=.goreleaser-podman-e2e.yml --clean --skip-validate
 
-      - name: Run E2E test for AWS centos 7.9 using podman
+      - name: Run E2E test for AWS Rocky 9.1 using podman
         run: |-
-          KIB_CONTAINER_ENGINE=podman dist/konvoy-image-wrapper-for-podman_linux_amd64_v1/konvoy-image build aws images/ami/centos-79.yaml --dry-run
+          KIB_CONTAINER_ENGINE=podman dist/konvoy-image-wrapper-for-podman_linux_amd64_v1/konvoy-image build aws images/ami/rocky-91.yaml --dry-run
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           KIB_CONTAINER_ENGINE: podman
