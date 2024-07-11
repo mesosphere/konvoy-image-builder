@@ -26,16 +26,19 @@
   retries: 5
   delay: 6
 
-# Oracle Linux does not have 'tar' or 'gtar' installed
+
 - name: install tar rpm package
   yum:
-    name: tar
+    name: "{{ item }}"
     state: present
     update_cache: true
   register: result
   until: result is success
   retries: 5
   delay: 6
+  with_items:
+    - tar
+    - container-selinux
   when:
     - ansible_distribution == 'OracleLinux'
 
@@ -53,6 +56,8 @@
   until: result is success
   retries: 5
   delay: 6
+  when:
+    - not ansible_distribution == 'OracleLinux'
 
 - name: install libseccomp rpm package
   yum:
