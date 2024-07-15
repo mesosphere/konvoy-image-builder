@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.10.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.2...v2.10.3) (2024-07-11)
+
+
+### Bug Fixes
+
+* adds oracle 7 repos ([#1120](https://github.com/mesosphere/konvoy-image-builder/issues/1120)) ([9228804](https://github.com/mesosphere/konvoy-image-builder/commit/9228804a753df42629e2951911acf28be41fdff1))
+* always downoad kubernetes images  ([#1111](https://github.com/mesosphere/konvoy-image-builder/issues/1111)) ([c63ff7a](https://github.com/mesosphere/konvoy-image-builder/commit/c63ff7adf41acecb9ee6f31346fa2d59c2ed8141))
+* Make image load compatible with podman 4.x ([1ddfa05](https://github.com/mesosphere/konvoy-image-builder/commit/1ddfa05f48a1c77d7989917850dcf2b5ce4fac05))
+* redhat 8.6 and redhat 8.8 gpu support  ([#1119](https://github.com/mesosphere/konvoy-image-builder/issues/1119)) ([12e9b9c](https://github.com/mesosphere/konvoy-image-builder/commit/12e9b9c505c52bf21b40f4135346433413827b5d))
+
 ## [2.10.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.1...v2.10.2) (2024-06-27)
 
 
