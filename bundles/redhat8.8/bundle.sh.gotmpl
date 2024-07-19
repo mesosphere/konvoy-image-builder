@@ -48,6 +48,12 @@ subscription::defer_unregister
 subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
 subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
 subscription-manager repos --enable rhel-8-for-x86_64-baseos-rpms
+
+# EUS rpms used to fetch kernel-headers for redhat 8.8
+# if you don't need kernel headers package for NVIDIA Gpu support, remove this line.
+# and remove kernel-headers-4.18.0-477.58.1.el8_8 from packages.txt.gotmpl
+subscription-manager repos --enable rhel-8-for-x86_64-baseos-eus-rpms
+
 yum -y install gettext yum-utils createrepo dnf-utils modulemd-tools
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
@@ -57,9 +63,13 @@ pushd "${TMP_DIR}"
 repoquery --archlist=x86_64,noarch --resolve --requires --recursive  $(< packages.txt) | grep -v *.i686  >> reqs.txt
 sed -i 1d reqs.txt # we need to get rid of the first line
 #shellcheck disable=SC2046
-yumdownloader --archlist=x86_64,noarch --setopt=skip_missing_names_on_install=False -x \*i686 $(< reqs.txt)
+yumdownloader --archlist=x86_64,noarch \
+  --setopt=skip_missing_names_on_install=False -x \*i686 $(< reqs.txt)
 #shellcheck disable=SC2046
-yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch --resolve --disablerepo=*  --enablerepo=kubernetes,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms $(< packages.txt)
+yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch \
+  --resolve --disablerepo=* --enablerepo="kubernetes,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms,rhel-8-for-x86_64-baseos-eus-rpms" \
+  $(< packages.txt)
+
 rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
