@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.3...v2.10.4) (2024-07-19)
+
+
+### Bug Fixes
+
+* adds base os repo and kernel package ([#1122](https://github.com/mesosphere/konvoy-image-builder/issues/1122)) ([def35d2](https://github.com/mesosphere/konvoy-image-builder/commit/def35d23dc4f82f9ad4fcade8f8d336fae0030d6))
+* remove snapshot groups ([#1124](https://github.com/mesosphere/konvoy-image-builder/issues/1124)) ([5598358](https://github.com/mesosphere/konvoy-image-builder/commit/5598358a371cf7573fdd34a7a63199206777fdef))
+
 ## [2.10.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.2...v2.10.3) (2024-07-11)
 
 
