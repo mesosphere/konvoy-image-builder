@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.4...v2.10.5) (2024-07-25)
+
+
+### Bug Fixes
+
+* downgrade packer version ([#1126](https://github.com/mesosphere/konvoy-image-builder/issues/1126)) ([72f453f](https://github.com/mesosphere/konvoy-image-builder/commit/72f453f6d76f3b1896943012962a00c3cbcee5dc))
+
 ## [2.10.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.3...v2.10.4) (2024-07-19)
 
 
