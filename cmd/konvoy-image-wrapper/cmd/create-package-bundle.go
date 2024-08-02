@@ -132,7 +132,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 			return err
 		}
 	}
-	if eusReposFlag == true {
+	if eusReposFlag {
 		r.env["EUS_REPOS"] = "true"
 	}
 	bundleCmd := "./bundle.sh"
