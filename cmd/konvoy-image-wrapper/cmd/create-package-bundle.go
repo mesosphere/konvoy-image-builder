@@ -168,7 +168,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	if fetchKubernetesRPMs {
 		r.env["KUBERNETES_REPOS"] = "true"
 	}
-	if eusReposFlag == true {
+	if eusReposFlag {
 		r.env["EUS_REPOS"] = "true"
 	}
 	bundleCmd := "./bundle.sh"
