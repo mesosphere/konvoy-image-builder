@@ -43,9 +43,6 @@ var (
 	rhck          = "rhck"
 
 	validOS = []string{
-		"centos 7.9",
-		"redhat 7.9",
-		"redhat 8.4",
 		"redhat 8.6",
 		"redhat 8.8",
 		"sles 15",
@@ -410,6 +407,10 @@ func createOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) er
 	}
 	if fips {
 		args = append(args, "--fips=true")
+	}
+	if osName == "redhat 8.8" || osName == "redhat 8.6" {
+		args = append(args, "--enable-eus-repos=true")
+
 	}
 	return sh.RunV(wrapperCmd, args...)
 }

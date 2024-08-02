@@ -79,15 +79,35 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		osFlag                string
 		kubernetesVersionFlag string
 		fipsFlag              bool
+		eusReposFlag          bool
 		outputDirectoy        string
 		containerImage        string
 	)
 	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
-	flagSet.StringVar(&osFlag, "os", "",
-		fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
-	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "",
-		"The version of kubernetes to download packages for.")
-	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
+	flagSet.StringVar(
+		&osFlag,
+		"os",
+		"",
+		fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)),
+	)
+	flagSet.StringVar(
+		&kubernetesVersionFlag,
+		"kubernetes-version",
+		"",
+		"The version of kubernetes to download packages for.",
+	)
+	flagSet.BoolVar(
+		&fipsFlag,
+		"fips",
+		false,
+		"If the package bundle should include fips packages.",
+	)
+	flagSet.BoolVar(
+		&eusReposFlag,
+		"enable-eus-repos",
+		false,
+		"If enabled fetches packages from EUS repositories when creating RHEL package bundles. Disabled by default.",
+	)
 	flagSet.StringVar(&outputDirectoy, "output-directory", "artifacts",
 		"The directory to place the bundle in.")
 	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
@@ -111,6 +131,9 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		if err != nil {
 			return err
 		}
+	}
+	if eusReposFlag == true {
+		r.env["EUS_REPOS"] = "true"
 	}
 	bundleCmd := "./bundle.sh"
 	absPathToOutput := outputDirectoy
