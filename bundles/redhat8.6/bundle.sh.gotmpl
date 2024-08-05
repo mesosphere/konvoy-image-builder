@@ -49,6 +49,7 @@ subscription::defer_unregister
 ENABLED_REPOS="kubernetes,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms"
 EUS_REPOS=${EUS_REPOS:-""}
 if [[ -n "${EUS_REPOS}" ]]; then
+  subscription-manager repos --disable=rhel-8-for-x86_64-baseos-rpms --disable=rhel-8-for-x86_64-appstream-rpms #disable baseos repos
   subscription-manager repos --enable rhel-8-for-x86_64-baseos-eus-rpms
   subscription-manager repos --enable rhel-8-for-x86_64-appstream-eus-rpms
   subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-eus-rpms
