@@ -46,12 +46,12 @@ subscription-manager release --set=8.8
 subscription-manager refresh
 subscription::defer_unregister
 
-ENABLED_REPOS="codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms"
+ENABLED_REPOS="kubernetes,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms"
 if [[ -n "${EUS_REPOS}" ]]; then
   subscription-manager repos --enable rhel-8-for-x86_64-baseos-eus-rpms
   subscription-manager repos --enable rhel-8-for-x86_64-appstream-eus-rpms
   subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-eus-rpms
-  ENABLED_REPOS="codeready-builder-for-rhel-8-x86_64-eus-rpms,rhel-8-for-x86_64-appstream-eus-rpms,rhel-8-for-x86_64-baseos-eus-rpms"
+  ENABLED_REPOS="kubernetes,codeready-builder-for-rhel-8-x86_64-eus-rpms,rhel-8-for-x86_64-appstream-eus-rpms,rhel-8-for-x86_64-baseos-eus-rpms"
 else
   subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
   subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
@@ -71,15 +71,15 @@ yumdownloader --archlist=x86_64,noarch \
   --setopt=skip_missing_names_on_install=False -x \*i686 $(< reqs.txt)
 #shellcheck disable=SC2046
 yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch \
-  --resolve --disablerepo=* --enablerepo="kubernetes,${ENABLED_REPOS}" \
+  --resolve --disablerepo=* --enablerepo="${ENABLED_REPOS}" \
   $(< packages.txt)
 
 rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
-chown -R 1000:1000 repodata/
 repo2module . --module-name offline
 createrepo_mod .
+chmod 777 -R "${TMP_DIR}"
 #shellcheck disable=SC1083,SC2035
 tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.8_x86_64{{ .FipsSuffix }}.tar.gz *
 #shellcheck disable=SC1083

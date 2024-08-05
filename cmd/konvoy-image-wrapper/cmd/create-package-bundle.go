@@ -170,7 +170,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 	configDirFS := os.DirFS(base)
 	l := make([]string, 0)
 	generated := path.Join(base, generatedDirName)
-	if err = os.MkdirAll(generated, 0o755); err != nil {
+	if err = os.MkdirAll(generated, 0o777); err != nil {
 		return l, err
 	}
 
