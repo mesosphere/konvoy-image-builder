@@ -61,6 +61,7 @@ fi
 yum -y install gettext yum-utils createrepo dnf-utils modulemd-tools
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
+chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046,SC2062,SC2063,SC2035
@@ -79,7 +80,6 @@ curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/
 createrepo -v .
 repo2module . --module-name offline
 createrepo_mod .
-chmod 777 -R "${TMP_DIR}"
 #shellcheck disable=SC1083,SC2035
 tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.8_x86_64{{ .FipsSuffix }}.tar.gz *
 #shellcheck disable=SC1083
