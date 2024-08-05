@@ -87,7 +87,6 @@ rm packages.txt reqs.txt
 createrepo -v .
 repo2module . --module-name offline
 createrepo_mod .
-chmod 777 -R "${TMP_DIR}"
 #shellcheck disable=SC1083,SC2035
 tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_redhat_8.8_x86_64{{ .FipsSuffix }}.tar.gz *
 #shellcheck disable=SC1083
