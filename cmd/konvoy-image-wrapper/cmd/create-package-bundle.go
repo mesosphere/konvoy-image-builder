@@ -82,6 +82,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		eusReposFlag          bool
 		outputDirectoy        string
 		containerImage        string
+		fetchKernelHeaders    bool
 	)
 	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
 	flagSet.StringVar(
@@ -108,9 +109,24 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		false,
 		"If enabled fetches packages from EUS repositories when creating RHEL package bundles. Disabled by default.",
 	)
-	flagSet.StringVar(&outputDirectoy, "output-directory", "artifacts",
-		"The directory to place the bundle in.")
-	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
+	flagSet.StringVar(
+		&outputDirectoy,
+		"output-directory",
+		"artifacts",
+		"The directory to place the bundle in.",
+	)
+	flagSet.StringVar(
+		&containerImage,
+		"container-image",
+		"",
+		"A container image to use for building the package bundles",
+	)
+	flagSet.BoolVar(
+		&fetchKernelHeaders,
+		"fetch-kernel-headers",
+		false,
+		"If enabled fetches kernel headers for the target operating system. To modify the verison, edit the file at bundles/{OS_NAME}{VERSION}/packages.txt.gotmpl directly eg: bundles/redhat8.8/packages.txt.gotmpl. This is required for operating systems that will use NVIDIA GPU drivers.",
+	)
 	err := flagSet.Parse(args)
 	if err != nil {
 		return err
@@ -141,7 +157,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		dir := r.workingDir
 		absPathToOutput = path.Join(dir, outputDirectoy)
 	}
-	reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag)
+	reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag, fetchKernelHeaders)
 	if err != nil {
 		return err
 	}
@@ -156,7 +172,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 }
 
 //nolint:gocyclo,funlen // the function is relatively clear
-func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) ([]string, error) {
+func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchKernelHeaders bool) ([]string, error) {
 	config, found := osToConfig[targetOS]
 	if !found {
 		return nil, fmt.Errorf("buildOS %s is invalid must be one of %v", targetOS, getKeys(osToConfig))
@@ -251,9 +267,11 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 				return fmt.Errorf("failed to create file: %w", err)
 			}
 			templateInput := struct {
-				KubernetesVersion string
+				KubernetesVersion  string
+				FetchKernelHeaders bool
 			}{
-				KubernetesVersion: kubernetesVersion,
+				KubernetesVersion:  kubernetesVersion,
+				FetchKernelHeaders: fetchKernelHeaders,
 			}
 			err = t.Execute(out, templateInput)
 			if err != nil {
