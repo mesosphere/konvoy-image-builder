@@ -27,7 +27,6 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
-RUN curl -o /opt/amazon-ssm-agent.rpm https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 ARG BUILDARCH
 # we copy this to remote hosts to execute GOSS
 # Packer copies /usr/local/bin/goss-amd64 from this container to the remote host
