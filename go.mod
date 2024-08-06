@@ -1,6 +1,6 @@
 module github.com/mesosphere/konvoy-image-builder
 
-go 1.18
+go 1.22
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.11.1
