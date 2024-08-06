@@ -61,7 +61,7 @@
       name: /opt/amazon-ssm-agent.rpm
       state: present
       disable_gpg_check: yes
-    when: ansible_os_family == "RedHat" and ansible_distribution != "Amazon"
+    when: ansible_os_family == "Suse" and ansible_distribution != "Amazon"
 
 - name: install aws cli for amazon linux
   package:
