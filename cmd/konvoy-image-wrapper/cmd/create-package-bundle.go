@@ -125,7 +125,8 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		&fetchKernelHeaders,
 		"fetch-kernel-headers",
 		false,
-		"If enabled fetches kernel headers for the target operating system. To modify the verison, edit the file at bundles/{OS_NAME}{VERSION}/packages.txt.gotmpl directly eg: bundles/redhat8.8/packages.txt.gotmpl. This is required for operating systems that will use NVIDIA GPU drivers.",
+		//nolint:lll // its ok to have long help texts
+		"If enabled fetches kernel headers for the target operating system. To modify the version, edit the file at bundles/{OS_NAME}{VERSION}/packages.txt.gotmpl directly eg: bundles/redhat8.8/packages.txt.gotmpl. This is required for operating systems that will use NVIDIA GPU drivers.",
 	)
 	err := flagSet.Parse(args)
 	if err != nil {
