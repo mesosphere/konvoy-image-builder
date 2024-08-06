@@ -27,11 +27,12 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
-RUN curl -o /opt/amazon-ssm-agent.rpm https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 ARG BUILDARCH
 # we copy this to remote hosts to execute GOSS
 # Packer copies /usr/local/bin/goss-amd64 from this container to the remote host
 COPY --from=devkit /usr/local/bin/goss-amd64 /usr/local/bin/goss-amd64
+
+COPY --from=devkit /opt/amazon-ssm-agent.rpm /opt/amazon-ssm-agent.rpm
 
 # we copy this to remote hosts to execute mindthegap so its always amd64
 COPY --from=devkit /usr/local/bin/mindthegap /usr/local/bin/
