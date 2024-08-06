@@ -43,9 +43,6 @@ var (
 	rhck          = "rhck"
 
 	validOS = []string{
-		"centos 7.9",
-		"redhat 7.9",
-		"redhat 8.4",
 		"redhat 8.6",
 		"redhat 8.8",
 		"sles 15",
@@ -391,18 +388,19 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 	if err := fetchPipPackages(artifactsDir); err != nil {
 		return fmt.Errorf("failed to fetch pip packages %w", err)
 	}
-	if buildConfig == offlineNvidia {
+	isGPU := buildConfig == offlineNvidia
+	if isGPU {
 		if err := fetchNvidiaRunFile(); err != nil {
 			return fmt.Errorf("failed to fetch nvidiaRunFile %w", err)
 		}
 	}
-	if err := createOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
+	if err := createOSBundle(buildOS, kubeVersion, artifactsDir, isFips, isGPU); err != nil {
 		return fmt.Errorf("failed to fetch OS bundle %w", err)
 	}
 	return nil
 }
 
-func createOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) error {
+func createOSBundle(osName, kubernetesVersion, downloadDir string, fips, gpu bool) error {
 	osInfo := strings.Replace(osName, " ", "-", 1)
 	args := []string{
 		"create-package-bundle", fmt.Sprintf("--os=%s", osInfo),
@@ -410,6 +408,13 @@ func createOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) er
 	}
 	if fips {
 		args = append(args, "--fips=true")
+	}
+	if osName == "redhat 8.8" || osName == "redhat 8.6" {
+		args = append(args, "--enable-eus-repos=true")
+
+	}
+	if gpu {
+		args = append(args, "--fetch-kernel-headers=true")
 	}
 	return sh.RunV(wrapperCmd, args...)
 }
