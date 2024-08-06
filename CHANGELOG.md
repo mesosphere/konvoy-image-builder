@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.11.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.5...v2.11.0) (2024-08-06)
+
+
+### Features
+
+* allows setting EUS repos with a flag ([#1133](https://github.com/mesosphere/konvoy-image-builder/issues/1133)) ([a54f9a0](https://github.com/mesosphere/konvoy-image-builder/commit/a54f9a0c5d907d3b1fed701ac1ec7b530c381629))
+
+
+### Bug Fixes
+
+* add toolchain version ([99a4836](https://github.com/mesosphere/konvoy-image-builder/commit/99a48368cdca1da6b514ab9640eb62c6201779e9))
+
 ## [2.10.5](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.4...v2.10.5) (2024-07-25)
 
 
