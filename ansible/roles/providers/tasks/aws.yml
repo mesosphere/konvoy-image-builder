@@ -54,6 +54,8 @@
       name: /opt/amazon-ssm-agent.rpm
       state: present
       disable_gpg_check: yes
+      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
     when: ansible_os_family == "RedHat" and ansible_distribution != "Amazon"
 
   - name: install aws agents RPM
