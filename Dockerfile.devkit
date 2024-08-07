@@ -85,8 +85,8 @@ RUN \
   curl -o /opt/kubectl-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubectl-${KUBERNETES_VERSION}-0.x86_64.rpm && \
   curl -o /opt/kubeadm-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubeadm-${KUBERNETES_VERSION}-0.x86_64.rpm && \
   curl -o /opt/kubelet-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubelet-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  export CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2)" && \
-  curl -o  /opt/cri-tools-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/cri-tools-${CRICTL_TOOLS_VERSION}.0-0.x86_64.rpm
+  export CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2).0" && \
+  curl -o  /opt/cri-tools-${CRICTL_TOOLS_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/cri-tools-${CRICTL_TOOLS_VERSION}.0-0.x86_64.rpm
 
 
 RUN \
@@ -94,8 +94,8 @@ RUN \
   curl -o /opt/kubectl-${KUBERNETES_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-fips/x86_64/kubectl-${KUBERNETES_VERSION}-0.x86_64.rpm && \
   curl -o /opt/kubeadm-${KUBERNETES_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-fips/x86_64/kubeadm-${KUBERNETES_VERSION}-0.x86_64.rpm && \
   curl -o /opt/kubelet-${KUBERNETES_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-fips/x86_64/kubelet-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  export CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2)0" && \
-  curl -o  /opt/cri-tools-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/cri-tools-${CRICTL_TOOLS_VERSION}.0-0.x86_64.rpm
+  export CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2).0" && \
+  curl -o  /opt/cri-tools-${CRICTL_TOOLS_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/cri-tools-${CRICTL_TOOLS_VERSION}.0-0.x86_64.rpm
 
 RUN curl -o /opt/d2iq-sign-authority-gpg-public-key https://packages.d2iq.com/konvoy/stable/linux/repos/d2iq-sign-authority-gpg-public-key
 
