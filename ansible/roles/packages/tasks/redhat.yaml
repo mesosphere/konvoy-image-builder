@@ -96,12 +96,12 @@
 - block:
   - name: copy kubernetes_cni rpm
     copy:
-      src: "/opt/{{ 'kubernetes_cni-' + kubernetes_cni_version }}-0{{ '-fips' if fips.enabled else '' }}.rpm"
-      dest: "/opt/{{ 'kubernetes_cni-' + kubernetes_cni_version }}-0.rpm"
+      src: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0{{ '-fips' if fips.enabled else '' }}.rpm"
+      dest: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
 
   - name: install kubernetes_cni rpm package
     yum:
-      name: "/opt/{{ 'kubernetes_cni-' + kubernetes_cni_version }}-0.rpm"
+      name: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
       state: present
       update_cache: true
       enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
