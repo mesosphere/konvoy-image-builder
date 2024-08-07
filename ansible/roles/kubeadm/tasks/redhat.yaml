@@ -14,17 +14,24 @@
       not 'kubeadm-' + package_versions.kubernetes_rpm in exportedversionlocklist.stdout
       )"
 
-- name: install kubeadm rpm package
-  yum:
-    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: true
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+
+- block:
+  - name: copy kubeadm rpm
+    copy:
+      src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
+      dest: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
+
+  - name: install kubeadm rpm package
+    yum:
+      name: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
+      state: present
+      update_cache: true
+      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    register: result
+    until: result is success
+    retries: 3
+    delay: 3
 
 - name: add versionlock for kubeadm package
   command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add kubeadm
