@@ -65,29 +65,41 @@
     - versionlock_plugin_enabled
     - item in exportedversionlocklist.stdout
 
-- name: install kubectl rpm package
-  yum:
-    name: "{{ 'kubectl-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: true
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+- block:
+  - name: copy kubectl rpm
+    copy:
+      src: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
+      dest: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
 
-- name: install kubelet rpm package
-  yum:
-    name: "{{ 'kubelet-' + package_versions.kubernetes_rpm }}"
-    state: present
-    update_cache: true
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  register: kubelet_installation_rpm
-  until: kubelet_installation_rpm is success
-  retries: 3
-  delay: 3
+  - name: install kubectl rpm package
+    yum:
+      name: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
+      state: present
+      update_cache: true
+      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    register: result
+    until: result is success
+    retries: 3
+    delay: 3
+
+- block:
+  - name: copy kubelet rpm
+    copy:
+      src: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
+      dest: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
+
+  - name: install kubelet rpm package
+    yum:
+      name: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
+      state: present
+      update_cache: true
+      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    register: kubelet_installation_rpm
+    until: kubelet_installation_rpm is success
+    retries: 3
+    delay: 3
 
 - name: add versionlock for kubelet and kubectl packages
   command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add {{ item }}
