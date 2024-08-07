@@ -18,7 +18,7 @@
 - block:
   - name: copy kubeadm rpm
     copy:
-      src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}-{{ 'fips' if fips.enabled else '' }}.rpm"
+      src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
 
   - name: install kubeadm rpm package
