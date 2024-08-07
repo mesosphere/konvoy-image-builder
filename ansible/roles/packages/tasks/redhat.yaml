@@ -66,6 +66,16 @@
     - item in exportedversionlocklist.stdout
 
 - block:
+  - name: copy gpg key
+    copy:
+      src: /opt/d2iq-sign-authority-gpg-public-key
+      dest: /opt/d2iq-sign-authority-gpg-public-key
+
+  - name: import key
+    ansible.builtin.rpm_key:
+      state: present
+      key: /opt/d2iq-sign-authority-gpg-public-key
+
   - name: copy kubectl rpm
     copy:
       src: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
