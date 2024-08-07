@@ -68,7 +68,7 @@
 - block:
   - name: copy kubectl rpm
     copy:
-      src: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
+      src: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}-{{ 'fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
 
   - name: install kubectl rpm package
@@ -86,7 +86,7 @@
 - block:
   - name: copy kubelet rpm
     copy:
-      src: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
+      src: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}-{{ 'fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
 
   - name: install kubelet rpm package
