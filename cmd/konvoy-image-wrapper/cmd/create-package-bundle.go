@@ -202,8 +202,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchK
 			}
 		}
 
-		if strings.Contains(filepath, "repo-templates") && strings.Contains(filepath, ".repo") &&
-			!strings.Contains(filepath, "kubernetes.repo.gotmpl") {
+		if strings.Contains(filepath, "repo-templates") && strings.Contains(filepath, ".repo") {
 			f, err := os.Open(path.Join(base, filepath))
 			if err != nil {
 				return fmt.Errorf("failed to open file: %w", err)
@@ -218,38 +217,6 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchK
 			_, err = io.Copy(out, f)
 			if err != nil {
 				return fmt.Errorf("failed to copy contents of repo file: %w", err)
-			}
-			l = append(l, out.Name())
-		}
-
-		//nolint:nestif // this if is not nested
-		if strings.Contains(filepath, "kubernetes.repo.gotmpl") {
-			kubernetesRepoTmpl, err := os.ReadFile(path.Join(base, filepath))
-			if err != nil {
-				return fmt.Errorf("failed to read template kubernetes repo file %w", err)
-			}
-			t, err := template.New("").Parse(string(kubernetesRepoTmpl))
-			if err != nil {
-				return fmt.Errorf("failed to parse go template: %w", err)
-			}
-			repoSuffix := "nokmem"
-			if fips {
-				repoSuffix = "fips"
-			}
-			templateInput := struct {
-				RepoSuffix        string
-				KubernetesVersion string
-			}{
-				RepoSuffix:        repoSuffix,
-				KubernetesVersion: kubernetesVersion,
-			}
-			out, err := os.Create(path.Join(base, generatedDirName, "repos", "kubernetes.repo"))
-			if err != nil {
-				return fmt.Errorf("failed to create file: %w", err)
-			}
-			err = t.Execute(out, templateInput)
-			if err != nil {
-				return fmt.Errorf("failed to execute go template: %w", err)
 			}
 			l = append(l, out.Name())
 		}
