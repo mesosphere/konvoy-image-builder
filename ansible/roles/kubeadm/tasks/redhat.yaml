@@ -18,12 +18,12 @@
 - block:
   - name: copy cri-tools rpm
     copy:
-      src: "/opt/{{ 'cri-tools' + critools_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
-      dest: "/opt/{{ 'cri-tools' + critools_rpm }}.rpm"
+      src: "/opt/{{ 'cri-tools-' + critools_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+      dest: "/opt/{{ 'cri-tools-' + critools_rpm }}.rpm"
 
   - name: install cri-tools rpm package
     yum:
-      name: "/opt/{{ 'cri-tools' + critools_rpm }}.rpm"
+      name: "/opt/{{ 'cri-tools-' + critools_rpm }}.rpm"
       state: present
       update_cache: true
       enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
