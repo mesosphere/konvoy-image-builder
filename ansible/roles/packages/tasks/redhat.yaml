@@ -106,6 +106,7 @@
       update_cache: true
       enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
       disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+      skip_broken: true
     register: kubelet_installation_rpm
     until: kubelet_installation_rpm is success
     retries: 3
