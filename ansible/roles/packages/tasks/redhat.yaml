@@ -99,33 +99,22 @@
       src: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0{{ '-fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
 
-  - name: install kubernetes_cni rpm package
-    yum:
-      name: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
-      state: present
-      update_cache: true
-      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-      skip_broken: true
-    register: kubelet_installation_rpm
-    until: kubelet_installation_rpm is success
-    retries: 3
-    delay: 3
-
   - name: copy kubelet rpm
     copy:
       src: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
 
-  - name: install kubelet rpm package
+  - name: install kubernetes_cni and kubelet rpm packages
     yum:
-      name: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
+      name:
+        - "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
+        - "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
       state: present
       update_cache: true
       enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
       disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-    register: kubelet_installation_rpm
-    until: kubelet_installation_rpm is success
+    register: installation_rpm
+    until: installation_rpm is success
     retries: 3
     delay: 3
 
