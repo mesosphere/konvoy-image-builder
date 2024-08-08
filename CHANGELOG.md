@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.11.0...v2.11.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* adds ssm from docker image ([#1139](https://github.com/mesosphere/konvoy-image-builder/issues/1139)) ([46c805a](https://github.com/mesosphere/konvoy-image-builder/commit/46c805a108748d224ebbeaa9d4389d347072fe01))
+
 ## [2.11.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.10.5...v2.11.0) (2024-08-06)
 
 
