@@ -15,6 +15,12 @@ yum-utils
 cloud-init
 cloud-utils-growpart
 container-selinux
+{{ if .FetchKubernetesRPMs -}}
+kubectl-{{ .KubernetesVersion }}-0
+kubelet-{{ .KubernetesVersion }}-0
+kubeadm-{{ .KubernetesVersion }}-0
+cri-tools
+{{- end }}
 conntrack
 ebtables
 ethtool

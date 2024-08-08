@@ -65,58 +65,66 @@
     - versionlock_plugin_enabled
     - item in exportedversionlocklist.stdout
 
-- block:
-  - name: copy gpg key
-    copy:
-      src: /opt/d2iq-sign-authority-gpg-public-key
-      dest: /opt/d2iq-sign-authority-gpg-public-key
-
-  - name: import key
-    ansible.builtin.rpm_key:
-      state: present
-      key: /opt/d2iq-sign-authority-gpg-public-key
-
-  - name: copy kubectl rpm
-    copy:
-      src: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
-      dest: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
-
-  - name: install kubectl rpm package
-    yum:
-      name: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
-      state: present
-      update_cache: true
-      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
+- name: check kubernetes rpms exist for provided version
+  stat:
+    path: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+  delegate_to: localhost
+  register: haslocalk8srpms
+  become: false
 
 - block:
-  - name: copy kubernetes_cni rpm
-    copy:
-      src: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0{{ '-fips' if fips.enabled else '' }}.rpm"
-      dest: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
+    - name: copy gpg key
+      copy:
+        src: /opt/d2iq-sign-authority-gpg-public-key
+        dest: /opt/d2iq-sign-authority-gpg-public-key
 
-  - name: copy kubelet rpm
-    copy:
-      src: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
-      dest: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
+    - name: import key
+      ansible.builtin.rpm_key:
+        state: present
+        key: /opt/d2iq-sign-authority-gpg-public-key
 
-  - name: install kubernetes_cni and kubelet rpm packages
-    yum:
-      name:
-        - "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
-        - "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
-      state: present
-      update_cache: true
-      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-    register: installation_rpm
-    until: installation_rpm is success
-    retries: 3
-    delay: 3
+    - name: copy kubectl rpm
+      copy:
+        src: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+        dest: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}.rpm"
+
+    - name: copy kubernetes_cni rpm
+      copy:
+        src: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0{{ '-fips' if fips.enabled else '' }}.rpm"
+        dest: "/opt/{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.rpm"
+
+    - name: copy kubelet rpm
+      copy:
+        src: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+        dest: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}.rpm"
+  when:
+    - haslocalk8srpms.stat.exists
+
+- name: install kubectl rpm package
+  yum:
+    name: "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubectl-' + package_versions.kubernetes_rpm }}{{ '.rpm' if haslocalk8srpms.stat.exists }}"
+    state: present
+    update_cache: true
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
+
+- name: install kubernetes_cni and kubelet rpm packages
+  yum:
+    name:
+      - "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.{{ '.rpm' if haslocalk8srpms.stat.exists }}"
+      - "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubelet-' + package_versions.kubernetes_rpm }}.{{ '.rpm' if haslocalk8srpms.stat.exists }}"
+    state: present
+    update_cache: true
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: installation_rpm
+  until: installation_rpm is success
+  retries: 3
+  delay: 3
 
 - name: add versionlock for kubelet and kubectl packages
   command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add {{ item }}

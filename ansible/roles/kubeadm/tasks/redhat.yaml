@@ -37,18 +37,19 @@
     copy:
       src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
+  when: haslocalk8srpms.stat.exists
 
-  - name: install kubeadm rpm package
-    yum:
-      name: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
-      state: present
-      update_cache: true
-      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-    register: result
-    until: result is success
-    retries: 3
-    delay: 3
+- name: install kubeadm rpm package
+  yum:
+    name: "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '.rpm' if haslocalk8srpms.stat.exists }}"
+    state: present
+    update_cache: true
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: result
+  until: result is success
+  retries: 3
+  delay: 3
 
 - name: add versionlock for kubeadm package
   command: yum versionlock {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }} add kubeadm
