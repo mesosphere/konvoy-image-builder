@@ -42,38 +42,34 @@
     - ansible_distribution != "Amazon"
     - ansible_os_family != "Suse"
 
-- name: install aws agents RPM
-  package:
-    name: "{{ item }}"
-    state: present
-    # must be fixed by amazon https://github.com/aws/amazon-ssm-agent/issues/235
-    disable_gpg_check: yes
-    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
-    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
-  with_items:
-    - "{{ 'amazon-ssm-agent' if offline_mode_enabled else 'https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm' }}"
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution != "Amazon"
 
-- name: install aws agents RPM
-  package:
-    name: "{{ item }}"
-    state: present
-    # must be fixed by amazon https://github.com/aws/amazon-ssm-agent/issues/235
-    disable_gpg_check: yes
-  with_items:
-    - https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-  when:
-    - ansible_os_family == "Suse"
-    - ansible_distribution != "Amazon"
+- block:
+  - name: copy ssm rpm
+    copy:
+      src: /opt/amazon-ssm-agent.rpm
+      dest: /opt/amazon-ssm-agent.rpm
 
-- name: install aws agents RPM
+  - name: install aws agents RPM
+    ansible.builtin.yum:
+      name: /opt/amazon-ssm-agent.rpm
+      state: present
+      disable_gpg_check: yes
+      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    when: ansible_os_family == "RedHat" and ansible_distribution != "Amazon"
+
+  - name: install aws agents RPM
+    ansible.builtin.zypper:
+      name: /opt/amazon-ssm-agent.rpm
+      state: present
+      disable_gpg_check: yes
+    when: ansible_os_family == "Suse" and ansible_distribution != "Amazon"
+
+- name: install aws cli for amazon linux
   package:
     name: "{{ item }}"
     state: present
   with_items:
-    - amazon-ssm-agent
     - awscli
   when: ansible_distribution == "Amazon"
 
@@ -94,4 +90,3 @@
     state: started
     enabled: yes
   when: ansible_distribution == "Ubuntu"
-

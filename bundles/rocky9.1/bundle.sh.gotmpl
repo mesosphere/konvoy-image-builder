@@ -15,7 +15,6 @@ repoquery --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packag
 #shellcheck disable=SC2046
 yumdownloader  --archlist=x86_64,noarch -x \*i686 $(< packages.txt)
 rm packages.txt
-curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v . && chown -R 1000:1000 repodata/
 #shellcheck disable=SC1083,SC2035
 tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.1_x86_64.tar.gz *
