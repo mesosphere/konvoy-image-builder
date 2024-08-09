@@ -115,8 +115,8 @@
 - name: install kubernetes_cni and kubelet rpm packages
   yum:
     name:
-      - "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0.{{ '.rpm' if haslocalk8srpms.stat.exists }}"
-      - "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubelet-' + package_versions.kubernetes_rpm }}.{{ '.rpm' if haslocalk8srpms.stat.exists }}"
+      - "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubernetes-cni-' + kubernetes_cni_version }}-0{{ '.rpm' if haslocalk8srpms.stat.exists }}"
+      - "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubelet-' + package_versions.kubernetes_rpm }}{{ '.rpm' if haslocalk8srpms.stat.exists }}"
     state: present
     update_cache: true
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
