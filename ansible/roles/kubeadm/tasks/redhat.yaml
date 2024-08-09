@@ -33,15 +33,25 @@
     retries: 3
     delay: 3
 
+# If the rpms for the kubernetes version provided by the customer
+# exists on the current container, we should copy it to the remote
+# and install it with the file.
+- name: check kubeadm rpm exists for provided version
+  stat:
+    path: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+  delegate_to: localhost
+  register: haslocalkubeadm
+  become: false
+
   - name: copy kubeadm rpm
     copy:
       src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
-  when: haslocalk8srpms.stat.exists
+  when: haslocalkubeadm.stat.exists
 
 - name: install kubeadm rpm package
   yum:
-    name: "{{ '/opt/' if haslocalk8srpms.stat.exists }}{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '.rpm' if haslocalk8srpms.stat.exists }}"
+    name: "{{ '/opt/' if haslocalkubeadm.stat.exists }}{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '.rpm' if haslocalkubeadm.stat.exists }}"
     state: present
     update_cache: true
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
