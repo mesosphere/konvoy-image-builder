@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.11.1...v2.12.0) (2024-08-13)
+
+
+### Features
+
+* bumps cni to 1.3.0 ([#1144](https://github.com/mesosphere/konvoy-image-builder/issues/1144)) ([b0d897f](https://github.com/mesosphere/konvoy-image-builder/commit/b0d897f7ee06cee9cb7c47e3c90efdfceeb3fa01))
+
 ## [2.11.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.11.0...v2.11.1) (2024-08-08)
 
 
