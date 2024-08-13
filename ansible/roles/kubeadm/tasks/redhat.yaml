@@ -43,10 +43,10 @@
   register: haslocalkubeadm
   become: false
 
-  - name: copy kubeadm rpm
-    copy:
-      src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
-      dest: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
+- name: copy kubeadm rpm
+  copy:
+    src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+    dest: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
   when: haslocalkubeadm.stat.exists
 
 - name: install kubeadm rpm package
