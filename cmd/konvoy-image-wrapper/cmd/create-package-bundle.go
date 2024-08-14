@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -142,15 +141,22 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 			return err
 		}
 	}
+
+	fetchKubernetesRPMs := true
 	kubernetesVersion := kubernetesVersionFlag
 	if kubernetesVersion == "" {
 		kubernetesVersion, err = getKubernetesVerisonFromAnsible()
 		if err != nil {
 			return err
 		}
+		// if we are getting the default version from ansible, we don't need to modify this.
+		fetchKubernetesRPMs = false
 	}
 	if eusReposFlag {
 		r.env["EUS_REPOS"] = "true"
+	}
+	if fetchKubernetesRPMs {
+		r.env["KUBERNETES_REPOS"] = "true"
 	}
 	bundleCmd := "./bundle.sh"
 	absPathToOutput := outputDirectoy
@@ -158,7 +164,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		dir := r.workingDir
 		absPathToOutput = path.Join(dir, outputDirectoy)
 	}
-	reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag, fetchKernelHeaders)
+	reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag, fetchKernelHeaders, fetchKubernetesRPMs)
 	if err != nil {
 		return err
 	}
@@ -173,7 +179,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 }
 
 //nolint:gocyclo,funlen // the function is relatively clear
-func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchKernelHeaders bool) ([]string, error) {
+func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchKernelHeaders, fetchKubernetesRPMs bool) ([]string, error) {
 	config, found := osToConfig[targetOS]
 	if !found {
 		return nil, fmt.Errorf("buildOS %s is invalid must be one of %v", targetOS, getKeys(osToConfig))
@@ -201,29 +207,9 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchK
 				return err
 			}
 		}
-
-		if strings.Contains(filepath, "repo-templates") && strings.Contains(filepath, ".repo") &&
-			!strings.Contains(filepath, "kubernetes.repo.gotmpl") {
-			f, err := os.Open(path.Join(base, filepath))
-			if err != nil {
-				return fmt.Errorf("failed to open file: %w", err)
-			}
-			defer f.Close()
-			baseName := path.Base(filepath)
-			newFile := path.Join(base, generatedDirName, "repos", baseName)
-			out, err := os.Create(newFile)
-			if err != nil {
-				return fmt.Errorf("failed to create file: %w", err)
-			}
-			_, err = io.Copy(out, f)
-			if err != nil {
-				return fmt.Errorf("failed to copy contents of repo file: %w", err)
-			}
-			l = append(l, out.Name())
-		}
-
 		//nolint:nestif // this if is not nested
-		if strings.Contains(filepath, "kubernetes.repo.gotmpl") {
+		if strings.Contains(filepath, "kubernetes.repo.gotmpl") && fetchKubernetesRPMs {
+			fmt.Printf("fetchKubernetesRPMs is %v", fetchKubernetesRPMs)
 			kubernetesRepoTmpl, err := os.ReadFile(path.Join(base, filepath))
 			if err != nil {
 				return fmt.Errorf("failed to read template kubernetes repo file %w", err)
@@ -268,11 +254,13 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchK
 				return fmt.Errorf("failed to create file: %w", err)
 			}
 			templateInput := struct {
-				KubernetesVersion  string
-				FetchKernelHeaders bool
+				KubernetesVersion   string
+				FetchKernelHeaders  bool
+				FetchKubernetesRPMs bool
 			}{
-				KubernetesVersion:  kubernetesVersion,
-				FetchKernelHeaders: fetchKernelHeaders,
+				KubernetesVersion:   kubernetesVersion,
+				FetchKernelHeaders:  fetchKernelHeaders,
+				FetchKubernetesRPMs: fetchKubernetesRPMs,
 			}
 			err = t.Execute(out, templateInput)
 			if err != nil {
