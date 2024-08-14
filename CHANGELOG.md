@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.13.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.12.0...v2.13.0) (2024-08-14)
+
+
+### Features
+
+* embed k8s rpms in container ([#1140](https://github.com/mesosphere/konvoy-image-builder/issues/1140)) ([d68fbfb](https://github.com/mesosphere/konvoy-image-builder/commit/d68fbfb08e97ca4866bd7e6737fd3f1ca2fb799a))
+
+
+### Bug Fixes
+
+* removes duplicate key ([#1147](https://github.com/mesosphere/konvoy-image-builder/issues/1147)) ([9800bf5](https://github.com/mesosphere/konvoy-image-builder/commit/9800bf5d2b227bd827c64b6e91bf82fcad409c8f))
+* set sysctl settings for fs.inotify ([#1148](https://github.com/mesosphere/konvoy-image-builder/issues/1148)) ([aa0c060](https://github.com/mesosphere/konvoy-image-builder/commit/aa0c060ca54d38ad2a3d25767063542e6f91c5c9))
+
 ## [2.12.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.11.1...v2.12.0) (2024-08-13)
 
 
