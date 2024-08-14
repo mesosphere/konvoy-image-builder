@@ -71,7 +71,6 @@
 - name: check kubernetes rpms exist for provided version
   stat:
     path: "/opt/{{ 'kubectl-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
-    path: "/opt/{{ 'kubelet-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
   delegate_to: localhost
   register: haslocalk8srpms
   become: false
