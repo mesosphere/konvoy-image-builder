@@ -110,3 +110,7 @@ nvidia_runfile_installer_url: "https://download.nvidia.com/XFree86/Linux-x86_64/
 suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansible_architecture }}
 
 pinned_debs: []
+
+sysctl_conf_file: >-
+  {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Common Base Linux Mariner', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
+    else '/etc/sysctl.conf' }}

@@ -99,3 +99,15 @@
     packer_builder_type is search('vmware') or
     packer_builder_type is search('vsphere')) and
     ansible_os_family != "Flatcar"
+
+- name: Set and persist kernel params
+  ansible.posix.sysctl:
+    name: "{{ item.param }}"
+    value: "{{ item.val }}"
+    state: present
+    sysctl_set: true
+    sysctl_file: "{{ sysctl_conf_file }}"
+    reload: true
+  loop:
+    - { param: fs.inotify.max_user_instances, val: 8192 }
+    - { param: fs.inotify.max_user_watches, val: 524288 }
