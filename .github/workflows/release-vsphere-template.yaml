@@ -23,6 +23,8 @@ jobs:
             buildConfig: "offline-fips"
           - os: "ubuntu 20.04"
             buildConfig: "offline"
+          - os: "ubuntu 20.04"
+            buildConfig: "basic"
           - os: "rocky 9.1"
             buildConfig: "offline"
           - os: "flatcar"
