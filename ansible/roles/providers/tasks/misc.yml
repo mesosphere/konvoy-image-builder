@@ -50,6 +50,20 @@
     mode: 0644
   when: ansible_os_family != "Flatcar"
 
+- name: Get cloud-init version
+  block:
+  - name: Run cloud-init --version
+    command: cloud-init --version
+    register: system_cloud_init_cmd
+  - name: Set cloud-init version fact
+    set_fact:
+      system_cloud_init_version: "{{ system_cloud_init_cmd.stdout | regex_replace('^.*cloud-init\\s+(\\d+.*)$', '\\1') }}"
+  - name: Set cloud-init version fact from stderr
+    set_fact:
+      system_cloud_init_version: "{{ system_cloud_init_cmd.stderr | regex_replace('^.*cloud-init\\s+(\\d+.*)$', '\\1') }}"
+    when: not system_cloud_init_version
+  when: ansible_os_family != "Flatcar"
+
 - name: set cloudinit feature flags
   copy:
     src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py

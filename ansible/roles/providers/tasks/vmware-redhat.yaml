@@ -1,0 +1,42 @@
+- name: Get package facts
+  ansible.builtin.package_facts:
+    manager: "auto"
+
+- name: Set cloud-init version
+  ansible.builtin.set_fact:
+    cloud_init_version: "{{ ansible_facts.packages['cloud-init'][0].version }}"
+
+# this program used by ds-identify to determine whether or not the
+# VMwareGuestInfo datasource is useable.
+- name: Directly install GuestInfo
+  when: cloud_init_version is version('21.3', '<')
+  block:
+
+    - name: Copy vmware guestinfo datasource
+      copy:
+        src: "{{ item }}"
+        dest: /tmp/
+        owner: root
+        group: root
+        mode: 0755
+      with_items:
+        - cloud-init-vmware.sh
+        - DataSourceVMwareGuestInfo.py
+
+    - name: Create ds-check program to verify VMwareGuestInfo datasource
+      copy:
+        src: files/dscheck_VMwareGuestInfo.sh
+        dest: /usr/bin/dscheck_VMwareGuestInfo
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Execute cloud-init-vmware.sh
+      shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
+      environment:
+        VMWARE_DS_PATH: '/tmp/DataSourceVMwareGuestInfo.py'
+
+    - name: Remove cloud-init-vmware.sh
+      file:
+        path: /tmp/cloud-init-vmware.sh
+        state: absent

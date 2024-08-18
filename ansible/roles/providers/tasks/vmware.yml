@@ -12,20 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Get cloud-init version
-  block:
-  - name: Run cloud-init --version
-    command: cloud-init --version
-    register: system_cloud_init_cmd
-  - name: Set cloud-init version fact
-    set_fact:
-      system_cloud_init_version: "{{ system_cloud_init_cmd.stdout | regex_replace('^.*cloud-init\\s+(\\d+.*)$', '\\1') }}"
-  - name: Set cloud-init version fact from stderr
-    set_fact:
-      system_cloud_init_version: "{{ system_cloud_init_cmd.stderr | regex_replace('^.*cloud-init\\s+(\\d+.*)$', '\\1') }}"
-    when: not system_cloud_init_version
-  when: ansible_os_family != "Flatcar"
-
 - name: Install cloud-init packages
   apt:
     name: "{{ packages }}"
@@ -38,15 +24,6 @@
       - cloud-initramfs-copymods
       - cloud-initramfs-dyn-netconf
   when: ansible_os_family == "Debian"
-
-- name: Install cloud-init packages
-  apt:
-    name: cloud-init-vmware-guestinfo
-    state: present
-    force_apt_get: true
-  when:
-    - system_cloud_init_version is version('23.1.2', '>')
-    - ansible_os_family == "Debian"
 
 - name: Install cloud-init packages
   yum:
@@ -81,19 +58,6 @@
     packages: "cloud-init cloud-utils python3-netifaces"
   when: ansible_os_family == "VMware Photon OS"
 
-- name: Copy vmware guestinfo datasource
-  copy:
-    src: "{{ item }}"
-    dest: /tmp/
-    owner: root
-    group: root
-    mode: 0755
-  with_items:
-    - cloud-init-vmware.sh
-    - DataSourceVMwareGuestInfo.py
-  when:
-    - ansible_os_family != "Flatcar"
-    - system_cloud_init_version is version('23.1.2', '<=')
 
 - name: Copy cloud-init config file for vmware
   copy:
@@ -104,11 +68,10 @@
     mode: 0644
   when:
     - ansible_os_family != "Flatcar"
-    - system_cloud_init_version is version('23.1.2', '<=')
 
 - name: Remove subiquity-disable-cloudinit-networking.cfg
   file:
-    path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
+    path: /etc/cloud/cloud.cfg.d/subiquity-disable-chloudinit-networking.cfg
     state: absent
   when: ansible_os_family != "Flatcar"
 
@@ -117,35 +80,6 @@
     path: /etc/cloud/cloud.cfg.d/99-installer.cfg
     state: absent
   when: ansible_os_family != "Flatcar"
-
-# this program used by ds-identify to determine whether or not the
-# VMwareGuestInfo datasource is useable.
-- name: Create ds-check program to verify VMwareGuestInfo datasource
-  copy:
-    src: files/dscheck_VMwareGuestInfo.sh
-    dest: /usr/bin/dscheck_VMwareGuestInfo
-    owner: root
-    group: root
-    mode: 0755
-  when:
-    - ansible_os_family != "Flatcar"
-    - system_cloud_init_version is version('23.1.2', '<=')
-
-- name: Execute cloud-init-vmware.sh
-  shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
-  environment:
-    VMWARE_DS_PATH: '/tmp/DataSourceVMwareGuestInfo.py'
-  when:
-    - ansible_os_family != "Flatcar"
-    - system_cloud_init_version is version('23.1.2', '<=')
-
-- name: Remove cloud-init-vmware.sh
-  file:
-    path: /tmp/cloud-init-vmware.sh
-    state: absent
-  when:
-    - ansible_os_family != "Flatcar"
-    - system_cloud_init_version is version('23.1.2', '<=')
 
 - name: >-
     Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
