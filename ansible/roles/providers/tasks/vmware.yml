@@ -58,7 +58,7 @@
     packages: "cloud-init cloud-utils python3-netifaces"
   when: ansible_os_family == "VMware Photon OS"
 
-
+# sets the datasource_list to VMwareGuestInfo for all OS
 - name: Copy cloud-init config file for vmware
   copy:
     src: files/etc/cloud/cloud.cfg.d/99-DataSourceVMwareGuestInfo.cfg
