@@ -10,7 +10,7 @@ jobs:
   build-e2e:
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 10
       matrix:
         include:
           - os: "redhat 8.6"
