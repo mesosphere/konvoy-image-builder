@@ -72,6 +72,13 @@ else
   fi
 fi
 
+USER_REPOS="$(awk -F '[][]' '/^\[.*\]/ {print $2}' /etc/yum.repos.d/user-repos.repo | paste -sd, -)"
+if [[ -n "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
+    ENABLED_REPOS="${ENABLED_REPOS},${USER_REPOS}"
+elif [[ -z "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
+    ENABLED_REPOS="${USER_REPOS}"
+fi
+
 yum -y install gettext yum-utils createrepo dnf-utils modulemd-tools
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
