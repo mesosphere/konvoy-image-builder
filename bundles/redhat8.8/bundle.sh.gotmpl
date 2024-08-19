@@ -45,12 +45,26 @@ subscription::defer_unregister() {
 subscription-manager release --set=8.8
 subscription-manager refresh
 subscription::defer_unregister
-subscription-manager repos --enable rhel-8-for-x86_64-baseos-eus-rpms
-subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
-subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
+
+ENABLED_REPOS="kubernetes,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms"
+EUS_REPOS=${EUS_REPOS:-""}
+if [[ -n "${EUS_REPOS}" ]]; then
+  #disables the standard repositories which should not be enabled when using EUS
+  subscription-manager repos --disable=rhel-8-for-x86_64-baseos-rpms --disable=rhel-8-for-x86_64-appstream-rpms
+  subscription-manager repos --enable rhel-8-for-x86_64-baseos-eus-rpms
+  subscription-manager repos --enable rhel-8-for-x86_64-appstream-eus-rpms
+  subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-eus-rpms
+  ENABLED_REPOS="kubernetes,codeready-builder-for-rhel-8-x86_64-eus-rpms,rhel-8-for-x86_64-appstream-eus-rpms,rhel-8-for-x86_64-baseos-eus-rpms"
+else
+  subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+  subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
+  subscription-manager repos --enable rhel-8-for-x86_64-baseos-rpms
+fi
+
 yum -y install gettext yum-utils createrepo dnf-utils modulemd-tools
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
+chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046,SC2062,SC2063,SC2035
@@ -59,11 +73,12 @@ sed -i 1d reqs.txt # we need to get rid of the first line
 #shellcheck disable=SC2046
 yumdownloader --archlist=x86_64,noarch --setopt=skip_missing_names_on_install=False -x \*i686 $(< reqs.txt)
 #shellcheck disable=SC2046
-yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch --resolve --disablerepo=*  --enablerepo=kubernetes,rhel-8-for-x86_64-baseos-eus-rpms,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms $(< packages.txt)
+yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch \
+  --resolve --disablerepo=* --enablerepo="${ENABLED_REPOS}" \
+  $(< packages.txt)
 rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
-chown -R 1000:1000 repodata/
 repo2module . --module-name offline
 createrepo_mod .
 #shellcheck disable=SC1083,SC2035
