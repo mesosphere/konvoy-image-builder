@@ -88,14 +88,15 @@ func getKubernetesVerisonFromAnsible() (string, error) {
 
 func (r *Runner) CreatePackageBundle(args []string) error {
 	var (
-		osFlag                string
-		kubernetesVersionFlag string
-		fipsFlag              bool
-		eusReposFlag          bool
-		satelliteFlag         string
-		outputDirectoy        string
-		containerImage        string
-		fetchKernelHeaders    bool
+		osFlag                  string
+		kubernetesVersionFlag   string
+		fipsFlag                bool
+		eusReposFlag            bool
+		satelliteFlag           string
+		subscriptionManagerFlag bool
+		outputDirectoy          string
+		containerImage          string
+		fetchKernelHeaders      bool
 	)
 	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
 	flagSet.StringVar(
@@ -128,6 +129,12 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		"",
 		//nolint:lll // it is ok to have long help texts
 		"If set, registers with and fetches packages from a Red Hat Satellite. All required repositories must be available in the Red Hat Satellite. Example: --satellite-server-url=\"https://satellite.nutanix.sh\"",
+	)
+	flagSet.BoolVar(
+		&subscriptionManagerFlag,
+		"skip-subscription-manager",
+		false,
+		"If enabled, skips authenticating with subscription-manager and fetching from the pre-configured official RHEL repositories when creating RHEL package bundles. Disabled by default.",
 	)
 	flagSet.StringVar(
 		&outputDirectoy,
@@ -174,6 +181,9 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	}
 	if satelliteFlag != "" {
 		r.env["SATELLITE_SERVER_URL"] = satelliteFlag
+	}
+	if subscriptionManagerFlag {
+		r.env["SKIP_SUBSCRIPTION_MANAGER"] = "true"
 	}
 	bundleCmd := "./bundle.sh"
 	absPathToOutput := outputDirectoy
