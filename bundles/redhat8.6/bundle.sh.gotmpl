@@ -13,6 +13,11 @@ RHSM_ACTIVATION_KEY=${RHSM_ACTIVATION_KEY:-""}
 RHSM_USER=${RHSM_USER:-""}
 RHSM_PASS=${RHSM_PASS:-""}
 
+SATELLITE_SERVER_URL=${SATELLITE_SERVER_URL:-""}
+if [[ -n "${SATELLITE_SERVER_URL}" ]]; then
+  rpm -ivh "${SATELLITE_SERVER_URL}/pub/katello-ca-consumer-latest.noarch.rpm"
+fi
+
 if [[ -n "${RHSM_ORG_ID}" && -n "${RHSM_ACTIVATION_KEY}" ]]; then
   subscription-manager register --org="${RHSM_ORG_ID}" --activationkey="${RHSM_ACTIVATION_KEY}" --force
   FOUND=true

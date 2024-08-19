@@ -92,6 +92,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		kubernetesVersionFlag string
 		fipsFlag              bool
 		eusReposFlag          bool
+		satelliteFlag         string
 		outputDirectoy        string
 		containerImage        string
 		fetchKernelHeaders    bool
@@ -120,6 +121,13 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		"enable-eus-repos",
 		false,
 		"If enabled fetches packages from EUS repositories when creating RHEL package bundles. Disabled by default.",
+	)
+	flagSet.StringVar(
+		&satelliteFlag,
+		"satellite-server-url",
+		"",
+		//nolint:lll // it is ok to have long help texts
+		"If set, registers with and fetches packages from a Red Hat Satellite. All required repositories must be available in the Red Hat Satellite. Example: --satellite-server-url=\"https://satellite.nutanix.sh\"",
 	)
 	flagSet.StringVar(
 		&outputDirectoy,
@@ -163,6 +171,9 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	}
 	if eusReposFlag {
 		r.env["EUS_REPOS"] = "true"
+	}
+	if satelliteFlag != "" {
+		r.env["SATELLITE_SERVER_URL"] = satelliteFlag
 	}
 	bundleCmd := "./bundle.sh"
 	absPathToOutput := outputDirectoy
