@@ -185,6 +185,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 	if subscriptionManagerFlag {
 		r.env["SKIP_SUBSCRIPTION_MANAGER"] = "true"
 	}
+	r.setHTTPProxyEnv()
 	bundleCmd := "./bundle.sh"
 	absPathToOutput := outputDirectoy
 	if !path.IsAbs(outputDirectoy) {
