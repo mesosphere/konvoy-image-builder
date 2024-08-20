@@ -44,6 +44,7 @@ resource "null_resource" "copy_upload_template_script" {
 resource "null_resource" "execute_upload_template_script" {
   provisioner "remote-exec" {
     inline = [
+      "set -o errexit",
       "export PROD_VSPHERE_URL=${var.vsphere_url}",
       "export PROD_VSPHERE_USERNAME=${var.vsphere_username}",
       "export PROD_VSPHERE_PASSWORD=${var.vsphere_password}",
@@ -53,7 +54,6 @@ resource "null_resource" "execute_upload_template_script" {
       "export PROD_TEMPLATE_NAME=${var.vm_template_name_to_upload}",
       "export VCD_ORG=${var.vcd_org}",
       "export VCD_ORG_CATALOG=${var.vcd_org_catalog}",
-      "set -o errexit",
       "chmod +x /home/${var.ssh_user}/upload-template.sh",
       "/home/${var.ssh_user}/upload-template.sh | tee /home/${var.ssh_user}/upload-template.log"
     ]
