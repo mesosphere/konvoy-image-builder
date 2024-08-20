@@ -55,7 +55,7 @@ resource "null_resource" "execute_upload_template_script" {
       "export VCD_ORG=${var.vcd_org}",
       "export VCD_ORG_CATALOG=${var.vcd_org_catalog}",
       "chmod +x /home/${var.ssh_user}/upload-template.sh",
-      "/home/${var.ssh_user}/upload-template.sh | tee /home/${var.ssh_user}/upload-template.log"
+      "/home/${var.ssh_user}/upload-template.sh > /home/${var.ssh_user}/upload-template.log"
     ]
   }
   provisioner "remote-exec" {
