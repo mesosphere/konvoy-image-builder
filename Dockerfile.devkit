@@ -78,6 +78,7 @@ RUN curl -L "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/
 RUN chmod +rx /usr/local/bin/goss-amd64
 ARG BUILDARCH
 RUN ln -s /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
+RUN curl -o /opt/amazon-ssm-agent.rpm https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 
 COPY --from=packer-amd64 /bin/packer /usr/local/bin/packer-amd64
 COPY --from=packer-arm64 /bin/packer /usr/local/bin/packer-arm64

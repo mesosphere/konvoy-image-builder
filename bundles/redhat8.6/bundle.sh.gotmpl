@@ -100,7 +100,6 @@ yumdownloader --disablerepo=* --enablerepo="${ENABLED_REPOS}" \
   --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch \
   --resolve $(<packages.txt)
 rm packages.txt reqs.txt
-curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
 repo2module . --module-name offline
 createrepo_mod .
