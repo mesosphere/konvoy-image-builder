@@ -15,10 +15,9 @@ RHSM_PASS=${RHSM_PASS:-""}
 
 SKIP_SUBSCRIPTION_MANAGER=${SKIP_SUBSCRIPTION_MANAGER:-""}
 SATELLITE_SERVER_URL=${SATELLITE_SERVER_URL:-""}
+ENABLED_REPOS=${ENABLED_REPOS:-""}
 
-if [[ -n "${SKIP_SUBSCRIPTION_MANAGER}" ]]; then
-  echo "Bypassing subscription-manager and upstream RHEL repositories due to --skip-subscription-manager being set to true."
-else
+if [[ -z "${SKIP_SUBSCRIPTION_MANAGER}" ]]; then
   if [[ -n "${SATELLITE_SERVER_URL}" ]]; then
     rpm -ivh "${SATELLITE_SERVER_URL}/pub/katello-ca-consumer-latest.noarch.rpm"
   fi
@@ -70,31 +69,36 @@ else
     subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
     subscription-manager repos --enable rhel-8-for-x86_64-baseos-rpms
   fi
+else
+  echo "Bypassing subscription-manager and upstream RHEL repositories due to --skip-subscription-manager being set to true."
 fi
 
-USER_REPOS="$(awk -F '[][]' '/^\[.*\]/ {print $2}' /etc/yum.repos.d/user-repos.repo | paste -sd, -)"
-if [[ -n "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
-    ENABLED_REPOS="${ENABLED_REPOS},${USER_REPOS}"
-elif [[ -z "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
-    ENABLED_REPOS="${USER_REPOS}"
+if [[ -f /etc/yum.repos.d/user-repos.repo ]]; then
+  USER_REPOS="$(awk -F '[][]' '/^\[.*\]/ {print $2}' /etc/yum.repos.d/user-repos.repo | paste -sd, -)"
+  if [[ -n "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
+      ENABLED_REPOS="${ENABLED_REPOS},${USER_REPOS}"
+  elif [[ -z "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
+      ENABLED_REPOS="${USER_REPOS}"
+  fi
 fi
 
-yum -y install gettext yum-utils createrepo dnf-utils modulemd-tools
+yum -y install --disablerepo=* --enablerepo="${ENABLED_REPOS}" gettext yum-utils createrepo dnf-utils modulemd-tools
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
 chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046,SC2062,SC2063,SC2035
-repoquery --archlist=x86_64,noarch --resolve --requires --recursive $(<packages.txt) | grep -v *.i686 >>reqs.txt
-sed -i 1d reqs.txt # we need to get rid of the first line
+repoquery --disablerepo=* --enablerepo="${ENABLED_REPOS}" \
+  --archlist=x86_64,noarch --resolve --requires --recursive $(<packages.txt) \
+  | grep -vE '*.i686|^[[:space:]]*$|Unable to read consumer identity|This system is not registered with an entitlement server|Updating Subscription Management repositories' >>reqs.txt
 #shellcheck disable=SC2046
-yumdownloader --archlist=x86_64,noarch \
-  --setopt=skip_missing_names_on_install=False -x \*i686 $(<reqs.txt)
+yumdownloader --disablerepo=* --enablerepo="${ENABLED_REPOS}" \
+  --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch $(<reqs.txt)
 #shellcheck disable=SC2046
-yumdownloader --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch \
-  --resolve --disablerepo=* --enablerepo="${ENABLED_REPOS}" \
-  $(<packages.txt)
+yumdownloader --disablerepo=* --enablerepo="${ENABLED_REPOS}" \
+  --setopt=skip_missing_names_on_install=False -x \*i686 --archlist=x86_64,noarch \
+  --resolve $(<packages.txt)
 rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
