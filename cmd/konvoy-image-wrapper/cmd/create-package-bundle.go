@@ -134,6 +134,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		&subscriptionManagerFlag,
 		"skip-subscription-manager",
 		false,
+		//nolint:lll // it is ok to have long help texts
 		"If enabled, skips authenticating with subscription-manager and fetching from the pre-configured official RHEL repositories when creating RHEL package bundles. Disabled by default.",
 	)
 	flagSet.StringVar(
@@ -177,6 +178,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		}
 	}
 	if eusReposFlag {
+		//nolint:goconst // it is ok to not use const here
 		r.env["EUS_REPOS"] = "true"
 	}
 	if satelliteFlag != "" {
