@@ -78,12 +78,12 @@ if [[ -n "${KUBERNETES_REPOS}" ]]; then
   ENABLED_REPOS="${ENABLED_REPOS},kubernetes"
 fi
 
-if [[ -f /etc/yum.repos.d/user-repos.repo ]]; then
-  USER_REPOS="$(awk -F '[][]' '/^\[.*\]/ {print $2}' /etc/yum.repos.d/user-repos.repo | paste -sd, -)"
-  if [[ -n "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
-      ENABLED_REPOS="${ENABLED_REPOS},${USER_REPOS}"
-  elif [[ -z "${ENABLED_REPOS}" ]] && [[ -n "${USER_REPOS}" ]]; then
-      ENABLED_REPOS="${USER_REPOS}"
+if [[ -f /etc/yum.repos.d/additional-repos.repo ]]; then
+  ADDITIONAL_REPOS="$(/usr/libexec/platform-python3.6 -c "import configparser; config = configparser.ConfigParser(); config.read('/etc/yum.repos.d/additional-repos.repo');  print(','.join(config.sections()) if config.sections() else '')")"
+  if [[ -n "${ENABLED_REPOS}" ]] && [[ -n "${ADDITIONAL_REPOS}" ]]; then
+      ENABLED_REPOS="${ENABLED_REPOS},${ADDITIONAL_REPOS}"
+  elif [[ -z "${ENABLED_REPOS}" ]] && [[ -n "${ADDITIONAL_REPOS}" ]]; then
+      ENABLED_REPOS="${ADDITIONAL_REPOS}"
   fi
 fi
 
