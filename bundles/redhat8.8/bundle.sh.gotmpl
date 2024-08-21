@@ -55,7 +55,7 @@ if [[ -z "${SKIP_SUBSCRIPTION_MANAGER}" ]]; then
   subscription-manager refresh
   subscription::defer_unregister
 
-  ENABLED_REPOS="kubernetes,codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms"
+  ENABLED_REPOS="codeready-builder-for-rhel-8-x86_64-rpms,rhel-8-for-x86_64-appstream-rpms,rhel-8-for-x86_64-baseos-rpms"
   EUS_REPOS=${EUS_REPOS:-""}
   if [[ -n "${EUS_REPOS}" ]]; then
     #disables the standard repositories which should not be enabled when using EUS
@@ -63,7 +63,7 @@ if [[ -z "${SKIP_SUBSCRIPTION_MANAGER}" ]]; then
     subscription-manager repos --enable rhel-8-for-x86_64-baseos-eus-rpms
     subscription-manager repos --enable rhel-8-for-x86_64-appstream-eus-rpms
     subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-eus-rpms
-    ENABLED_REPOS="kubernetes,codeready-builder-for-rhel-8-x86_64-eus-rpms,rhel-8-for-x86_64-appstream-eus-rpms,rhel-8-for-x86_64-baseos-eus-rpms"
+    ENABLED_REPOS="codeready-builder-for-rhel-8-x86_64-eus-rpms,rhel-8-for-x86_64-appstream-eus-rpms,rhel-8-for-x86_64-baseos-eus-rpms"
   else
     subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
     subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
@@ -71,6 +71,11 @@ if [[ -z "${SKIP_SUBSCRIPTION_MANAGER}" ]]; then
   fi
 else
   echo "Bypassing subscription-manager and upstream RHEL repositories due to --skip-subscription-manager being set to true."
+fi
+
+KUBERNETES_REPOS=${KUBERNETES_REPOS:-""}
+if [[ -n "${KUBERNETES_REPOS}" ]]; then
+  ENABLED_REPOS="${ENABLED_REPOS},kubernetes"
 fi
 
 if [[ -f /etc/yum.repos.d/user-repos.repo ]]; then

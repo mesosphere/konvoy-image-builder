@@ -51,6 +51,7 @@ subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
 yum --disablerepo=appstream-centos -y install gettext yum-utils createrepo dnf-utils
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
+chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046,SC2062,SC2063,SC2035
