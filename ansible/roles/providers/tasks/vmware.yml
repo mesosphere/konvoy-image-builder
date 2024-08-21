@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# FIXME: remove after upgrading ansible
-- name: update apt cache
-  command: apt-get update
-
 - name: Install cloud-init packages
   apt:
     name: "{{ packages }}"
@@ -62,16 +58,6 @@
   vars:
     packages: "cloud-init cloud-utils python3-netifaces"
   when: ansible_os_family == "VMware Photon OS"
-
-# sets the datasource_list to VMwareGuestInfo for all OS
-- name: Copy cloud-init config file for vmware
-  copy:
-    src: files/etc/cloud/cloud.cfg.d/99-DataSourceVMwareGuestInfo.cfg
-    dest: /etc/cloud/cloud.cfg.d/99-DataSourceVMwareGuestInfo.cfg
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_os_family != "Flatcar"
 
 - name: Remove subiquity-disable-cloudinit-networking.cfg
   file:

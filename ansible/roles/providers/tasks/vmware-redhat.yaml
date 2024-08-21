@@ -40,3 +40,13 @@
       file:
         path: /tmp/cloud-init-vmware.sh
         state: absent
+
+    # sets the datasource_list to VMwareGuestInfo for all OS
+    # ensure that VMwareGuestInfo overrides existing datasource drop-ins if it exists.
+    - name: Copy cloud-init config file for vmware
+      copy:
+        src: files/etc/cloud/cloud.cfg.d/99-DataSourceVMwareGuestInfo.cfg
+        dest: /etc/cloud/cloud.cfg.d/99-DataSourceVMwareGuestInfo.cfg
+        owner: root
+        group: root
+        mode: 0644
