@@ -137,14 +137,14 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		}
 	}
 
-	if buildOS == "flatcar" || buildOS == "ubuntu 20.04" && buildInfra == ova {
-		flatcarOverride := "packer-ova-flatcar-override.yaml"
-		flatcarOverrideFlag := fmt.Sprintf("--overrides=%s", flatcarOverride)
-		overrideFlagForCmd = append(overrideFlagForCmd, flatcarOverrideFlag)
-		fmt.Printf("making flatcar/ubuntu override %s \n", flatcarOverride)
+	if buildConfig == basic && buildInfra == ova {
+		basicOverride := "packer-ova-basic-override.yaml"
+		basicOverrideFlag := fmt.Sprintf("--overrides=%s", basicOverride)
+		overrideFlagForCmd = append(overrideFlagForCmd, basicOverrideFlag)
+		fmt.Printf("making basic override %s \n", basicOverride)
 		// TODO: @faiq - move this to mage
-		if err := sh.RunV("make", flatcarOverride); err != nil {
-			return fmt.Errorf("failed to override for flatcar ova %s %v", flatcarOverride, err)
+		if err := sh.RunV("make", basicOverride); err != nil {
+			return fmt.Errorf("failed to override for basic ova %s %v", basicOverride, err)
 		}
 	}
 
@@ -411,7 +411,6 @@ func createOSBundle(osName, kubernetesVersion, downloadDir string, fips, gpu boo
 	}
 	if osName == "redhat 8.8" || osName == "redhat 8.6" {
 		args = append(args, "--enable-eus-repos=true")
-
 	}
 	if gpu {
 		args = append(args, "--fetch-kernel-headers=true")
