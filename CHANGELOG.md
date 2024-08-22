@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.13.0...v2.13.1) (2024-08-22)
+
+
+### Bug Fixes
+
+* cloud init problems with ubuntu ([#1150](https://github.com/mesosphere/konvoy-image-builder/issues/1150)) ([c35b7d4](https://github.com/mesosphere/konvoy-image-builder/commit/c35b7d4627fd22d306deb48b8c3eeea248c2ba9b))
+
 ## [2.13.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.12.0...v2.13.0) (2024-08-14)
 
 
