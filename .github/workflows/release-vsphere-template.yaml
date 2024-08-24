@@ -10,7 +10,7 @@ jobs:
   build-e2e:
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 10
       matrix:
         include:
           - os: "redhat 8.4"
@@ -22,7 +22,7 @@ jobs:
           - os: "redhat 8.4"
             buildConfig: "offline-fips"
           - os: "ubuntu 20.04"
-            buildConfig: "offline"
+            buildConfig: "basic"
           - os: "rocky 9.1"
             buildConfig: "offline"
           - os: "flatcar"
