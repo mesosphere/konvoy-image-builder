@@ -45,6 +45,13 @@ jobs:
         env:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          # notarize options
+          NOTARIZE_DARWIN_BINARY: 'true'
+          MACOS_SIGN_P12: "${{ secrets.NCN_APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}"
+          MACOS_SIGN_PASSWORD: "${{ secrets.NCN_APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}"
+          MACOS_NOTARY_ISSUER_ID: "${{ secrets.NCN_APPSTORECONNECT_ISSUER_ID }}"
+          MACOS_NOTARY_KEY_ID: "${{ secrets.NCN_APPSTORECONNECT_KEY_ID }}"
+          MACOS_NOTARY_KEY: "${{ secrets.NCN_APPSTORECONNECT_PRIVATE_KEY }}"
 
   bump-kib:
     runs-on: ubuntu-22.04
