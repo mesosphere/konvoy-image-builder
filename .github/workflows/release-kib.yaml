@@ -7,14 +7,14 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 name: Release konvoy-image-builder
 jobs:
   release-to-github:
     runs-on:
-    - self-hosted
-    - small
+      - self-hosted
+      - small
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,11 +24,11 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           cache: true
 
       - name: Download GoReleaser
-        run: go install github.com/goreleaser/goreleaser@v1.15.2
+        run: go install github.com/goreleaser/goreleaser/v2@v2.2.0
 
       - name: Docker Login
         uses: docker/login-action@v3
@@ -46,7 +46,7 @@ jobs:
           DOCKER_CLI_EXPERIMENTAL: "enabled"
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           # notarize options
-          NOTARIZE_DARWIN_BINARY: 'true'
+          NOTARIZE_DARWIN_BINARY: "true"
           MACOS_SIGN_P12: "${{ secrets.NCN_APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}"
           MACOS_SIGN_PASSWORD: "${{ secrets.NCN_APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}"
           MACOS_NOTARY_ISSUER_ID: "${{ secrets.NCN_APPSTORECONNECT_ISSUER_ID }}"
