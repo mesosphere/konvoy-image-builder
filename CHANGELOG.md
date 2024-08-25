@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.13.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.13.1...v2.13.2) (2024-08-25)
+
+
+### Bug Fixes
+
+* add macos binary notarization ([10a69ab](https://github.com/mesosphere/konvoy-image-builder/commit/10a69ab3d18c6135437d236558be1f45e87bd1b5))
+* bump goreleaser version ([eb69896](https://github.com/mesosphere/konvoy-image-builder/commit/eb6989655d3a5f1a80dba31d3c95d3a84b92e045))
+
 ## [2.13.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.13.0...v2.13.1) (2024-08-22)
 
 
