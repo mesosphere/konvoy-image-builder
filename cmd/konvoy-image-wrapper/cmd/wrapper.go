@@ -7,11 +7,13 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"os/user"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/mitchellh/go-homedir"
 
@@ -368,6 +370,16 @@ func (r *Runner) dockerRun(args []string) error {
 	cmd.Args = append(cmd.Args, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(c)
+	go func() {
+		for sig := range c {
+			if signalErr := cmd.Process.Signal(sig); signalErr != nil {
+				fmt.Fprintf(cmd.Stderr, "failed to relay signal %s %v\n", sig.String(), signalErr)
+			}
+		}
+	}()
 
 	err := cmd.Run()
 	if err != nil {
@@ -503,7 +515,10 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to make temp %w", err)
 	}
-	defer os.RemoveAll(r.tempDir)
+	defer func() {
+		fmt.Println("Removing temporary directory", r.tempDir)
+		os.RemoveAll(r.tempDir)
+	}()
 
 	// Setup the user and group mappings in the container so that uid and
 	// gid on the host can be properly resolved in the container too.
