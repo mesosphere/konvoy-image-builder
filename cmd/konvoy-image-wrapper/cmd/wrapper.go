@@ -281,7 +281,6 @@ func (r *Runner) mountFileEnv(envName string, containerPath string) error {
 	if containerPath == "" {
 		containerPath = absFilePath
 	}
-
 	r.env[envName] = containerPath
 	r.addBindVolume(absFilePath, containerPath, "readonly")
 	return nil
@@ -305,8 +304,9 @@ func (r *Runner) setHTTPProxyEnv() {
 	}
 }
 
-func (r *Runner) setAnsibleHostKeyChecking() {
+func (r *Runner) setAnsibleEnvs() {
 	r.env["ANSIBLE_HOST_KEY_CHECKING"] = "false"
+	r.env["ANSIBLE_LOCAL_TEMP"] = containerWorkingDir
 }
 
 func (r *Runner) setupSSHAgent() {
@@ -337,7 +337,6 @@ func (r *Runner) dockerRun(args []string) error {
 
 	if runtime.GOOS != windows && r.containerEngine == containerEngineDocker {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
-		r.addBindVolume(r.tempDir, r.homeDir)
 	}
 
 	for _, gid := range r.supplementaryGroupIDs {
@@ -481,6 +480,7 @@ func (r *Runner) maskSSHKnownHosts() error {
 	return nil
 }
 
+//nolint:gocyclo // its a complicated function.
 func (r *Runner) Run(args []string) error {
 	// Get the Konvoy image version for marker file
 	var err error
@@ -516,8 +516,10 @@ func (r *Runner) Run(args []string) error {
 		return fmt.Errorf("failed to make temp %w", err)
 	}
 	defer func() {
-		fmt.Println("Removing temporary directory", r.tempDir)
-		os.RemoveAll(r.tempDir)
+		removeErr := os.RemoveAll(r.tempDir)
+		if removeErr != nil {
+			fmt.Fprintf(os.Stderr, "error removing kib temporary directory: %s\n", removeErr)
+		}
 	}()
 
 	// Setup the user and group mappings in the container so that uid and
@@ -560,7 +562,7 @@ func (r *Runner) Run(args []string) error {
 		return fmt.Errorf("failed to load image %w", err)
 	}
 
-	r.setAnsibleHostKeyChecking()
+	r.setAnsibleEnvs()
 	r.setupSSHAgent()
 	// Run the command in the konvoy docker container.
 	return r.dockerRun(args)
