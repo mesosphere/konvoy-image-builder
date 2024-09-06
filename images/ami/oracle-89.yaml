@@ -1,12 +1,12 @@
 ---
-build_name: "oracle-7"
+build_name: "oracle-8.9"
 packer_builder_type: "amazon"
 python_path: ""
 packer:
-  ami_filter_name: "OL7.9-x86_64-HVM-2023-01-05"
+  ami_filter_name: "OL8.9-x86_64-HVM-2024-02-02"
   ami_filter_owners: "131827586825"
   distribution: "Oracle"
-  distribution_version: "7.9"
+  distribution_version: "8.9"
   source_ami: ""
   ssh_username: "ec2-user"
   root_device_name: "/dev/sda1"
