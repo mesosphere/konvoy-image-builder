@@ -17,7 +17,7 @@ jobs:
       max-parallel: 10
       matrix:
         include:
-          - os: "oracle 7.9"
+          - os: "oracle 8.9"
             buildConfig: "fips"
           - os: "redhat 8.6"
             buildConfig: "offline"

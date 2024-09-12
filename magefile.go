@@ -46,7 +46,7 @@ var (
 		"redhat 8.6",
 		"redhat 8.8",
 		"sles 15",
-		"oracle 7.9",
+		"oracle 8.9",
 		"flatcar",
 		"ubuntu 18.04",
 		"ubuntu 20.04",

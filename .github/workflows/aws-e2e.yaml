@@ -48,12 +48,12 @@ jobs:
             buildConfig: "basic"
           - os: "sles 15"
             buildConfig: "nvidia"
-          # Oracle 7.9
-          - os: "oracle 7.9"
+          # Oracle 8.9
+          - os: "oracle 8.9"
             buildConfig: "basic"
-          - os: "oracle 7.9"
+          - os: "oracle 8.9"
             buildConfig: "fips"
-          - os: "oracle 7.9"
+          - os: "oracle 8.9"
             buildConfig: "rhck"
           # Flatcar
           - os: "flatcar"
