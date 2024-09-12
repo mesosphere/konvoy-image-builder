@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/coreos/go-semver/semver"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"gopkg.in/yaml.v2"
@@ -24,7 +23,13 @@ var (
 	baseURL         = "https://downloads.d2iq.com/dkp"
 	containerdURL   = "https://packages.d2iq.com/dkp/containerd"
 	nvidiaURL       = "https://download.nvidia.com/XFree86/Linux-x86_64"
+	pipPackagesFile = "pip-packages.tar.gz"
 	overrideDirName = "overrides"
+
+	fipsSuffix               = "_fips"
+	tgzExt                   = ".tar.gz"
+	perm         os.FileMode = 0o700
+	artifactsDir             = "artifacts"
 )
 
 var (
@@ -128,38 +133,8 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 				}
 			}
 		}()
-		// we need to fetch the proper os-bundle
-		// pip packages
-		// image bundle
-		// nvidia
-		// containerd
-		// TODO: @faiq - move this to mage
-		if err := sh.RunV("make", "pip-packages-artifacts"); err != nil {
-			return fmt.Errorf("failed to download pip packages %v", err)
-		}
-		kubeVersion, err := getKubernetesVerisonForBuild()
-		if err != nil {
-			return fmt.Errorf("failed to read kubernetes version %w", err)
-		}
-
-		// Fetch artifacts
-		isFips := buildConfig == offlineFIPS
-		if err := os.MkdirAll(path.Join("artifacts", "images"), 0775); err != nil {
-			return fmt.Errorf("failed to create artifacts/images err %w", err)
-		}
-		if err := fetchOSBundle(buildOS, kubeVersion, isFips); err != nil {
-			return fmt.Errorf("failed to fetch OS bundle %w", err)
-		}
-		if err := fetchImageBundle(kubeVersion, isFips); err != nil {
-			return fmt.Errorf("failed to fetch Image bundle %w", err)
-		}
-		if err := fetchContainerd(buildOS, isFips); err != nil {
-			return fmt.Errorf("failed to fetch containerd %w", err)
-		}
-		if buildConfig == offlineNvidia {
-			if err := fetchNvidiaRunFile(); err != nil {
-				return fmt.Errorf("failed to fetch nvidiaRunFile %w", err)
-			}
+		if err := downloadAirgappedArtifacts(buildOS, buildConfig); err != nil {
+			return fmt.Errorf("failed to fetch airgap artifacts: %w", err)
 		}
 	}
 	args := []string{"build"}
@@ -329,184 +304,23 @@ func getInfraOverride(buildInfra string) string {
 	return ""
 }
 
-func getKubernetesVerisonForBuild() (string, error) {
-	bytes, err := os.ReadFile(path.Join("images", "common.yaml"))
-	if err != nil {
-		return "", err
-	}
-	var config map[string]interface{}
-	if err := yaml.Unmarshal(bytes, &config); err != nil {
-		return "", err
-	}
-	return config["kubernetes_version"].(string), nil
-}
-
-func fetchOSBundle(osName, kubernetesVersion string, fips bool) error {
-	fetchClient := http.DefaultClient
-	u, err := url.Parse(baseURL)
-	if err != nil {
-		return fmt.Errorf("failed to parse url %w", err)
-	}
-	osInfo := strings.Split(osName, " ")
-	osDist := osInfo[0]
-	osMajor := strings.Split(osInfo[1], ".")[0]
-
-	airgappedBundlePath := fmt.Sprintf("%s_%s_%s_x86_64", kubernetesVersion, osDist, osMajor)
-	if fips {
-		airgappedBundlePath = airgappedBundlePath + "_fips"
-	}
-	airgappedBundlePath = airgappedBundlePath + ".tar.gz"
-
-	u.Path = path.Join(u.Path,
-		"airgapped",
-		"os-packages",
-		airgappedBundlePath,
-	)
-	fmt.Println("Downloading artifact from ", u.String())
-	resp, err := fetchClient.Do(&http.Request{
-		Method: http.MethodGet,
-		URL:    u,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to download os bundle %w", err)
-	}
-	defer resp.Body.Close()
-	outFile := path.Join("artifacts", airgappedBundlePath)
-	out, err := os.Create(outFile)
-	if err != nil {
-		return fmt.Errorf("failed to create file %w", err)
-	}
-	defer out.Close()
-	_, err = io.Copy(out, resp.Body)
-	return err
-}
-
-func fetchImageBundle(kubernetesVersion string, fips bool) error {
-	fetchClient := http.DefaultClient
-	u, err := url.Parse(baseURL)
-	if err != nil {
-		return fmt.Errorf("failed to parse url %w", err)
-	}
-	imageBundleName := fmt.Sprintf("kubernetes-images-%s-d2iq.1", kubernetesVersion)
-	v := semver.New(kubernetesVersion)
-	ext := ".tar"
-	if v.Minor < int64(oldImageFormatVersion) {
-		imageBundleName = fmt.Sprintf("%s_images", kubernetesVersion)
-		ext = ".tar.gz"
-	}
-	if fips {
-		imageBundleName = imageBundleName + "-fips"
-	}
-	imageBundleName = imageBundleName + ext
-	u.Path = path.Join(u.Path, "airgapped",
-		"kubernetes-images",
-		imageBundleName)
-	fmt.Println("Downloading image bundle from ", u.String())
-	resp, err := fetchClient.Do(&http.Request{
-		Method: http.MethodGet,
-		URL:    u,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to get image bundle %w", err)
-	}
-	defer resp.Body.Close()
-	outFile := path.Join("artifacts", "images", imageBundleName)
-	out, err := os.Create(outFile)
-	if err != nil {
-		return fmt.Errorf("failed to create file %w", err)
-	}
-	defer out.Close()
-	_, err = io.Copy(out, resp.Body)
-	return err
-}
-
-func fetchContainerd(osName string, fips bool) error {
-	bytes, err := os.ReadFile(path.Join("ansible", "group_vars", "all", "defaults.yaml"))
-	if err != nil {
-		return fmt.Errorf("failed to read file %w", err)
-	}
-	var config map[string]interface{}
-	if err = yaml.Unmarshal(bytes, &config); err != nil {
-		return fmt.Errorf("failed to unmarshal yaml %w", err)
-	}
-	containerdVersion, ok := config["containerd_version"].(string)
-	if !ok {
-		return fmt.Errorf("could not parse containerd version in bytes %v", bytes)
-	}
-	fetchClient := http.DefaultClient
-	u, err := url.Parse(containerdURL)
-	if err != nil {
-		return fmt.Errorf("failed to parse URL %w", err)
-	}
-	osInfo := strings.Split(osName, " ")
-	osDist := osInfo[0]
-	// TODO: improve this
-	osMajorMinor := strings.Split(osInfo[1], ".")
-	osMajor := osMajorMinor[0]
-	osMinor := osMajorMinor[1]
-	osDist = strings.Replace(osDist, "redhat", "rhel", 1)
-	containerdPath := fmt.Sprintf("containerd-%s-d2iq.1-%s-%s.%s-x86_64", containerdVersion, osDist, osMajor, osMinor)
-	if fips {
-		containerdPath = containerdPath + "_fips"
-	}
-	containerdPath = containerdPath + ".tar.gz"
-	u.Path = path.Join(u.Path, containerdPath)
-	fmt.Println("fetching assets from ", u.String())
-	resp, err := fetchClient.Do(&http.Request{
-		Method: http.MethodGet,
-		URL:    u,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to get containerd %w", err)
-	}
-	defer resp.Body.Close()
-	outFile := path.Join("artifacts", containerdPath)
-	out, err := os.Create(outFile)
-	if err != nil {
-		return fmt.Errorf("failed to create file %w", err)
-	}
-	defer out.Close()
-	_, err = io.Copy(out, resp.Body)
-	return err
-}
-
 func fetchNvidiaRunFile() error {
-	bytes, err := os.ReadFile(path.Join("ansible", "group_vars", "all", "defaults.yaml"))
+	config, err := getAnsibleDefaults()
 	if err != nil {
-		return fmt.Errorf("failed to read file %w", err)
-	}
-	var config map[string]interface{}
-	if err = yaml.Unmarshal(bytes, &config); err != nil {
-		return fmt.Errorf("failed to unmarshal yaml %w", err)
+		return fmt.Errorf("failed to parse ansible defaults: %w", err)
 	}
 	nvidiaRunfileVersion, ok := config["nvidia_driver_version"].(string)
 	if !ok {
-		return fmt.Errorf("could not parse nvidia_driver_version version in bytes %v", bytes)
+		return fmt.Errorf("could not parse nvidia_driver_version version")
 	}
-	fetchClient := http.DefaultClient
 	u, err := url.Parse(nvidiaURL)
 	if err != nil {
 		return fmt.Errorf("failed to parse URL %w", err)
 	}
 	runFile := fmt.Sprintf("NVIDIA-Linux-x86_64-%s.run", nvidiaRunfileVersion)
 	u.Path = path.Join(u.Path, nvidiaRunfileVersion, runFile)
-	fmt.Println("Downloading artifact from ", u.String())
-	resp, err := fetchClient.Do(&http.Request{
-		URL:    u,
-		Method: http.MethodGet,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to download runfile %w", err)
-	}
-	defer resp.Body.Close()
-	outFile := path.Join("artifacts", runFile)
-	out, err := os.Create(outFile)
-	if err != nil {
-		return fmt.Errorf("failed to create file %w", err)
-	}
-	defer out.Close()
-	_, err = io.Copy(out, resp.Body)
-	return err
+	destPath := path.Join("artifacts", runFile)
+	return downloadArtifact(u, destPath)
 }
 
 func getVMForBuild(buildInfra, buildConfig string) string {
@@ -531,4 +345,154 @@ func getVMForBuild(buildInfra, buildConfig string) string {
 	default:
 		return ""
 	}
+}
+
+func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
+	ansibleDefaults, err := getAnsibleDefaults()
+	if err != nil {
+		return fmt.Errorf("failed to parse ansible default vars: %w", err)
+	}
+	kubeVersion, ok := ansibleDefaults["kubernetes_version"].(string)
+	if !ok {
+		return fmt.Errorf("unable to parse kubernetes_version from ansible defaults")
+	}
+	containerdVersion, ok := ansibleDefaults["containerd_version"].(string)
+	if !ok {
+		return fmt.Errorf("unable to parse containerd_version from ansible defaults")
+	}
+	// Fetch artifacts
+	isFips := buildConfig == offlineFIPS
+	if err := fetchOSBundle(buildOS, kubeVersion, artifactsDir, isFips); err != nil {
+		return fmt.Errorf("failed to fetch OS bundle %w", err)
+	}
+	if err := fetchImageBundle(kubeVersion, artifactsDir, isFips); err != nil {
+		return fmt.Errorf("failed to fetch Image bundle %w", err)
+	}
+	if err := fetchContainerd(buildOS, artifactsDir, containerdVersion, isFips); err != nil {
+		return fmt.Errorf("failed to fetch containerd %w", err)
+	}
+	if err := fetchPipPackages(artifactsDir); err != nil {
+		return fmt.Errorf("failed to fetch pip packages %w", err)
+	}
+	if buildConfig == offlineNvidia {
+		if err := fetchNvidiaRunFile(); err != nil {
+			return fmt.Errorf("failed to fetch nvidiaRunFile %w", err)
+		}
+	}
+	return nil
+}
+
+func fetchOSBundle(osName, kubernetesVersion, downloadDir string, fips bool) error {
+	osInfo := strings.Split(osName, " ")
+	osDist := osInfo[0]
+	osMajor := strings.Split(osInfo[1], ".")[0]
+
+	airgappedBundlePath := fmt.Sprintf("%s_%s_%s_x86_64", kubernetesVersion, osDist, osMajor)
+	if fips {
+		airgappedBundlePath += fipsSuffix
+	}
+	airgappedBundlePath += tgzExt
+
+	srcURL, err := url.Parse(baseURL)
+	if err != nil {
+		return fmt.Errorf("failed to parse url %s :%w", baseURL, err)
+	}
+	srcURL.Path = path.Join(srcURL.Path, "airgapped", "os-packages", airgappedBundlePath)
+	osBundleDownloadPath := path.Join(downloadDir, airgappedBundlePath)
+	return downloadArtifact(srcURL, osBundleDownloadPath)
+}
+
+func fetchImageBundle(kubernetesVersion, downloadDir string, fips bool) error {
+	imageBundleName := fmt.Sprintf("kubernetes-images-%s-d2iq.1", kubernetesVersion)
+	if fips {
+		imageBundleName += "-fips"
+	}
+	imageBundleName += ".tar"
+	srcURL, err := url.Parse(baseURL)
+	if err != nil {
+		return fmt.Errorf("failed to parse url %w", err)
+	}
+	srcURL.Path = path.Join(srcURL.Path, "airgapped", "kubernetes-images", imageBundleName)
+	destPath := filepath.Join(downloadDir, "images", imageBundleName)
+	return downloadArtifact(srcURL, destPath)
+}
+
+func fetchPipPackages(downloadDir string) error {
+	srcURL, err := url.Parse(baseURL)
+	if err != nil {
+		return fmt.Errorf("failed to parse url %w", err)
+	}
+	srcURL.Path = path.Join(srcURL.Path, "airgapped", "pip-packages", pipPackagesFile)
+	destPath := filepath.Join(downloadDir, pipPackagesFile)
+	return downloadArtifact(srcURL, destPath)
+}
+
+func fetchContainerd(osName, downloadDir, containerdVersion string, fips bool) error {
+	osInfo := strings.Split(osName, " ")
+	osDist := osInfo[0]
+	// TODO: improve this
+	osMajorMinor := strings.Split(osInfo[1], ".")
+	osMajor := osMajorMinor[0]
+	osMinor := osMajorMinor[1]
+	osDist = strings.Replace(osDist, "redhat", "rhel", 1)
+	containerdFile := fmt.Sprintf("containerd-%s-d2iq.1-%s-%s.%s-x86_64", containerdVersion, osDist, osMajor, osMinor)
+	if fips {
+		containerdFile += "_fips"
+	}
+	containerdFile += tgzExt
+	srcURL, err := url.Parse(containerdURL)
+	if err != nil {
+		return fmt.Errorf("failed to parse URL %w", err)
+	}
+	srcURL.Path = path.Join(srcURL.Path, containerdFile)
+	destPath := filepath.Join(downloadDir, containerdFile)
+	return downloadArtifact(srcURL, destPath)
+}
+
+func downloadArtifact(srcURL *url.URL, destPath string) error {
+	fmt.Println("Downloading", srcURL.String(), "to", destPath)
+	resp, err := http.DefaultClient.Do(&http.Request{
+		Method: http.MethodGet,
+		URL:    srcURL,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to download %s: %w", srcURL.String(), err)
+	}
+	defer resp.Body.Close()
+
+	destDir := filepath.Dir(destPath)
+	_, statErr := os.Stat(destDir)
+	if os.IsNotExist(statErr) {
+		if err = os.MkdirAll(destDir, perm); err != nil {
+			return fmt.Errorf("error creating download directory %s: %w", destDir, err)
+		}
+	} else if statErr != nil {
+		//nolint:wrapcheck //error has all context needed
+		return err
+	}
+	out, err := os.Create(destPath)
+	if err != nil {
+		return fmt.Errorf("failed to create file %w", err)
+	}
+	defer out.Close()
+	_, err = io.Copy(out, resp.Body)
+	//nolint:wrapcheck // error has all context needed
+	return err
+}
+
+func getAnsibleDefaults() (map[string]interface{}, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get process's working dir: %w", err)
+	}
+
+	bytes, err := os.ReadFile(path.Join(pwd, "ansible", "group_vars", "all", "defaults.yaml"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to read ansible defaults file %w", err)
+	}
+	var config map[string]interface{}
+	if err = yaml.Unmarshal(bytes, &config); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal ansible defaults %w", err)
+	}
+	return config, nil
 }
