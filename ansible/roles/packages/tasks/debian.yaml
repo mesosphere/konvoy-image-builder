@@ -4,19 +4,18 @@
     name: apt-transport-https
     state: latest
     update_cache: true
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
-
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: apt update package management cache
   apt:
     update_cache: true
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: install common debs
   apt:
@@ -26,10 +25,10 @@
       - python3-cryptography
       - python3-pip
     state: present
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: install pinned debs
   apt:
@@ -56,20 +55,20 @@
     name: kubelet={{ package_versions.kubernetes_deb }}
     state: present
     force: true
-  register: kubelet_installation_deb
-  until: kubelet_installation_deb is success
-  retries: 3
-  delay: 3
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: install kubectl deb package
   apt:
     name: kubectl={{ package_versions.kubernetes_deb }}
     state: present
     force: true
-  register: result
-  until: result is success
-  retries: 3
-  delay: 3
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: add version hold for kubelet and kubectl packages
   command: apt-mark hold {{ item }}

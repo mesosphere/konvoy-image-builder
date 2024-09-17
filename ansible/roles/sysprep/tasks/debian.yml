@@ -57,6 +57,10 @@
     autoclean: true
     autoremove: true
     force_apt_get: true
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: Remove apt package lists
   file:
