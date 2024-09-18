@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.14.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.13.2...v2.14.0) (2024-09-18)
+
+
+### Features
+
+* adds oracle 8.9 support ([#1165](https://github.com/mesosphere/konvoy-image-builder/issues/1165)) ([4926074](https://github.com/mesosphere/konvoy-image-builder/commit/492607469516eae1b77d71aa984e64c2003e343c))
+* Support creating Ubuntu 22.04 OVA (vSphere) image ([#1170](https://github.com/mesosphere/konvoy-image-builder/issues/1170)) ([7fdf913](https://github.com/mesosphere/konvoy-image-builder/commit/7fdf913067f354be4cd9625c4e590b8def3e9907))
+
+
+### Bug Fixes
+
+* Wait for concurrent apt process to release lock ([#1177](https://github.com/mesosphere/konvoy-image-builder/issues/1177)) ([d277468](https://github.com/mesosphere/konvoy-image-builder/commit/d2774683e646424dd1af42858d5893f19d047b92))
+
 ## [2.13.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.13.1...v2.13.2) (2024-08-25)
 
 
