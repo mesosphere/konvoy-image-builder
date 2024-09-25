@@ -1,5 +1,7 @@
 ---
 version: 2
+project:
+  name:konvoy-image-builder
 before:
   hooks:
     - go mod download
