@@ -21,7 +21,7 @@ crictl_version: "{{ kubernetes_major_minor }}.1"
 # The url points to the linux/amd64 release artifact.
 crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
 # The sha256 sum verifies the integrity of the release artifact.
-crictl_sha256: d16a1ffb3938f5a19d5c8f45d363bd091ef89c0bc4d44ad16b933eede32fdcbb
+crictl_sha256: 71873cdeeeb6c9ee0f79c27b45db38066da81f0c30dcda909b4eedc3aff63f59
 
 
 # The critools deb and rpm package versions. While the version derives directly from
