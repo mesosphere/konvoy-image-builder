@@ -31,6 +31,10 @@ jobs:
           buildConfig: "basic"
         - os: "rocky 9.1"
           buildConfig: "offline"
+        - os: "oracle 9.4"
+          buildConfig: "basic"
+        - os: "oracle 9.4"
+          buildConfig: "fips"
         - os: "flatcar"
           buildConfig: "basic"
     runs-on:
