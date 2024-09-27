@@ -16,14 +16,22 @@
 
 
 - block:
+  - name: check cri-tools rpm exists locally at '/opt'
+    stat:
+      path: "/opt/{{ 'cri-tools-' + critools_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+    delegate_to: localhost
+    register: haslocalcritools
+    become: false
+
   - name: copy cri-tools rpm
     copy:
       src: "/opt/{{ 'cri-tools-' + critools_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
       dest: "/opt/{{ 'cri-tools-' + critools_rpm }}.rpm"
+    when: haslocalcritools.stat.exists
 
   - name: install cri-tools rpm package
     yum:
-      name: "/opt/{{ 'cri-tools-' + critools_rpm }}.rpm"
+      name: "{{ '/opt/'  if haslocalcritools.stat.exists }}{{ 'cri-tools-' + critools_rpm }}{{'.rpm' if haslocalcritools.stat.exists }}"
       state: present
       update_cache: true
       enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
