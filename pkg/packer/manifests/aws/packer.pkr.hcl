@@ -151,8 +151,8 @@ variable "skip_profile_validation" {
 }
 
 variable "snapshot_groups" {
-  type    = string
-  default = "all"
+  type    = list(string)
+  default = []
 }
 
 variable "snapshot_users" {
@@ -382,7 +382,7 @@ source "amazon-ebs" "kib_image" {
   secret_key              = var.aws_secret_key
   security_group_id       = var.security_group_id
   skip_profile_validation = var.skip_profile_validation
-  snapshot_groups         = split(",", var.snapshot_groups)
+  snapshot_groups         = var.snapshot_groups
   snapshot_tags = {
     ami_name = local.ami_name
   }
