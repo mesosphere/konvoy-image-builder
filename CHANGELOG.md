@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.15.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.14.0...v2.15.0) (2024-09-27)
+
+
+### Features
+
+* bump Containerd patch release 1.7.22 ([#1183](https://github.com/mesosphere/konvoy-image-builder/issues/1183)) ([893720d](https://github.com/mesosphere/konvoy-image-builder/commit/893720d732f19e44fbf562baad1c2afcb2018ad0))
+* bump the k8s version ([#1188](https://github.com/mesosphere/konvoy-image-builder/issues/1188)) ([eddd723](https://github.com/mesosphere/konvoy-image-builder/commit/eddd723ea8f1108045470766b269aabeeb6326f8))
+
+
+### Bug Fixes
+
+* enable installing cri-tools rpm from upstream repo ([#1191](https://github.com/mesosphere/konvoy-image-builder/issues/1191)) ([4f29942](https://github.com/mesosphere/konvoy-image-builder/commit/4f299425c6ffee8f2b1f9ecdcce890d1da33becd))
+
 ## [2.14.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.13.2...v2.14.0) (2024-09-18)
 
 
