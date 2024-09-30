@@ -15,7 +15,7 @@ jobs:
       max-parallel: 8
       matrix:
         include:
-        - os: "redhat 8.6"
+        - os: "oracle 9.4"
           buildConfig: "offline"
         - os: "redhat 8.6"
           buildConfig: "offline-fips"
@@ -58,7 +58,7 @@ jobs:
         with:
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
-      
+
       - name: Login to D2iQ's Mirror Registry
         uses: docker/login-action@v3
         with:
@@ -73,7 +73,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_BASTION_KEY_CONTENTS }}
-      
+
       # configure git to access private repo hosting vsphere module mesosphere/vcenter-tools
       - name: Configure git to clone private registry from mesosphere org
         run: |

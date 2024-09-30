@@ -18,6 +18,7 @@ var (
 		"rocky-9.1",
 		"ubuntu-18.04",
 		"ubuntu-20.04",
+		"oracle-9.4",
 	}
 )
 

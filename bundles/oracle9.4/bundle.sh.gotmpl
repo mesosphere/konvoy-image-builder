@@ -1,0 +1,35 @@
+#!/bin/bash
+set -x
+set -euo pipefail
+
+# When yum operates on multiple packages, it does not, by default, return an error if a subset
+# of packages is not found. This makes yum return an error.
+echo skip_missing_names_on_install=False >> /etc/yum.conf
+
+# Install required tools for repository creation
+yum -y install epel-release gettext dnf-utils createrepo modulemd-tools yum-utils
+yum clean all
+
+TMP_DIR="$(mktemp -d repodata-XXXX)"
+chmod 777 -R "${TMP_DIR}"
+cp packages.txt "${TMP_DIR}"
+pushd "${TMP_DIR}"
+#shellcheck disable=SC2046
+repoquery --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
+#shellcheck disable=SC2046
+yumdownloader  --archlist=x86_64,noarch -x \*i686 $(< packages.txt)
+rm packages.txt
+
+createrepo -v .
+repo2module . --module-name offline
+createrepo_mod .
+
+# Package the repository into a tarball with proper permissions
+#shellcheck disable=SC1083,SC2035
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_oraclelinux_9.4_x86_64{{ .FipsSuffix }}.tar.gz *
+#shellcheck disable=SC1083,SC2035
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_oraclelinux_9.4_x86_64{{ .FipsSuffix }}.tar.gz
+
+# Return to the original directory and clean up
+popd
+rm -rf "${TMP_DIR}"

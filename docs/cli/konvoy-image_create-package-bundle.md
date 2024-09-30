@@ -19,7 +19,7 @@ create-package-bundle --os redhat-8.4 --output-directory=artifacts
       --fips                        If the package bundle should include fips packages.
   -h, --help                        help for create-package-bundle
       --kubernetes-version string   The version of kubernetes to download packages for.
-      --os string                   The target OS you wish to create a package bundle for. Must be one of [centos-7.9 redhat-7.9 redhat-8.4 redhat-8.6 redhat-8.8 rocky-9.1 ubuntu-18.04 ubuntu-20.04]
+      --os string                   The target OS you wish to create a package bundle for. Must be one of [centos-7.9 redhat-7.9 redhat-8.4 redhat-8.6 redhat-8.8 rocky-9.1 ubuntu-18.04 ubuntu-20.04 oracle-9.4]
       --output-directory string     The directory to place the bundle in. (default "artifacts")
 ```
 

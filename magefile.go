@@ -447,12 +447,15 @@ func fetchPipPackages(downloadDir string) error {
 
 func fetchContainerd(osName, downloadDir, containerdVersion string, fips bool) error {
 	osInfo := strings.Split(osName, " ")
-	osDist := osInfo[0]
 	// TODO: improve this
 	osMajorMinor := strings.Split(osInfo[1], ".")
 	osMajor := osMajorMinor[0]
 	osMinor := osMajorMinor[1]
+
+	osDist := osInfo[0]
 	osDist = strings.Replace(osDist, "redhat", "rhel", 1)
+	osDist = strings.Replace(osDist, "oracle", "ol", 1)
+
 	containerdFile := fmt.Sprintf("containerd-%s-d2iq.1-%s-%s.%s-x86_64", containerdVersion, osDist, osMajor, osMinor)
 	if fips {
 		containerdFile += "_fips"
