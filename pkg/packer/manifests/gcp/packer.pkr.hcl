@@ -274,6 +274,7 @@ source "googlecompute" "kib_image" {
   ssh_username                = var.ssh_username
   wait_to_add_ssh_keys        = "20s"
   zone                        = local.zone
+  disable_default_service_account = true
 
   skip_create_image = var.dry_run
 }
