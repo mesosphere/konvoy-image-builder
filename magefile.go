@@ -179,7 +179,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	}
 	// extra args for gcp
 	if buildInfra == gcp {
-		args = append(args, "--project-id=eng-ksphere-platform-e2e", "--network=kib-ssh-network")
+		args = append(args, "--project-id=ncn-ci-workloads", "--network=kib-ssh-network")
 	}
 	fmt.Printf("Running %s with args %v\n", wrapperCmd, args)
 	return sh.RunV(wrapperCmd, args...)
