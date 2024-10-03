@@ -47,6 +47,7 @@ var (
 		"redhat 8.8",
 		"sles 15",
 		"oracle 8.9",
+		"oracle 9.4",
 		"flatcar",
 		"ubuntu 18.04",
 		"ubuntu 20.04",
@@ -138,7 +139,7 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 		}
 	}
 
-	if buildConfig == basic && buildInfra == ova {
+	if (buildConfig == basic || buildConfig == fips) && buildInfra == ova {
 		basicOverride := "packer-ova-basic-override.yaml"
 		basicOverrideFlag := fmt.Sprintf("--overrides=%s", basicOverride)
 		overrideFlagForCmd = append(overrideFlagForCmd, basicOverrideFlag)
