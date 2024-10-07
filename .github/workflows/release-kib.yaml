@@ -96,7 +96,7 @@ jobs:
           echo "pr_type=$PR_TYPE" >> "$GITHUB_ENV"
 
       - name: Create Pull Request for KIB bump in CAPPP
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
           add-paths: preprovisioned/kib
