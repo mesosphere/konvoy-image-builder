@@ -47,6 +47,10 @@ var osToConfig = map[string]OSConfig{
 		configDir:      "bundles/ubuntu20.04",
 		containerImage: "docker.io/library/ubuntu:20.04",
 	},
+	"oracle-9.4": {
+		configDir:      "bundles/oracle9.4",
+		containerImage: "docker.io/library/oraclelinux:9",
+	},
 }
 
 func getKubernetesVerisonFromAnsible() (string, error) {

@@ -31,6 +31,10 @@ jobs:
             buildConfig: "basic"
           - os: "oracle 9.4"
             buildConfig: "fips"
+          - os: "oracle 9.4"
+            buildConfig: "offline"
+          - os: "oracle 9.4"
+            buildConfig: "offline-fips"
           - os: "flatcar"
             buildConfig: "basic"
     runs-on:
@@ -55,7 +59,7 @@ jobs:
         with:
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
-      
+
       - name: Login to D2iQ's Mirror Registry
         uses: docker/login-action@v3
         with:

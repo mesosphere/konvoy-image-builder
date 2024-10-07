@@ -26,12 +26,13 @@
   retries: 5
   delay: 6
 
-
-- name: install tar rpm package
+- name: install tar and container-selinux rpm package
   yum:
     name: "{{ item }}"
     state: present
     update_cache: true
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
   register: result
   until: result is success
   retries: 5
