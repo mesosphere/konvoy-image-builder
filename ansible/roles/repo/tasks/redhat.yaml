@@ -48,57 +48,6 @@
     - rhelorg.subscribed_pool_ids is defined or rheluser.subscribed_pool_ids is defined
     - ansible_distribution_major_version == '8'
 
-# The AppStream repo for Centos 8 is not available from centos mirror list.
-# AlmaLinux is 1:1 binary compatible with RHEL and subscription free.
-# Alma linux's extra repository symlinks epel repository rpms. https://wiki.almalinux.org/repos/AlmaLinux.html
-# Why not RHEL repo?: RHEL is RHEL though the free subscription expires once a year.
-# it cannot be renewed until it does expire and then you have to re-register your systems to pick up the new subscription.
-# Also RHEL repos are missing some python3 rpms that we need.
-- name: add alma linux extra repository
-  yum_repository:
-    name: alma-linux-extra
-    description: Extra repository for alma linux
-    file: almalinux
-    baseurl: "{{ alma_linux_extra_repo_base_url }}"
-    mirrorlist: "{{ alma_linux_extra_repo_mirror_list_url }}"
-    enabled: yes
-    gpgkey: "{{ alma_linux_gpg_key_url }}"
-    gpgcheck: yes
-  when:
-    - ansible_distribution_major_version == '8'
-
-# epel-release for Centos/RHEL/Oracle 8 will be installed using Alma linux "extra" repository
-- name: install epel-release for RHEL 8.x
-  yum:
-    name:
-      - epel-release
-    state: present
-    disablerepo: appstream
-  when:
-    - ansible_distribution_major_version == '8'
-
-# The epel repo files installed from alma linux contain variable "$releasever".
-# This variable may not get properly replaced in all environments.
-# Replace it with the minor version "8" (similar to what upstream does).
-# see https://access.redhat.com/discussions/5473561?page=2
-- name: find epel-release repo files
-  find:
-    depth: 1
-    paths: /etc/yum.repos.d
-    patterns: 'epel*.repo'
-  register: epel_repo_files
-  when:
-    - ansible_distribution_major_version == '8'
-
-- name: set $releasever variables in epel-release repo files
-  replace:
-    path: "{{ item.path }}"
-    regexp: '\$releasever'
-    replace: '8'
-  loop: "{{ epel_repo_files.files }}"
-  when:
-    - ansible_distribution_major_version == '8'
-
 # RPM
 - name: add Konvoy Kubernetes rpm repository
   yum_repository:
@@ -112,7 +61,3 @@
   until: konvoy_repo_installation_rpm is success
   retries: 5
   delay: 6
-
-- name: clean yum caches
-  shell: yum clean all
-  when: ansible_distribution_major_version == '7'
