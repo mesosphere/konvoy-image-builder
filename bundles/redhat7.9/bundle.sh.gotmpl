@@ -58,6 +58,7 @@ subscription-manager repos --enable=rhel-7-server-extras-rpms
 yum -y install createrepo gettext yum-utils https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
+chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046

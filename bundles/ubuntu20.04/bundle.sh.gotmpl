@@ -24,6 +24,7 @@ sed -i 's/cri-tools/cri-tools='"{{ .CRIToolsVersion }}-${DEB_PATCH_VERSION}"'/' 
 sed -i 's/cloud-init/cloud-init='"23.1.2-0ubuntu0~20.04.2"'/' /tmp/packages
 
 TMP_DIR="$(mktemp -d repodata-XXXX)"
+chmod 777 -R "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046
 apt-get download $(< /tmp/packages)
