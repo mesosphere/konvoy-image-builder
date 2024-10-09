@@ -30,3 +30,8 @@
 
 - include_tasks: misc.yml
   when: packer_builder_type and packer_builder_type != ""
+
+- include_tasks: vmware-redhat.yaml
+  when: 
+  - packer_builder_type is search('vmware') or packer_builder_type is search('vsphere')
+  - ansible_os_family == "RedHat"
