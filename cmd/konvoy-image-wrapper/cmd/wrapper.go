@@ -373,10 +373,9 @@ func (r *Runner) dockerRun(args []string) error {
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	defer signal.Stop(c)
 	go func() {
-		for sig := range c {
-			if signalErr := cmd.Process.Signal(sig); signalErr != nil {
-				fmt.Fprintf(cmd.Stderr, "failed to relay signal %s %v\n", sig.String(), signalErr)
-			}
+		sig := <-c
+		if signalErr := cmd.Process.Signal(sig); signalErr != nil {
+			fmt.Fprintf(cmd.Stderr, "failed to relay signal %s %v\n", sig.String(), signalErr)
 		}
 	}()
 
