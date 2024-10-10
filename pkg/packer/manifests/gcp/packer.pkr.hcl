@@ -80,6 +80,11 @@ variable "project_id" {
   default = ""
 }
 
+variable "image_storage_locations" {
+  type    = string
+  default = ""
+}
+
 variable "region" {
   type    = string
   default = ""
@@ -238,6 +243,7 @@ locals {
   ansible_extra_vars   = "${var.ansible_extra_vars}"
   build_timestamp      = local.timestamp
   zone                 = "${var.region}-a"
+  image_storage_locations = split(",", var.image_storage_locations)
   generated_image_name = "konvoy-${var.build_name}-${var.kubernetes_full_version}-${local.build_timestamp}"
   # clean_resource_name https://github.com/hashicorp/packer-plugin-googlecompute/blob/81d8d5a740c0d7fb0b02be93133ac17a11557f34/builder/googlecompute/template_funcs.go#L20
   image_name           = regex_replace(lower(local.generated_image_name), "[^-a-z0-9]", "-")
@@ -267,6 +273,7 @@ source "googlecompute" "kib_image" {
   image_name                  = local.image_name
   network                     = var.network
   project_id                  = var.project_id
+  image_storage_locations = local.image_storage_locations
   region                      = var.region
   source_image                = var.source_image
   source_image_family         = var.distribution_family
@@ -274,7 +281,6 @@ source "googlecompute" "kib_image" {
   ssh_username                = var.ssh_username
   wait_to_add_ssh_keys        = "20s"
   zone                        = local.zone
-
   skip_create_image = var.dry_run
 }
 
