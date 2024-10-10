@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.16.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.15.0...v2.16.0) (2024-10-10)
+
+
+### Features
+
+* add Oracle Linux 9.4 vSphere build configuration ([#1190](https://github.com/mesosphere/konvoy-image-builder/issues/1190)) ([1aa335b](https://github.com/mesosphere/konvoy-image-builder/commit/1aa335bce08d4c7ef248cf9e4e66414ad6d2973a))
+* Support building offline OS bundles for Oracle Linux 9.4 ([#1192](https://github.com/mesosphere/konvoy-image-builder/issues/1192)) ([f8da088](https://github.com/mesosphere/konvoy-image-builder/commit/f8da0883dd01298393ba5b9aeecb91a0d66ede21))
+
+
+### Bug Fixes
+
+* remove appstream code as its not needed ([#1202](https://github.com/mesosphere/konvoy-image-builder/issues/1202)) ([e9b4f51](https://github.com/mesosphere/konvoy-image-builder/commit/e9b4f512739020ed3b2a3ab4b7a8819fe95f1b99))
+
 ## [2.15.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.14.0...v2.15.0) (2024-09-27)
 
 
