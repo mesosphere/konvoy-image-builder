@@ -77,6 +77,7 @@ func getKubernetesVerisonFromAnsible() (string, error) {
 	return kubeVersion, nil
 }
 
+//nolint:funlen // no need to split this function
 func (r *Runner) CreatePackageBundle(args []string) error {
 	var (
 		osFlag                string
@@ -157,6 +158,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 		fetchKubernetesRPMs = false
 	}
 	if eusReposFlag {
+		//nolint:goconst // this is a flag
 		r.env["EUS_REPOS"] = "true"
 	}
 	if fetchKubernetesRPMs {
