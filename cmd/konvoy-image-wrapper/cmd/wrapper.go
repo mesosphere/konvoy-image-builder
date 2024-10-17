@@ -369,17 +369,25 @@ func (r *Runner) dockerRun(args []string) error {
 	cmd.Args = append(cmd.Args, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	subStdin, err := cmd.StdinPipe()
+	if err != nil {
+		return fmt.Errorf("failed to make pipe %w", err)
+	}
+	defer subStdin.Close()
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setsid:    true,
+		Pdeathsig: syscall.SIGKILL,
+	}
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	defer signal.Stop(c)
 	go func() {
 		sig := <-c
-		if signalErr := cmd.Process.Signal(sig); signalErr != nil {
+		if signalErr := cmd.Process.Signal(os.Interrupt); signalErr != nil {
 			fmt.Fprintf(cmd.Stderr, "failed to relay signal %s %v\n", sig.String(), signalErr)
 		}
 	}()
-
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return fmt.Errorf("cmd failed %w", err)
 	}
