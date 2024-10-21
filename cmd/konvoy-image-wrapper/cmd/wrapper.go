@@ -7,11 +7,13 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"os/user"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/mitchellh/go-homedir"
 
@@ -279,7 +281,6 @@ func (r *Runner) mountFileEnv(envName string, containerPath string) error {
 	if containerPath == "" {
 		containerPath = absFilePath
 	}
-
 	r.env[envName] = containerPath
 	r.addBindVolume(absFilePath, containerPath, "readonly")
 	return nil
@@ -303,8 +304,9 @@ func (r *Runner) setHTTPProxyEnv() {
 	}
 }
 
-func (r *Runner) setAnsibleHostKeyChecking() {
+func (r *Runner) setAnsibleEnvs() {
 	r.env["ANSIBLE_HOST_KEY_CHECKING"] = "false"
+	r.env["ANSIBLE_LOCAL_TEMP"] = containerWorkingDir
 }
 
 func (r *Runner) setupSSHAgent() {
@@ -335,7 +337,6 @@ func (r *Runner) dockerRun(args []string) error {
 
 	if runtime.GOOS != windows && r.containerEngine == containerEngineDocker {
 		cmd.Args = append(cmd.Args, "-u", r.usr.Uid+":"+r.usr.Gid)
-		r.addBindVolume(r.tempDir, r.homeDir)
 	}
 
 	for _, gid := range r.supplementaryGroupIDs {
@@ -368,8 +369,25 @@ func (r *Runner) dockerRun(args []string) error {
 	cmd.Args = append(cmd.Args, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
-	err := cmd.Run()
+	subStdin, err := cmd.StdinPipe()
+	if err != nil {
+		return fmt.Errorf("failed to make pipe %w", err)
+	}
+	defer subStdin.Close()
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setsid:    true,
+		Pdeathsig: syscall.SIGKILL,
+	}
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(c)
+	go func() {
+		sig := <-c
+		if signalErr := cmd.Process.Signal(os.Interrupt); signalErr != nil {
+			fmt.Fprintf(cmd.Stderr, "failed to relay signal %s %v\n", sig.String(), signalErr)
+		}
+	}()
+	err = cmd.Run()
 	if err != nil {
 		return fmt.Errorf("cmd failed %w", err)
 	}
@@ -469,6 +487,7 @@ func (r *Runner) maskSSHKnownHosts() error {
 	return nil
 }
 
+//nolint:gocyclo // its a complicated function.
 func (r *Runner) Run(args []string) error {
 	// Get the Konvoy image version for marker file
 	var err error
@@ -503,7 +522,12 @@ func (r *Runner) Run(args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to make temp %w", err)
 	}
-	defer os.RemoveAll(r.tempDir)
+	defer func() {
+		removeErr := os.RemoveAll(r.tempDir)
+		if removeErr != nil {
+			fmt.Fprintf(os.Stderr, "error removing kib temporary directory: %s\n", removeErr)
+		}
+	}()
 
 	// Setup the user and group mappings in the container so that uid and
 	// gid on the host can be properly resolved in the container too.
@@ -545,7 +569,7 @@ func (r *Runner) Run(args []string) error {
 		return fmt.Errorf("failed to load image %w", err)
 	}
 
-	r.setAnsibleHostKeyChecking()
+	r.setAnsibleEnvs()
 	r.setupSSHAgent()
 	// Run the command in the konvoy docker container.
 	return r.dockerRun(args)
