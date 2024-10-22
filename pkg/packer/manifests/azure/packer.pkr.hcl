@@ -9,8 +9,8 @@ packer {
       source  = "github.com/hashicorp/ansible"
     }
     goss = {
-      version = ">=3.1.5"
-      source = "github.com/supershal/goss"
+      version = ">=3.3.0"
+      source = "github.com/mesosphere/goss"
     }
   }
 }
