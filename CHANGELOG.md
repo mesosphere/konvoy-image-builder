@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.16.0...v2.16.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* update goss Packer plugin ([#1208](https://github.com/mesosphere/konvoy-image-builder/issues/1208)) ([89a2637](https://github.com/mesosphere/konvoy-image-builder/commit/89a26376031e1c6165eaf0de74e1518779aa6746))
+
 ## [2.16.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.15.0...v2.16.0) (2024-10-21)
 
 
