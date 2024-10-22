@@ -123,7 +123,7 @@ RUN --mount=type=secret,id=githubtoken PACKER_GITHUB_API_TOKEN="$(cat /run/secre
     packer-${BUILDARCH} plugins install github.com/hashicorp/ansible ">=1.1.0" && \
     packer-${BUILDARCH} plugins install github.com/hashicorp/vsphere ">=1.0.8" && \
     packer-${BUILDARCH} plugins install github.com/ivoronin/sshkey ">=1.0.1" && \
-    packer-${BUILDARCH} plugins install github.com/supershal/goss ">=3.1.5"
+    packer-${BUILDARCH} plugins install github.com/mesosphere/goss ">=3.3.0"
 
 # Non-trivial bash scripting like e.g. the Makefile require bash instead of
 # plain sh, in order to function.
