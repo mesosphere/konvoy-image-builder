@@ -49,9 +49,10 @@ const (
 	PackerAzureTenantIDPath              = "/packer/tenant_id"
 	PackerAzureCloudEndpointPath         = "/packer/cloud_environment_name"
 
-	PackerGCPProjectIDPath = "/packer/project_id"
-	PackerGCPNetworkPath   = "/packer/network"
-	PackerGCPRegionPath    = "/packer/region"
+	PackerGCPProjectIDPath     = "/packer/project_id"
+	PackerGCPNetworkPath       = "/packer/network"
+	PackerGCPRegionPath        = "/packer/region"
+	PackerGCPImageLocationPath = "/packer/image_storage_locations"
 
 	PackerVSphereTemplatePath          = "/packer/template"
 	PackerVSphereClusterPath           = "/packer/cluster"

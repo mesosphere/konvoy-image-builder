@@ -72,6 +72,13 @@ func addGCPArgs(fs *flag.FlagSet, gcp *app.GCPArgs) {
 		"the project id to use when storing created image",
 	)
 
+	fs.StringSliceVar(
+		&gcp.ImageLocation,
+		"image-storage-locations",
+		[]string{},
+		"the location to use when storing created image",
+	)
+
 	fs.StringVar(
 		&gcp.Network,
 		"network",

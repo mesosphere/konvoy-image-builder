@@ -6,9 +6,10 @@ import (
 )
 
 type GCPArgs struct {
-	ProjectID string // the project ID to which the source VM belongs.
-	Region    string // the region where the source VM is located.
-	Network   string // the network in which to load image creation, should have .
+	ProjectID     string   // the project ID to which the source VM belongs.
+	Region        string   // the region where the source VM is located.
+	Network       string   // the network in which to load image creation, should have .
+	ImageLocation []string // the location where the image will be stored.
 }
 
 func ensureGCP() error {
