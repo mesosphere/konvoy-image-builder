@@ -48,6 +48,14 @@
     - rhelorg.subscribed_pool_ids is defined or rheluser.subscribed_pool_ids is defined
     - ansible_distribution_major_version == '8'
 
+# Disable support for EUS repos if this is RHEL 8.10 because its not needed
+- name: Disable EUS repos for RHEL 8.10
+  shell: subscription-manager repos --disable=rhel-8-for-x86_64-baseos-eus-rpms && subscription-manager repos --disable=rhel-8-for-x86_64-appstream-eus-rpms
+  when:
+    - ansible_distribution == 'RedHat'
+    - rhelorg.subscribed_pool_ids is defined or rheluser.subscribed_pool_ids is defined
+    - ansible_distribution_version is version('8.10', '==')
+
 # RPM
 - name: add Konvoy Kubernetes rpm repository
   yum_repository:
