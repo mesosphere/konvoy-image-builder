@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.16.1...v2.16.2) (2024-10-24)
+
+
+### Bug Fixes
+
+* tests for podman ([#1211](https://github.com/mesosphere/konvoy-image-builder/issues/1211)) ([40815f7](https://github.com/mesosphere/konvoy-image-builder/commit/40815f7adfd6967d83cec72adf5f533c76bcac99))
+
 ## [2.16.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.16.0...v2.16.1) (2024-10-22)
 
 
