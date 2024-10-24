@@ -1,0 +1,43 @@
+audit
+ca-certificates
+conntrack-tools
+chrony
+ebtables
+open-vm-tools
+python2-pip
+python3-pip
+socat
+sysstat
+yum-utils
+yum-plugin-versionlock
+NetworkManager
+cloud-init
+cloud-utils-growpart
+container-selinux
+{{ if .FetchKubernetesRPMs -}}
+kubectl-{{ .KubernetesVersion }}-0
+kubelet-{{ .KubernetesVersion }}-0
+kubeadm-{{ .KubernetesVersion }}-0
+cri-tools
+{{- end }}
+conntrack
+ebtables
+ethtool
+iproute
+iptables
+iscsi-initiator-utils
+socat
+gcc
+glibc-devel
+glibc-gconv-extra
+make
+libseccomp
+iproute-tc
+gssproxy
+libverto-module-base
+libverto
+nfs-utils
+{{ if .FetchKernelHeaders -}}
+kernel-headers-4.18.0-553.5.1.el8_10
+kernel-devel-4.18.0-553.5.1.el8_10
+{{- end }}
