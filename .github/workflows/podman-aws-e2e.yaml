@@ -51,12 +51,12 @@ jobs:
           aws-region: us-west-2
 
       - name: Download GoReleaser
-        run: go install github.com/goreleaser/goreleaser@v1.15.2
+        run: go install github.com/goreleaser/goreleaser/v2@v2.2.0
 
       - name: Build snapshot
         run:  |-
           make build-for-podman
-          goreleaser build --config=.goreleaser-podman-e2e.yml --clean --skip-validate
+          goreleaser build --config=.goreleaser-podman-e2e.yml --clean --skip=validate
 
       - name: Run E2E test for AWS Rocky 9.1 using podman
         run: |-
