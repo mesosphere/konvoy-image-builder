@@ -112,7 +112,8 @@
 - name: install driver
   shell:
     ./nvidia-installer -s \
-      --log-file-name=$(pwd)/nvidia-installer.log
+      --log-file-name=$(pwd)/nvidia-installer.log \
+      --no-cc-version-check
   args:
     chdir: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}"
 
