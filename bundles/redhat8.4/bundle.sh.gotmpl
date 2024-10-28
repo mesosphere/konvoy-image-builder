@@ -64,7 +64,10 @@ rm packages.txt reqs.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v .
 chown -R 1000:1000 repodata/
-yum install -y modulemd-tools
+# The package modulemd-tools is not available directly in RHEL 8.4
+# https://github.com/rpm-software-management/modulemd-tools?tab=readme-ov-file#installation-instructions
+dnf copr enable frostyx/modulemd-tools-epel
+dnf install modulemd-tools
 repo2module . --module-name offline
 createrepo_mod .
 #shellcheck disable=SC1083,SC2035
