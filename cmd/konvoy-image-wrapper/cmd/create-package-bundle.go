@@ -39,6 +39,10 @@ var osToConfig = map[string]OSConfig{
 		configDir:      "bundles/redhat8.8",
 		containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",
 	},
+	"redhat-8.10": {
+		configDir:      "bundles/redhat8.10",
+		containerImage: "registry.access.redhat.com/ubi8/ubi:8.10",
+	},
 	"rocky-9.1": {
 		configDir:      "bundles/rocky9.1",
 		containerImage: "docker.io/library/rockylinux:9.1",
