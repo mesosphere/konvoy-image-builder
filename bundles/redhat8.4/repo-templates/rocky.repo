@@ -1,4 +1,5 @@
-[rocky-appstream]
+# this is used to fetch the repo2mod utility which is not availible through rhel repositories
+[appstream-rocky]
 name=Rocky Linux $releasever - AppStream
 mirrorlist=https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=AppStream-$releasever
 #baseurl=http://dl.rockylinux.org/$contentdir/$releasever/AppStream/$basearch/os/
