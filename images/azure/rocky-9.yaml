@@ -1,5 +1,5 @@
 ---
-build_name: "rocky-9-az"
+build_name: "rocky-9"
 packer_builder_type: "azure"
 python_path: ""
 packer:
