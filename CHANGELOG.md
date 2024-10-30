@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.17.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.16.1...v2.17.0) (2024-10-30)
+
+
+### Features
+
+* adds rhel 8.10 support for aws ([#1210](https://github.com/mesosphere/konvoy-image-builder/issues/1210)) ([8479654](https://github.com/mesosphere/konvoy-image-builder/commit/84796541c48b8b7f504ba796a202a8022a99f88b))
+* adds rhel 8.10 vsphere support ([#1216](https://github.com/mesosphere/konvoy-image-builder/issues/1216)) ([c5bf9eb](https://github.com/mesosphere/konvoy-image-builder/commit/c5bf9eb4ba4bba211f7ed7fe7ea4c086c2b526a8))
+
+
+### Bug Fixes
+
+* Replaces Azure rocky-9.1 with rocky-9.3 image ([#1215](https://github.com/mesosphere/konvoy-image-builder/issues/1215)) ([fbf31f8](https://github.com/mesosphere/konvoy-image-builder/commit/fbf31f82b79bb18a3d1a6313b74340ca39bb707c))
+* tests for podman ([#1211](https://github.com/mesosphere/konvoy-image-builder/issues/1211)) ([40815f7](https://github.com/mesosphere/konvoy-image-builder/commit/40815f7adfd6967d83cec72adf5f533c76bcac99))
+
 ## [2.16.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.16.0...v2.16.1) (2024-10-22)
 
 
