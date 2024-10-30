@@ -1,5 +1,5 @@
 ---
-build_name: "rocky-93-az"
+build_name: "rocky-9-az"
 packer_builder_type: "azure"
 python_path: ""
 packer:
@@ -7,7 +7,7 @@ packer:
   distribution_version: "9-base"    # SKU
   # Azure Rocky linux official image: https://azuremarketplace.microsoft.com/en/marketplace/apps/resf.rockylinux-x86_64?tab=Overview
   image_publisher: "resf"
-  image_version: "9.3.20231113"
+  image_version: "latest"
   ssh_username: "azureuser"
   plan_image_sku: "9-base" # SKU
   plan_image_offer: "rockylinux-x86_64" # offer
