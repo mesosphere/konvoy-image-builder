@@ -15,11 +15,11 @@ jobs:
       max-parallel: 10
       matrix:
         os:
+        - "rocky 9.3"
         - "ubuntu 20.04"
-        - "rocky 9.1"
         buildConfig:
         - "basic"
-    runs-on: 
+    runs-on:
     - self-hosted
     - medium
     continue-on-error: false
@@ -41,7 +41,7 @@ jobs:
         with:
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
-      
+
       - name: Login to D2iQ's Mirror Registry
         uses: docker/login-action@v3
         with:
