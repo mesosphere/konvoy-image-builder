@@ -12,7 +12,7 @@ chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
 #shellcheck disable=SC2046
-repoquery --archlist=x86_64,noarch  --resolve --requires --recursive  $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
+repoquery --archlist=x86_64,noarch --resolve --requires --recursive $(< packages.txt) | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
 #shellcheck disable=SC2046
 yumdownloader  --archlist=x86_64,noarch -x \*i686 $(< packages.txt)
 rm packages.txt
