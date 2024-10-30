@@ -16,7 +16,7 @@ jobs:
       max-parallel: 10
       matrix:
         include:
-          - os: "rocky 9.3"
+          - os: "rocky 9"
             buildConfig: "basic"
           - os: "ubuntu 20.04"
             buildConfig: "basic"
