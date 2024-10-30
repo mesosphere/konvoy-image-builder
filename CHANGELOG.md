@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.17.0...v2.17.1) (2024-10-30)
+
+
+### Bug Fixes
+
+* use Rocky 9 without a minor version for Azure ([#1217](https://github.com/mesosphere/konvoy-image-builder/issues/1217)) ([8c852d6](https://github.com/mesosphere/konvoy-image-builder/commit/8c852d6d008625646fdda626e16a86055f91848d))
+
 ## [2.17.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.16.1...v2.17.0) (2024-10-30)
 
 
