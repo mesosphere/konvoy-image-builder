@@ -8,7 +8,7 @@ kubernetes_rpm_gpg_key_url: "https://packages.d2iq.com/konvoy/stable/linux/repos
 
 ## Debian
 kubernetes_deb_repository_url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_major_minor }}/deb/"
-kubernetes_deb_gpg_key_url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_major_minor }}/deb/Release.key"
+kubernetes_deb_gpg_key_url: "https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key"
 kubernetes_deb_release_name: "/"
 
 # containerd package
