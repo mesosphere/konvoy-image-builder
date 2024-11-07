@@ -1,8 +1,13 @@
 ---
+version: 2
 before:
   hooks:
     - go mod download
     - go mod tidy
+
+# NOTE(jkoelker) the changelog is managed by `release-please`
+changelog:
+  disable: true
 
 builds:
   - main: ./cmd/konvoy-image/main.go
@@ -90,3 +95,20 @@ release:
   prerelease: auto
   ids:
     - konvoy-image-bundle
+
+notarize:
+  macos:
+    - enabled: '{{ isEnvSet "NOTARIZE_DARWIN_BINARY"}}'
+      ids:
+        - konvoy-image
+        - konvoy-image-wrapper
+      sign:
+        certificate: "{{.Env.MACOS_SIGN_P12}}"
+        password: "{{.Env.MACOS_SIGN_PASSWORD}}"
+
+      notarize:
+        issuer_id: "{{.Env.MACOS_NOTARY_ISSUER_ID}}"
+        key_id: "{{.Env.MACOS_NOTARY_KEY_ID}}"
+        key: "{{.Env.MACOS_NOTARY_KEY}}"
+        wait: true
+        timeout: 20m
