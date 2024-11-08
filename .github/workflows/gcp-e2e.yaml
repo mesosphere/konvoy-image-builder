@@ -66,3 +66,6 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" gcp true
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          GCP_PROJECT: ${{ vars.GCP_PROJECT }}
+          GCP_NETWORK: ${{ vars.GCP_NETWORK }}
+          GCP_IMAGE_LOCATIONS: ${{ vars.GCP_IMAGE_LOCATIONS }}
