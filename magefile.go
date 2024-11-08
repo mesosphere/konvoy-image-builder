@@ -179,7 +179,10 @@ func RunE2e(buildOS, buildConfig, buildInfra string, dryRun bool) error {
 	}
 	// extra args for gcp
 	if buildInfra == gcp {
-		args = append(args, "--project-id=eng-ksphere-platform-e2e", "--network=kib-ssh-network")
+		args = append(args,
+			fmt.Sprintf("--project-id=%s", os.Getenv("GCP_PROJECT")),
+			fmt.Sprintf("--network=%s", os.Getenv("GCP_NETWORK")),
+			fmt.Sprintf("--image-storage-locations=%s", os.Getenv("GCP_IMAGE_LOCATIONS")))
 	}
 	fmt.Printf("Running %s with args %v\n", wrapperCmd, args)
 	return sh.RunV(wrapperCmd, args...)
