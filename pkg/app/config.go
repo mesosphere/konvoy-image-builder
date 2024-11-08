@@ -585,6 +585,10 @@ func MergeGCPUserArgs(config Config, gcpArgs *GCPArgs) error {
 		return fmt.Errorf("failed to set %s: %w", PackerGCPProjectIDPath, err)
 	}
 
+	if err := config.Set(PackerGCPImageLocationPath, gcpArgs.ImageLocation); err != nil {
+		return fmt.Errorf("failed to set %s: %w", PackerGCPImageLocationPath, err)
+	}
+
 	if err := config.Set(PackerGCPNetworkPath, gcpArgs.Network); err != nil {
 		return fmt.Errorf("failed to set %s: %w", PackerGCPNetworkPath, err)
 	}
