@@ -58,7 +58,7 @@ jobs:
           echo -n "${GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64}" | base64 --decode >> google-credentials.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=google-credentials.json" >> $GITHUB_ENV
         env:
-          GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64 }}
+          GOOGLE_APPLICATION_CREDENTIALS_E2E_BASE64: ${{ secrets.GCP_NCN_CI_SERVICE_ACCOUNT_B64 }}
 
       - name: Run E2E test for ${{ matrix.os }} with ${{ matrix.buildConfig }} configuration
         uses: magefile/mage-action@v3
@@ -67,3 +67,6 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" gcp true
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
+          GCP_PROJECT: ${{ vars.GCP_PROJECT }}
+          GCP_NETWORK: ${{ vars.GCP_NETWORK }}
+          GCP_IMAGE_LOCATIONS: ${{ vars.GCP_IMAGE_LOCATIONS }}
