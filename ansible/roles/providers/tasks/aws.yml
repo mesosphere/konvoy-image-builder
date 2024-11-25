@@ -33,6 +33,20 @@
   when:
     - ansible_distribution == "Flatcar"
 
+- name: Install cloud-init packages
+  yum:
+    name: "{{ packages }}"
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  vars:
+    packages:
+      - "cloud-init{{ '-23.1.1-10.el8' if  ansible_distribution_version is version('8.10', '=') else ''}}"
+       #this pins the version of cloud-init to avoid the issue here https://github.com/kubernetes-sigs/cluster-api-provider-aws/issues/4745
+      - cloud-utils-growpart
+      - "python{{ '3' if ansible_distribution_major_version|int >= 9 else '2'}}-pip"
+  when: ansible_os_family == "RedHat"
+
 - name: install aws clients
   pip:
     name: "awscli"
