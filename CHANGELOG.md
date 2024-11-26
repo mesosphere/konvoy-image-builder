@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.18.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.17.1...v2.18.0) (2024-11-26)
+
+
+### Features
+
+* allows specific regional location image to be created for GCP ([#1184](https://github.com/mesosphere/konvoy-image-builder/issues/1184)) ([10da743](https://github.com/mesosphere/konvoy-image-builder/commit/10da7436756ff807787c328dd6a708398a2d86b1))
+
+
+### Bug Fixes
+
+* pins cloud init to last known working version for aws  ([#1233](https://github.com/mesosphere/konvoy-image-builder/issues/1233)) ([97a52fd](https://github.com/mesosphere/konvoy-image-builder/commit/97a52fd0d9f69c02d72d63e8b1bc3b203b0a35a2))
+* use correct kernel header for rhel 8.10 ([#1234](https://github.com/mesosphere/konvoy-image-builder/issues/1234)) ([73a3f81](https://github.com/mesosphere/konvoy-image-builder/commit/73a3f813099055edc99842f6644af260068fec0b))
+
 ## [2.17.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.17.0...v2.17.1) (2024-10-30)
 
 
