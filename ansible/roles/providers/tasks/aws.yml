@@ -33,6 +33,41 @@
   when:
     - ansible_distribution == "Flatcar"
 
+
+- name: install cloud-init deps
+  yum:
+    name: "{{ packages }}"
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  vars:
+    packages:
+      - cloud-utils-growpart
+      - "python{{ '3' if ansible_distribution_major_version|int >= 9 else '2'}}-pip"
+  when: ansible_os_family == "RedHat"
+
+- name: install cloud-init for RHEL
+  yum:
+    name: cloud-init
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  when:
+  - ansible_os_family == "RedHat"
+  - ansible_distribution_version is version('8.10', '!=')
+
+ #this pins the version of cloud-init to avoid the issue here https://github.com/kubernetes-sigs/cluster-api-provider-aws/issues/4745
+- name: install cloud-init 23.1.1 for RHEL 8.10
+  yum:
+    name: cloud-init-23.1.1-10.el8
+    allow_downgrade: true
+    state: present
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  when:
+  - ansible_os_family == "RedHat"
+  - ansible_distribution_version is version('8.10', '==')
+
 - name: install aws clients
   pip:
     name: "awscli"
