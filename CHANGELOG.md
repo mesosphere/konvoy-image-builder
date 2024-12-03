@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.18.0...v2.18.1) (2024-12-03)
+
+
+### Bug Fixes
+
+* removes ipv6 disabled check from goss ([#1235](https://github.com/mesosphere/konvoy-image-builder/issues/1235)) ([cbfac52](https://github.com/mesosphere/konvoy-image-builder/commit/cbfac52719fc54f542ad4bcdb94f2fdcd901b448))
+
 ## [2.18.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.17.1...v2.18.0) (2024-11-26)
 
 
