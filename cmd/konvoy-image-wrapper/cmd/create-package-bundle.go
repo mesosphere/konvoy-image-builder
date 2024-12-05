@@ -89,21 +89,74 @@ func getKubernetesVerisonFromAnsible() (string, error) {
 //nolint:funlen // no need to split this function
 func (r *Runner) CreatePackageBundle(args []string) error {
 	var (
-		osFlag                string
-		kubernetesVersionFlag string
-		fipsFlag              bool
-		outputDirectoy        string
-		containerImage        string
+		osFlag                  string
+		kubernetesVersionFlag   string
+		fipsFlag                bool
+		eusReposFlag            bool
+		satelliteFlag           string
+		subscriptionManagerFlag bool
+		outputDirectoy          string
+		containerImage          string
+		fetchKernelHeaders      bool
 	)
 	flagSet := flag.NewFlagSet(createPackageBundleCmd, flag.ExitOnError)
-	flagSet.StringVar(&osFlag, "os", "",
-		fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)))
-	flagSet.StringVar(&kubernetesVersionFlag, "kubernetes-version", "",
-		"The version of kubernetes to download packages for.")
-	flagSet.BoolVar(&fipsFlag, "fips", false, "If the package bundle should include fips packages.")
-	flagSet.StringVar(&outputDirectoy, "output-directory", "artifacts",
-		"The directory to place the bundle in.")
-	flagSet.StringVar(&containerImage, "container-image", "", "A container image to use for building the package bundles")
+	flagSet.StringVar(
+		&osFlag,
+		"os",
+		"",
+		fmt.Sprintf("The target OS you wish to create a package bundle for. Must be one of %v", getKeys(osToConfig)),
+	)
+	flagSet.StringVar(
+		&kubernetesVersionFlag,
+		"kubernetes-version",
+		"",
+		"The version of kubernetes to download packages for.",
+	)
+	flagSet.BoolVar(
+		&fipsFlag,
+		"fips",
+		false,
+		"If the package bundle should include fips packages.",
+	)
+	flagSet.BoolVar(
+		&eusReposFlag,
+		"enable-eus-repos",
+		false,
+		"If enabled fetches packages from EUS repositories when creating RHEL package bundles. Disabled by default.",
+	)
+	flagSet.StringVar(
+		&satelliteFlag,
+		"satellite-server-url",
+		"",
+		//nolint:lll // it is ok to have long help texts
+		"If set, registers with and fetches packages from a Red Hat Satellite. All required repositories must be available in the Red Hat Satellite. Example: --satellite-server-url=\"https://satellite.nutanix.sh\"",
+	)
+	flagSet.BoolVar(
+		&subscriptionManagerFlag,
+		"skip-subscription-manager",
+		false,
+		//nolint:lll // it is ok to have long help texts
+		"If enabled, skips authenticating with subscription-manager and fetching from the pre-configured official RHEL repositories when creating RHEL package bundles. Disabled by default.",
+	)
+	flagSet.StringVar(
+		&outputDirectoy,
+		"output-directory",
+		"artifacts",
+		"The directory to place the bundle in.",
+	)
+	flagSet.StringVar(
+		&containerImage,
+		"container-image",
+		"",
+		"A container image to use for building the package bundles",
+	)
+	flagSet.BoolVar(
+		&fetchKernelHeaders,
+		"fetch-kernel-headers",
+		false,
+		//nolint:lll // its ok to have long help texts
+		"If enabled fetches kernel headers for the target operating system. To modify the version, edit the file at bundles/{OS_NAME}{VERSION}/packages.txt.gotmpl directly eg: bundles/redhat8.8/packages.txt.gotmpl. This is required for operating systems that will use NVIDIA GPU drivers.",
+	)
 	err := flagSet.Parse(args)
 	if err != nil {
 		return err
@@ -118,20 +171,37 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 			return err
 		}
 	}
+	fetchKubernetesRPMs := true
 	kubernetesVersion := kubernetesVersionFlag
 	if kubernetesVersion == "" {
 		kubernetesVersion, err = getKubernetesVerisonFromAnsible()
 		if err != nil {
 			return err
 		}
+		// if we are getting the default version from ansible, we don't need to modify this.
+		fetchKubernetesRPMs = false
 	}
+	if eusReposFlag {
+		//nolint:goconst // it is ok to not use const here
+		r.env["EUS_REPOS"] = "true"
+	}
+	if fetchKubernetesRPMs {
+		r.env["KUBERNETES_REPOS"] = "true"
+	}
+	if satelliteFlag != "" {
+		r.env["SATELLITE_SERVER_URL"] = satelliteFlag
+	}
+	if subscriptionManagerFlag {
+		r.env["SKIP_SUBSCRIPTION_MANAGER"] = "true"
+	}
+	r.setHTTPProxyEnv()
 	bundleCmd := "./bundle.sh"
 	absPathToOutput := outputDirectoy
 	if !path.IsAbs(outputDirectoy) {
 		dir := r.workingDir
 		absPathToOutput = path.Join(dir, outputDirectoy)
 	}
-	reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag)
+	reposList, err := templateObjects(osFlag, kubernetesVersion, absPathToOutput, fipsFlag, fetchKernelHeaders, fetchKubernetesRPMs)
 	if err != nil {
 		return err
 	}
@@ -146,7 +216,7 @@ func (r *Runner) CreatePackageBundle(args []string) error {
 }
 
 //nolint:gocyclo,funlen // the function is relatively clear
-func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) ([]string, error) {
+func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchKernelHeaders, fetchKubernetesRPMs bool) ([]string, error) {
 	config, found := osToConfig[targetOS]
 	if !found {
 		return nil, fmt.Errorf("buildOS %s is invalid must be one of %v", targetOS, getKeys(osToConfig))
@@ -160,7 +230,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 	configDirFS := os.DirFS(base)
 	l := make([]string, 0)
 	generated := path.Join(base, generatedDirName)
-	if err = os.MkdirAll(generated, 0o755); err != nil {
+	if err = os.MkdirAll(generated, 0o777); err != nil {
 		return l, err
 	}
 
@@ -196,7 +266,8 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 		}
 
 		//nolint:nestif // this if is not nested
-		if strings.Contains(filepath, "kubernetes.repo.gotmpl") {
+		if strings.Contains(filepath, "kubernetes.repo.gotmpl") && fetchKubernetesRPMs {
+			fmt.Printf("fetchKubernetesRPMs is %v", fetchKubernetesRPMs)
 			kubernetesRepoTmpl, err := os.ReadFile(path.Join(base, filepath))
 			if err != nil {
 				return fmt.Errorf("failed to read template kubernetes repo file %w", err)
@@ -241,9 +312,13 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips bool) (
 				return fmt.Errorf("failed to create file: %w", err)
 			}
 			templateInput := struct {
-				KubernetesVersion string
+				KubernetesVersion   string
+				FetchKernelHeaders  bool
+				FetchKubernetesRPMs bool
 			}{
-				KubernetesVersion: kubernetesVersion,
+				KubernetesVersion:   kubernetesVersion,
+				FetchKernelHeaders:  fetchKernelHeaders,
+				FetchKubernetesRPMs: fetchKubernetesRPMs,
 			}
 			err = t.Execute(out, templateInput)
 			if err != nil {
