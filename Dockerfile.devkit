@@ -7,7 +7,7 @@ FROM goreleaser/goreleaser:v1.24.0 as goreleaser
 FROM docker:27.1 as docker
 FROM vmware/govc:v0.36.0 as govc
 
-FROM golang:1.19.13-alpine3.18 as builder
+FROM golang:1.22.10-alpine3.20 as builder
 
 # NOTE(jkoelker) since this is a multistage build we
 #                can have an explosion at the layer
@@ -24,7 +24,7 @@ RUN apk add --no-cache \
 ARG BUILDARCH
 
 # NOTE(jkoelker) From here we care about layers
-FROM golang:1.19.13-alpine3.18
+FROM golang:1.22.10-alpine3.20
 
 ARG ANSIBLE_VERSION=6.3.0
 ARG DOCKER_PY_VERSION=5.0.3
@@ -53,8 +53,10 @@ RUN apk add --no-cache \
         python3-dev \
         gettext \
         py3-pynacl \
-        py3-pip \
-    && pip3 install --no-cache-dir --upgrade pip wheel \
+        py3-pip
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+RUN pip3 install --no-cache-dir --upgrade pip wheel \
     && pip3 install --no-cache-dir \
         --requirement /tmp/requirements.txt \
         --requirement /tmp/requirements-devkit.txt \
