@@ -7,7 +7,7 @@ FROM goreleaser/goreleaser:v1.24.0 as goreleaser
 FROM docker:27.1 as docker
 FROM vmware/govc:v0.36.0 as govc
 
-FROM golang:1.19.13-alpine3.18 as builder
+FROM golang:1.22.10-alpine3.20 as builder
 
 # NOTE(jkoelker) since this is a multistage build we
 #                can have an explosion at the layer
@@ -24,7 +24,7 @@ RUN apk add --no-cache \
 ARG BUILDARCH
 
 # NOTE(jkoelker) From here we care about layers
-FROM golang:1.19.13-alpine3.18
+FROM golang:1.22.10-alpine3.19
 
 ARG ANSIBLE_VERSION=6.3.0
 ARG DOCKER_PY_VERSION=5.0.3
@@ -53,13 +53,18 @@ RUN apk add --no-cache \
         python3-dev \
         gettext \
         py3-pynacl \
-        py3-pip \
-    && pip3 install --no-cache-dir --upgrade pip wheel \
-    && pip3 install --no-cache-dir \
+        py3-pip
+# Use --break-system-packages as we do want install these packages into the system Python
+RUN pip3 install \
+        --break-system-packages \
+        --no-cache-dir \
+        --upgrade pip wheel \
+    && pip3 install \
+        --break-system-packages \
+        --no-cache-dir \
         --requirement /tmp/requirements.txt \
         --requirement /tmp/requirements-devkit.txt \
-    && rm -rf \
-        /root/.cache
+    && rm -rf /root/.cache
 
 # Managing the below ansible dependencies is covered in docs/dev/ansible-modules.md
 RUN mkdir -p /usr/share/ansible/collections \

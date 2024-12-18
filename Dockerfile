@@ -6,7 +6,7 @@ FROM ${BASE} as devkit
 
 ARG TARGETPLATFORM
 # hadolint ignore=DL3029
-FROM --platform=${TARGETPLATFORM} alpine:3.17.5
+FROM --platform=${TARGETPLATFORM} alpine:3.19.4
 
 ENV ANSIBLE_PATH=/usr
 ENV PYTHON_PATH=/usr
@@ -23,8 +23,12 @@ RUN apk add --no-cache \
         py3-cryptography \
         py3-pip \
         py3-wheel \
-        xorriso \
-    && pip3 install --no-cache-dir --requirement /tmp/requirements.txt \
+        xorriso
+# Use --break-system-packages as we do want install these packages into the system Python
+RUN pip3 install \
+        --break-system-packages \
+        --no-cache-dir \
+        --requirement /tmp/requirements.txt \
     && rm -rf /root/.cache
 
 ARG BUILDARCH
