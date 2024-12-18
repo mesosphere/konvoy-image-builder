@@ -68,10 +68,10 @@ RUN pip3 install \
 RUN mkdir -p /usr/share/ansible/collections \
     && ansible-galaxy \
     collection install \
-    community.general:==6.4.0 \
-    ansible.netcommon:==5.0.0 \
-    ansible.posix:==1.5.1 \
-    ansible.utils:==2.9.0 \
+    community.general:==10.1.0 \
+    ansible.netcommon:==7.1.0 \
+    ansible.posix:==1.6.2 \
+    ansible.utils:==5.1.2 \
     -p /usr/share/ansible/collections
 
 # hadolint ignore=DL4006
