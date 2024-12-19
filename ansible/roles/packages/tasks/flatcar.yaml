@@ -5,7 +5,7 @@
     state: directory
     mode: 0755
 
-- include: url.yaml
+- include_tasks: url.yaml
 
 - name: Get crictl version
   command: crictl --version
@@ -16,7 +16,7 @@
     system_crictl_version: "{{ system_crictl_version_cmd.stdout | regex_replace('^crictl version v(?P<version>.*)$', '\\g<version>', multiline=True) }}"
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.
-- include: crictl-url.yaml
+- include_tasks: crictl-url.yaml
   when: crictl_version != system_crictl_version
 
 - name: create kubelet systemd directory
