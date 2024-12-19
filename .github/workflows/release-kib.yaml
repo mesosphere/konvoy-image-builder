@@ -28,7 +28,7 @@ jobs:
           cache: true
 
       - name: Download GoReleaser
-        run: go install github.com/goreleaser/goreleaser/v2@v2.2.0
+        run: go install github.com/goreleaser/goreleaser/v2@v2.5.0
 
       - name: Docker Login
         uses: docker/login-action@v3
