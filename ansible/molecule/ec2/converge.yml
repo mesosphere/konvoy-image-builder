@@ -8,4 +8,4 @@
         sysprep: false
 
 - name: "Include Provision"
-  include: ../../provision.yaml
+  include_tasks: ../../provision.yaml

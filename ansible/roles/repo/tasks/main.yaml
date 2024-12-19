@@ -1,23 +1,23 @@
 ---
-- include: redhat.yaml
+- include_tasks: redhat.yaml
   when:
     - ansible_facts['os_family'] == "RedHat"
     - not offline_mode_enabled
 
-- include: redhat-offline.yaml
+- include_tasks: redhat-offline.yaml
   when:
     - ansible_facts['os_family'] == "RedHat"
     - offline_mode_enabled
 
-- include: suse.yaml
+- include_tasks: suse.yaml
   when: ansible_facts['os_family'] == "Suse"
 
-- include: debian.yaml
+- include_tasks: debian.yaml
   when:
     - ansible_facts['os_family'] == "Debian"
     - not offline_mode_enabled
 
-- include: debian-offline.yaml
+- include_tasks: debian-offline.yaml
   when:
     - ansible_facts['os_family'] == "Debian"
     - offline_mode_enabled

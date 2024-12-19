@@ -1,14 +1,14 @@
 ---
-- include: redhat.yaml
+- include_tasks: redhat.yaml
   when: ansible_os_family == "RedHat"
 
-- include: suse.yaml
+- include_tasks: suse.yaml
   when: ansible_os_family == "Suse"
 
-- include: flatcar.yaml
+- include_tasks: flatcar.yaml
   when: ansible_os_family == "Flatcar"
 
-- include: debian.yaml
+- include_tasks: debian.yaml
   when: ansible_os_family == "Debian"
 
 - name: remove swapfile
