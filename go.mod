@@ -2,7 +2,7 @@ module github.com/mesosphere/konvoy-image-builder
 
 go 1.22
 
-toolchain go1.22.5
+toolchain go1.22.10
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.11.1
