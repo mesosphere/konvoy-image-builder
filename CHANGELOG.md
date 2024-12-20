@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.19.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.18.0...v2.19.0) (2024-12-20)
+
+
+### Features
+
+* support ubuntu 22.04 for gcp images  ([#1245](https://github.com/mesosphere/konvoy-image-builder/issues/1245)) ([241a941](https://github.com/mesosphere/konvoy-image-builder/commit/241a941c5c15602d93cf84c1c79eba3720137d49))
+
+
+### Bug Fixes
+
+* removes ipv6 disabled check from goss ([#1235](https://github.com/mesosphere/konvoy-image-builder/issues/1235)) ([cbfac52](https://github.com/mesosphere/konvoy-image-builder/commit/cbfac52719fc54f542ad4bcdb94f2fdcd901b448))
+* RHEL 8.10 kernel version in bundle ([ed42913](https://github.com/mesosphere/konvoy-image-builder/commit/ed42913320f2f7d3974ddda0534a7139294af4f3))
+* RHEL 8.8 kernel version in bundle ([2abbb40](https://github.com/mesosphere/konvoy-image-builder/commit/2abbb405cfb68e510c684ac32bc2aa9d6042a682))
+
 ## [2.18.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.17.1...v2.18.0) (2024-11-26)
 
 
