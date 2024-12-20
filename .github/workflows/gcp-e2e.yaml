@@ -17,6 +17,7 @@ jobs:
         os:
         - "ubuntu 20.04"
         - "ubuntu 18.04"
+        - "ubuntu 12.04"
         buildConfig:
         - "basic"
     runs-on:
