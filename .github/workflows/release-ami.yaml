@@ -41,6 +41,10 @@ jobs:
             buildConfig: "nvidia"
           - os: "ubuntu 20.04"
             buildConfig: "basic"
+          - os: "ubuntu 22.04"
+            buildConfig: "basic"
+          - os: "ubuntu 22.04"
+            buildConfig: "nvidia"
           - os: "flatcar"
             buildConfig: "basic"
 
