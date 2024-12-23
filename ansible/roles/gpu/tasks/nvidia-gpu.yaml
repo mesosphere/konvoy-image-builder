@@ -11,8 +11,8 @@
   include_tasks: nvidia-gpu-Flatcar.yaml
   when: ansible_distribution == "Flatcar"
 
-- name: "NVIDIA Gpu - Ubuntu 20"
-  include_tasks: nvidia-gpu-Ubuntu20.yaml
+- name: "NVIDIA Gpu - Ubuntu"
+  include_tasks: nvidia-gpu-Ubuntu.yaml
   when: ansible_distribution == "Ubuntu"
 
 # disable with these instructions https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#runfile-nouveau
@@ -117,6 +117,7 @@
       --no-cc-version-check
   args:
     chdir: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}"
+  become: yes # solves for this ERROR: nvidia-installer must be run as root
 
 - name: Create ld.so conf dir
   file:

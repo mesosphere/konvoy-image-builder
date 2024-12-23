@@ -1,0 +1,29 @@
+---
+# Implements the NVIDIA Driver Installation Quickstart Guide for Ubuntu LTS - see
+# https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html#ubuntu-lts
+
+- name: install runfile prereqs
+  apt:
+    name:
+      - linux-headers-{{ ansible_kernel }}
+      - build-essential
+      - gcc-12
+      - g++-12
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 3
+
+- name: configure update-alternatives for gcc
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+  with_items:
+    - "update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12"
+    - "update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-12 12"
+
+- name: set gcc 12 as default
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+  with_items:
+    - "update-alternatives --set gcc /usr/bin/gcc-12"
+    - "update-alternatives --set cc /usr/bin/gcc-12"
