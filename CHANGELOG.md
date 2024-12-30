@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.20.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.19.0...v2.20.0) (2024-12-26)
+
+
+### Features
+
+* bump the Kubernetes version to v1.31.4 ([#1239](https://github.com/mesosphere/konvoy-image-builder/issues/1239)) ([4b2ad69](https://github.com/mesosphere/konvoy-image-builder/commit/4b2ad69d5b97078e1bdcc176fe11435c193cc314))
+
 ## [2.18.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.17.1...v2.18.0) (2024-11-26)
 
 
