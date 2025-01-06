@@ -421,11 +421,6 @@ source "amazon-ebs" "kib_image" {
 build {
   sources = ["source.amazon-ebs.kib_image"]
 
-  provisioner "shell" {
-    remote_folder = "${var.remote_folder}"
-    environment_vars = ["HTTP_PROXY=${var.http_proxy}", "http_proxy=${var.http_proxy}", "HTTPS_PROXY=${var.https_proxy}", "https_proxy=${var.https_proxy}", "NO_PROXY=${var.no_proxy}", "no_proxy=${var.no_proxy}", "BUILD_NAME=${var.build_name}"]
-    inline           = ["if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi", "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done", "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"]
-  }
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args}'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]

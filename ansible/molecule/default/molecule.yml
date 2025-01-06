@@ -29,12 +29,6 @@ platforms:
     region: us-east-1
     instance_type: t3.small
     ssh_user: ec2-user
-  - name: konvoyimage-ubuntu-18.04-${USER:-ci}-${HOSTNAME:-local}
-    image_search_name: "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server*"
-    image_search_owner: "099720109477"
-    region: us-east-1
-    instance_type: t3.small
-    ssh_user: ubuntu
   - name: konvoyimage-ubuntu-20.04-${USER:-ci}-${HOSTNAME:-local}
     image_search_name: "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server*"
     image_search_owner: "099720109477"
