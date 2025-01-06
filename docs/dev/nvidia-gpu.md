@@ -39,11 +39,9 @@ konvoy-image build aws --region us-west-2 images/ami/ubuntu-2004.yaml \
 
 | base os   | nvidia             |
 |-----------|--------------------|
-| centos-7  | :white_check_mark: |
 | rhel-79   | :white_check_mark: |
 | rhel-84   | :white_check_mark: |
 | rhel-86   | :white_check_mark: |
-| ubuntu-18 | :white_check_mark: |
 | ubuntu-20 | :white_check_mark: |
 | flatcar   | :white_check_mark: |
 | sles-15   | :white_check_mark: |

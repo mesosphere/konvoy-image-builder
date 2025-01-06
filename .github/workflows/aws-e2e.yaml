@@ -71,9 +71,6 @@ jobs:
           # Flatcar
           - os: "flatcar"
             buildConfig: "basic"
-          # Ubuntu 18.04
-          - os: "ubuntu 18.04"
-            buildConfig: "basic"
           # Ubuntu 20.04
           - os: "ubuntu 20.04"
             buildConfig: "basic"

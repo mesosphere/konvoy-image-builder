@@ -16,7 +16,6 @@ var (
 		"redhat-8.6",
 		"redhat-8.8",
 		"rocky-9.1",
-		"ubuntu-18.04",
 		"ubuntu-20.04",
 		"oracle-9.4",
 	}
