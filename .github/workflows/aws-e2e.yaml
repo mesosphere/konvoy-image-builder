@@ -78,6 +78,11 @@ jobs:
             buildConfig: "nvidia"
           - os: "ubuntu 20.04"
             buildConfig: "offline"
+          # Ubuntu 22.04
+          - os: "ubuntu 22.04"
+            buildConfig: "basic"
+          - os: "ubuntu 22.04"
+            buildConfig: "nvidia"
           # Rocky 9.1
           - os: "rocky 9.1"
             buildConfig: "basic"
