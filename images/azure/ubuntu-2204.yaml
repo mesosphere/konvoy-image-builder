@@ -1,0 +1,10 @@
+---
+build_name: "ubuntu-2204"
+packer_builder_type: "azure"
+python_path: ""
+packer:
+  distribution: "0001-com-ubuntu-server-jammy" # Offer
+  distribution_version: "22_04-lts-gen2"       # SKU
+  image_publisher: "Canonical"
+  image_version: "latest"
+  ssh_username: "ubuntu"
