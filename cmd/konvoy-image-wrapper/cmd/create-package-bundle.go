@@ -47,6 +47,10 @@ var osToConfig = map[string]OSConfig{
 		configDir:      "bundles/ubuntu20.04",
 		containerImage: "docker.io/library/ubuntu:20.04",
 	},
+	"ubuntu-22.04": {
+		configDir:      "bundles/ubuntu22.04",
+		containerImage: "docker.io/library/ubuntu:22.04",
+	},
 	"oracle-9.4": {
 		configDir:      "bundles/oracle9.4",
 		containerImage: "docker.io/library/oraclelinux:9",
@@ -296,7 +300,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchK
 			}
 			var criToolsVersion string
 			var kubernetesMajorMinorVersion string
-			if targetOS == "ubuntu-20.04" {
+			if strings.Contains(targetOS, "ubuntu") {
 				kubernetesMajorMinorVersionNoV := strings.Join(strings.Split(kubernetesVersion, ".")[0:2], ".")
 				// according to ansible.group_vars/all/defaults.yaml L18 this is k8s major minor.1
 				criToolsVersion = fmt.Sprintf("%s.1", kubernetesMajorMinorVersionNoV)
