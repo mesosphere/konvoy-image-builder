@@ -73,7 +73,7 @@
     mode: 0644
   when: ansible_os_family == "Debian" and system_cloud_init_version is version('20.0.0', '>') and system_cloud_init_version is version('23.3.0', '<')
 
-- name: Patch cloud-init feature flags for Debian-based OS
+- name: patch cloud-init feature flags for Debian-based OS
   ansible.builtin.blockinfile:
     path: /usr/lib/python3/dist-packages/cloudinit/features.py
     marker: "# {mark} ANSIBLE MANAGED BLOCK (by image-builder)"
@@ -85,9 +85,9 @@
   shell: python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))"
   when: ansible_os_family not in ["Debian", "Flatcar"]
 
-- name: Patch cloud-init feature flags for RedHat
+- name: patch cloud-init feature flags for RedHat
   ansible.builtin.blockinfile:
-    path: "{{ python3_version.stdout }}/site-packages/cloudinit/features.py"
+    path: "{{ python3_version.stdout }}/cloudinit/features.py"
     marker: "# {mark} ANSIBLE MANAGED BLOCK (by image-builder)"
     block: "{{ lookup('file', 'cloud-init-features.patch') }}"
   when: ansible_os_family == "RedHat" and system_cloud_init_version is version('23.3.0', '>=')
