@@ -2,10 +2,6 @@
 build_name: "ubuntu-22"
 packer_builder_type: "amazon"
 python_path: ""
-# The latest cloud-init version is unable to run #boothook created by CAPA https://github.com/kubernetes-sigs/cluster-api-provider-aws/issues/5115
-# This is a workaround to downgrade to older cloud-init version.
-# https://github.com/kubernetes-sigs/image-builder/pull/1590/files
-pinned_debs: ["cloud-init=23.1.2-0ubuntu0~22.04.1"]
 packer:
   ami_filter_name: "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
   ami_filter_owners: "099720109477"
