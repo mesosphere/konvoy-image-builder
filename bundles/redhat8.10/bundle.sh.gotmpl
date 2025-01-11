@@ -52,11 +52,6 @@ subscription-manager repos --enable rhel-8-for-x86_64-appstream-rpms
 subscription-manager repos --enable rhel-8-for-x86_64-baseos-rpms
 subscription-manager repos --disable=rhel-8-for-x86_64-baseos-eus-rpms --disable=rhel-8-for-x86_64-appstream-eus-rpms
 
-KUBERNETES_REPOS=${KUBERNETES_REPOS:-""}
-if [[ -n "${KUBERNETES_REPOS}" ]]; then
-  ENABLED_REPOS="${ENABLED_REPOS},kubernetes"
-fi
-
 yum -y install gettext yum-utils createrepo dnf-utils modulemd-tools
 yum clean all
 TMP_DIR="$(mktemp -d repodata-XXXX)"
