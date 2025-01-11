@@ -14,12 +14,6 @@ NetworkManager
 cloud-init
 cloud-utils-growpart
 container-selinux
-{{ if .FetchKubernetesRPMs -}}
-kubectl-{{ .KubernetesVersion }}-0
-kubelet-{{ .KubernetesVersion }}-0
-kubeadm-{{ .KubernetesVersion }}-0
-cri-tools
-{{- end }}
 conntrack
 ebtables
 ethtool
@@ -37,6 +31,10 @@ gssproxy
 libverto-module-base
 libverto
 nfs-utils
+lvm2
+xfsprogs
+ipvsadm
+lsscsi
 {{ if .FetchKernelHeaders -}}
 kernel-headers-4.18.0-553.40.1.el8_10
 kernel-devel-4.18.0-553.40.1.el8_10
