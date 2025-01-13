@@ -31,10 +31,6 @@ type OSConfig struct {
 }
 
 var osToConfig = map[string]OSConfig{
-	"redhat-8.6": {
-		configDir:      "bundles/redhat8.6",
-		containerImage: "registry.access.redhat.com/ubi8/ubi:8.6",
-	},
 	"redhat-8.8": {
 		configDir:      "bundles/redhat8.8",
 		containerImage: "registry.access.redhat.com/ubi8/ubi:8.8",

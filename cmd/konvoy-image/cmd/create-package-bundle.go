@@ -8,13 +8,10 @@ import (
 
 var (
 	packageCmd        = "create-package-bundle"
-	packageCmdExample = "create-package-bundle --os redhat-8.4 --output-directory=artifacts"
+	packageCmdExample = "create-package-bundle --os redhat-8.10 --output-directory=artifacts"
 	validOS           = []string{
-		"centos-7.9",
-		"redhat-7.9",
-		"redhat-8.4",
-		"redhat-8.6",
 		"redhat-8.8",
+		"redhat-8.10",
 		"rocky-9.1",
 		"ubuntu-20.04",
 		"oracle-9.4",
