@@ -19,18 +19,6 @@ ifeq ($(CI),true)
   SSH_BASTION_PUBLIC_KEY_FILE = $(CURDIR)/vsphere-bastion.pub
 endif
 
-# VCD terraform inputs
-VCD_TF_FLAGS ?= \
-	-var='vsphere_url=$(VSPHERE_SERVER)' \
-	-var='vsphere_username=$(VSPHERE_USERNAME)' \
-	-var='vsphere_password=$(VSPHERE_PASSWORD)' \
-	-var='datastore_name=$(VSPHERE_DATASTORE)' \
-	-var='ssh_public_key=$(SSH_BASTION_PUBLIC_KEY_FILE)' \
-	-var='vcd_url=$(VCD_SERVER)' \
-	-var='vcd_org_username=$(VCD_ORG_USERNAME)' \
-	-var='vcd_org_password=$(VCD_ORG_PASSWORD)' \
-	-var='vm_template_name_to_upload=$(TEMPLATE_NAME_TO_UPLOAD)'
-
 .PHONY: install-terraform
 install-terraform: ## Download and unpack terraform binary
 install-terraform: $(TERRAFORM_BIN)
@@ -94,19 +82,3 @@ infra.vsphere.destroy: infra.vsphere.init
 	$(call print-target)
 	TF_LOG=INFO $(TERRAFORM_BIN) -chdir=$(INFRA_MODULES_DIR)/vsphere destroy -auto-approve
 
-.PHONY: infra.vcd.init
-infra.vcd.init: ## Initialize VCD infrastructure
-infra.vcd.init: install-terraform
-	$(call print-target)
-	$(TERRAFORM_BIN) -chdir=$(INFRA_MODULES_DIR)/vcd init
-
-PHONY: infra.vcd.create
-infra.vcd.create: ## Create VCD infrastructure
-infra.vcd.create: infra.vcd.init
-	$(TERRAFORM_BIN) -chdir=$(INFRA_MODULES_DIR)/vcd plan $(VCD_TF_FLAGS)
-	$(TERRAFORM_BIN) -chdir=$(INFRA_MODULES_DIR)/vcd apply -auto-approve $(VCD_TF_FLAGS)
-
-PHONY: infra.vcd.destroy
-infra.vcd.destroy: ## Destroy VCD infrastructure
-infra.vcd.destroy: infra.vcd.init
-	$(TERRAFORM_BIN) -chdir=$(INFRA_MODULES_DIR)/vcd destroy -auto-approve $(VCD_TF_FLAGS)
