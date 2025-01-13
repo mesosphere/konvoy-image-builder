@@ -45,7 +45,6 @@ var (
 	validOS = []string{
 		"redhat 8.8",
 		"redhat 8.10",
-		"sles 15",
 		"oracle 8.9",
 		"oracle 9.4",
 		"flatcar",

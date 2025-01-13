@@ -43,11 +43,6 @@ jobs:
             buildConfig: "offline-fips"
           - os: "redhat 8.10"
             buildConfig: "offline-nvidia"
-          # SLES 15
-          - os: "sles 15"
-            buildConfig: "basic"
-          - os: "sles 15"
-            buildConfig: "nvidia"
           # Oracle 8.9
           - os: "oracle 8.9"
             buildConfig: "basic"
