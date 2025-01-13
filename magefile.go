@@ -43,14 +43,12 @@ var (
 	rhck          = "rhck"
 
 	validOS = []string{
-		"redhat 8.6",
 		"redhat 8.8",
 		"redhat 8.10",
 		"sles 15",
 		"oracle 8.9",
 		"oracle 9.4",
 		"flatcar",
-		"ubuntu 18.04",
 		"ubuntu 20.04",
 		"ubuntu 22.04",
 		"rocky 9.0",
