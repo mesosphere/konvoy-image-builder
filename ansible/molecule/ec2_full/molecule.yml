@@ -50,12 +50,6 @@ platforms:
     instance_type: p2.xlarge
     spot_price: false
     ssh_user: ec2-user
-  - name: konvoyimage-sles15-sp3-${USER:-ci}-${HOSTNAME:-local}
-    image_search_name: "suse-sles-15-sp3-v*"
-    image_search_owner: "amazon"
-    region: us-east-1
-    instance_type: t3.small
-    ssh_user: ec2-user
   - name: konvoyimage-ubuntu-20.04-${USER:-ci}-${HOSTNAME:-local}
     image_search_name: "*ubuntu-focal-20.04-amd64-server-*"
     image_search_owner: "099720109477"
