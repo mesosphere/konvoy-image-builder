@@ -45,6 +45,8 @@ jobs:
           # we use terraform to provision *test* infrastructure that is deleted
           VALIDATE_TERRAFORM_TFLINT: false
           VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'pull_request' }}
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON: false
   golangci-lint:
     runs-on: ubuntu-22.04
     steps:

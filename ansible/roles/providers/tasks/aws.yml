@@ -112,3 +112,21 @@
     state: started
     enabled: yes
   when: ansible_distribution == "Ubuntu"
+
+- name: Create cloud-init custom data source list
+  ansible.builtin.copy:
+    src: files/etc/cloud/cloud.cfg.d/90_dpkg.cfg
+    dest: /etc/cloud/cloud.cfg.d/90_dpkg.cfg
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version is version('22.04', '>=')
+
+- name: Create custom cloud-init data source
+  ansible.builtin.copy:
+    src: usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    dest: /usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version is version('22.04', '>=')
