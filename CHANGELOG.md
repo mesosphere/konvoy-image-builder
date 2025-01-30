@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.21.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.20.0...v2.21.0) (2025-01-30)
+
+
+### Features
+
+* adds custom datasource for ubuntu 22.04 ([#1255](https://github.com/mesosphere/konvoy-image-builder/issues/1255)) ([aa0a7ae](https://github.com/mesosphere/konvoy-image-builder/commit/aa0a7aebed4a0b14ec35967e4676cee407bd0a8b))
+* Azure add support for ubuntu-22.04 ([#1247](https://github.com/mesosphere/konvoy-image-builder/issues/1247)) ([6c91b2b](https://github.com/mesosphere/konvoy-image-builder/commit/6c91b2b49df731e317518e8aa5223d7b58a43a8a))
+* create package bundle for ubuntu 22.04 ([#1250](https://github.com/mesosphere/konvoy-image-builder/issues/1250)) ([a166371](https://github.com/mesosphere/konvoy-image-builder/commit/a166371bb54cd52401b7e195a0b09e9dd27971ff))
+* remove rhel 8.6 support ([#1253](https://github.com/mesosphere/konvoy-image-builder/issues/1253)) ([3a6e83a](https://github.com/mesosphere/konvoy-image-builder/commit/3a6e83ac9fa0dfe5be788c23ce7822907ce59bdb))
+* Remove VCD from konvoy-image-builder ([88b1b91](https://github.com/mesosphere/konvoy-image-builder/commit/88b1b91331dd0e627c3393357524c53005a9cc3d))
+* removes cloud-init pins ([#1251](https://github.com/mesosphere/konvoy-image-builder/issues/1251)) ([edbd2f7](https://github.com/mesosphere/konvoy-image-builder/commit/edbd2f7fd0e7cc9dfb4f3174d7f90af8e57a7833))
+* Support creating ubuntu 22.04 AMI for AWS ([#1244](https://github.com/mesosphere/konvoy-image-builder/issues/1244)) ([105d58e](https://github.com/mesosphere/konvoy-image-builder/commit/105d58e083bb2723846b34fca2c5c9b4756617b9))
+
+
+### Bug Fixes
+
+* drop ubuntu 18.04 ([#1248](https://github.com/mesosphere/konvoy-image-builder/issues/1248)) ([35a7a87](https://github.com/mesosphere/konvoy-image-builder/commit/35a7a87d207860ad10f38375314d70e767f2158e))
+* fail on curl errors in devkit build ([#1243](https://github.com/mesosphere/konvoy-image-builder/issues/1243)) ([89bbd8d](https://github.com/mesosphere/konvoy-image-builder/commit/89bbd8d95e33fad0ea15147ac59a24a2b3ecb562))
+* remove support for sles-15 ([#1254](https://github.com/mesosphere/konvoy-image-builder/issues/1254)) ([759f967](https://github.com/mesosphere/konvoy-image-builder/commit/759f967edfe03dd7cd91936b3e9d177b3f7067d6))
+
 ## [2.20.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.19.0...v2.20.0) (2024-12-26)
 
 
