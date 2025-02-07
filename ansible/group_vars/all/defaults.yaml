@@ -104,7 +104,7 @@ nvidia_remote_bundle_path: "/opt/dkp/nvidia"
 
 # NOTE(jkoelker) UEK is the default. Set to RHCK to change to RH kernel.
 oracle_kernel: UEK
-nvidia_driver_version: "535.171.04"
+nvidia_driver_version: "535.230.02"
 nvidia_runfile_installer: "NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}.run"
 nvidia_runfile_installer_url: "https://download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_driver_version }}/{{ nvidia_runfile_installer }}"
 suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansible_architecture }}
