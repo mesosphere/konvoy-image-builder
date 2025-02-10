@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.21.0...v2.22.0) (2025-02-10)
+
+
+### Features
+
+* bumps nvidia driver ([#1256](https://github.com/mesosphere/konvoy-image-builder/issues/1256)) ([7b39928](https://github.com/mesosphere/konvoy-image-builder/commit/7b399282da589a6454abc4a5300767e476676fd9))
+
 ## [2.21.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.20.0...v2.21.0) (2025-01-30)
 
 
