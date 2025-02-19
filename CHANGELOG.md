@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.22.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.22.0...v2.22.1) (2025-02-19)
+
+
+### Bug Fixes
+
+* Update RHEL 8.10 kernel packages version ([#1260](https://github.com/mesosphere/konvoy-image-builder/issues/1260)) ([158bcb0](https://github.com/mesosphere/konvoy-image-builder/commit/158bcb0bd43adcc5558e49d795e556f958308b53))
+* Update RHEL 8.8 kernel headers version ([#1259](https://github.com/mesosphere/konvoy-image-builder/issues/1259)) ([7f6edfa](https://github.com/mesosphere/konvoy-image-builder/commit/7f6edfa44d78c5ae10459dc6176cc08c4fc9640a))
+
 ## [2.22.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.21.0...v2.22.0) (2025-02-10)
 
 
