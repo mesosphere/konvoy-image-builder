@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.22.1...v2.22.2) (2025-02-21)
+
+
+### Bug Fixes
+
+* moves sysctl settings to a common place for preprovisioned and providers ([#1262](https://github.com/mesosphere/konvoy-image-builder/issues/1262)) ([2210b0a](https://github.com/mesosphere/konvoy-image-builder/commit/2210b0a61705f4d0c2f916051e546866c3c25453))
+
 ## [2.22.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.22.0...v2.22.1) (2025-02-19)
 
 
