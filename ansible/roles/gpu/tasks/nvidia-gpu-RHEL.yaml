@@ -7,11 +7,11 @@
     - ansible_distribution_version is version('8.10', '<')
 
 
-- name: install kernel headers and devel for kernel version on remote detected {{ hostvars[inventory_hostname].ansible_kernel }}
+- name: install kernel headers and devel for kernel version on remote detected {{ ansible_kernel }}
   yum:
     name:
-      - "kernel-headers-{{ hostvars[inventory_hostname].ansible_kernel }}"
-      - "kernel-devel-{{ hostvars[inventory_hostname].ansible_kernel }}"
+      - "kernel-headers-{{ ansible_kernel | regex_replace('(\\d+\\.\\d+\\.\\d+-\\d+)\\..*?(el\\d+_\\d+)', '\\1.\\2') }}"
+      - "kernel-devel-{{ ansible_kernel | regex_replace('(\\d+\\.\\d+\\.\\d+-\\d+)\\..*?(el\\d+_\\d+)', '\\1.\\2') }}"
     state: present
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
     disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
