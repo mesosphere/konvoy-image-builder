@@ -83,7 +83,8 @@ kubernetes_bins:
 
 sysprep: true
 
-images_local_bundle_dir: ""
+# The KIB container will have the images pre-pulled and available in the local cache at /opt/kubernetes-images
+images_local_bundle_dir: "/opt/kubernetes-images"
 images_cache: /opt/dkp/images
 # use the mindthegap in the container by default
 mindthegap_binary_location: /usr/local/bin/mindthegap
