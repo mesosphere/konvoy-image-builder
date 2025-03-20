@@ -5,6 +5,9 @@
     state: restarted
     daemon_reload: true
 
+- name: upload images
+  import_tasks: upload.yaml
+
 - name: load images
   import_tasks: load.yaml
 
