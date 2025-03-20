@@ -89,7 +89,7 @@ class DataSourceEc2Kubernetes(DataSourceEc2.DataSourceEc2):
         # TODO: work with upstream to put this somewhere more sensible like:
         # /var/lib/cloud/instances/{{v1.instance_id}}/ec2-kubernetes-userdata.txt
         userdata_raw = util.load_text_file(secret_userdata)
-        LOG.info("Secret user-data:[\n%s]", self.userdata_raw)
+        LOG.info("Secret user-data:[\n%s]", userdata_raw)
 
         uid = os.getuid()
         redacted_data_fn = self.paths.get_runpath("instance_data")
