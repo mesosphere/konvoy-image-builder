@@ -21,7 +21,7 @@
       - conntrack-tools
       - chrony
       - curl
-      - iptables-ebtables
+      - "{{ 'iptables-' if ansible_distribution_major_version == '8' }}ebtables"
       - open-vm-tools
       - python3-pip
       - python3-netifaces
