@@ -82,6 +82,7 @@ class DataSourceEc2Kubernetes(DataSourceEc2.DataSourceEc2):
                 "excluded": [],
             },
         )
+        # pylint: disable=access-member-before-definition, this can be set in super()._get_data()
         LOG.info("User-data before update:[\n%s]", self.userdata_raw)
         secret_userdata = "/etc/secret-userdata.txt"
         # Get the boothook output, save it as user-data
