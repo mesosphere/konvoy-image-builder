@@ -110,7 +110,7 @@ class DataSourceEc2Kubernetes(DataSourceEc2.DataSourceEc2):
         util.write_file(
             "/etc/cloud/cloud.cfg.d/99_kubeadm_bootstrap.cfg", rendered_payload
         )
-        self.userdata_raw = rendered_payload
+
         return True
 
 
