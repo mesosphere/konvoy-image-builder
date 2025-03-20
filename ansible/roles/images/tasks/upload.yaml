@@ -11,7 +11,7 @@
         paths:
           - "{{ images_local_bundle_dir }}"
         patterns:
-          - "{{ '.*-fips' if fips.enabled else '.*' }}\.tar(\.gz)?"
+          - "{{ '.*-fips' if fips.enabled else '^(?!.*-fips).*' }}\\.tar(\\.gz)?"
         file_type: file
         use_regex: true
       register: images_cache_find_result

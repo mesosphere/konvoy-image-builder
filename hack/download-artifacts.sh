@@ -6,16 +6,16 @@ set -o nounset
 set -x
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-PROJECT_DIR="$(cd ${SCRIPT_DIR}/.. &> /dev/null && pwd )"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." &> /dev/null && pwd )"
 PACKAGES_BASE_URL="https://packages.d2iq.com/konvoy/stable/linux/repos"
 IMAGES_BASE_URL="https://downloads.d2iq.com/dkp/airgapped/kubernetes-images"
 
 TARGET_ARTIFACTS_DIR="${TARGET_ARTIFACTS_DIR:-"/opt"}"
 TARGET_KUBERNETES_IMAGES_DIR="${TARGET_KUBERNETES_IMAGES_DIR:-"${TARGET_ARTIFACTS_DIR}/kubernetes-images"}"
 
-export KUBERNETES_VERSION=$(awk -F': ' '/kubernetes_version/ {print $2}' "${PROJECT_DIR}/ansible/group_vars/all/defaults.yaml" | sed -n '2p' | xargs)
-export CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2).1"
-export CNI_VERSION=$(awk -F': ' '/kubernetes_cni_version/ {print $2}' "${PROJECT_DIR}/ansible/group_vars/all/defaults.yaml" | sed -n '1p' | xargs)
+KUBERNETES_VERSION=$(awk -F': ' '/kubernetes_version/ {print $2}' "${PROJECT_DIR}/ansible/group_vars/all/defaults.yaml" | sed -n '2p' | xargs)
+CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2).1"
+CNI_VERSION=$(awk -F': ' '/kubernetes_cni_version/ {print $2}' "${PROJECT_DIR}/ansible/group_vars/all/defaults.yaml" | sed -n '1p' | xargs)
 
 # ensure target directories exist
 mkdir -p "${TARGET_ARTIFACTS_DIR}"

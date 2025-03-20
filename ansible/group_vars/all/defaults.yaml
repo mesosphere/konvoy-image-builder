@@ -88,7 +88,8 @@ images_local_bundle_dir: "/opt/kubernetes-images"
 images_cache: /opt/dkp/images
 # use the mindthegap in the container by default
 mindthegap_binary_location: /usr/local/bin/mindthegap
-mindthegap_binary_location_on_remote: /usr/local/bin/mindthegap
+# /opt is writable on flatcar and other operating systems. Use /opt for the mindthegap binary location.
+mindthegap_binary_location_on_remote: /opt/mindthegap
 
 os_packages_local_bundle_file: ""
 os_packages_remote_bundle_path: "/opt/dkp/packages/"
