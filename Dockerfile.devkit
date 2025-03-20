@@ -74,38 +74,17 @@ RUN mkdir -p /usr/share/ansible/collections \
 # hadolint ignore=DL4006
 RUN  curl -Lf https://github.com/mesosphere/mindthegap/releases/download/v"${MINDTHEGAP_VERSION}"/mindthegap_v"${MINDTHEGAP_VERSION}"_linux_amd64.tar.gz |tar xzf - -C /usr/local/bin
 ARG GOSS_VERSION=v0.3.23
-RUN curl -L "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" -o /usr/local/bin/goss-amd64
-RUN chmod +rx /usr/local/bin/goss-amd64
 ARG BUILDARCH
-RUN ln -s /usr/local/bin/goss-${BUILDARCH} /usr/local/bin/goss
-RUN curl -o /opt/amazon-ssm-agent.rpm https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+RUN \
+    curl --fail -v -L -o /usr/local/bin/goss-amd64 "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" \
+    && chmod +rx /usr/local/bin/goss-amd64 \
+    && ln -s /usr/local/bin/goss-amd64 /usr/local/bin/goss
+# Copy the Ansible plybooks into the image
 COPY ansible ansible
-# Fetch nokmem rpms
-RUN \
-  export KUBERNETES_VERSION=$(awk -F': ' '/kubernetes_version/ {print $2}' ansible/group_vars/all/defaults.yaml | sed -n '2p' | xargs) && \
-  echo ${KUBERNETES_VERSION} && \
-  curl -o /opt/kubectl-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubectl-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  curl -o /opt/kubeadm-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubeadm-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  curl -o /opt/kubelet-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubelet-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  export CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2).1" && \
-  curl -o  /opt/cri-tools-${CRICTL_TOOLS_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/cri-tools-${CRICTL_TOOLS_VERSION}-0.x86_64.rpm && \
-  export CNI_VERSION=$(awk -F': ' '/kubernetes_cni_version/ {print $2}' ansible/group_vars/all/defaults.yaml | sed -n '1p' | xargs) && \
-  curl -o /opt/kubernetes-cni-${CNI_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubernetes-cni-${CNI_VERSION}-0.x86_64.rpm
 
-
-# Fetch fips rpms
-RUN \
-  export KUBERNETES_VERSION=$(awk -F': ' '/kubernetes_version/ {print $2}' ansible/group_vars/all/defaults.yaml | sed -n '2p' | xargs) && \
-  echo ${KUBERNETES_VERSION} && \
-  curl -o /opt/kubectl-${KUBERNETES_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-fips/x86_64/kubectl-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  curl -o /opt/kubeadm-${KUBERNETES_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-fips/x86_64/kubeadm-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  curl -o /opt/kubelet-${KUBERNETES_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-fips/x86_64/kubelet-${KUBERNETES_VERSION}-0.x86_64.rpm && \
-  export CRICTL_TOOLS_VERSION="$(echo ${KUBERNETES_VERSION} | cut -d. -f1-2).1" && \
-  curl -o  /opt/cri-tools-${CRICTL_TOOLS_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/cri-tools-${CRICTL_TOOLS_VERSION}-0.x86_64.rpm && \
-  export CNI_VERSION=$(awk -F': ' '/kubernetes_cni_version/ {print $2}' ansible/group_vars/all/defaults.yaml | sed -n '1p' | xargs) && \
-  curl -o /opt/kubernetes-cni-${CNI_VERSION}-0-fips.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-fips/x86_64/kubernetes-cni-${CNI_VERSION}-0.x86_64.rpm
-
-RUN curl -o /opt/d2iq-sign-authority-gpg-public-key https://packages.d2iq.com/konvoy/stable/linux/repos/d2iq-sign-authority-gpg-public-key
+# Download nokmem RPMs to be used at image creation time
+COPY hack/download-artifacts.sh hack/download-artifacts.sh
+RUN hack/download-artifacts.sh
 
 COPY --from=packer-amd64 /bin/packer /usr/local/bin/packer-amd64
 COPY --from=packer-arm64 /bin/packer /usr/local/bin/packer-arm64
