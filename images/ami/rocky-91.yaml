@@ -8,6 +8,7 @@ packer:
   distribution: "rocky"
   distribution_version: "9.1"
   source_ami: ""
+  include_deprecated: true
   ssh_username: "rocky"
   root_device_name: "/dev/sda1"
   volume_size: "15"
