@@ -303,7 +303,7 @@ func templateObjects(targetOS, kubernetesVersion, outputDir string, fips, fetchK
 			if strings.Contains(targetOS, "ubuntu") {
 				kubernetesMajorMinorVersionNoV := strings.Join(strings.Split(kubernetesVersion, ".")[0:2], ".")
 				// according to ansible.group_vars/all/defaults.yaml L18 this is k8s major minor.1
-				criToolsVersion = fmt.Sprintf("%s.1", kubernetesMajorMinorVersionNoV)
+				criToolsVersion = fmt.Sprintf("%s.0", kubernetesMajorMinorVersionNoV)
 				kubernetesMajorMinorVersion = fmt.Sprintf("v%s", kubernetesMajorMinorVersionNoV)
 			}
 			templateInput := struct {
