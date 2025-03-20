@@ -1,0 +1,33 @@
+---
+
+- block:
+    - name: create images directory
+      file:
+        path: "{{ images_cache }}"
+        state: directory
+
+    - name: list tar.gz files in the local image cache
+      find:
+        paths:
+          - "{{ images_local_bundle_dir }}"
+        patterns:
+          - "{{ '.*-fips' if fips.enabled else '^(?!.*-fips).*' }}\\.tar(\\.gz)?"
+        file_type: file
+        use_regex: true
+      register: images_cache_find_result
+      delegate_to: 127.0.0.1
+      become: no
+      changed_when: false
+
+    - name: upload image bundles to remote
+      copy:
+        src: "{{ item }}"
+        dest: "{{ images_cache}}/{{ item | basename }}"
+      with_items: "{{  images_cache_find_result.files | map(attribute='path') | list }}"
+
+    - name: upload mindthegap
+      copy:
+        src: "{{ mindthegap_binary_location }}"
+        dest: "{{ mindthegap_binary_location_on_remote }}"
+        mode: 0755
+  when: images_local_bundle_dir != ""

@@ -386,9 +386,6 @@ func downloadAirgappedArtifacts(buildOS, buildConfig string) error {
 	}
 	// Fetch artifacts
 	isFips := buildConfig == offlineFIPS
-	if err := fetchImageBundle(kubeVersion, artifactsDir, isFips); err != nil {
-		return fmt.Errorf("failed to fetch Image bundle %w", err)
-	}
 	if err := fetchContainerd(buildOS, artifactsDir, containerdVersion, isFips); err != nil {
 		return fmt.Errorf("failed to fetch containerd %w", err)
 	}
@@ -423,21 +420,6 @@ func createOSBundle(osName, kubernetesVersion, downloadDir string, fips, gpu boo
 		args = append(args, "--fetch-kernel-headers=true")
 	}
 	return sh.RunV(wrapperCmd, args...)
-}
-
-func fetchImageBundle(kubernetesVersion, downloadDir string, fips bool) error {
-	imageBundleName := fmt.Sprintf("kubernetes-images-%s-d2iq.1", kubernetesVersion)
-	if fips {
-		imageBundleName += "-fips"
-	}
-	imageBundleName += ".tar"
-	srcURL, err := url.Parse(baseURL)
-	if err != nil {
-		return fmt.Errorf("failed to parse url %w", err)
-	}
-	srcURL.Path = path.Join(srcURL.Path, "airgapped", "kubernetes-images", imageBundleName)
-	destPath := filepath.Join(downloadDir, "images", imageBundleName)
-	return downloadArtifact(srcURL, destPath)
 }
 
 func fetchPipPackages(downloadDir string) error {
