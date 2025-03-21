@@ -90,7 +90,7 @@ var (
 )
 
 func BuildWrapper() error {
-	return sh.RunV("make", "build-wrapper")
+	return sh.RunV("make", "bin/konvoy-image-wrapper")
 }
 
 // Runs E2e for images.
