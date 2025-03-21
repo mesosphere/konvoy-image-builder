@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.23.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.22.2...v2.23.0) (2025-03-21)
+
+
+### Features
+
+* bump the Kubernetes version to v1.32.3 ([#1267](https://github.com/mesosphere/konvoy-image-builder/issues/1267)) ([a47bf1e](https://github.com/mesosphere/konvoy-image-builder/commit/a47bf1ee03d72034e82f4b73df13cf27a2e56efe))
+* download kubernetes images in the KIB container  ([#1270](https://github.com/mesosphere/konvoy-image-builder/issues/1270)) ([7906d37](https://github.com/mesosphere/konvoy-image-builder/commit/7906d37b55407e040c9d934c3e1e7373a4fd1663))
+* nvidia kernel headers fix ([#1268](https://github.com/mesosphere/konvoy-image-builder/issues/1268)) ([2f219af](https://github.com/mesosphere/konvoy-image-builder/commit/2f219af8c7dd3af795c5cb4548f81d55c7ee6686))
+
+
+### Bug Fixes
+
+* allow using deprecated Rocky 9.1 AMI ([#1271](https://github.com/mesosphere/konvoy-image-builder/issues/1271)) ([20bc596](https://github.com/mesosphere/konvoy-image-builder/commit/20bc596f9f9e5c25c10cca40e856d855bcbd6c35))
+* custom cloudinit script ([#1272](https://github.com/mesosphere/konvoy-image-builder/issues/1272)) ([90652e0](https://github.com/mesosphere/konvoy-image-builder/commit/90652e0e540c0e1a8c630a275160ba719a221e61))
+
 ## [2.22.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.22.1...v2.22.2) (2025-02-21)
 
 
