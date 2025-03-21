@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.ref }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -63,8 +64,8 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws true
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          RHSM_USER: ${{ secrets.RHSM_USER }}
-          RHSM_PASS: ${{ secrets.RHSM_PASS }}
+          RHSM_ACTIVATION_KEY: ${{ secrets.RHSM_ACTIVATION_KEY }}
+          RHSM_ORG_ID: ${{ secrets.RHSM_ORG_ID }}
 
       - name: Run make destroy to clean up failed tests
         if: ${{ always() }}
