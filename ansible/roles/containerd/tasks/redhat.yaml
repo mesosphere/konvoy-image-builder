@@ -26,7 +26,7 @@
   retries: 5
   delay: 6
 
-- name: install tar and container-selinux rpm package
+- name: install tar for oracle linux
   yum:
     name: "{{ item }}"
     state: present
@@ -39,7 +39,6 @@
   delay: 6
   with_items:
     - tar
-    - container-selinux
   when:
     - ansible_distribution == 'OracleLinux'
 
@@ -47,7 +46,6 @@
   yum:
     name: "{{
       'container-selinux' if offline_mode_enabled
-      else docker_rpm_container_selinux_package_url
     }}"
     state: present
     update_cache: true
@@ -57,8 +55,6 @@
   until: result is success
   retries: 5
   delay: 6
-  when:
-    - not ansible_distribution == 'OracleLinux'
 
 - name: install libseccomp rpm package
   yum:
