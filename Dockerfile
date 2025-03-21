@@ -31,7 +31,8 @@ ARG BUILDARCH
 # we copy this to remote hosts to execute GOSS
 # Packer copies /usr/local/bin/goss-amd64 from this container to the remote host
 COPY --from=devkit /usr/local/bin/goss-amd64 /usr/local/bin/goss-amd64
-
+COPY --from=devkit /opt/*.rpm /opt
+COPY --from=devkit /opt/d2iq-sign-authority-gpg-public-key /opt/d2iq-sign-authority-gpg-public-key
 # we copy this to remote hosts to execute mindthegap so its always amd64
 COPY --from=devkit /usr/local/bin/mindthegap /usr/local/bin/
 COPY --from=devkit /usr/local/bin/packer-${BUILDARCH} /usr/local/bin/packer
