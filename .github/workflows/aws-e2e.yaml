@@ -15,21 +15,6 @@ jobs:
       max-parallel: 30
       matrix:
         include:
-          # RHEL 8.8
-          - os: "redhat 8.8"
-            buildConfig: "basic"
-          - os: "redhat 8.8"
-            buildConfig: "fips"
-          - os: "redhat 8.8"
-            buildConfig: "fips-kernel"
-          - os: "redhat 8.8"
-            buildConfig: "nvidia"
-          - os: "redhat 8.8"
-            buildConfig: "offline"
-          - os: "redhat 8.8"
-            buildConfig: "offline-fips"
-          - os: "redhat 8.8"
-            buildConfig: "offline-nvidia"
           #RHEL 8.10
           - os: "redhat 8.10"
             buildConfig: "basic"
@@ -53,13 +38,6 @@ jobs:
           # Flatcar
           - os: "flatcar"
             buildConfig: "basic"
-          # Ubuntu 20.04
-          - os: "ubuntu 20.04"
-            buildConfig: "basic"
-          - os: "ubuntu 20.04"
-            buildConfig: "nvidia"
-          - os: "ubuntu 20.04"
-            buildConfig: "offline"
           # Ubuntu 22.04
           - os: "ubuntu 22.04"
             buildConfig: "basic"
