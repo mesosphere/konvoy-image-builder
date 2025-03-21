@@ -90,6 +90,7 @@ var (
 )
 
 func BuildWrapper() error {
+	fmt.Println("Building wrapper")
 	return sh.RunV("make", "bin/konvoy-image-wrapper")
 }
 
