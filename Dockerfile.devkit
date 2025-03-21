@@ -83,7 +83,7 @@ COPY ansible ansible
 # Fetch nokmem rpms
 RUN \
   export KUBERNETES_VERSION=$(awk -F': ' '/kubernetes_version/ {print $2}' ansible/group_vars/all/defaults.yaml | sed -n '2p' | xargs) && \
-  echo ${KUBERNETES_VERSION} && \
+  echo "pulling ${KUBERNETES_VERSION} and ${CNI_VERSION}" && \
   curl -o /opt/kubectl-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubectl-${KUBERNETES_VERSION}-0.x86_64.rpm && \
   curl -o /opt/kubeadm-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubeadm-${KUBERNETES_VERSION}-0.x86_64.rpm && \
   curl -o /opt/kubelet-${KUBERNETES_VERSION}-0.rpm https://packages.d2iq.com/konvoy/stable/linux/repos/el/kubernetes-v${KUBERNETES_VERSION}-nokmem/x86_64/kubelet-${KUBERNETES_VERSION}-0.x86_64.rpm && \
