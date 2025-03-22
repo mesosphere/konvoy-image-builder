@@ -14,9 +14,44 @@
       not 'kubeadm-' + package_versions.kubernetes_rpm in exportedversionlocklist.stdout
       )"
 
+
+- block:
+  - name: copy cri-tools rpm
+    copy:
+      src: "/opt/{{ 'cri-tools-' + critools_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+      dest: "/opt/{{ 'cri-tools-' + critools_rpm }}.rpm"
+
+  - name: install cri-tools rpm package
+    yum:
+      name: "/opt/{{ 'cri-tools-' + critools_rpm }}.rpm"
+      state: present
+      update_cache: true
+      enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+      disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+    register: result
+    until: result is success
+    retries: 3
+    delay: 3
+
+# If the rpms for the kubernetes version provided by the customer
+# exists on the current container, we should copy it to the remote
+# and install it with the file.
+- name: check kubeadm rpm exists for provided version
+  stat:
+    path: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+  delegate_to: localhost
+  register: haslocalkubeadm
+  become: false
+
+- name: copy kubeadm rpm
+  copy:
+    src: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '-fips' if fips.enabled else '' }}.rpm"
+    dest: "/opt/{{ 'kubeadm-' + package_versions.kubernetes_rpm }}.rpm"
+  when: haslocalkubeadm.stat.exists
+
 - name: install kubeadm rpm package
   yum:
-    name: "{{ 'kubeadm-' + package_versions.kubernetes_rpm }}"
+    name: "{{ '/opt/' if haslocalkubeadm.stat.exists }}{{ 'kubeadm-' + package_versions.kubernetes_rpm }}{{ '.rpm' if haslocalkubeadm.stat.exists }}"
     state: present
     update_cache: true
     enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"

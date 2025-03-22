@@ -48,6 +48,7 @@ var (
 		"redhat 8.4",
 		"redhat 8.6",
 		"redhat 8.8",
+		"redhat 8.10",
 		"sles 15",
 		"oracle 7.9",
 		"flatcar",
@@ -90,7 +91,8 @@ var (
 )
 
 func BuildWrapper() error {
-	return sh.RunV("make", "build-wrapper")
+	fmt.Println("Building wrapper")
+	return sh.RunV("make", "bin/konvoy-image-wrapper")
 }
 
 // Runs E2e for images.

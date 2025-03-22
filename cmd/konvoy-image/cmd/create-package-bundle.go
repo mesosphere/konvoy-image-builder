@@ -15,6 +15,7 @@ var (
 		"redhat-8.4",
 		"redhat-8.6",
 		"redhat-8.8",
+		"redhat-8.10",
 		"rocky-9.1",
 		"ubuntu-18.04",
 		"ubuntu-20.04",
