@@ -1,12 +1,12 @@
 ---
-build_name: "rocky-9.1"
+build_name: "rocky-9.5"
 packer_builder_type: "amazon"
 python_path: ""
 packer:
-  ami_filter_name: "Rocky-9-EC2-Base-9.1*x86_64*"
+  ami_filter_name: "Rocky-9-EC2-Base-9.5*x86_64*"
   ami_filter_owners: "792107900819"
   distribution: "rocky"
-  distribution_version: "9.1"
+  distribution_version: "9.5"
   source_ami: ""
   include_deprecated: true
   ssh_username: "rocky"
