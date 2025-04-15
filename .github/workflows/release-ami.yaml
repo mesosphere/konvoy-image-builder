@@ -19,12 +19,6 @@ jobs:
         include:
           - os: "oracle 8.9"
             buildConfig: "fips"
-          - os: "redhat 8.8"
-            buildConfig: "offline"
-          - os: "redhat 8.8"
-            buildConfig: "offline-fips"
-          - os: "redhat 8.8"
-            buildConfig: "fips-kernel"
           - os: "redhat 8.10"
             buildConfig: "offline"
           - os: "redhat 8.10"

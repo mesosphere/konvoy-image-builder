@@ -13,10 +13,6 @@ jobs:
       max-parallel: 10
       matrix:
         include:
-          - os: "redhat 8.8"
-            buildConfig: "offline"
-          - os: "redhat 8.8"
-            buildConfig: "offline-fips"
           - os: "redhat 8.10"
             buildConfig: "offline"
           - os: "redhat 8.10"
