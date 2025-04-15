@@ -67,10 +67,10 @@ jobs:
             buildConfig: "nvidia"
           - os: "ubuntu 22.04"
             buildConfig: "offline"
-          # Rocky 9.1
-          - os: "rocky 9.1"
+          # Rocky 9.5
+          - os: "rocky 9.5"
             buildConfig: "basic"
-          - os: "rocky 9.1"
+          - os: "rocky 9.5"
             buildConfig: "offline"
     runs-on:
     - self-hosted
