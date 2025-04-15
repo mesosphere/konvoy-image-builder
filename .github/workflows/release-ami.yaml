@@ -29,7 +29,7 @@ jobs:
             buildConfig: "offline"
           - os: "redhat 8.10"
             buildConfig: "offline-fips"
-          - os: "rocky 9.1"
+          - os: "rocky 9.5"
             buildConfig: "offline"
           - os: "ubuntu 20.04"
             buildConfig: "nvidia"
