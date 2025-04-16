@@ -386,6 +386,7 @@ dist/konvoy-image_linux_$(BUILDARCH)/konvoy-image:
 .PHONY: build
 build: bin/konvoy-image
 build: ## go build
+  echo "hello world"
 
 .PHONY: build-wrapper
 build-wrapper: bin/konvoy-image-wrapper
