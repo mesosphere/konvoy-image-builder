@@ -3,7 +3,7 @@ packer:
   datacenter: "dc1"
   datastore: ${VSPHERE_DATASTORE}
   folder: "cluster-api"
-  network: "Public"
-  resource_pool: "Users"
+  network: "VMs"
+  resource_pool: "ci/ci-kib"
   ssh_username: "builder"
   linked_clone: false

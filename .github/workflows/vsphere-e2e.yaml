@@ -35,6 +35,8 @@ jobs:
           buildConfig: "basic"
         - os: "rocky 9.1"
           buildConfig: "offline"
+        - os: "rocky 9.1"
+          buildConfig: "basic"
         - os: "oracle 9.4"
           buildConfig: "basic"
         - os: "oracle 9.4"
@@ -46,8 +48,7 @@ jobs:
         - os: "flatcar"
           buildConfig: "basic"
     runs-on:
-    - self-hosted
-    - medium
+    - self-hosted-nutanix-docker-large
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4

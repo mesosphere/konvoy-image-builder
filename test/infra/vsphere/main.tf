@@ -3,7 +3,7 @@ terraform {
   required_providers {
     vsphere = {
       source  = "hashicorp/vsphere"
-      version = "~> 2.4.0"
+      version = "~> 2.11.0"
     }
   }
 }
@@ -27,6 +27,7 @@ module "bastion_node" {
   custom_attribute_owner      = var.bastion_owner
   custom_attribute_expiration = "4h"
   vsphere_network             = var.vsphere_network
+  port_calculation            = "nutanix"
 }
 
 output "bastion_node_ssh_user" {
