@@ -16,10 +16,12 @@ jobs:
       max-parallel: 10
       matrix:
         include:
-          - os: "rocky 9"
+#          - os: "rocky 9"
+#            buildConfig: "basic"
+          - os: "rocky 9.5"
             buildConfig: "basic"
-          - os: "ubuntu 22.04"
-            buildConfig: "basic"
+#          - os: "ubuntu 22.04"
+#            buildConfig: "basic"
     runs-on:
     - self-hosted
     - medium
