@@ -2,10 +2,14 @@ audit
 ca-certificates
 conntrack-tools
 chrony
+curl
+ebtables
 open-vm-tools
 python3-pip
-python-unversioned-command
+python3-netifaces
+python3-requests
 socat
+python-unversioned-command
 sysstat
 yum-utils
 yum-plugin-versionlock
@@ -20,11 +24,9 @@ kubeadm-{{ .KubernetesVersion }}-0
 cri-tools
 {{- end }}
 conntrack
-ebtables
 ethtool
 iproute
 iptables
-socat
 gcc
 libseccomp
 nfs-utils
