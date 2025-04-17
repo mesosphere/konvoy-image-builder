@@ -32,8 +32,7 @@ jobs:
           - os: "flatcar"
             buildConfig: "basic"
     runs-on:
-    - self-hosted
-    - medium
+    - self-hosted-nutanix-docker-large
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
