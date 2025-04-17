@@ -1,0 +1,11 @@
+---
+build_name: "rocky-9.5"
+packer_builder_type: "azure"
+python_path: ""
+packer:
+  custom_managed_image_name: "Rocky-9-Azure-Base-9.5-20241118"
+  distribution: ""
+  distribution_version: ""
+  image_publisher: ""
+  image_version: ""
+  ssh_username: "azureuser"
