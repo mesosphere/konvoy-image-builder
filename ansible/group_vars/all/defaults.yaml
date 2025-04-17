@@ -32,7 +32,7 @@ critools_deb: "{{ crictl_version }}-1.1"
 critools_rpm: "{{ crictl_version }}-0"
 
 # Containerd container runtime version.
-containerd_version: "1.7.22"
+containerd_version: "1.7.24"
 
 # NOTE(jkoelker) `nvidia_cuda_version` is set via an override, it is listed
 #                empty here for documentation.
