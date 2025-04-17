@@ -10,7 +10,7 @@ variable "bastion_base_template" {
 
 variable "resource_pool_name" {
   description = "The resource pool name"
-  default     = "cluster-api"
+  default     = "ci-kib"
 }
 
 variable "root_volume_size" {
