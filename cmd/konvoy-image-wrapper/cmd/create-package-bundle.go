@@ -43,6 +43,10 @@ var osToConfig = map[string]OSConfig{
 		configDir:      "bundles/rocky9.1",
 		containerImage: "docker.io/library/rockylinux:9.1",
 	},
+	"rocky-9.5": {
+		configDir:      "bundles/rocky9.5",
+		containerImage: "docker.io/rockylinux/rockylinux:9.5",
+	},
 	"ubuntu-20.04": {
 		configDir:      "bundles/ubuntu20.04",
 		containerImage: "docker.io/library/ubuntu:20.04",
@@ -352,11 +356,13 @@ func startContainer(containerEngine, containerImage,
 ) error {
 	tty := terminal.IsTerminal(int(os.Stdout.Fd()))
 	outputBaseName := path.Base(outputDir)
+	platform := "linux/amd64" // we only support linux/amd64 rpm packages now
 	//nolint:gosec // the input is sanatized and contained.
 	cmd := exec.Command(
 		containerEngine, "run",
 		"--interactive",
 		"--tty="+strconv.FormatBool(tty),
+		"--platform", platform,
 		"--rm",
 		"-v", fmt.Sprintf("%s:/%s", outputDir, outputBaseName),
 		"-v", fmt.Sprintf("%s:%s", workingDir, containerWorkingDir),
