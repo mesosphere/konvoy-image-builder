@@ -1,9 +1,10 @@
 ---
-build_name: "rocky-9.5"
+build_name: "rocky-95"
 packer_builder_type: "azure"
 python_path: ""
 packer:
-  custom_managed_image_name: "Rocky-9-Azure-Base-9.5-20241118.0.2"
+  source_gallery_name: "dkp"
+  source_gallery_image_name: "dkp-rocky-9.5-base"
   distribution: "rockylinux-x86_64"
   distribution_version: "9-base"
   image_publisher: ""
