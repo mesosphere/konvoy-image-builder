@@ -5,7 +5,7 @@ variable "datastore_name" {
 
 variable "bastion_base_template" {
   description = "base template name"
-  default     = "d2iq-base-templates/d2iq-base-RockyLinux-9.1"
+  default     = "d2iq-base-templates/d2iq-base-RockyLinux-9.5"
 }
 
 variable "resource_pool_name" {
