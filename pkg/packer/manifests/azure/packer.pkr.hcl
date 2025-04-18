@@ -51,16 +51,6 @@ variable "cloud_environment_name" {
   default = "Public"
 }
 
-variable "custom_managed_image_name" {
-  type    = string
-  default = ""
-}
-
-variable "custom_managed_image_resource_group_name" {
-  type    = string
-  default = "dkp"
-}
-
 variable "distribution" {
   type = string
 }
@@ -143,6 +133,16 @@ variable "plan_image_publisher" {
 }
 
 variable "plan_image_sku" {
+  type    = string
+  default = ""
+}
+
+variable "source_gallery_name" {
+  type    = string
+  default = ""
+}
+
+variable "source_gallery_image_name" {
   type    = string
   default = ""
 }
@@ -400,7 +400,7 @@ source "azure-arm" "marketplace_image" {
   skip_create_image = var.dry_run
 }
 
-source "azure-arm" "custom_image" {
+source "azure-arm" "gallery_image" {
   azure_tags = {
     build_date             = legacy_isotime("June 7, 7:22:43pm 2014") # json template isotime
     build_timestamp        = local.build_timestamp
@@ -417,11 +417,16 @@ source "azure-arm" "custom_image" {
   client_id                         = var.client_id
   client_secret                     = var.client_secret
   cloud_environment_name            = var.cloud_environment_name
-  custom_managed_image_name         = var.custom_managed_image_name
-  custom_managed_image_resource_group_name = var.custom_managed_image_resource_group_name
   location                          = length(local.gallery_image_locations) > 0 ? element(local.gallery_image_locations, 0) : var.location
   managed_image_name                = local.managed_image_name
   managed_image_resource_group_name = var.resource_group_name
+  shared_image_gallery {
+    subscription     = var.subscription_id
+    resource_group   = var.resource_group_name
+    gallery_name     = var.source_gallery_name
+    image_name       = var.source_gallery_image_name
+    image_version    = var.image_version
+  }
   os_type                           = "Linux"
   os_disk_size_gb                   = var.disk_size
   private_virtual_network_with_public_ip = var.private_virtual_network_with_public_ip
@@ -448,9 +453,9 @@ source "azure-arm" "custom_image" {
 # documentation for build blocks can be found here:
 # https://www.packer.io/docs/templates/hcl_templates/blocks/build
 build {
-  # It is not possible to template and either use var.custom_managed_image_name or var.image_...
+  # It is not possible to template and either use var.source_gallery_... or var.image_...
   sources = [
-      length(var.custom_managed_image_name) > 0  ? "source.azure-arm.custom_image" : "source.azure-arm.marketplace_image"
+      length(var.source_gallery_image_name) > 0  ? "source.azure-arm.gallery_image" : "source.azure-arm.marketplace_image"
   ]
 
   provisioner "ansible" {
