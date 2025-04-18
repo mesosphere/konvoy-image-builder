@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.24.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.23.0...v2.24.0) (2025-04-18)
+
+
+### Features
+
+* create package bundle for rocky-9.5  ([#1290](https://github.com/mesosphere/konvoy-image-builder/issues/1290)) ([003e1dc](https://github.com/mesosphere/konvoy-image-builder/commit/003e1dc7a941aceb70e53b36d0670c5be58d3acc))
+* support building Rocky 9.5 AWS images ([#1284](https://github.com/mesosphere/konvoy-image-builder/issues/1284)) ([fdb7bdc](https://github.com/mesosphere/konvoy-image-builder/commit/fdb7bdc766541f2dae62bb5d3a0e99ea7fedb7ca))
+* support building Rocky 9.5 vSphere images ([#1296](https://github.com/mesosphere/konvoy-image-builder/issues/1296)) ([87b2e5c](https://github.com/mesosphere/konvoy-image-builder/commit/87b2e5c08b1ee5563f53c1f150776776d91ae16d))
+
+
+### Bug Fixes
+
+* simplifies rhel deps ([#1277](https://github.com/mesosphere/konvoy-image-builder/issues/1277)) ([8e2e086](https://github.com/mesosphere/konvoy-image-builder/commit/8e2e0865dded1ea135e127dce13071f95d084615))
+
 ## [2.23.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.22.2...v2.23.0) (2025-03-21)
 
 
