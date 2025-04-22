@@ -45,6 +45,8 @@ jobs:
             buildConfig: "nvidia"
           - os: "ubuntu 22.04"
             buildConfig: "offline"
+          - os: "ubuntu 22.04"
+            buildConfig: "offline-nvidia"
           # Rocky 9.5
           - os: "rocky 9.5"
             buildConfig: "basic"
