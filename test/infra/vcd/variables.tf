@@ -18,7 +18,7 @@ variable "bastion_base_template" {
 
 variable "vcd_bastion_vsphere_folder" {
   description = "Name of the folder where the bastion vm will be created"
-  default     = "users/users-ksphere-platform"
+  default     = "ci-kib"
   type        = string
 }
 
@@ -29,7 +29,7 @@ variable "datastore_name" {
 
 variable "vcd_bastion_resource_pool_name" {
   description = "Name of the vsphere resource pool"
-  default     = "users-ksphere-platform"
+  default     = "ci-kib"
   type        = string
 }
 
