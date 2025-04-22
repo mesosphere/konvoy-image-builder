@@ -137,6 +137,16 @@ variable "plan_image_sku" {
   default = ""
 }
 
+variable "source_gallery_name" {
+  type    = string
+  default = ""
+}
+
+variable "source_gallery_image_name" {
+  type    = string
+  default = ""
+}
+
 variable "private_virtual_network_with_public_ip" {
   type    = bool
   default = true
@@ -339,7 +349,7 @@ locals {
 # https://www.packer.io/docs/templates/hcl_templates/blocks/source
 # could not parse template for following block: "template: hcl2_upgrade:2: bad character U+0060 '`'"
 
-source "azure-arm" "kib_image" {
+source "azure-arm" "marketplace_image" {
   azure_tags = {
     build_date             = legacy_isotime("June 7, 7:22:43pm 2014") # json template isotime
     build_timestamp        = local.build_timestamp
@@ -390,11 +400,63 @@ source "azure-arm" "kib_image" {
   skip_create_image = var.dry_run
 }
 
+source "azure-arm" "gallery_image" {
+  azure_tags = {
+    build_date             = legacy_isotime("June 7, 7:22:43pm 2014") # json template isotime
+    build_timestamp        = local.build_timestamp
+    containerd_version     = var.containerd_version
+    distribution           = var.distribution
+    distribution_version   = var.distribution_version
+    gpu                    = var.gpu
+    gpu_nvidia_version     = var.gpu_nvidia_version
+    gpu_types              = var.gpu_types
+    image_builder_version  = var.konvoy_image_builder_version
+    kubernetes_cni_version = var.kubernetes_cni_version
+    kubernetes_version     = var.kubernetes_full_version
+  }
+  client_id                         = var.client_id
+  client_secret                     = var.client_secret
+  cloud_environment_name            = var.cloud_environment_name
+  location                          = length(local.gallery_image_locations) > 0 ? element(local.gallery_image_locations, 0) : var.location
+  managed_image_name                = local.managed_image_name
+  managed_image_resource_group_name = var.resource_group_name
+  shared_image_gallery {
+    subscription     = var.subscription_id
+    resource_group   = var.resource_group_name
+    gallery_name     = var.source_gallery_name
+    image_name       = var.source_gallery_image_name
+    image_version    = var.image_version
+  }
+  os_type                           = "Linux"
+  os_disk_size_gb                   = var.disk_size
+  private_virtual_network_with_public_ip = var.private_virtual_network_with_public_ip
+  shared_image_gallery_destination {
+    gallery_name        = var.gallery_name
+    image_name          = var.gallery_image_name
+    image_version       = local.shared_image_gallery_image_version
+    replication_regions = local.gallery_image_locations
+    resource_group      = var.resource_group_name
+  }
+  ssh_key_exchange_algorithms         = ["curve25519-sha256@libssh.org", "ecdh-sha2-nistp256", "ecdh-sha2-nistp384", "ecdh-sha2-nistp521", "diffie-hellman-group14-sha1", "diffie-hellman-group1-sha1"]
+  ssh_username                        = "packer"
+  subscription_id                     = var.subscription_id
+  tenant_id                           = var.tenant_id
+  virtual_network_name                = var.virtual_network_name
+  virtual_network_resource_group_name = var.virtual_network_resource_group_name
+  virtual_network_subnet_name         = var.virtual_network_subnet_name
+  vm_size                             = var.vm_size
+
+  skip_create_image = var.dry_run
+}
+
 # a build block invokes sources and runs provisioning steps on them. The
 # documentation for build blocks can be found here:
 # https://www.packer.io/docs/templates/hcl_templates/blocks/build
 build {
-  sources = ["source.azure-arm.kib_image"]
+  # It is not possible to template and either use var.source_gallery_... or var.image_...
+  sources = [
+      length(var.source_gallery_image_name) > 0  ? "source.azure-arm.gallery_image" : "source.azure-arm.marketplace_image"
+  ]
 
   provisioner "ansible" {
     ansible_env_vars = ["ANSIBLE_SSH_ARGS='${var.existing_ansible_ssh_args}'", "ANSIBLE_REMOTE_TEMP='${var.remote_folder}/.ansible/'"]
