@@ -43,7 +43,6 @@ var (
 	rhck          = "rhck"
 
 	validOS = []string{
-		"redhat 8.8",
 		"redhat 8.10",
 		"oracle 8.9",
 		"oracle 9.4",
@@ -410,9 +409,6 @@ func createOSBundle(osName, kubernetesVersion, downloadDir string, fips, gpu boo
 	}
 	if fips {
 		args = append(args, "--fips=true")
-	}
-	if osName == "redhat 8.8" || osName == "redhat 8.6" {
-		args = append(args, "--enable-eus-repos=true")
 	}
 	if gpu {
 		args = append(args, "--fetch-kernel-headers=true")
