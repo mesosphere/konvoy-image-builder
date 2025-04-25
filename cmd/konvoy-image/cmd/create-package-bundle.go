@@ -12,7 +12,7 @@ var (
 	validOS           = []string{
 		"redhat-8.10",
 		"rocky-9.1",
-		"ubuntu-20.04",
+		"ubuntu-22.04",
 		"oracle-9.4",
 	}
 )

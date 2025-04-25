@@ -511,7 +511,7 @@ func MergeAzureUserArgs(config Config, azureArgs *AzureArgs) error {
 	// https://learn.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage#terminology
 	// Create unique gallery image name to represent different OS flavors + kubernetes version + fips + metadata(release)
 	// to prevent conflicts when creating azure images.
-	// ex. dkp-ubuntu-2004-release-1.24.6-fips.0,  dkp-ubuntu-2004-release-1.24.6-nvidia
+	// ex. dkp-ubuntu-2204-release-1.24.6-fips.0,  dkp-ubuntu-2204-release-1.24.6-nvidia
 	fullKuberenetesVersion, err := config.GetWithError(KubernetesFullVersionKey)
 	if err != nil {
 		return fmt.Errorf("unable to get full kubernetes version from config: %w", err)
