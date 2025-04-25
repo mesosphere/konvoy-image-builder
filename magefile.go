@@ -47,7 +47,6 @@ var (
 		"oracle 8.9",
 		"oracle 9.4",
 		"flatcar",
-		"ubuntu 20.04",
 		"ubuntu 22.04",
 		"rocky 9.0",
 		"rocky 9.1",

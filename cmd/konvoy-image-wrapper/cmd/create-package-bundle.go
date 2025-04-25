@@ -43,10 +43,6 @@ var osToConfig = map[string]OSConfig{
 		configDir:      "bundles/rocky9.5",
 		containerImage: "docker.io/rockylinux/rockylinux:9.5",
 	},
-	"ubuntu-20.04": {
-		configDir:      "bundles/ubuntu20.04",
-		containerImage: "docker.io/library/ubuntu:20.04",
-	},
 	"ubuntu-22.04": {
 		configDir:      "bundles/ubuntu22.04",
 		containerImage: "docker.io/library/ubuntu:22.04",
