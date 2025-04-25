@@ -25,10 +25,10 @@ build --region us-west-2 --source-ami=ami-12345abcdef images/ami/centos-79.yaml 
     --instance-type=g4dn.2xlarge
 ```
 
-Example of building on AWS with Ubuntu 20.04 as the operating system and `p2.xlarge` as the AWS machines you are going to use:
+Example of building on AWS with Ubuntu 22.04 as the operating system and `p2.xlarge` as the AWS machines you are going to use:
 
 ```sh
-konvoy-image build aws --region us-west-2 images/ami/ubuntu-2004.yaml \
+konvoy-image build aws --region us-west-2 images/ami/ubuntu-2204.yaml \
     --overrides overrides/nvidia.yaml \
     --instance-type=p2.xlarge
 ```
