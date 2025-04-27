@@ -21,9 +21,7 @@ concurrency:
 
 jobs:
   build-push-devkit:
-    runs-on: 
-    - self-hosted
-    - small
+    runs-on: self-hosted-nutanix-docker-medium
     steps:
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v4

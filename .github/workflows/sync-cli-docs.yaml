@@ -9,9 +9,7 @@ on:
 
 jobs:
   sync-cli-docs:
-    runs-on: 
-    - self-hosted
-    - small
+    runs-on: self-hosted-nutanix-medium
     name: Sync CLI docs to Confluence
     steps:
       - name: Checkout konvoy-image-builder repository

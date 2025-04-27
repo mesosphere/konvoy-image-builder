@@ -12,9 +12,7 @@ on:
 name: Release konvoy-image-builder
 jobs:
   release-to-github:
-    runs-on:
-      - self-hosted
-      - large
+    runs-on: self-hosted-nutanix-docker-large
     steps:
       - uses: actions/checkout@v4
         with:

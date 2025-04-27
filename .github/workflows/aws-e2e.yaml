@@ -50,9 +50,7 @@ jobs:
             buildConfig: "basic"
           - os: "rocky 9.5"
             buildConfig: "offline"
-    runs-on:
-    - self-hosted
-    - medium
+    runs-on: self-hosted-nutanix-docker-large
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
