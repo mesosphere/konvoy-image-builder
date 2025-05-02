@@ -20,9 +20,7 @@ jobs:
             buildConfig: "basic"
           - os: "ubuntu 22.04"
             buildConfig: "basic"
-    runs-on:
-    - self-hosted
-    - medium
+    runs-on: self-hosted-nutanix-docker-large
     continue-on-error: false
     steps:
       - name: Checkout konvoy-image-builder repository
