@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.25.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.24.0...v2.25.0) (2025-05-22)
+
+
+### Features
+
+* Bump K8s to 1.33.0 ([8628677](https://github.com/mesosphere/konvoy-image-builder/commit/8628677f826e6bf91864b0071b30d1466243c05f))
+* bump k8s to latest 1.33.1 ([3576928](https://github.com/mesosphere/konvoy-image-builder/commit/3576928a116cc62c160cf2ed7f8c7eedaa62379b))
+* changed the cni url ([a1d6a23](https://github.com/mesosphere/konvoy-image-builder/commit/a1d6a2335077383195e204e7c63b313591530c87))
+* revert the vscode setting ([d38371f](https://github.com/mesosphere/konvoy-image-builder/commit/d38371f912d5cb90fb9cca122383b8b690aca3db))
+* support using gallery images in Azure ([#1295](https://github.com/mesosphere/konvoy-image-builder/issues/1295)) ([fc7cea6](https://github.com/mesosphere/konvoy-image-builder/commit/fc7cea66a41b44fd5ac030344668e3c13efd84e6))
+
+
+### Bug Fixes
+
+* remove ubuntu-20.04 and its references ([#1300](https://github.com/mesosphere/konvoy-image-builder/issues/1300)) ([e17f4fa](https://github.com/mesosphere/konvoy-image-builder/commit/e17f4faeb9c2cec12c734437bb5973a405de98dc))
+
 ## [2.24.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.23.0...v2.24.0) (2025-04-18)
 
 
