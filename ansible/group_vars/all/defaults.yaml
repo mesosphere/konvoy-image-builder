@@ -5,11 +5,11 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 #
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
-kubernetes_version: "1.32.3"
+kubernetes_version: "1.33.1"
 kubernetes_major_minor: "{{ (kubernetes_version.split('.') | map('trim'))[:2] | join('.') }}"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
-kubernetes_cni_version: "1.6.0"
+kubernetes_cni_version: "1.6.2"
 
 # The crictl CLI is released as part of the http://sigs.k8s.io/cri-tools project.
 # The project release closely follows the Kubernetes release cycle, and uses a
@@ -21,7 +21,7 @@ crictl_version: "{{ kubernetes_major_minor }}.0"
 # The url points to the linux/amd64 release artifact.
 crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
 # The sha256 sum verifies the integrity of the release artifact.
-crictl_sha256: f050b71d3a73a91a4e0990b90143ed04dcd100cc66f953736fcb6a2730e283c4
+crictl_sha256: 8307399e714626e69d1213a4cd18c8dec3d0201ecdac009b1802115df8973f0f
 
 
 # The critools deb and rpm package versions. While the version derives directly from
@@ -32,7 +32,7 @@ critools_deb: "{{ crictl_version }}-1.1"
 critools_rpm: "{{ crictl_version }}-0"
 
 # Containerd container runtime version.
-containerd_version: "1.7.26"
+containerd_version: "1.7.27"
 
 # NOTE(jkoelker) `nvidia_cuda_version` is set via an override, it is listed
 #                empty here for documentation.
@@ -65,7 +65,7 @@ containerd_base_url: https://packages.d2iq.com/dkp/containerd
 docker_base_url: https://download.docker.com/linux/static/stable
 kubernetes_http_source: https://dl.k8s.io/release
 kubernetes_cni_semver: v{{ kubernetes_cni_version }}
-kubernetes_cni_http_checksum: sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
+kubernetes_cni_http_checksum: sha256:https://github.com/containernetworking/plugins/releases/download/{{ kubernetes_cni_semver }}/cni-plugins-linux-amd64-{{ kubernetes_cni_semver }}.tgz.sha256
 kubernetes_cni_http_source: https://github.com/containernetworking/plugins/releases/download
 containerd_cri_socket: /run/containerd/containerd.sock
 flatcar_containerd_cri_socket: /run/docker/libcontainerd/docker-containerd.sock
