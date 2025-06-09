@@ -45,10 +45,10 @@ jobs:
             buildConfig: "nvidia"
           - os: "ubuntu 22.04"
             buildConfig: "offline"
-          # Rocky 9.5
-          - os: "rocky 9.5"
+          # Rocky 9.6
+          - os: "rocky 9.6"
             buildConfig: "basic"
-          - os: "rocky 9.5"
+          - os: "rocky 9.6"
             buildConfig: "offline"
     runs-on: self-hosted-nutanix-docker-large
     continue-on-error: false

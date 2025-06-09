@@ -39,6 +39,10 @@ var osToConfig = map[string]OSConfig{
 		configDir:      "bundles/rocky9.1",
 		containerImage: "docker.io/library/rockylinux:9.1",
 	},
+	"rocky-9.6": {
+		configDir:      "bundles/rocky9.6",
+		containerImage: "docker.io/rockylinux/rockylinux:9.6",
+	},
 	"rocky-9.5": {
 		configDir:      "bundles/rocky9.5",
 		containerImage: "docker.io/rockylinux/rockylinux:9.5",
