@@ -19,8 +19,8 @@ rm packages.txt
 curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
 createrepo -v . && chown -R 1000:1000 repodata/
 #shellcheck disable=SC1083,SC2035
-tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.5_x86_64.tar.gz *
+tar -czf {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.6_x86_64.tar.gz *
 #shellcheck disable=SC1083
-chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.5_x86_64.tar.gz
+chmod 777 {{ .OutputDirectory }}/{{ .KubernetesVersion }}_rocky_9.6_x86_64.tar.gz
 popd
 rm -rf "${TMP_DIR}"
