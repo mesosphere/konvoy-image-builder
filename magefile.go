@@ -51,6 +51,7 @@ var (
 		"rocky 9.0",
 		"rocky 9.1",
 		"rocky 9.5",
+		"rocky 9.6",
 		"rocky 9",
 	}
 
