@@ -23,7 +23,7 @@ jobs:
             buildConfig: "offline"
           - os: "redhat 8.10"
             buildConfig: "offline-fips"
-          - os: "rocky 9.5"
+          - os: "rocky 9.6"
             buildConfig: "offline"
           - os: "ubuntu 22.04"
             buildConfig: "basic"
