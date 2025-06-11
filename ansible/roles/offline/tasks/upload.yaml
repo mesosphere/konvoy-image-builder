@@ -8,6 +8,10 @@
       os: linux
     set_fact: os_release
 
+- name: Print os_release fact
+  debug:
+    var: os_release
+
 - name: Set containerd_tar_file
   set_fact:
     # Notes
