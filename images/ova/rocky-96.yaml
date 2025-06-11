@@ -1,5 +1,5 @@
 ---
-build_name: "rocky-95"
+build_name: "rocky-96"
 packer_builder_type: "vsphere" 
 guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
 guestinfo_datasource_ref: "v1.4.0"
@@ -12,12 +12,12 @@ packer:
   insecure_connection: "false"
   network: ""
   resource_pool: ""
-  template: "d2iq-base-templates/d2iq-base-RockyLinux-9.5" # change default value with your base template name
+  template: "d2iq-base-templates/d2iq-base-RockyLinux-9.6" # change default value with your base template name
   vsphere_guest_os_type: "other4xLinux64Guest"
   guest_os_type: "rocky9-64"
   # goss params
   distribution: "rocky"
-  distribution_version: "9.5"
+  distribution_version: "9.6"
 # Use following overrides to select the authentication method that can be used with base template
 # ssh_username: ""  # can be exported as environment variable 'SSH_USERNAME'
 # ssh_password: "" # can be exported as environment variable 'SSH_PASSWORD'

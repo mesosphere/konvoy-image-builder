@@ -19,7 +19,7 @@ jobs:
             buildConfig: "offline-fips"
           - os: "ubuntu 22.04"
             buildConfig: "basic"
-          - os: "rocky 9.5"
+          - os: "rocky 9.6"
             buildConfig: "offline"
           - os: "oracle 9.4"
             buildConfig: "basic"
