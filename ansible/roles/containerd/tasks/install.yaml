@@ -15,7 +15,7 @@
   when:
     - not containerd_tar_file_exists.stat.exists
 
-- name: download containerd
+- name: download containerd for {{ containerd_tar_file }}
   get_url:
     url: "{{ containerd_base_url }}/{{ containerd_tar_file }}"
     dest: "{{ containerd_remote_bundle_path }}/{{ containerd_tar_file }}"
