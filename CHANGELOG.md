@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.26.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.25.0...v2.26.0) (2025-06-11)
+
+
+### Features
+
+* adds rocky 9.6 build for aws ([#1306](https://github.com/mesosphere/konvoy-image-builder/issues/1306)) ([c184b40](https://github.com/mesosphere/konvoy-image-builder/commit/c184b4099cc11cf72abe008701b6bf7ec408db9e))
+* rocky 9.6 on vsphere ([#1308](https://github.com/mesosphere/konvoy-image-builder/issues/1308)) ([f3afb94](https://github.com/mesosphere/konvoy-image-builder/commit/f3afb94ed1ae22c95cebaf0fa8ef4be767953cd9))
+
+
+### Bug Fixes
+
+* adds download name to file for containerd download ([#1311](https://github.com/mesosphere/konvoy-image-builder/issues/1311)) ([7b5a5f9](https://github.com/mesosphere/konvoy-image-builder/commit/7b5a5f9aa739ac276c59e4efa6d1966868575c94))
+
 ## [2.25.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.24.0...v2.25.0) (2025-05-22)
 
 
