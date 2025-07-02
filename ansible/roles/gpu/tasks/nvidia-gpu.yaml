@@ -56,11 +56,17 @@
     nvidia_driver_versions: "{{ nvidia_driver_files.files | map(attribute='path') | map('regex_replace', '^.*NVIDIA-Linux-x86_64-(\\d+\\.\\d+\\.\\d+)\\.run$', '\\1') | list }}"
     uninstall_list: []
 
-- name: compare versions with nvidia_driver_version
+- name: compare versions with nvidia_driver_version for uninstall
+  loop: "{{ nvidia_driver_versions }}"
+  when: item is version( nvidia_driver_version , '<=')
+  set_fact:
+    uninstall_list: "{{ uninstall_list + [item] }}"
+
+- name: compare versions with nvidia_driver_version for removal
   loop: "{{ nvidia_driver_versions }}"
   when: item is version( nvidia_driver_version , '<')
   set_fact:
-    uninstall_list: "{{ uninstall_list + [item] }}"
+    remove_list: "{{ remove_list + [item] }}"
 
 - name: uninstall and stop programs using older nvidia drivers
   block:
@@ -83,14 +89,14 @@
     file:
       path: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ item }}"
       state: absent
-    loop: "{{ uninstall_list }}"
+    loop: "{{ remove_list }}"
 
   - name: remove older runfile
     file:
       path: "{{ nvidia_remote_bundle_path }}/NVIDIA-Linux-x86_64-{{ item }}.run"
       state: absent
-    loop: "{{ uninstall_list }}"
-  when: uninstall_list | length > 0
+    loop: "{{ remove_list }}"
+  when: remove_list | length > 0
 
 - name: download gpu runfile
   get_url:
