@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.27.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.26.0...v2.27.0) (2025-07-03)
+
+
+### Features
+
+* bump the Kubernetes version to v1.33.2 ([ec442af](https://github.com/mesosphere/konvoy-image-builder/commit/ec442affca87a796b995a9d0d059baa9085198e8))
+
+
+### Bug Fixes
+
+* bump kernel headers for RHEL 8.10 ([0ba33e6](https://github.com/mesosphere/konvoy-image-builder/commit/0ba33e62be7b6ce8903312e12d14493a6f14f56c))
+
 ## [2.26.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.25.0...v2.26.0) (2025-06-11)
 
 
