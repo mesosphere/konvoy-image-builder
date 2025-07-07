@@ -101,7 +101,7 @@
 - name: Create custom cloud-init data source for RedHat
   ansible.builtin.copy:
     src: usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
-    dest: /usr/lib/python3.9/site-packages/cloudinit/cloudinit/sources/DataSourceEc2Kubernetes.py
+    dest: /usr/lib/python3.9/site-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
     owner: root
     group: root
     mode: "0644"
