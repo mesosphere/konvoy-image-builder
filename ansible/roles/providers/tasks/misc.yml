@@ -87,7 +87,9 @@
     owner: root
     group: root
     mode: "0644"
-  when: system_cloud_init_version is version('24.2', '>')
+  when:
+    - ansible_os_family != "Flatcar"
+    - system_cloud_init_version is version('24.2', '>')
 
 - name: Create custom cloud-init data source for Ubuntu
   ansible.builtin.copy:
