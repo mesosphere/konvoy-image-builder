@@ -80,10 +80,43 @@
     block: "{{ lookup('file', 'cloud-init-features.patch') }}"
   when: ansible_os_family == "Debian" and system_cloud_init_version is version('23.3.0', '>=')
 
+- name: Create cloud-init custom data source list
+  ansible.builtin.copy:
+    src: files/etc/cloud/cloud.cfg.d/90_dpkg.cfg
+    dest: /etc/cloud/cloud.cfg.d/90_dpkg.cfg
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ansible_os_family != "Flatcar"
+    - system_cloud_init_version is version('24.2', '>')
+
+- name: Create custom cloud-init data source for Ubuntu
+  ansible.builtin.copy:
+    src: usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    dest: /usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ansible_distribution == "Ubuntu" and system_cloud_init_version is version('24.2', '>')
+    - packer_builder_type.startswith('amazon')
+
 - name: get python3 location for non-debian
   register: python3_version
   shell: python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))"
   when: ansible_os_family not in ["Debian", "Flatcar"]
+
+- name: Create custom cloud-init data source for RedHat
+  ansible.builtin.copy:
+    src: usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    dest: "{{ python3_version.stdout }}/cloudinit/sources/DataSourceEc2Kubernetes.py"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ansible_os_family == "RedHat" and system_cloud_init_version is version('24.2', '>')
+    - packer_builder_type.startswith('amazon')
 
 - name: patch cloud-init feature flags for RedHat
   ansible.builtin.blockinfile:
