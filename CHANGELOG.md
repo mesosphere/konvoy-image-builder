@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.27.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.27.0...v2.27.1) (2025-07-08)
+
+
+### Bug Fixes
+
+* adds cloud init version checks for newer EL 9 OSes ([#1315](https://github.com/mesosphere/konvoy-image-builder/issues/1315)) ([d991f7f](https://github.com/mesosphere/konvoy-image-builder/commit/d991f7fe3989669a4ceec754953fd0c1770b962d))
+
 ## [2.27.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.26.0...v2.27.0) (2025-07-03)
 
 
