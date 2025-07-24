@@ -40,6 +40,20 @@ RHSM_ACTIVATION_KEY=example_key
 RHSM_ORG_ID=example_org_id
 ```
 
+Setting pool_ids, environment, or consumer name is optional, but recommended for better subscription management:
+
+```bash
+RHSM_ENVIRONMENT=example_environment
+RHSM_POOL_ID=example_pool_id
+```
+
+Or set a custom consumer name for easier identification:
+
+```bash
+RHSM_CONSUMER_NAME=example_consumer_name
+RHSM_POOL_ID=example_pool_id
+```
+
 **Packer variables for vSphere:**
 Following variables are needed for the vSphere. Add this configuration in the `image.yaml`
 

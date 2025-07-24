@@ -82,5 +82,5 @@ jobs:
           args: runE2e "${{ matrix.os }}" "${{ matrix.buildConfig }}" aws false
         env:
           GITHUB_TOKEN: ${{ secrets.MESOSPHERECI_USER_TOKEN }}
-          RHSM_ACTIVATION_KEY: ${{ secrets.RHSM_ACTIVATION_KEY }}
-          RHSM_ORG_ID: ${{ secrets.RHSM_ORG_ID }}
+          RHSM_ACTIVATION_KEY: ${{ secrets.RHSM_NTNX_ACTIVATION_KEY }}
+          RHSM_ORG_ID: ${{ secrets.RHSM_NTNX_ORG_ID }}
