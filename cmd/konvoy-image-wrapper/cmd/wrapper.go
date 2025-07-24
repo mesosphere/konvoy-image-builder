@@ -50,6 +50,9 @@ const (
 	envRedHatSubscriptionManagerPassword      = "RHSM_PASS" // #gitleaks:allow
 	envRedHatSubscriptionManagerActivationKey = "RHSM_ACTIVATION_KEY"
 	envRedHatSubscriptionManagerOrgID         = "RHSM_ORG_ID"
+	envRedHatSubscriptionManagerEnvironment   = "RHSM_ENVIRONMENT"
+	envRedHatSubscriptionManagerConsumerName  = "RHSM_CONSUMER_NAME"
+	envRedHatSubscriptionManagerPoolID        = "RHSM_POOL_ID"
 
 	envVSphereSSHUserName          = "SSH_USERNAME"
 	envVSphereSSHPassword          = "SSH_PASSWORD" // #gitleaks:allow
@@ -228,6 +231,9 @@ func (r *Runner) setVSphereEnv() error {
 		envRedHatSubscriptionManagerPassword,
 		envRedHatSubscriptionManagerActivationKey,
 		envRedHatSubscriptionManagerOrgID,
+		envRedHatSubscriptionManagerEnvironment,
+		envRedHatSubscriptionManagerConsumerName,
+		envRedHatSubscriptionManagerPoolID,
 		envVSphereSSHUserName,
 		envVSphereSSHPassword,
 		envVsphereSSHPrivatekeyFile,
