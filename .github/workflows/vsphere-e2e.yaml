@@ -94,8 +94,9 @@ jobs:
           VSPHERE_SERVER: ${{ secrets.VSPHERE_SERVER }}
           VSPHERE_DATASTORE: ${{ secrets.VSPHERE_DATASTORE }}
           VSPHERE_DATACENTER: ${{ secrets.VSPHERE_DATACENTER }}
-          RHSM_ACTIVATION_KEY: ${{ secrets.RHSM_ACTIVATION_KEY }}
-          RHSM_ORG_ID: ${{ secrets.RHSM_ORG_ID }}
+          RHSM_ACTIVATION_KEY: ${{ secrets.RHSM_NTNX_ACTIVATION_KEY }}
+          RHSM_ORG_ID: ${{ secrets.RHSM_NTNX_ORG_ID }}
+          RHSM_CONSUMER_NAME: "kib-e2e-vsphere-${{ github.run_id }}-${{ github.run_attempt }}"
 
       - name: Run make destroy to clean up failed tests
         if: ${{ always() }}
