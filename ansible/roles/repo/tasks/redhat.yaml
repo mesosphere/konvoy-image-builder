@@ -32,7 +32,8 @@
     activationkey: "{{ rhsm_activation_key }}"
     force_register: true
     consumer_name: "{{ rhsm_consumer_name }}"
-    pool_ids: ["{{ rhsm_pool_id }}"]
+    pool_ids: "{{ [rhsm_pool_id] if rhsm_pool_id | default('') | length > 0 else [] }}"
+    environment: "{{ rhsm_environment }}"
     release: "{{ ansible_distribution_version }}"
   register: rhelorg
   when:
