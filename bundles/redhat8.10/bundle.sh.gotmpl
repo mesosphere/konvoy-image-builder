@@ -17,7 +17,8 @@ RHSM_CONSUMER_NAME=${RHSM_CONSUMER_NAME:-""}
 RHSM_POOL_ID=${RHSM_POOL_ID:-""}
 
 RHSM_REGISTER_ARGS=()
-if [[ -n "${RHSM_ENVIRONMENT}" ]]; then
+# environment and activationkey are mutually exclusive
+if [[ -n "${RHSM_ENVIRONMENT}" && -z "${RHSM_ACTIVATION_KEY}" ]]; then
   RHSM_REGISTER_ARGS+=("--environment=${RHSM_ENVIRONMENT}")
 fi
 if [[ -n "${RHSM_CONSUMER_NAME}" ]]; then
