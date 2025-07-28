@@ -55,6 +55,7 @@
   set_fact:
     nvidia_driver_versions: "{{ nvidia_driver_files.files | map(attribute='path') | map('regex_replace', '^.*NVIDIA-Linux-x86_64-(\\d+\\.\\d+\\.\\d+)\\.run$', '\\1') | list }}"
     uninstall_list: []
+    remove_list: []
 
 - name: compare versions with nvidia_driver_version for uninstall
   loop: "{{ nvidia_driver_versions }}"
