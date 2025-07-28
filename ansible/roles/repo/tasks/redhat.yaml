@@ -1,9 +1,12 @@
 ---
 - set_fact:
-   rhsm_user: "{{ lookup('env', 'RHSM_USER' ) | ternary (lookup('env', 'RHSM_USER' ), rhsm_user) }}"
-   rhsm_password: "{{ lookup('env', 'RHSM_PASS' ) | ternary (lookup('env', 'RHSM_PASS' ), rhsm_password) }}"
-   rhsm_activation_key: "{{ lookup('env', 'RHSM_ACTIVATION_KEY' ) | ternary (lookup('env', 'RHSM_ACTIVATION_KEY' ), rhsm_activation_key) }}"
-   rhsm_org_id: "{{ lookup('env', 'RHSM_ORG_ID' ) | ternary (lookup('env', 'RHSM_ORG_ID' ), rhsm_org_id) }}"
+    rhsm_user: "{{ lookup('env', 'RHSM_USER' ) | ternary (lookup('env', 'RHSM_USER' ), rhsm_user) }}"
+    rhsm_password: "{{ lookup('env', 'RHSM_PASS' ) | ternary (lookup('env', 'RHSM_PASS' ), rhsm_password) }}"
+    rhsm_activation_key: "{{ lookup('env', 'RHSM_ACTIVATION_KEY' ) | ternary (lookup('env', 'RHSM_ACTIVATION_KEY' ), rhsm_activation_key) }}"
+    rhsm_org_id: "{{ lookup('env', 'RHSM_ORG_ID' ) | ternary (lookup('env', 'RHSM_ORG_ID' ), rhsm_org_id) }}"
+    rhsm_consumer_name: "{{ lookup('env', 'RHSM_CONSUMER_NAME' ) | ternary (lookup('env', 'RHSM_CONSUMER_NAME' ), rhsm_consumer_name) }}"
+    rhsm_pool_id: "{{ lookup('env', 'RHSM_POOL_ID' ) | ternary (lookup('env', 'RHSM_POOL_ID' ), rhsm_pool_id) }}"
+    rhsm_environment: "{{ lookup('env', 'RHSM_ENVIRONMENT' ) | ternary (lookup('env', 'RHSM_ENVIRONMENT' ), rhsm_environment) }}"
 
 - name: RHEL subscription using username and password
   redhat_subscription:
@@ -12,6 +15,9 @@
     password: "{{ rhsm_password }}"
     auto_attach: true
     force_register: true
+    consumer_name: "{{ rhsm_consumer_name }}"
+    pool_ids: "{{ [rhsm_pool_id] if rhsm_pool_id | default('') | length > 0 else [] }}"
+    environment: "{{ rhsm_environment }}"
     release: "{{ ansible_distribution_version }}"
   register: rheluser
   when:
@@ -25,6 +31,9 @@
     org_id: "{{ rhsm_org_id }}"
     activationkey: "{{ rhsm_activation_key }}"
     force_register: true
+    consumer_name: "{{ rhsm_consumer_name }}"
+    pool_ids: "{{ [rhsm_pool_id] if rhsm_pool_id | default('') | length > 0 else [] }}"
+    environment: "{{ rhsm_environment }}"
     release: "{{ ansible_distribution_version }}"
   register: rhelorg
   when:

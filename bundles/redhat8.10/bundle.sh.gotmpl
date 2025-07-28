@@ -12,14 +12,31 @@ RHSM_ORG_ID=${RHSM_ORG_ID:-""}
 RHSM_ACTIVATION_KEY=${RHSM_ACTIVATION_KEY:-""}
 RHSM_USER=${RHSM_USER:-""}
 RHSM_PASS=${RHSM_PASS:-""}
+RHSM_ENVIRONMENT=${RHSM_ENVIRONMENT:-""}
+RHSM_CONSUMER_NAME=${RHSM_CONSUMER_NAME:-""}
+RHSM_POOL_ID=${RHSM_POOL_ID:-""}
+
+RHSM_REGISTER_ARGS=()
+if [[ -n "${RHSM_ENVIRONMENT}" ]]; then
+  RHSM_REGISTER_ARGS+=("--environment=${RHSM_ENVIRONMENT}")
+fi
+if [[ -n "${RHSM_CONSUMER_NAME}" ]]; then
+  RHSM_REGISTER_ARGS+=("--name=${RHSM_CONSUMER_NAME}")
+fi
+if [[ -n "${RHSM_POOL_ID}" ]]; then
+  RHSM_REGISTER_ARGS+=("--pool=${RHSM_POOL_ID}")
+fi
+
 
 if [[ -n "${RHSM_ORG_ID}" && -n "${RHSM_ACTIVATION_KEY}" ]]; then
-  subscription-manager register --org="${RHSM_ORG_ID}" --activationkey="${RHSM_ACTIVATION_KEY}" --force
+  # shellcheck disable=SC2068 # We use the array expansion here to ensure that the arguments are passed correctly
+  subscription-manager register --org="${RHSM_ORG_ID}" --activationkey="${RHSM_ACTIVATION_KEY}" --force ${RHSM_REGISTER_ARGS[@]}
   FOUND=true
 fi
 
 if [[ -n "${RHSM_USER}" && -n "${RHSM_PASS}" && ${FOUND} == false ]]; then
-  subscription-manager register --username="${RHSM_USER}" --password="${RHSM_PASS}" --force
+  # shellcheck disable=SC2068 # We use the array expansion here to ensure that the arguments are passed correctly
+  subscription-manager register --username="${RHSM_USER}" --password="${RHSM_PASS}" --force ${RHSM_REGISTER_ARGS[@]}
   FOUND=true
 fi
 
