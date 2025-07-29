@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.28.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.27.1...v2.28.0) (2025-07-29)
+
+
+### Features
+
+* enhance RHEL subscription management with environment and pool support ([#1320](https://github.com/mesosphere/konvoy-image-builder/issues/1320)) ([b82293d](https://github.com/mesosphere/konvoy-image-builder/commit/b82293ddd8e775d7cf8ff5c46a7f5a19dfed4013))
+
+
+### Bug Fixes
+
+* uninstalls same version of NVIDIA driver for preprovisioned usecase ([#1313](https://github.com/mesosphere/konvoy-image-builder/issues/1313)) ([262bd7f](https://github.com/mesosphere/konvoy-image-builder/commit/262bd7f546ee7902d891d57e7ffa497da30f5e49))
+* update kernel header versions for rhel-8.10 ([#1322](https://github.com/mesosphere/konvoy-image-builder/issues/1322)) ([9c6c945](https://github.com/mesosphere/konvoy-image-builder/commit/9c6c9451c9c28d02899e9530da446268616f215f))
+
 ## [2.27.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.27.0...v2.27.1) (2025-07-08)
 
 
