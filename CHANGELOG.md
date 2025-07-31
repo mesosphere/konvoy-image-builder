@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.1](https://github.com/mesosphere/konvoy-image-builder/compare/v2.28.0...v2.28.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* only use Ec2Kubernetes datasource in aws ([#1324](https://github.com/mesosphere/konvoy-image-builder/issues/1324)) ([f2293e7](https://github.com/mesosphere/konvoy-image-builder/commit/f2293e747b87de02118db5566aa15838f0dd46d0))
+
 ## [2.28.0](https://github.com/mesosphere/konvoy-image-builder/compare/v2.27.1...v2.28.0) (2025-07-29)
 
 
