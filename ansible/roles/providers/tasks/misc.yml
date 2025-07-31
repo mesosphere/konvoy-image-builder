@@ -90,6 +90,7 @@
   when:
     - ansible_os_family != "Flatcar"
     - system_cloud_init_version is version('24.2', '>')
+    - packer_builder_type.startswith('amazon')
 
 - name: Create custom cloud-init data source for Ubuntu
   ansible.builtin.copy:
