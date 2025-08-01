@@ -11,8 +11,6 @@
 
 - name: remove versionlock for containerd
   command: zypper removelock containerd.io
-  args:
-    warn: false
   ignore_errors: true
   register: command_result
   changed_when: |

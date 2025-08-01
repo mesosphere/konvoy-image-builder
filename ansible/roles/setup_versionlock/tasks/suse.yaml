@@ -7,8 +7,6 @@
     # before and after it runs. Instead, let's allow the service 60 seconds to finish, and release the lock.
     ZYPP_LOCK_TIMEOUT: 60
   register: versionlocklist
-  args:
-    warn: false
   changed_when: false
 
 - name: export versionlocklist

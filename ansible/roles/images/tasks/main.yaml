@@ -27,7 +27,7 @@
   when: packer_builder_type.startswith('amazon')
 
 - name: pull images
-  include_tasks: check-or-pull-images.yaml
+  include: check-or-pull-images.yaml
   vars:
     image_name: "{{ item }}"
   loop: "{{ pull_images }}"

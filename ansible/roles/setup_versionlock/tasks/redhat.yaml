@@ -67,8 +67,6 @@
 - name: check if versionlock exists
   command: yum versionlock list {{ '--disablerepo "*" --enablerepo offline' if offline_mode_enabled else '' }}
   register: versionlocklist
-  args:
-    warn: false
   ignore_errors: true
   changed_when: false
 

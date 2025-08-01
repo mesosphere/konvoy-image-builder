@@ -13,8 +13,6 @@
   shell: |
     apt-get install --force-yes --yes \
       cri-tools={{ critools_deb }}
-  args:
-    warn: false
   register: result
   until: result is success
   retries: 3
@@ -29,8 +27,6 @@
   shell: |
     apt-get install --force-yes --yes \
       kubeadm={{ package_versions.kubernetes_deb }}
-  args:
-    warn: false
   register: result
   until: result is success
   retries: 3

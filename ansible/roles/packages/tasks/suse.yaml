@@ -26,8 +26,6 @@
   with_items:
     - kubelet
     - kubectl
-  args:
-    warn: false
   ignore_errors: True
   register: command_result
   until: command_result is success
@@ -64,8 +62,6 @@
   with_items:
     - kubelet
     - kubectl
-  args:
-    warn: false
   register: command_result
   until: result is success
   retries: 15

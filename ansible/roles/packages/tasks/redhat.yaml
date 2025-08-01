@@ -55,8 +55,6 @@
   with_items:
     - kubelet
     - kubectl
-  args:
-    warn: false
   ignore_errors: true
   register: command_result
   changed_when: >
@@ -134,8 +132,6 @@
   with_items:
     - kubelet
     - kubectl
-  args:
-    warn: false
   register: command_result
   changed_when: >
     'command_result.stdout is regex(".*versionlock added: [1-9]+.*")'
