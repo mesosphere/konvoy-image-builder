@@ -1,5 +1,5 @@
 ---
-- include: upload.yaml
+- include_tasks: upload.yaml
 
 - name: check for offline bundle
   stat:

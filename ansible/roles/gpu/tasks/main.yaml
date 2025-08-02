@@ -1,6 +1,6 @@
 ---
 - name: "NVIDIA GPU detected"
-  include: nvidia-gpu.yaml
+  include_tasks: nvidia-gpu.yaml
   when:
     - gpu is defined
     - "'nvidia' in gpu.types"

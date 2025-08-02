@@ -1,6 +1,6 @@
 ---
-- include: redhat.yaml
+- include_tasks: redhat.yaml
   when: ansible_os_family == "RedHat"
 
-- include: suse.yaml
+- include_tasks: suse.yaml
   when: ansible_os_family == "Suse"

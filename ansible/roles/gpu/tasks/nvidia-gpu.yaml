@@ -1,18 +1,18 @@
 ---
 - name: "NVIDIA Gpu - RHEL"
-  include: nvidia-gpu-RHEL.yaml
+  include_tasks: nvidia-gpu-RHEL.yaml
   when: ansible_distribution == 'RedHat'
 
 - name: "NVIDIA Gpu - SLES 15"
-  include: nvidia-gpu-SLES15.yaml
+  include_tasks: nvidia-gpu-SLES15.yaml
   when: ansible_distribution == "SLES" and ansible_distribution_major_version == '15'
 
 - name: "NVIDIA Gpu - Flatcar"
-  include: nvidia-gpu-Flatcar.yaml
+  include_tasks: nvidia-gpu-Flatcar.yaml
   when: ansible_distribution == "Flatcar"
 
 - name: "NVIDIA Gpu - Ubuntu"
-  include: nvidia-gpu-Ubuntu.yaml
+  include_tasks: nvidia-gpu-Ubuntu.yaml
   when: ansible_distribution == "Ubuntu"
 
 # disable with these instructions https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#runfile-nouveau

@@ -12,26 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include: aws.yml
+- include_tasks: aws.yml
   when: packer_builder_type.startswith('amazon')
 
-- include: azure.yml
+- include_tasks: azure.yml
   when: packer_builder_type.startswith('azure')
 
-- include: vmware.yml
+- include_tasks: vmware.yml
   when: packer_builder_type is search('vmware') or
         packer_builder_type is search('vsphere')
 
-- include: googlecompute.yml
+- include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
 
-- include: qemu.yml
+- include_tasks: qemu.yml
   when: packer_builder_type is search('qemu')
 
-- include: misc.yml
+- include_tasks: misc.yml
   when: packer_builder_type and packer_builder_type != ""
 
-- include: vmware-redhat.yaml
+- include_tasks: vmware-redhat.yaml
   when:
   - packer_builder_type is search('vmware') or packer_builder_type is search('vsphere')
   - ansible_os_family == "RedHat"
