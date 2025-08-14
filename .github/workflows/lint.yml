@@ -32,7 +32,7 @@ jobs:
           env-file: .github/super-linter.env
 
       - name: Run Super-Linter
-        uses: super-linter/super-linter@v5
+        uses: super-linter/super-linter@v7
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
