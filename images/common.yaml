@@ -1,5 +1,5 @@
 ---
-kubernetes_version: "1.31.9"
+kubernetes_version: "1.31.12"
 
 packer:
   goss_arch: amd64
