@@ -11,7 +11,7 @@ var (
 	packageCmdExample = "create-package-bundle --os redhat-8.10 --output-directory=artifacts"
 	validOS           = []string{
 		"redhat-8.10",
-		"rocky-9.1",
+		"rocky-9.6",
 		"ubuntu-22.04",
 		"oracle-9.4",
 	}
