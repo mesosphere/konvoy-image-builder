@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.28.2...v2.28.3) (2025-08-22)
+
+
+### Bug Fixes
+
+* remove deprecated OS from package bundle ([#1330](https://github.com/mesosphere/konvoy-image-builder/issues/1330)) ([00a9544](https://github.com/mesosphere/konvoy-image-builder/commit/00a954412fbdd0c7f71073f85b0254b3c67dbb46))
+
 ## [2.28.2](https://github.com/mesosphere/konvoy-image-builder/compare/v2.28.1...v2.28.2) (2025-08-19)
 
 
