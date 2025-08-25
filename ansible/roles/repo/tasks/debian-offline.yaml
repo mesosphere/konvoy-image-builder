@@ -19,5 +19,6 @@
     apt_repository:
       repo: 'deb [trusted=yes] file:{{ offline.os_packages_remote_filesystem_repo_path }} /'
       filename: offline
+      update_cache: true
     retries: 3
     delay: 3
