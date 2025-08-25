@@ -4,28 +4,10 @@
     name: apt-transport-https
     state: latest
     update_cache: true
-  register: apt_result
-  until: apt_result is not failed
+  register: apt_lock_status
+  until: apt_lock_status is not failed
   retries: 5
   delay: 10
-  ignore_errors: true
-
-- name: Debug apt_result summary
-  debug:
-    msg:
-      - "RC: {{ apt_result.rc | default('N/A') }}"
-      - "STDOUT: {{ apt_result.stdout | default('') }}"
-      - "STDERR: {{ apt_result.stderr | default('') }}"
-      - "MSG: {{ apt_result.msg | default('') }}"
-
-- name: install apt-transport-https deb package without cache
-  apt:
-    name: apt-transport-https
-    state: present
-    update_cache: false
-  register: apt_transport_result
-  ignore_errors: true
-  when: apt_result is failed
 
 - name: apt update package management cache
   apt:
@@ -34,7 +16,6 @@
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
-  when: apt_result is not failed
 
 - name: install common debs
   apt:
