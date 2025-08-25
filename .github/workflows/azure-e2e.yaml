@@ -16,7 +16,6 @@ jobs:
       matrix:
         os:
         - "rocky 9"
-        - "ubuntu 20.04"
         - "ubuntu 22.04"
         buildConfig:
         - "basic"

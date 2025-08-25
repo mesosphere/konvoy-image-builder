@@ -38,13 +38,6 @@ jobs:
           # Flatcar
           - os: "flatcar"
             buildConfig: "basic"
-          # Ubuntu 20.04
-          - os: "ubuntu 20.04"
-            buildConfig: "basic"
-          - os: "ubuntu 20.04"
-            buildConfig: "nvidia"
-          - os: "ubuntu 20.04"
-            buildConfig: "offline"
           # Ubuntu 22.04
           - os: "ubuntu 22.04"
             buildConfig: "basic"
