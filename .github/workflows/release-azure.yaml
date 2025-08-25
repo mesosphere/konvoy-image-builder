@@ -18,8 +18,6 @@ jobs:
         include:
           - os: "rocky 9"
             buildConfig: "basic"
-          - os: "ubuntu 20.04"
-            buildConfig: "basic"
           - os: "ubuntu 22.04"
             buildConfig: "basic"
     runs-on:
