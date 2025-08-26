@@ -15,11 +15,6 @@
     command: "mv {{ item.path }} {{ item.path }}.disabled"
     loop: "{{ repo_files.files }}"
 
-  - name: update apt cache from offline repo
-    ansible.builtin.apt:
-      update_cache: yes
-      update_cache_retries: 10
-
   - name: add offline repository
     apt_repository:
       repo: 'deb [trusted=yes] file:{{ offline.os_packages_remote_filesystem_repo_path }} /'
