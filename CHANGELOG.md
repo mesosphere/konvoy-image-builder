@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.28.3...v2.28.4) (2025-08-27)
+
+
+### Bug Fixes
+
+* chnages update cache logic for debian ([#1333](https://github.com/mesosphere/konvoy-image-builder/issues/1333)) ([bd8430c](https://github.com/mesosphere/konvoy-image-builder/commit/bd8430ce98b95f6bbf654078f8e8506494783fe5))
+
 ## [2.28.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.28.2...v2.28.3) (2025-08-22)
 
 
