@@ -5,7 +5,7 @@ python_path: ""
 # If it's not there, the kubernetes_full_version will have "None" for a version number.
 #
 # IMPORTANT When you update kubernetes_version, also update crictl_version.
-kubernetes_version: "1.33.2"
+kubernetes_version: "1.34.1"
 kubernetes_major_minor: "{{ (kubernetes_version.split('.') | map('trim'))[:2] | join('.') }}"
 kubernetes_semver: "v{{ kubernetes_version }}"
 
@@ -21,7 +21,7 @@ crictl_version: "{{ kubernetes_major_minor }}.0"
 # The url points to the linux/amd64 release artifact.
 crictl_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-amd64.tar.gz
 # The sha256 sum verifies the integrity of the release artifact.
-crictl_sha256: 8307399e714626e69d1213a4cd18c8dec3d0201ecdac009b1802115df8973f0f
+crictl_sha256: a8ff2a3edb37a98daf3aba7c3b284fe0aa5bff24166d896ab9ef64c8913c9f51
 
 
 # The critools deb and rpm package versions. While the version derives directly from
