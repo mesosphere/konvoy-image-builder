@@ -16,6 +16,17 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: false
     steps:
+      - name: Cleanup Disk Space
+        run: |
+          echo "Before removing files:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          echo "After removing files:"
+          df -h
+
       - name: Checkout konvoy-image-builder repository
         uses: actions/checkout@v4
         with:
@@ -33,16 +44,6 @@ jobs:
         with:
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
-
-      - name: Cleanup Disk Space
-        run: |
-          echo "Before removing files:"
-          df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          echo "After removing files:"
 
       - name: Login to D2iQ's Mirror Registry
         uses: docker/login-action@v3
