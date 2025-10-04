@@ -23,7 +23,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set up Go
-        uses: actions/setup-go@v
+        uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
           cache: true
@@ -57,7 +57,7 @@ jobs:
         run:  |-
           make build-for-podman
           goreleaser build --config=.goreleaser-podman-e2e.yml --clean --skip=validate
-          
+
       - name: Cleanup Disk Space
         run: |
           echo "Before removing files:"
