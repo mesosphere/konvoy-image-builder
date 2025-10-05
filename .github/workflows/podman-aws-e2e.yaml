@@ -58,6 +58,16 @@ jobs:
           make build-for-podman
           goreleaser build --config=.goreleaser-podman-e2e.yml --clean --skip=validate
 
+      - name: Cleanup Disk Space
+        run: |
+          echo "Before removing files:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          echo "After removing files:"
+
       - name: Run E2E test for AWS Rocky 9.1 using podman
         run: |-
           KIB_CONTAINER_ENGINE=podman dist/konvoy-image-wrapper-for-podman_linux_amd64_v1/konvoy-image build aws images/ami/ubuntu-2204.yaml --dry-run
