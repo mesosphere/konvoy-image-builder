@@ -22,3 +22,10 @@
       update_cache: true
     retries: 3
     delay: 3
+
+  # always update cache so that new packages are available during upgrades
+  - name: update apt cache for offline repository
+    apt:
+      update_cache: yes
+    retries: 3
+    delay: 3
