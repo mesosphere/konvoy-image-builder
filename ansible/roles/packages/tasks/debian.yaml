@@ -3,20 +3,11 @@
   apt:
     name: apt-transport-https
     state: latest
-    update_cache: true
   register: apt_lock_status
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
 
-- name: apt update package management cache
-  apt:
-    update_cache: true
-  register: apt_lock_status
-  until: apt_lock_status is not failed
-  retries: 5
-  delay: 10
-  
 - name: install common debs
   apt:
     name:
