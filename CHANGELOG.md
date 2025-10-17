@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.28.4](https://github.com/mesosphere/konvoy-image-builder/compare/v2.28.3...v2.28.4) (2025-10-17)
+
+
+### Bug Fixes
+
+* apt update offline repo cache ([#1339](https://github.com/mesosphere/konvoy-image-builder/issues/1339)) ([7c24b63](https://github.com/mesosphere/konvoy-image-builder/commit/7c24b63ef2d953089c3e6c94d52b34365a6d71ac))
+* chnages update cache logic for debian ([#1333](https://github.com/mesosphere/konvoy-image-builder/issues/1333)) ([bd8430c](https://github.com/mesosphere/konvoy-image-builder/commit/bd8430ce98b95f6bbf654078f8e8506494783fe5))
+* update kernel-headers package version for RHEL 8.10 ([#1342](https://github.com/mesosphere/konvoy-image-builder/issues/1342)) ([1191a31](https://github.com/mesosphere/konvoy-image-builder/commit/1191a31010d6e6729d045261fe395ad06c1917be))
+
 ## [2.28.3](https://github.com/mesosphere/konvoy-image-builder/compare/v2.28.2...v2.28.3) (2025-08-22)
 
 
