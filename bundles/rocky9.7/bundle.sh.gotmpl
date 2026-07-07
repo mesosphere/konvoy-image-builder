@@ -12,7 +12,13 @@ TMP_DIR="$(mktemp -d repodata-XXXX)"
 chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
-mapfile -t pkgs < packages.txt
+mapfile -t raw_pkgs < packages.txt
+pkgs=()
+for p in "${raw_pkgs[@]}"; do
+  # Ignore empty/comment lines from templated package lists.
+  [[ -z "${p//[[:space:]]/}" || "${p}" =~ ^[[:space:]]*# ]] && continue
+  pkgs+=("${p}")
+done
 bare_pkgs=()
 for p in "${pkgs[@]}"; do
   bare_pkgs+=("${p%% *}")
