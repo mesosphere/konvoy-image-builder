@@ -1,0 +1,37 @@
+---
+- name: Ensure Rocky kernel packages are updated
+  yum:
+    name:
+      - "kernel{{ ' >= ' + rocky_min_kernel_version if rocky_min_kernel_version | length > 0 else '' }}"
+      - "kernel-core{{ ' >= ' + rocky_min_kernel_version if rocky_min_kernel_version | length > 0 else '' }}"
+      - "kernel-modules{{ ' >= ' + rocky_min_kernel_version if rocky_min_kernel_version | length > 0 else '' }}"
+      - "kernel-modules-core{{ ' >= ' + rocky_min_kernel_version if rocky_min_kernel_version | length > 0 else '' }}"
+      - "kernel-modules-extra{{ ' >= ' + rocky_min_kernel_version if rocky_min_kernel_version | length > 0 else '' }}"
+    state: latest
+    update_only: true
+    update_cache: true
+    # Rocky images do not expose a "security" repo alias consistently,
+    # so use normal enabled repos for online mode.
+    enablerepo: "{{ 'offline' if offline_mode_enabled else '' }}"
+    disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+  register: rocky_kernel_update
+  until: rocky_kernel_update is success
+  retries: 5
+  delay: 3
+  when:
+    - ansible_distribution == "Rocky"
+    - ansible_distribution_version is version(current_rocky_version, '==')
+
+- name: Install Fragnesia module block config for Rocky {{ current_rocky_version }}
+  copy:
+    dest: /etc/modprobe.d/fragnesia.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      install esp4 /bin/false
+      install esp6 /bin/false
+      install rxrpc /bin/false
+  when:
+    - ansible_distribution == "Rocky"
+    - ansible_distribution_version is version(current_rocky_version, '==')

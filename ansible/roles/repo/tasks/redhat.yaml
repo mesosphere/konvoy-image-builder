@@ -64,6 +64,36 @@
     - rhelorg.subscribed_pool_ids is defined or rheluser.subscribed_pool_ids is defined
     - ansible_distribution_version is version('8.10', '==')
 
+- name: Update Rocky repo metadata packages for Rocky {{ current_rocky_version }} online builds
+  yum:
+    name:
+      - rocky-repos
+      - rocky-release
+      - rocky-gpg-keys
+    state: latest
+    update_only: true
+    update_cache: true
+  register: rocky_initial_update
+  until: rocky_initial_update is success
+  retries: 5
+  delay: 3
+  when:
+    - not offline_mode_enabled
+    - ansible_distribution == "Rocky"
+
+# Rocky mirrorlist resolution can be flaky in CI networks. For Rocky releases,
+# fully manage rocky.repo with deterministic vault baseurls.
+- name: Render Rocky repos from template for stable vault baseurls
+  ansible.builtin.template:
+    src: rocky.repo.j2
+    dest: /etc/yum.repos.d/rocky.repo
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ansible_distribution == 'Rocky'
+    - not offline_mode_enabled
+
 # RPM
 - name: add Konvoy Kubernetes rpm repository
   yum_repository:
