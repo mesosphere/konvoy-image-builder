@@ -12,6 +12,18 @@
         ansible_distribution_major_version == '8'
       ) }}"
 
+# Keep Rocky builds pinned to current_rocky_version to avoid repo drift/restamping.
+- name: pin Rocky Linux releasever to {{ current_rocky_version }}
+  copy:
+    dest: /etc/dnf/vars/releasever
+    content: "{{ current_rocky_version }}\n"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ansible_distribution == 'Rocky'
+    - not offline_mode_enabled
+
 - name: remove release ver file for azure
   file:
     path: /etc/yum/vars/releasever

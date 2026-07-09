@@ -45,10 +45,10 @@ jobs:
             buildConfig: "nvidia"
           - os: "ubuntu 22.04"
             buildConfig: "offline"
-          # Rocky 9.6
-          - os: "rocky 9.6"
+          # Rocky 9.7
+          - os: "rocky 9.7"
             buildConfig: "basic"
-          - os: "rocky 9.6"
+          - os: "rocky 9.7"
             buildConfig: "offline"
     runs-on: self-hosted-nutanix-docker-large
     continue-on-error: false
@@ -68,13 +68,6 @@ jobs:
       - name: Login to dockerhub Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.NEXUS_USERNAME }}
-          password: ${{ secrets.NEXUS_PASSWORD }}
-
-      - name: Login to D2iQ's Mirror Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ secrets.D2IQ_DOCKER_MIRROR_REGISTRY}}
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
 

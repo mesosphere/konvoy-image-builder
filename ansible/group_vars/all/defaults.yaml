@@ -111,6 +111,11 @@ nvidia_runfile_installer: "NVIDIA-Linux-x86_64-{{ nvidia_driver_version }}.run"
 nvidia_runfile_installer_url: "https://download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_driver_version }}/{{ nvidia_runfile_installer }}"
 suse_packagehub_product: PackageHub/{{ ansible_distribution_version }}/{{ ansible_architecture }}
 
+# Rocky Linux version used for non-version-specific playbook behavior.
+current_rocky_version: "9.7"
+# Minimum Rocky kernel version for security update step (Rocky 9.7 floor).
+rocky_min_kernel_version: "5.14.0-611.55.1"
+
 pinned_debs: []
 
 sysctl_conf_file: >-

@@ -19,7 +19,7 @@ jobs:
             buildConfig: "offline-fips"
           - os: "ubuntu 22.04"
             buildConfig: "basic"
-          - os: "rocky 9.6"
+          - os: "rocky 9.7"
             buildConfig: "offline"
           - os: "oracle 9.4"
             buildConfig: "basic"
@@ -50,13 +50,6 @@ jobs:
       - name: Login to dockerhub Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.NEXUS_USERNAME }}
-          password: ${{ secrets.NEXUS_PASSWORD }}
-
-      - name: Login to D2iQ's Mirror Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ secrets.D2IQ_DOCKER_MIRROR_REGISTRY}}
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
 
