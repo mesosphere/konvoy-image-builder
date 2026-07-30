@@ -1,17 +1,13 @@
 [Unit]
-Requires=torcx.target
-After=torcx.target
 Description=containerd container runtime
 Documentation=https://containerd.io
 After=network.target
 
 [Service]
-EnvironmentFile=/run/metadata/torcx
-Environment=TORCX_IMAGEDIR=/docker
-Environment=PATH=${PATH}:/opt/bin
+Environment=PATH=/usr/bin:/opt/bin:${PATH}
 Delegate=yes
 Environment=CONTAINERD_CONFIG=/etc/containerd/config.toml
-ExecStart=/usr/bin/env PATH=${TORCX_BINDIR}:${PATH} ${TORCX_BINDIR}/containerd --config ${CONTAINERD_CONFIG}
+ExecStart=/usr/bin/containerd --config ${CONTAINERD_CONFIG}
 KillMode=process
 Restart=always
 
