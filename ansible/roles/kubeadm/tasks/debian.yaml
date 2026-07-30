@@ -4,6 +4,10 @@
 
 - name: remove version hold for cri-tools package
   command: apt-mark unhold cri-tools
+  register: cri_tools_unhold_result
+  # apt-mark returns rc=100 when the package is not installed yet.
+  failed_when: cri_tools_unhold_result.rc not in [0, 100]
+  changed_when: cri_tools_unhold_result.rc == 0
 
 # cri-tools version should be, approximately, the Kubernetes version.
 # The community-maintained kubeadm package installs the latest version of
