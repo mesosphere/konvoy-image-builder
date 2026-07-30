@@ -1,10 +1,11 @@
 ---
-build_name: "flatcar-lts-3033.3.x"
+build_name: "flatcar-lts-4081.3.x"
 packer_builder_type: "amazon"
 packer:
   # Selectors for source AMI:
-  ami_filter_name: "Flatcar-lts-3033.3.*"
+  ami_filter_name: "Flatcar-lts-4081.3.*"
   ami_filter_owners: "075585003325"
+  include_deprecated: true
   # Tags applied to generated AMI:
   distribution: "Flatcar"
   distribution_version: "LTS"
