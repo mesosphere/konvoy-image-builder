@@ -20,7 +20,8 @@ apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-br
 sed -i 's/kubelet/kubelet='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
 sed -i 's/kubectl/kubectl='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
 sed -i 's/kubeadm/kubeadm='"{{ .KubernetesVersion }}-${KUBERNETES_DEB_BUILD_VERSION}"'/' /tmp/packages
-sed -i 's/cri-tools/cri-tools='"{{ .CRIToolsVersion }}-${CRI_TOOLS_DEB_BUILD_VERSION}"'/' /tmp/packages
+grep -qx "cri-tools={{ .CRIToolsVersion }}-${CRI_TOOLS_DEB_BUILD_VERSION}" /tmp/packages || \
+  echo "cri-tools={{ .CRIToolsVersion }}-${CRI_TOOLS_DEB_BUILD_VERSION}" >> /tmp/packages
 
 TMP_DIR="$(mktemp -d repodata-XXXX)"
 pushd "${TMP_DIR}"
