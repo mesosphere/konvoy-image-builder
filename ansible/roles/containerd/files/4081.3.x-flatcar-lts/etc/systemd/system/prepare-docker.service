@@ -1,0 +1,18 @@
+[Unit]
+Description=Unpack docker binaries to /opt/bin
+ConditionPathExists=!/opt/bin/docker
+# Needs to be downloaded prior to execution (either by user or by kib job)
+ConditionPathExists=/opt/docker.tgz
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+Restart=on-failure
+ExecStartPre=/usr/bin/mkdir -p /opt/bin
+ExecStartPre=/usr/bin/tar -v --extract --file /opt/docker.tgz --directory /opt/ --no-same-owner
+ExecStartPre=/usr/bin/rm /opt/docker.tgz
+ExecStartPre=/usr/bin/sh -c "mv /opt/docker/* /opt/bin/"
+ExecStart=/usr/bin/rmdir /opt/docker
+
+[Install]
+WantedBy=multi-user.target
