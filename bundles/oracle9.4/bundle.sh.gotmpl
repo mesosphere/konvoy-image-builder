@@ -15,7 +15,14 @@ TMP_DIR="$(mktemp -d repodata-XXXX)"
 chmod 777 -R "${TMP_DIR}"
 cp packages.txt "${TMP_DIR}"
 pushd "${TMP_DIR}"
-mapfile -t package_specs < packages.txt
+mapfile -t raw_package_specs < packages.txt
+package_specs=()
+for spec in "${raw_package_specs[@]}"; do
+  # Ignore empty lines from templating blocks.
+  if [[ -n "${spec//[[:space:]]/}" ]]; then
+    package_specs+=("${spec}")
+  fi
+done
 #shellcheck disable=SC2046
 repoquery --archlist=x86_64,noarch --resolve --requires --recursive "${package_specs[@]}" | xargs -r yumdownloader --archlist=x86_64,noarch -x \*i686
 #shellcheck disable=SC2046
