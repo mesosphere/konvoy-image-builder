@@ -104,8 +104,11 @@
     - name: verify the running UEK7 kernel fixes CVE-2026-53359
       assert:
         that:
-          - ansible_kernel is match('^5\.15\.')
-          - (ansible_kernel | regex_replace('\.el[89]uek.*$', '')) is version(oracle_uek_minimum_version, '>=')
+          - ansible_kernel is match('^5\.15\..*\.el' ~ ansible_distribution_major_version ~ 'uek(?:\..*)?$')
+          - >-
+            (ansible_kernel | regex_replace('\.x86_64$', ''))
+            is version(oracle_uek7_min_kernel_version[ansible_distribution_major_version], '>=')
         fail_msg: >-
-          UEK7 {{ oracle_uek_minimum_version }} or newer is required;
+          UEK7 {{ oracle_uek7_min_kernel_version[ansible_distribution_major_version] }}
+          or newer is required;
           the running kernel is {{ ansible_kernel }}.
