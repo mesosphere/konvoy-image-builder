@@ -26,7 +26,7 @@
 
   - name: Update docker and containerd unit files for flatcar LTS 4081.3.x
     copy:
-      src: 4081.3.x-flatcar-lts/etc/systemd/system/
+      src: 3033.3.x-flatcar-lts/etc/systemd/system/
       dest: /etc/systemd/system/
       mode: 0644
 
