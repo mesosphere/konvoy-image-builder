@@ -13,6 +13,7 @@ var (
 		"redhat-8.10",
 		"rocky-9.6",
 		"ubuntu-22.04",
+		"oracle-8.9",
 		"oracle-9.4",
 	}
 )

@@ -49,3 +49,63 @@
 
     - name: reboot to load RHCK kernel
       ansible.builtin.reboot:
+
+- name: UEK7 kernel
+  when:
+    - oracle_kernel == "UEK"
+    - ansible_distribution_major_version in ['8', '9']
+  block:
+    - name: install the latest UEK7 kernel
+      yum:
+        name: kernel-uek-5.15.*
+        state: latest
+        update_cache: true
+        enablerepo: "{{ 'offline' if offline_mode_enabled else oracle_uek_repository }}"
+        disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+      register: uek_installation_rpm
+      until: uek_installation_rpm is success
+      retries: 3
+      delay: 3
+
+    - name: install grubby
+      yum:
+        name: grubby
+        state: present
+        update_cache: true
+        enablerepo: "{{ 'offline' if offline_mode_enabled else oracle_uek_repository }}"
+        disablerepo: "{{ '*' if offline_mode_enabled else '' }}"
+      register: grubby_installation_rpm
+      until: grubby_installation_rpm is success
+      retries: 3
+      delay: 3
+
+    - name: read the latest installed UEK7 kernel
+      shell: ls -1v /boot/vmlinuz-5.15.*uek* | tail -n 1
+      register: uek_kernel
+      changed_when: false
+
+    - name: read the default kernel
+      command: grubby --default-kernel
+      register: default_kernel
+      changed_when: false
+
+    - name: set UEK7 as the default kernel
+      command: grubby --set-default "{{ uek_kernel.stdout }}"
+      when: default_kernel.stdout != uek_kernel.stdout
+
+    - name: reboot to load UEK7 kernel
+      ansible.builtin.reboot:
+      when: ansible_kernel != (uek_kernel.stdout | basename)
+
+    - name: refresh kernel facts
+      setup:
+        filter: ansible_kernel
+
+    - name: verify the running UEK7 kernel fixes CVE-2026-53359
+      assert:
+        that:
+          - ansible_kernel is match('^5\.15\.')
+          - (ansible_kernel | regex_replace('\.el[89]uek.*$', '')) is version(oracle_uek_minimum_version, '>=')
+        fail_msg: >-
+          UEK7 {{ oracle_uek_minimum_version }} or newer is required;
+          the running kernel is {{ ansible_kernel }}.

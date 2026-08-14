@@ -43,9 +43,13 @@ var osToConfig = map[string]OSConfig{
 		configDir:      "bundles/ubuntu22.04",
 		containerImage: "docker.io/library/ubuntu:22.04",
 	},
+	"oracle-8.9": {
+		configDir:      "bundles/oracle8.9",
+		containerImage: "docker.io/library/oraclelinux:8.9",
+	},
 	"oracle-9.4": {
 		configDir:      "bundles/oracle9.4",
-		containerImage: "docker.io/library/oraclelinux:9",
+		containerImage: "docker.io/library/oraclelinux:9.4",
 	},
 }
 
