@@ -1,5 +1,5 @@
 ---
-build_name: "flatcar-3033.3.16"
+build_name: "flatcar-4081.3.9"
 packer_builder_type: "vsphere"
 guestinfo_datasource_slug: "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo"
 guestinfo_datasource_ref: "v1.4.0"
@@ -12,12 +12,12 @@ packer:
   insecure_connection: "false"
   network: ""
   resource_pool: ""
-  template: "d2iq-base-templates/d2iq-base-Flatcar-3033.3.16"
+  template: "d2iq-base-templates/d2iq-base-Flatcar-4081.3.9"
   vsphere_guest_os_type: "flatcar_64Guest"
   guest_os_type: "flatcar-64"
   # goss params
   distribution: "flatcar"
-  distribution_version: "3033.3.16"
+  distribution_version: "4081.3.9"
 # Use following overrides to select the authentication method that can be used with base template
 # ssh_username: ""  # can be exported as environment variable 'SSH_USERNAME'
 # ssh_password: "" # can be exported as environment variable 'SSH_PASSWORD'
